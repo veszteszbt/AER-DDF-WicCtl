@@ -3,13 +3,31 @@
 # include <iostream>
 # include <cstring>
 # include <string>
-# include <stdio.h>
+# include <cstdio>
+# include <error.h>
 # include <unistd.h>
 # include <libusb-1.0/libusb.h>
 
 class wicctl
 {
 	libusb_device_handle *devh;
+
+	template<uint8_t tObj, uint16_t tFn>
+	void invoke()
+	{
+		int size = libusb_control_transfer(
+			devh,
+			0x0,
+			0x80+tObj,
+			tFn,
+			0,
+			0,
+			0,5000
+		);
+
+		if(size < 0)
+			throw -size;
+	}
 
 	template<typename Tresult, uint8_t tObj, uint16_t tFn>
 	Tresult get(uint16_t index)
@@ -26,7 +44,10 @@ class wicctl
 		);
 
 		if(result != sizeof(Tresult))
-			throw 1;
+			if(result < 0)
+				throw -result;
+			else
+				throw EPROTO;
 
 		return rv;
 	}
@@ -44,15 +65,14 @@ class wicctl
 			sizeof(Tdata),5000
 		);
 
-
-		if(size <= 0 || size != sizeof(Tdata))
-			throw 1;
+		if(size < 0)
+			throw -size;
 	}
 
 	char buf[65536];
 
 	template<uint8_t tObj, uint16_t tFn>
-	std::string getstr(uint16_t index,uint16_t size=1024)
+	std::string getstr(uint16_t index=0,uint16_t size=1024)
 	{
 		int s = libusb_control_transfer(
 			devh,
@@ -64,10 +84,10 @@ class wicctl
 			size,5000
 		);
 
-		if(s<0)
-			std::cerr << "getstr error " << std::dec << s << std::endl;
+		if(size < 0)
+			throw -size;
 
-		return std::string(buf,size);
+		return std::string(buf,s);
 	}
 
 	template<uint8_t tObj, uint16_t tFn>
@@ -83,9 +103,15 @@ class wicctl
 			value.size(),5000
 		);
 
-		if(size<=0 && value.size())
-			throw size;
+		if(size < 0)
+			throw -size;
+		else if(!size && value.size())
+			throw ECOMM;
 	}
+
+
+	uint8_t app_state()
+	{ return get<uint8_t,objs::app,0>(0); }
 
 	uint8_t app_wait_for_completion()
 	{
@@ -94,7 +120,6 @@ class wicctl
 			usleep(10000);
 		return r;
 	}
-
 
 	struct objs
 	{
@@ -114,7 +139,7 @@ public:
 		libusb_init(0);
 		devh = libusb_open_device_with_vid_pid(0, 0x1234, 0x5678);
 		if(!devh)
-			throw static_cast<int>((int64_t)devh);
+			throw EHOSTUNREACH;
 
 		libusb_detach_kernel_driver(devh, 0);
 		libusb_claim_interface(devh, 0);
@@ -125,7 +150,7 @@ public:
 		libusb_init(0);
 		devh = libusb_open_device_with_vid_pid(0, 0x1234, 0x5678);
 		if(!devh)
-			throw 1;
+			throw errno;
 
 		libusb_detach_kernel_driver(devh, 0);
 		libusb_claim_interface(devh, 0);
@@ -137,84 +162,131 @@ public:
 		libusb_exit(0);
 	}
 
-	
-	uint32_t version()
+	/*! Returns the version number of the host application installed on the WIC */
+	uint32_t system_version()
 	{ return get<uint32_t, objs::system, 0>(0); }
 
-	uint64_t serial()
+	/*! Returns the generally unique serial number of the processor in the WIC */
+	uint64_t system_serial()
 	{ return get<uint64_t, objs::system, 1>(0); }
 
 
-	std::string hostname()
+	/*! Returns the hostname of the WIC */
+	std::string network_hostname()
 	{ return getstr<objs::network, 0>(0); }
 
-	void hostname(const std::string &v)
+	/*! Sets the hostname of the WIC */
+	void network_hostname(const std::string &v)
 	{ putstr<objs::network, 0>(0,v); }
 
 
-	std::string ssid()
+	/*! Returns the SSID which the WIC connects to when available */
+	std::string network_ssid()
 	{ return getstr<objs::network, 1>(0); }
 
-	void ssid(const std::string &v)
+	/*! Sets the SSID which the WIC shall try to connect to */
+	void network_ssid(const std::string &v)
 	{ putstr<objs::network, 1>(0,v); }
 
-	std::string psk()
+	/*! Returns the security key which the WIC uses in order to connect to the specified network */
+	std::string network_psk()
 	{ return getstr<objs::network, 3>(0); }
 
-	void psk(const std::string &v)
+	/*! Sets the security key which the WIC uses in order to connect to the specified network */
+	void network_psk(const std::string &v)
 	{ putstr<objs::network, 3>(0,v); }
 
-	void save()
+	uint32_t network_own_ip()
+	{ return get<uint32_t, objs::network, 4>(0); }
+
+	void network_own_ip(uint32_t v)
+	{ return put<uint32_t, objs::network, 4>(0,v); }
+
+	uint32_t network_server_ip()
+	{ return get<uint32_t, objs::network, 5>(0); }
+
+	void network_server_ip(uint32_t v)
+	{ return put<uint32_t, objs::network, 5>(0,v); }
+
+
+	/*! Persists all the configuration modifications */
+	void config_save()
 	{ getstr<objs::system, 0x100>(0); }
 
-
-	uint8_t app_state()
-	{ return get<uint8_t,objs::app,0>(0); }
-
+	/*! Initiates uninstallation of currently installed WIC client app */
 	uint8_t app_uninstall()
 	{
-		putstr<objs::app,0>(0,"");
+		invoke<objs::app,0>();
 		return app_wait_for_completion();
 	}
 
+	/*! Returns whether client application is currently running */
+	bool app_running()
+	{ return get<uint8_t,objs::app,1>(0); }
+
+	/* Returns the number of 64-byte chunks the WIC application space contains. */
+	uint16_t app_chunk_count()
+	{ throw EOPNOTSUPP; }
+
+	/*! Writes the specified chunk of data to the specified position WIC application space.
+	 *  Chunk size must always be nonzero and less than or equal to 64 bytes, as this is the chunk size. Invocations with
+	 *  chunk index greater or equal to chunk_count()'s return value will result in an invalid argument error.
+	 */
 	uint8_t app_install_chunk(uint16_t chunk, const std::string &s)
 	{
 		putstr<objs::app, 1>(chunk,s);
 		return app_wait_for_completion();
 	}
 
+	/*! Begins the app installation process, which provides the ability to install application
+	 *  chunks into the application space of the WIC.
+	 */
 	uint8_t app_install_begin()
 	{
-		putstr<objs::app,2>(0,"");
+		invoke<objs::app,2>();
 		return app_wait_for_completion();
 	}
 
+	/*! Ends the app installation process and returns a value indicating the outcome of the installation. */
 	uint8_t app_install_end()
 	{
-		putstr<objs::app,3>(0,"");
+		invoke<objs::app,3>();
 		return app_wait_for_completion();
 	}
 
+	/*! Start the previously installed client application */
 	uint8_t app_start()
 	{
-		putstr<objs::app,4>(0,"");
+		invoke<objs::app,4>();
 		return app_wait_for_completion();
 	}
 
+	/*! Stops the previously started client application */
 	uint8_t app_stop()
 	{
-		putstr<objs::app,5>(0,"");
+		invoke<objs::app,5>();
 		return app_wait_for_completion();
 	}
 
+	std::string app_name()
+	{ return getstr<objs::app, 3>(); }
 
-	void memseek(uint32_t p)
+	uint32_t app_version()
+	{ return get<uint32_t, objs::app, 4>(0); }
+
+
+	/*! Set the memory pointer to the specified value */
+	void memory_seek(uint32_t p)
 	{ put<uint32_t, objs::memory, 0>(0,p); }
 
-	uint32_t memtell()
+	/*! Returns the value of the memory pointer */
+	uint32_t memory_tell()
 	{ return get<uint32_t, objs::memory, 0>(0); }
 
-	uint32_t memread(void *target, uint32_t size)
+	/*! Reads the specified number of bytes into the specified target buffer, starting from the current value of memory
+	 *  pointer, and increments it with the number of bytes eventually read. The number of bytes actually read is returned.
+	 */
+	uint32_t memory_read(void *target, uint32_t size)
 	{ 
 		char *const t = reinterpret_cast<char*>(target);
 		uint32_t s = 0;
@@ -230,7 +302,11 @@ public:
 		return s;
 	}
 
-	void memwrite(const void *source, uint32_t size)
+	/*! Writes the specified number of bytes from the specified source buffer to the application space of the WIC, starting
+	 *  from the current value of memory pointer, and increments it with the number of bytes eventually read. The number of
+	 *  bytes actually read is returned.
+	 */
+	void memory_write(const void *source, uint32_t size)
 	{
 		char *const t = reinterpret_cast<char*>(const_cast<void*>(source));
 		uint32_t s = 0;
@@ -241,7 +317,7 @@ public:
 		}
 	}
 
-	void memexec()
+	void memory_exec()
 	{ putstr<objs::memory,2>(0,std::string()); }
 
 };
