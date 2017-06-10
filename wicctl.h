@@ -208,10 +208,14 @@ public:
 	void network_server_ip(uint32_t v)
 	{ return put<uint32_t, objs::network, 5>(0,v); }
 
+	std::string network_mac_address()
+	{ return getstr<objs::network,6>(); }
+	
+
 
 	/*! Persists all the configuration modifications */
 	void config_save()
-	{ getstr<objs::system, 0x100>(0); }
+	{ getstr<objs::system, 0x100>(); }
 
 	/*! Initiates uninstallation of currently installed WIC client app */
 	uint8_t app_uninstall()

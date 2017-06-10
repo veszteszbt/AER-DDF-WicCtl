@@ -230,6 +230,15 @@ int main(int argc, char **argv)
 					std::cout << ((ip>>24)&0xff) << std::endl;
 				}
 			}
+			else if(property == "mac_address")
+			{
+				assert_rdonly(property,argc);
+				const std::string v = w->network_mac_address();
+				std::cout << std::hex;
+				for(int i = 0; i < v.size()-1; ++i)
+					std::cout << (int)((v[i]>>4)&0xf) << (int)(v[i]&0xf) << ':';
+				std::cout << (int)((*(v.end()-1)>>4)&0xf) << (int)(*(v.end()-1)&0xf) << std::endl;
+			}
 			else 
 			{
 				unknown_property(property);
