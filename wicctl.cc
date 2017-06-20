@@ -100,6 +100,27 @@ int main(int argc, char **argv)
 					return 1;
 				else
 					print_version(w->system_version());
+
+			else if(property == "monothonic_clock")
+				if(!assert_rdonly(property,argc))
+					return 1;
+				else
+					std::cout << w->system_time_monothonic() << std::endl;
+
+			else if(property == "wall_clock")
+				if(!assert_rdonly(property,argc))
+					return 1;
+				else
+					std::cout << w->system_time_wall() << std::endl;
+
+			else if(property == "cpu_usage")
+				if(!assert_rdonly(property,argc))
+					return 1;
+				else
+					std::cout << std::fixed << std::setprecision(3) << (
+						static_cast<double>(w->system_cpu_usage()) * 100.0 /
+						static_cast<double>(0xffff)
+					) << "%" << std::endl;
 			else 
 			{
 				unknown_property(property);

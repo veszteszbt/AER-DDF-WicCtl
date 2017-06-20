@@ -1,6 +1,7 @@
 #ifndef WICCTL_H
 # define WICCTL_H
 # include <iostream>
+# include <iomanip>
 # include <cstring>
 # include <string>
 # include <cstdio>
@@ -169,6 +170,18 @@ public:
 	/*! Returns the generally unique serial number of the processor in the WIC */
 	uint64_t system_serial()
 	{ return get<uint64_t, objs::system, 1>(0); }
+
+	/*! Returns the value of the monothonic clock on the WIC */
+	uint32_t system_time_monothonic()
+	{ return get<uint64_t, objs::system, 2>(0); }
+
+	/*! Returns the value of the wall clock on the WIC */
+	uint32_t system_time_wall()
+	{ return get<uint64_t, objs::system, 3>(0); }
+
+	/*! Returns the cpu usage on the WIC */
+	uint32_t system_cpu_usage()
+	{ return get<uint16_t, objs::system, 8>(0); }
 
 
 	/*! Returns the hostname of the WIC */
