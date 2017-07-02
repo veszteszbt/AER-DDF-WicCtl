@@ -3,7 +3,6 @@
 # include <cstdint>
 # include <list>
 # include <mutex>
-# include <chrono>
 # include <condition_variable>
 # include <net/ipv4_address.h>
 namespace earpc {
@@ -19,9 +18,9 @@ namespace process
 
 		typedef typename TEnv::earpc_header_type   earpc_header_type;
 
-		typedef std::chrono::high_resolution_clock clock;
+		typedef typename TEnv::clock clock;
 
-		typedef clock::time_point time_point;
+		typedef typename clock::time_point time_point;
 
 		struct queue_record
 		{

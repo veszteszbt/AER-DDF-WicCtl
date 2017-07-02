@@ -1,7 +1,9 @@
 #ifndef EARPC_EARPC_H
 # define EARPC_EARPC_H
 # include <cstdint>
+# include <fstream>
 # include <thread>
+# include <chrono>
 # include <types/integer.h>
 # include <net/ipv4_address.h>
 # include <net/algorithm.h>
@@ -16,6 +18,8 @@ namespace earpc
 	{
 		struct env
 		{
+			typedef std::chrono::high_resolution_clock clock;
+
 			typedef typename TConfig::command_id_type command_id_type;
 
 			typedef typename TConfig::call_id_type call_id_type;
@@ -122,6 +126,67 @@ namespace earpc
 
 		typedef typename env_recv::proc_send             proc_send;
 
+		typedef typename env::clock clock;
+
+		typedef typename env::call_id_type call_id_type;
+	public:
+		typedef typename env::command_id_type command_id_type;
+	private:
+
+		static const uint32_t call_timeout = 1120;
+
+                struct outgoing_call_record
+                {
+                        net::ipv4_address ip;
+
+                        call_id_type call_id;
+
+                        command_id_type command_id;
+
+                        void (*callback)(void*);
+
+                        const void *arg; 
+
+                        uint16_t arg_size;
+                                
+                        uint16_t return_size;
+
+                        uint64_t expiry;
+                                
+                        bool ack_recvd;
+                                        
+                        bool returned;  
+
+
+                        outgoing_call_record() {}
+
+                        template<typename Treturn>
+                        outgoing_call_record(
+                                net::ipv4_address i,
+                                command_id_type cmd,
+                                call_id_type cid,
+                                const void *a,
+                                uint16_t as,
+                                uint16_t rs,
+                                void (*cb)(Treturn*)
+                        )       
+                                : ip(i)
+                                , call_id(cid)
+                                , command_id(cmd)
+                                , callback(reinterpret_cast<void(*)(void*)>(cb))
+                                , arg(a)
+                                , arg_size(as)
+                                , return_size(rs)
+                                , expiry(clock::now()+std::chrono::milliseconds(call_timeout))
+                                , ack_recvd(false)
+                                , returned(false)
+                        {}
+                };
+
+		static std::list<outgoing_call_record> outgoing_call_buffer;
+
+		static std::ifstream urandom;
+
 		static void start()
 		{
 			std::thread feedback(proc_feedback::start);
@@ -137,12 +202,17 @@ namespace earpc
 			feedback.join();
 		}
 
+		static call_id_type generate_call_id()
+		{
+			call_id_type r;
+			urandom.read(reinterpret_cast<char*>(&r),sizeof(call_id_type));
+			return r;
+		}
+
 
 	public:
 		template<typename Treturn>
 		using call_handle = typename proc_recv::template call_handle<Treturn>;
-
-		typedef typename env::command_id_type command_id_type;
 
 		template<typename Treturn, typename Targ>
 		static void set_command(
@@ -159,11 +229,25 @@ namespace earpc
 			);
 		}
 
+		template<typename Treturn, typename Targ>
+		static void call(net::ipv4_address ip, command_id_type cmd, const Targ &arg, void(*c)(Treturn*))
+		{
+			call_id_type cid = generate_call_id();
+			outgoing_call_buffer.push(
+				outgoing_call_record(ip,cmd,cid,&arg,sizeof(Targ),sizeof(Treturn),c)
+			);
+			std::cout << "\e[37;01m - \e[0mearpc: initiating send for call ", << std::hex << cid << std::endl;
+			proc_send::notify(ip,1234,cid,cmd,&arg,sizeof(Targ));		
+		}
+
 		static std::thread init()
 		{ return std::thread(start); }
 	};
 
 	template<typename c>
 	typename earpc<c>::env_recv::command_buffer_type earpc<c>::env_recv::command_buffer;
+
+	template<typename c>
+	std::ifstream earpc<c>::urandom("/dev/urandom");
 }
 #endif

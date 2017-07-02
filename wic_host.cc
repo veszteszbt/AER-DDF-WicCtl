@@ -30,17 +30,23 @@ earpc::udp wicc_earpc_config::connection(1234, 1234);
 
 static void cmd_handler(
 	wicc_earpc::call_handle<uint8_t> call_handle,
-	const uint8_t *color
+	const bool *door_state
 )
 {
-	std::cout << "color: \e[3" << (int)((*color)&7) << ";01m####\e[0m" << std::endl;
-	call_handle.respond(*color);
+	std::cout << "Door state: " << ((*door_state)?"open":"closed") << std::endl;
+	call_handle.respond(1);
 }
 
 int main()
 {
-	wicc_earpc::set_command(4,cmd_handler);
+	wicc_earpc::set_command(5,cmd_handler);
 	wicc_earpc::init().join();
+
+	while(std::cin)
+	{
+		std::cin.get();
+
+	}
 
 	return 0;
 }
