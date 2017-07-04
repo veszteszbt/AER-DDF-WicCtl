@@ -39,13 +39,12 @@ static void cmd_handler(
 
 int main()
 {
-	wicc_earpc::set_command(5,cmd_handler);
+	wicc_earpc::set_command(0x10000000b,cmd_handler);
 	wicc_earpc::init().join();
 
 	while(std::cin)
 	{
 		std::cin.get();
-
 	}
 
 	return 0;

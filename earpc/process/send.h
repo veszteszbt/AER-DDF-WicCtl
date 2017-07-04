@@ -124,21 +124,7 @@ namespace process
 
 					i->resend_time = t + std::chrono::milliseconds(70);
 					if(ns > i->resend_time)
-					{
 						ns = i->resend_time;
-						std::cout <<
-							"\e[37;01m - \e[0mearpc send process: updating reschedule time to t-" << std::dec << tp2msec(time_point(ns-t)) <<"msec"<< std::endl;
-					}
-
-					if(!--i->retries)
-					{
-						std::cout <<
-							"\e[31;01m - \e[0mearpc send process: too many retries on " <<
-							std::hex << i->call_id << "; cancelling\n"
-						;
-						queue.erase(i++);
-						continue;
-					}
 
 					const uint16_t size = sizeof(earpc_header_type) + i->size;
 					uint8_t *buf = new uint8_t[size];
@@ -165,30 +151,28 @@ namespace process
 
 				queue_lock.unlock();
 
+				if(ns == time_point::max())
 				{
-					if(ns == time_point::max())
-					{
-						std::cout <<
-							"\e[37;01m - \e[0mearpc send process: nothing to do; "
-							"suspending until next notify\n"
-						;
-						std::unique_lock<std::mutex> ul(suspend_lock);
-						suspend_cv.wait(ul);
-						std::cout <<
-							"\e[37;01m - \e[0mearpc send process: resuming on notify\n";
-					}
+					std::cout <<
+						"\e[37;01m - \e[0mearpc send process: nothing to do; "
+						"suspending until next notify\n"
+					;
+					std::unique_lock<std::mutex> ul(suspend_lock);
+					suspend_cv.wait(ul);
+					std::cout <<
+						"\e[37;01m - \e[0mearpc send process: resuming on notify\n";
+				}
 
-					else
-					{
-						std::cout <<
-							"\e[37;01m - \e[0mearpc send process: nothing to do; "
-							"suspending for " << std::dec << tp2msec(time_point(ns-clock::now())) << " msec\n"
-						;
-						std::unique_lock<std::mutex> ul(suspend_lock);
-						suspend_cv.wait_until(ul,ns);
-						std::cout <<
-							"\e[37;01m - \e[0mearpc send process: resuming on timeout\n";
-					}
+				else
+				{
+					std::cout <<
+						"\e[37;01m - \e[0mearpc send process: nothing to do; "
+						"suspending for " << std::dec << tp2msec(time_point(ns-clock::now())) << " msec\n"
+					;
+					std::unique_lock<std::mutex> ul(suspend_lock);
+					suspend_cv.wait_until(ul,ns);
+					std::cout <<
+						"\e[37;01m - \e[0mearpc send process: resuming on timeout\n";
 				}
 			}
 		}
@@ -210,7 +194,7 @@ namespace process
 			suspend_cv.notify_one();
 		}
 
-		static void remove(call_id_type cid)
+		static void remove(net::ipv4_address ip, call_id_type cid)
 		{
 			queue_lock.lock();
 			for(
@@ -218,7 +202,7 @@ namespace process
 				i != queue.end();
 				++i
 			)
-				if(i->call_id == cid)
+				if(i->call_id == cid && i->ip == ip)
 				{
 					std::cout <<
 						"\e[37;01m - \e[0mearpc send process: removing call "<< std::hex << cid << std::endl;
