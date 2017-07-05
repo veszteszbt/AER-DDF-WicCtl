@@ -115,138 +115,118 @@ namespace process
 			std::endl;
 
 			buf_command::lock();
-			for(
-				typename buf_command::iterator i = buf_command::begin();
-				i != buf_command::end();
-				++i
-			)
-				if(i->command_id == h.command_id)
+			typename buf_command::iterator i = buf_command::find(h.command_id);
+			if(i == buf_command::end())
+			{
+				buf_command::unlock();
+				proc_feedback::notify(
+					ip,
+					port,
+					h.call_id,
+					command_id_nak
+				);
+				std::cout << "\e[37;01m - \e[0mearpc recv process: call "
+					<< std::hex << h.call_id << ": dropping due to unknown command "<<h.command_id
+				<<std::endl;
+				return;
+			}
+
+
+			if(i->arg_size != size-sizeof(earpc_header_type))
+			{
+				buf_command::unlock();
+				proc_feedback::notify(
+					ip,
+					port,
+					h.call_id,
+					command_id_nak
+				);
+				std::cout << "\e[37;01m - \e[0mearpc recv process: dropping due to argument size mismatch "
+					<< std::hex << h.call_id
+				<<std::endl;
+				return;
+			}
+
+			buf_incoming_call::lock();
+			typename buf_incoming_call::iterator icall = buf_incoming_call::find(ip,h.call_id);
+			if(icall != buf_incoming_call::end())
+			{
+				buf_command::unlock();
+				buf_incoming_call::unlock();
+				if(icall->checksum == h.checksum)
 				{
-
-					if(i->arg_size == size-sizeof(earpc_header_type))
-					{
-						buf_incoming_call::lock();
-						for(
-							typename buf_incoming_call::iterator icall = buf_incoming_call::begin();
-							icall != buf_incoming_call::end();
-							++icall
-						)
-							if(icall->call_id == h.call_id && icall->ip == ip)
-							{
-								if(icall->checksum == h.checksum)
-								{
-									std::cout << "\e[33;01m - \e[0mearpc recv process: retransmitted call "
-										<< std::hex << h.call_id << std::endl
-									;
-									buf_command::unlock();
-									buf_incoming_call::unlock();
-									proc_feedback::notify(
-										ip,
-										port,
-										h.call_id,
-										command_id_ack
-									);
-								}
-
-								else
-								{
-									std::cout << "\e[31;01m - \e[0mearpc recv process: duplicate call id "
-										<< std::hex << h.call_id << std::endl
-									;
-									buf_command::unlock();
-									buf_incoming_call::unlock();
-									proc_feedback::notify(
-										ip,
-										port,
-										h.call_id,
-										command_id_nak
-									);
-								}
-								return;
-
-							}
-						buf_incoming_call::unlock();
-
-						buf_outgoing_call::lock();
-						for(
-							typename buf_outgoing_call::iterator ocall = buf_outgoing_call::begin();
-							ocall != buf_outgoing_call::end();
-							++ocall
-						)
-							if(ocall->call_id == h.call_id && ocall->ip == ip)
-							{
-								std::cout << "\e[31;01m - \e[0mearpc recv process: duplicate call id "
-									<< std::hex << h.call_id << std::endl
-								;
-								buf_command::unlock();
-								buf_outgoing_call::unlock();
-								proc_feedback::notify(
-									ip,
-									port,
-									h.call_id,
-									command_id_nak
-								);
-								return;
-							}
-						buf_outgoing_call::unlock();
-
-						proc_feedback::notify(
-							ip,
-							port,
-							h.call_id,
-							command_id_ack
-						);
-
-						buf_incoming_call::lock();
-						buf_incoming_call::push(ip,port,h.command_id,h.call_id,h.checksum);
-						buf_incoming_call::unlock();
-
-						proc_expiry::notify();
-
-						std::cout << "\e[37;01m - \e[0mearpc recv process: serving call "
-							<< std::hex << h.call_id
-						<<std::endl;
-
-						i->callback(
-							call_handle_base(ip,port,h.call_id),
-							buffer+sizeof(earpc_header_type)
-						);
-
-					}
-
-					else
-					{
-						proc_feedback::notify(
-							ip,
-							port,
-							h.call_id,
-							command_id_nak
-						);
-						std::cout << "\e[37;01m - \e[0mearpc recv process: dropping due to argument size mismatch "
-							<< std::hex << h.call_id
-						<<std::endl;
-					}
-					buf_command::unlock();
-					return;
+					std::cout << "\e[33;01m - \e[0mearpc recv process: retransmitted call "
+						<< std::hex << h.call_id << std::endl
+					;
+					proc_feedback::notify(
+						ip,
+						port,
+						h.call_id,
+						command_id_ack
+					);
 				}
-			buf_command::unlock();
+
+				else
+				{
+					std::cout << "\e[31;01m - \e[0mearpc recv process: duplicate call id "
+						<< std::hex << h.call_id << std::endl
+					;
+					proc_feedback::notify(
+						ip,
+						port,
+						h.call_id,
+						command_id_nak
+					);
+				}
+				return;
+			}
+			buf_incoming_call::unlock();
+
+			buf_outgoing_call::lock();
+			typename buf_outgoing_call::iterator ocall = buf_outgoing_call::find(ip,h.call_id);
+			if(ocall != buf_outgoing_call::end())
+			{
+				buf_command::unlock();
+				buf_outgoing_call::unlock();
+				std::cout << "\e[31;01m - \e[0mearpc recv process: duplicate call id "
+					<< std::hex << h.call_id << std::endl
+				;
+				proc_feedback::notify(
+					ip,
+					port,
+					h.call_id,
+					command_id_nak
+				);
+				return;
+			}
+			buf_outgoing_call::unlock();
+
 			proc_feedback::notify(
 				ip,
 				port,
 				h.call_id,
-				command_id_nak
+				command_id_ack
 			);
-			std::cout << "\e[37;01m - \e[0mearpc recv process: call "
-				<< std::hex << h.call_id << ": dropping due to unknown command "<<h.command_id
-			<<std::endl;
+
+			buf_incoming_call::lock();
+			buf_incoming_call::push(ip,port,h.command_id,h.call_id,h.checksum);
+			buf_incoming_call::unlock();
+
+			proc_expiry::notify();
+
+			std::cout << "\e[37;01m - \e[0mearpc recv process: serving call " << std::hex << h.call_id << std::endl;
+			const typename buf_command::callback_type f = i->callback;
+			buf_command::unlock();
+			f(
+				call_handle_base(ip,port,h.call_id),
+				buffer+sizeof(earpc_header_type)
+			);
 		}
 
 		static void process_ack(net::ipv4_address ip, uint16_t port, uint16_t size)
 		{
 			earpc_header_type &h = *reinterpret_cast<earpc_header_type*>(buffer);
 
-			std::cout <<
-				"\e[37;01m - \e[0mearpc recv process: ACK on "<< std::hex << h.call_id << std::endl;
 			proc_send::remove(ip,h.call_id);
 			buf_incoming_call::lock();
 			typename buf_incoming_call::iterator i = buf_incoming_call::find(ip,h.call_id);
@@ -260,20 +240,60 @@ namespace process
 				return;
 			}
 			buf_incoming_call::unlock();
+
+			buf_outgoing_call::lock();
+			typename buf_outgoing_call::iterator j = buf_outgoing_call::find(ip,h.call_id);
+			if(j != buf_outgoing_call::end())
+				std::cout <<
+					"\e[37;01m - \e[0mearpc recv process: ACK on outgoing call " <<
+					std::hex << h.call_id << std::endl;
+			else
+				std::cout <<
+					"\e[33;01m - \e[0mearpc recv process: ACK on unknown call id " <<
+					std::hex << h.call_id << std::endl;
+
+			buf_outgoing_call::unlock();
+		}
+
+		static void process_nak(net::ipv4_address ip, uint16_t port, uint16_t size)
+		{
+			earpc_header_type &h = *reinterpret_cast<earpc_header_type*>(buffer);
+
+			proc_send::remove(ip,h.call_id);
+			buf_incoming_call::lock();
+			typename buf_incoming_call::iterator i = buf_incoming_call::find(ip,h.call_id);
+			if(i != buf_incoming_call::end())
+			{
+				std::cout <<
+					"\e[31;01m - \e[0mearpc recv process: NAK on return of incoming call " <<
+					std::hex <<  h.call_id << "; finished" << std::endl;
+				buf_incoming_call::erase(i);
+				buf_incoming_call::unlock();
+				return;
+			}
+			buf_incoming_call::unlock();
 			buf_outgoing_call::lock();
 
 			typename buf_outgoing_call::iterator j = buf_outgoing_call::find(ip,h.call_id);
 			if(j != buf_outgoing_call::end())
 			{
 				std::cout <<
-					"\e[37;01m - \e[0mearpc recv process: ACK on outgoing call " << std::hex << h.call_id << std::endl;
+					"\e[37;01m - \e[0mearpc recv process: MAK on outgoing call " <<
+					std::hex << h.call_id << "; returning failure" << std::endl;
+				const typename buf_outgoing_call::callback_type f = j->callback;
+				const command_id_type cmd = j->command_id;
+				buf_outgoing_call::erase(j);
 				buf_outgoing_call::unlock();
+				f(ip,cmd,0);
 				return;
 			}
-			buf_outgoing_call::unlock();
-			std::cout <<
-				"\e[33;01m - \e[0mearpc recv process: ACK on unknown call id "<< std::hex << h.call_id << std::endl;
-		
+			else
+			{
+				std::cout <<
+					"\e[33;01m - \e[0mearpc recv process: NAK on unknown call id " <<
+					std::hex << h.call_id << std::endl;
+				buf_outgoing_call::unlock();
+			}
 		}
 
 		static void process()
@@ -309,7 +329,7 @@ namespace process
 					break;
 					
 				case command_id_nak:
-					proc_send::remove(ip,h.call_id);
+					process_nak(ip,port,size);
 					break;
 
 				case command_id_return:

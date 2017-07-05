@@ -19,7 +19,7 @@ namespace buffer
 
 		typedef typename TEnv::clock            clock;
 
-		static const unsigned call_timeout =    TEnv::call_timeout;
+		static const uint32_t call_timeout =    TEnv::call_timeout;
 
 	public:
 		typedef void (*callback_type)(
@@ -69,7 +69,7 @@ namespace buffer
 				, arg(a)
 				, arg_size(as)
 				, return_size(sizeof(Treturn))
-				, expiry(clock::now()+std::chrono::milliseconds(call_timeout))
+				, expiry(clock::now()+std::chrono::milliseconds(static_cast<uint32_t>(call_timeout)))
 			{}
 		};
 

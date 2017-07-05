@@ -112,9 +112,7 @@ namespace process
 					typename queue_type::iterator i = queue.begin();
 					i != queue.end();
 				) {
-					time_point t = clock::now();
-
-					if(i->resend_time > t)
+					if(i->resend_time > clock::now())
 					{
 						if(ns > i->resend_time)
 							ns = i->resend_time;
@@ -122,7 +120,7 @@ namespace process
 						continue;
 					}
 
-					i->resend_time = t + std::chrono::milliseconds(70);
+					i->resend_time = clock::now() + std::chrono::milliseconds(70);
 					if(ns > i->resend_time)
 						ns = i->resend_time;
 
@@ -136,7 +134,8 @@ namespace process
 					memcpy(buf+sizeof(earpc_header_type),i->buffer,i->size);
 
 					std::cout <<
-						"\e[37;01m - \e[0mearpc send process: doing send operation\n"
+						"\e[37;01m - \e[0mearpc send process: doing send operation for call " << std::hex << i->call_id <<
+						std::endl
 					;
 
 					const net::ipv4_address ip = i->ip;

@@ -123,6 +123,8 @@ namespace earpc
 
 		typedef typename env_recv::call_id_type      call_id_type;
 
+		typedef typename env_recv::buf_incoming_call buf_incoming_call;
+
 		typedef typename env_recv::buf_outgoing_call buf_outgoing_call;
 
 	public:
@@ -150,10 +152,16 @@ namespace earpc
 			expiry.join();
 		}
 
-		static call_id_type generate_call_id()
+		static call_id_type generate_call_id(net::ipv4_address ip)
 		{
 			call_id_type r;
-			urandom.read(reinterpret_cast<char*>(&r),sizeof(call_id_type));
+			do
+			{
+				urandom.read(reinterpret_cast<char*>(&r),sizeof(call_id_type));
+			} while(
+				buf_incoming_call::find(ip,r) != buf_incoming_call::end() ||
+				buf_outgoing_call::find(ip,r) != buf_outgoing_call::end()
+			);
 			return r;
 		}
 
@@ -177,10 +185,15 @@ namespace earpc
 		}
 
 		template<typename Treturn, typename Targ>
-		static void call(net::ipv4_address ip, command_id_type cmd, const Targ &arg, void(*c)(Treturn*))
+		static void call(
+			net::ipv4_address ip,
+			command_id_type cmd,
+			const Targ &arg,
+			void(*c)(net::ipv4_address,command_id_type,Treturn*)
+		)
 		{
 			buf_outgoing_call::lock();
-			call_id_type cid = generate_call_id();
+			call_id_type cid = generate_call_id(ip);
 			buf_outgoing_call::push(
 				ip,cmd,cid,&arg,sizeof(Targ),c
 			);

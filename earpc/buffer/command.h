@@ -73,6 +73,14 @@ namespace buffer
 		static void push(const record_type &v)
 		{ container.push_back(v); }
 
+		static iterator find(command_id_type cmd)
+		{
+			iterator i = begin();
+			while(i != end() && i->command_id != cmd)
+				++i;
+			return i;
+		}
+
 		static void push(
 			command_id_type cmd,
 			uint16_t as,
