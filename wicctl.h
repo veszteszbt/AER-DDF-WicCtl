@@ -179,6 +179,14 @@ public:
 	uint32_t system_time_wall()
 	{ return get<uint64_t, objs::system, 3>(0); }
 
+	/*! Returns the commit id of the WIC Framework installed on the WIC */
+	std::string system_commit_id()
+	{ return getstr<objs::system, 4>(0); }
+
+	/*! Returns the build number of the host application installed on the WIC */
+	uint32_t system_build_number()
+	{ return get<uint32_t, objs::system, 5>(0); }
+
 	/*! Returns the cpu usage on the WIC */
 	uint32_t system_cpu_usage()
 	{ return get<uint16_t, objs::system, 8>(0); }

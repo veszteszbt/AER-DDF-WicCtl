@@ -113,6 +113,18 @@ int main(int argc, char **argv)
 				else
 					std::cout << w->system_time_wall() << std::endl;
 
+			else if(property == "commit_id")
+				if(!assert_rdonly(property,argc))
+					return 1;
+				else
+					std::cout << w->system_commit_id() << std::endl;
+
+			else if(property == "build_number")
+				if(!assert_rdonly(property,argc))
+					return 1;
+				else
+					std::cout << w->system_build_number() << std::endl;
+
 			else if(property == "cpu_usage")
 				if(!assert_rdonly(property,argc))
 					return 1;
