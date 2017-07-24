@@ -75,7 +75,7 @@ namespace earpc
 
 			constexpr static udp &conn = TConfig::connection;
 
-			static const uint32_t call_timeout = 1120;
+			static const uint32_t call_timeout = 3200;
 		};
 
 		struct env_buffers : public env_base
@@ -189,16 +189,18 @@ namespace earpc
 			net::ipv4_address ip,
 			command_id_type cmd,
 			const Targ &arg,
-			void(*c)(net::ipv4_address,command_id_type,Treturn*)
+			void(*c)(net::ipv4_address,command_id_type,const Treturn*)
 		)
 		{
 			buf_outgoing_call::lock();
+			buf_incoming_call::lock();
 			call_id_type cid = generate_call_id(ip);
 			buf_outgoing_call::push(
 				ip,cmd,cid,&arg,sizeof(Targ),c
 			);
+			buf_incoming_call::unlock();
 			buf_outgoing_call::unlock();
-			std::cout << "\e[37;01m - \e[0mearpc: initiating send for call " << std::hex << cid << std::endl;
+//			std::cout << "\e[37;01m - \e[0mearpc: initiating send for call " << std::hex << cid << std::endl;
 			proc_send::notify(ip,1234,cid,cmd,&arg,sizeof(Targ));
 			proc_expiry::notify();
 		}

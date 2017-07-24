@@ -41,7 +41,7 @@ namespace process
 	public:
 		static void start()
 		{
-			std::cout << "\e[37;01m - \e[0mearpc expiry process: initializing" << std::endl;
+//			std::cout << "\e[37;01m - \e[0mearpc expiry process: initializing" << std::endl;
 
 			while(1)
 			{
@@ -79,6 +79,7 @@ namespace process
 				}
 				buf_outgoing_call::unlock();
 
+				buf_incoming_call::lock();
 				for(
 					typename buf_incoming_call::iterator i = buf_incoming_call::begin();
 					i != buf_incoming_call::end();
@@ -108,26 +109,26 @@ namespace process
 
 				if(ns == time_point::max())
 				{
-					std::cout <<
-						"\e[37;01m - \e[0mearpc expiry process: nothing to do; "
-						"suspending until next notify\n"
-					;
+//					std::cout <<
+//						"\e[37;01m - \e[0mearpc expiry process: nothing to do; "
+//						"suspending until next notify\n"
+//					;
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait(ul);
-					std::cout <<
-						"\e[37;01m - \e[0mearpc expiry process: resuming on notify\n";
+//					std::cout <<
+//						"\e[37;01m - \e[0mearpc expiry process: resuming on notify\n";
 				}
 
 				else
 				{
-					std::cout <<
-						"\e[37;01m - \e[0mearpc expiry process: nothing to do; "
-						"suspending for " << std::dec << tp2msec(time_point(ns-clock::now())) << " msec\n"
-					;
+//					std::cout <<
+//						"\e[37;01m - \e[0mearpc expiry process: nothing to do; "
+//						"suspending for " << std::dec << tp2msec(time_point(ns-clock::now())) << " msec\n"
+//					;
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait_until(ul,ns);
-					std::cout <<
-						"\e[37;01m - \e[0mearpc expiry process: resuming on timeout\n";
+//					std::cout <<
+//						"\e[37;01m - \e[0mearpc expiry process: resuming on timeout\n";
 				}
 			}
 		}

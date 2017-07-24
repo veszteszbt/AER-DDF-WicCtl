@@ -164,6 +164,10 @@ public:
 	}
 
 	/*! Returns the version number of the host application installed on the WIC */
+	void system_reset()
+	{ invoke<objs::system, 0>(); }
+
+	/*! Returns the version number of the host application installed on the WIC */
 	uint32_t system_version()
 	{ return get<uint32_t, objs::system, 0>(0); }
 
@@ -231,6 +235,12 @@ public:
 
 	std::string network_mac_address()
 	{ return getstr<objs::network,6>(); }
+
+	uint32_t network_subnet_mask()
+	{ return get<uint32_t, objs::network, 7>(0); }
+
+	void network_subnet_mask(uint32_t v)
+	{ return put<uint32_t, objs::network, 7>(0,v); }
 	
 
 

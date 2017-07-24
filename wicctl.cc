@@ -89,7 +89,13 @@ int main(int argc, char **argv)
 				
 
 		else if(submodule == "system")
-			if(property == "serial")
+			if(property == "reset")
+				if(!assert_rdonly(property,argc))
+					return 1;
+				else
+					w->system_reset();
+					
+			else if(property == "serial")
 				if(!assert_rdonly(property,argc))
 					return 1;
 				else
@@ -184,7 +190,7 @@ int main(int argc, char **argv)
 					std::cout << std::endl;
 				}
 
-			else if(property == "own_ip" || property == "server_ip")
+			else if(property == "own_ip" || property == "server_ip" || property == "subnet_mask")
 			{
 				if(argc==4)
 				{
@@ -246,6 +252,8 @@ int main(int argc, char **argv)
 						w->network_own_ip(ip);
 					else if(property == "server_ip")
 						w->network_server_ip(ip);
+					else if(property == "subnet_mask")
+						w->network_subnet_mask(ip);
 				}
 				
 				else
@@ -255,6 +263,8 @@ int main(int argc, char **argv)
 						ip = w->network_own_ip();
 					else if(property == "server_ip")
 						ip = w->network_server_ip();
+					else if(property == "subnet_mask")
+						ip = w->network_subnet_mask();
 
 					std::cout << std::dec;
 					for(int i = 0; i < 3; ++i)

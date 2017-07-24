@@ -102,17 +102,17 @@ namespace process
 		{
 			earpc_header_type &h = *reinterpret_cast<earpc_header_type*>(buffer);
 
-			std::cout <<
-				"\e[37;01m - \e[0mearpc recv process: ip is "<<
-					std::dec << (int)ip.octet[0] << '.'
-					<< (int)ip.octet[1] << '.'
-					<< (int)ip.octet[2] << '.'
-					<< (int)ip.octet[3] <<
-				"; port is " << port <<
-				"; command id is " << std::hex <<
-				h.command_id << "; call id is " << h.call_id << "; checksum is " <<
-				h.checksum <<
-			std::endl;
+//			std::cout <<
+//				"\e[37;01m - \e[0mearpc recv process: ip is "<<
+//					std::dec << (int)ip.octet[0] << '.'
+//					<< (int)ip.octet[1] << '.'
+//					<< (int)ip.octet[2] << '.'
+//					<< (int)ip.octet[3] <<
+//				"; port is " << port <<
+//				"; command id is " << std::hex <<
+//				h.command_id << "; call id is " << h.call_id << "; checksum is " <<
+//				h.checksum <<
+//			std::endl;
 
 			buf_command::lock();
 			typename buf_command::iterator i = buf_command::find(h.command_id);
@@ -125,7 +125,7 @@ namespace process
 					h.call_id,
 					command_id_nak
 				);
-				std::cout << "\e[37;01m - \e[0mearpc recv process: call "
+				std::cout << "\e[31;01m - \e[0mearpc recv process: call "
 					<< std::hex << h.call_id << ": dropping due to unknown command "<<h.command_id
 				<<std::endl;
 				return;
@@ -141,7 +141,7 @@ namespace process
 					h.call_id,
 					command_id_nak
 				);
-				std::cout << "\e[37;01m - \e[0mearpc recv process: dropping due to argument size mismatch "
+				std::cout << "\e[31;01m - \e[0mearpc recv process: dropping due to argument size mismatch "
 					<< std::hex << h.call_id
 				<<std::endl;
 				return;
@@ -214,7 +214,7 @@ namespace process
 
 			proc_expiry::notify();
 
-			std::cout << "\e[37;01m - \e[0mearpc recv process: serving call " << std::hex << h.call_id << std::endl;
+//			std::cout << "\e[37;01m - \e[0mearpc recv process: serving call " << std::hex << h.call_id << std::endl;
 			const typename buf_command::callback_type f = i->callback;
 			buf_command::unlock();
 			f(
@@ -232,9 +232,9 @@ namespace process
 			typename buf_incoming_call::iterator i = buf_incoming_call::find(ip,h.call_id);
 			if(i != buf_incoming_call::end())
 			{
-				std::cout <<
-					"\e[32;01m - \e[0mearpc recv process: ACK on return of incoming call "<< std::hex << h.call_id <<
-					"; finished" << std::endl;
+//				std::cout <<
+//					"\e[32;01m - \e[0mearpc recv process: ACK on return of incoming call "<< std::hex << h.call_id <<
+//					"; finished" << std::endl;
 				buf_incoming_call::erase(i);
 				buf_incoming_call::unlock();
 				return;
@@ -243,14 +243,14 @@ namespace process
 
 			buf_outgoing_call::lock();
 			typename buf_outgoing_call::iterator j = buf_outgoing_call::find(ip,h.call_id);
-			if(j != buf_outgoing_call::end())
-				std::cout <<
-					"\e[37;01m - \e[0mearpc recv process: ACK on outgoing call " <<
-					std::hex << h.call_id << std::endl;
-			else
+			if(j == buf_outgoing_call::end())
 				std::cout <<
 					"\e[33;01m - \e[0mearpc recv process: ACK on unknown call id " <<
 					std::hex << h.call_id << std::endl;
+//			else
+//				std::cout <<
+//					"\e[37;01m - \e[0mearpc recv process: ACK on outgoing call " <<
+//					std::hex << h.call_id << std::endl;
 
 			buf_outgoing_call::unlock();
 		}
@@ -278,7 +278,7 @@ namespace process
 			if(j != buf_outgoing_call::end())
 			{
 				std::cout <<
-					"\e[37;01m - \e[0mearpc recv process: MAK on outgoing call " <<
+					"\e[31;01m - \e[0mearpc recv process: NAK on outgoing call " <<
 					std::hex << h.call_id << "; returning failure" << std::endl;
 				const typename buf_outgoing_call::callback_type f = j->callback;
 				const command_id_type cmd = j->command_id;
@@ -357,7 +357,7 @@ namespace process
 		{
 			void respond(const Treturn &ret)
 			{
-				std::cout << "\e[37;01m - \e[0mearpc return: notifying send process" << std::endl;
+//				std::cout << "\e[37;01m - \e[0mearpc return: notifying send process" << std::endl;
 				proc_send::notify(
 					call_handle_base::ip,
 					call_handle_base::port,
@@ -378,7 +378,7 @@ namespace process
 
 		static void start()
 		{
-			std::cout << "\e[37;01m - \e[0mearpc recv process: initializing" << std::endl;
+//			std::cout << "\e[37;01m - \e[0mearpc recv process: initializing" << std::endl;
 			buffer = new uint8_t[65536];
 			while(1)
 				process();
