@@ -309,6 +309,12 @@ public:
 	uint32_t app_version()
 	{ return get<uint32_t, objs::app, 4>(0); }
 
+	bool app_autostart()
+	{ return get<bool, objs::app, 6>(0); }
+
+	void app_autostart(bool v)
+	{ put<bool, objs::app, 6>(0,v); }
+
 
 	/*! Set the memory pointer to the specified value */
 	void memory_seek(uint32_t p)

@@ -62,14 +62,13 @@ namespace wicp
 			if(v && env::value != *v)
 			{
 				std::cout << "\e[32;01m - \e[0mwicp remote property: new value on remote" << std::endl;
-				const typename clock::time_point t = clock::now();
 
 				history_lock.lock();
 				env::value = *v;
 				history.push_front(history_record(*v));
 				if(history.size() > 16)
 					history.pop_back();
-				remote.sync_timestamp = t;
+				remote.sync_timestamp = history.front().time;
 				history_lock.unlock();
 
 				h.respond(true);

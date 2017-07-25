@@ -64,7 +64,12 @@ namespace process
 					else
 					{
 						std::cout << "\e[31;01m - \e[0mearpc expiry process: outgoing call " << std::hex <<
-							i->call_id << " expired" << std::endl
+							i->call_id << " to " << std::dec <<
+							(int)i->ip.octet[0] << '.' <<
+							(int)i->ip.octet[1] << '.' <<
+							(int)i->ip.octet[2] << '.' <<
+							(int)i->ip.octet[3] <<
+							" expired" << std::endl
 						;
 						proc_send::remove(i->ip,i->call_id);
 						const net::ipv4_address ip = i->ip;
@@ -94,7 +99,12 @@ namespace process
 					else
 					{
 						std::cout << "\e[31;01m - \e[0mearpc expiry process: incoming call " << std::hex <<
-							i->call_id << " expired" << std::endl
+							i->call_id << " to " << std::dec <<
+							(int)i->ip.octet[0] << '.' <<
+							(int)i->ip.octet[1] << '.' <<
+							(int)i->ip.octet[2] << '.' <<
+							(int)i->ip.octet[3] <<
+							" expired" << std::endl
 						;
 						proc_send::remove(i->ip,i->call_id);
 						const net::ipv4_address ip = i->ip;

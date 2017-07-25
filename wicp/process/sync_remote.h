@@ -24,6 +24,11 @@ namespace process
 			if(remote.ip == ip)
 			{
 				TEnv::finish_sync_remote(remote,v);
+				if(v)
+					std::cout << "\e[32;01m - \e[0mwicp sync remote: sync successful" << std::endl;
+				else
+					std::cout << "\e[31;01m - \e[0mwicp sync remote: sync failed" << std::endl;
+
 				notify();
 				return;
 			}

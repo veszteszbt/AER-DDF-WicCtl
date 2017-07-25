@@ -38,6 +38,9 @@ namespace wicp
 			((member_id & (static_cast<member_id_type>(-1) >> 3)) << 3)
 		;
 
+		static int64_t tp2nsec(typename clock::time_point p)
+		{ return std::chrono::time_point_cast<std::chrono::nanoseconds>(p).time_since_epoch().count(); }
+
 	/// Remote endpoint ///
 		struct remote_record
 		{
@@ -88,23 +91,23 @@ namespace wicp
 		{
 			history_lock.lock();
 			if(
-				r.pending_timestamp != clock::time_point::min() &&
+				r.pending_timestamp == clock::time_point::min() &&
 				r.sync_timestamp < history.front().time
 			)
 			{
-				typename history_type::reverse_iterator i = history.rbegin();
+				typename history_type::iterator i;
 				for(
-					;i != history.rend();
-					++i
+					typename history_type::iterator j = history.begin();
+					j != history.end();
+					++j
 				)
-					if(r.sync_timestamp >= i->time)
-						break;
+				{
 
-				if(i == history.rend())
-					--i;
-				else
-					++i;
-				
+					if(r.sync_timestamp >= j->time)
+						break;
+					i = j;
+				}
+
 				r.pending_timestamp = i->time;
 				history_lock.unlock();
 				rpc::call(r.ip,command_id|function,i->value,callback);

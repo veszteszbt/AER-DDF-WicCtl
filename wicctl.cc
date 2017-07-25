@@ -478,6 +478,25 @@ int main(int argc, char **argv)
 
 				print_version(v);
 			}
+			else if(property == "autostart")
+			{
+				if(argc > 3)
+				{
+					const std::string vs = argv[3];
+
+					if(vs == "true")
+						w->app_autostart(true);
+					else if(vs == "false")
+						w->app_autostart(false);
+					else
+					{
+						std::cerr << "wicctl: \e[31;01merror:\e[0m invalid argument" << std::endl;
+						return 1;
+					}
+				}
+				else
+					std::cout << (w->app_autostart()?"true":"false") << std::endl;
+			}
 
 			else
 			{
