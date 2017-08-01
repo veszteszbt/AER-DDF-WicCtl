@@ -3,6 +3,7 @@
 # include <wicp/property_env_base.h>
 # include <wicp/process/sync_remote.h>
 # include <wicp/process/commit.h>
+# include <listener.h>
 namespace wicp
 {
 	template<typename TConfig>
@@ -43,9 +44,7 @@ namespace wicp
 		typedef typename env::rpc::template call_handle<bool>  notify_call_handle_type;
 
 	public:
-		typedef typename env::change_handler_type change_handler_type;
-
-		constexpr static change_handler_type &change_handler = env::change_handler;
+		constexpr static listener_t &on_change = env::on_change;
 
 	private:
 
@@ -70,14 +69,12 @@ namespace wicp
 					history.pop_back();
 				remote.sync_timestamp = history.front().time;
 				history_lock.unlock();
-
 				h.respond(true);
-				if(change_handler)
-					change_handler();
+				on_change();
 			}
 			else
 			{
-				std::cout << "\e[32;01m - \e[0mwicp remote property: notify from remote" << std::endl;
+				std::cout << "\e[37;01m - \e[0mwicp remote property: notify from remote" << std::endl;
 				h.respond(false);
 			}
 		}
@@ -88,7 +85,6 @@ namespace wicp
 			history.clear();
 			proc_commit::init();
 			proc_sync::init();
-			change_handler = 0;
 			env::remote.ip = ip;
 			env::remote.sync_timestamp = clock::time_point::min();
 			env::remote.pending_timestamp = clock::time_point::min();
@@ -118,18 +114,9 @@ namespace wicp
 			proc_commit::notify();
 			return env::value;
 		}
-
-		static change_handler_type on_change()
-		{ return change_handler; }
-
-		static change_handler_type on_change(change_handler_type c)
-		{ change_handler = c; }
 	};
 
 	template<typename e>
 	typename remote_property<e>::env::base::remote_record remote_property<e>::env::remote;
-
-	template<typename e>
-	typename remote_property<e>::env::change_handler_type remote_property<e>::env::change_handler;
 }
 #endif

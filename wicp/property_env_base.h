@@ -3,6 +3,7 @@
 # include <mutex>
 # include <list>
 # include <net/ipv4_address.h>
+# include <listener.h>
 namespace wicp
 {
 	template<typename TConfig>
@@ -19,6 +20,8 @@ namespace wicp
 		typedef typename TConfig::cfg_member_id_type member_id_type;
 
 		typedef typename TConfig::cfg_value_type     value_type;
+
+		static listener_t on_change;
 
 		static_assert(
 			sizeof(command_id_type) >= sizeof(class_id_type) + sizeof(member_id_type),
@@ -134,6 +137,9 @@ namespace wicp
 
 	template<typename c>
 	std::mutex property_env_base<c>::history_lock;
+
+	template<typename c>
+	listener_t property_env_base<c>::on_change;
 
 	template<typename c>
 	typename property_env_base<c>::value_type property_env_base<c>::value;

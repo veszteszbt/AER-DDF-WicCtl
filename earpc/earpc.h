@@ -184,6 +184,13 @@ namespace earpc
 			env_recv::buf_command::unlock();
 		}
 
+		static void clear_command(command_id_type id)
+		{
+			typename env_recv::buf_command::iterator i = env_recv::buf_command::find(id);
+			if(i != env_recv::buf_command::end())
+				env_recv::buf_command::erase(i);
+		}
+
 		template<typename Treturn, typename Targ>
 		static void call(
 			net::ipv4_address ip,

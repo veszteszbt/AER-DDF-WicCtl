@@ -29,6 +29,8 @@ namespace peripheral
 
 		static value_type value()
 		{ return property::value(); }
+
+		constexpr static listener_t &on_change = property::on_change;
 	};
 }
 #endif

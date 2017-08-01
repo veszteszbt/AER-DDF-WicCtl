@@ -78,8 +78,7 @@ namespace process
 					history.pop_back();
 				history_lock.unlock();
 
-				if(TEnv::change_handler)
-					TEnv::change_handler();
+				TEnv::on_change();
 
 				proc_sync::notify();
 				suspend_cv.wait_until(ul,hr.time + std::chrono::milliseconds(static_cast<uint32_t>(cooldown_time)));
