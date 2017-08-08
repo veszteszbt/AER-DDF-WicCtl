@@ -3,6 +3,7 @@
 # include <wicp/property_env_base.h>
 # include <wicp/process/sync_remote.h>
 # include <wicp/process/commit.h>
+# include <wicp/process/log.h>
 # include <listener.h>
 namespace wicp
 {
@@ -21,11 +22,16 @@ namespace wicp
 		};
 
 		struct env_commit : public env
-		{ typedef typename process::sync_remote<env> proc_sync; };
+		{
+			typedef typename process::sync_remote<env> proc_sync;
+			typedef typename process::log<env>         proc_log;
+		};
 
 		typedef typename process::commit<env_commit>  proc_commit;
 
 		typedef typename env_commit::proc_sync        proc_sync;
+
+		typedef typename env_commit::proc_log         proc_log;
 
 		typedef typename env::clock                   clock;
 
@@ -70,6 +76,7 @@ namespace wicp
 				remote.sync_timestamp = history.front().time;
 				history_lock.unlock();
 				h.respond(true);
+				proc_log::notify();
 				on_change();
 			}
 			else
@@ -83,6 +90,7 @@ namespace wicp
 		static void init(net::ipv4_address ip)
 		{
 			history.clear();
+			proc_log::init();
 			proc_commit::init();
 			proc_sync::init();
 			env::remote.ip = ip;
@@ -99,6 +107,7 @@ namespace wicp
 		{
 			proc_commit::uninit();
 			proc_sync::uninit();
+			proc_log::uninit();
 			rpc::clear_command(command_id | types::function::notify);
 			std::cout << "\e[32;01m - \e[0mwicp remote property: uninitialized; command id is " << command_id << std::endl;
 		}

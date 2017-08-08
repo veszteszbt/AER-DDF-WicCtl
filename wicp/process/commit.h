@@ -15,6 +15,8 @@ namespace process
 
 		typedef typename TEnv::proc_sync       proc_sync;
 
+		typedef typename TEnv::proc_log        proc_log;
+
 		typedef typename TEnv::history_type    history_type;
 
 		typedef typename TEnv::history_record  history_record;
@@ -81,6 +83,8 @@ namespace process
 				TEnv::on_change();
 
 				proc_sync::notify();
+				proc_log::notify();
+
 				suspend_cv.wait_until(ul,hr.time + std::chrono::milliseconds(static_cast<uint32_t>(cooldown_time)));
 				cooldown_pending = false;
 			}
