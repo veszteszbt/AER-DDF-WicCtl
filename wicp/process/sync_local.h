@@ -14,8 +14,11 @@ namespace process
 
 		constexpr static remotes_type          &remotes = TEnv::remotes;
 
+		constexpr static std::mutex            &remotes_lock = TEnv::remotes_lock;
+
 		static void call_finish(net::ipv4_address ip, command_id_type cmd, const bool *v)
 		{
+			TEnv::remotes_lock.lock();
 			for(
 				typename remotes_type::iterator i = remotes.begin();
 				i != remotes.end();
@@ -24,35 +27,42 @@ namespace process
 				if(i->ip == ip)
 				{
 					TEnv::finish_sync_remote(*i,v);
-					idle::yield(notify);
+					TEnv::remotes_lock.unlock();
+					notify();
 					return;
 				}
 
-			log::println("\e[33;01m - \e[0mwicp sync local: could not find remote for finished change notify");
+			TEnv::remotes_lock.unlock();
+			std::cout << "\e[33;01m - \e[0mwicp sync local: could not find remote for finished change notify" << std::endl;
 			notify();
 		}
 
 	public:
 		static void init()
-		{ log::println("\e[37;01m - \e[0mwicp sync local: initialized"); }
+		{ std::cout << "\e[37;01m - \e[0mwicp sync local: initialized" << std::endl; }
 
 		static void uninit()
-		{}
+		{ std::cout << "\e[37;01m - \e[0mwicp sync local: uninitialized" << std::endl; }
 
 		static void notify()
 		{
+			TEnv::history_lock.lock();
 			if(TEnv::history.empty())
 			{
-				log::println("\e[37;01m - \e[0mwicp sync local: nothing to do; suspending until next notify");
+				TEnv::history_lock.unlock();
+				std::cout << "\e[37;01m - \e[0mwicp sync local: nothing to do; suspending until next notify" << std::endl;
 				return;
 			}
-
+			TEnv::history_lock.unlock();
+			TEnv::remotes_lock.lock();
 			for(
 				typename remotes_type::iterator i = remotes.begin();
 				i != remotes.end();
 				++i
 			)
 				TEnv::sync_remote(*i,types::function::notify,call_finish);
+
+			TEnv::remotes_lock.unlock();
 		}
 	};
 }}
