@@ -80,7 +80,7 @@ namespace process
 					history.pop_back();
 				history_lock.unlock();
 
-				TEnv::on_change();
+				TEnv::sync_local();
 
 				proc_sync::notify();
 				proc_log::notify();

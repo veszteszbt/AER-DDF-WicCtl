@@ -77,7 +77,7 @@ namespace wicp
 				history_lock.unlock();
 				h.respond(true);
 				proc_log::notify();
-				on_change();
+				env::sync_local();
 			}
 			else
 			{

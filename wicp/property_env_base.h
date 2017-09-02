@@ -21,6 +21,8 @@ namespace wicp
 
 		typedef typename TConfig::cfg_value_type     value_type;
 
+		static typename clock::time_point            local_timestamp;
+
 		static listener_t on_change;
 
 		static_assert(
@@ -86,6 +88,25 @@ namespace wicp
 	/// Local value ///
 		static value_type value;
 
+		static void sync_local()
+		{
+			history_lock.lock();
+			if(history.empty())
+			{
+				history_lock.unlock();
+				return;
+			
+			}
+			if(local_timestamp < history.front().time)
+			{
+				local_timestamp = history.front().time;
+				history_lock.unlock();
+				on_change();
+				return;
+			}
+			history_lock.unlock();
+		}
+
 		static void sync_remote(
 			remote_record &r,
 			uint8_t function,
@@ -144,5 +165,8 @@ namespace wicp
 	template<typename c>
 	typename property_env_base<c>::value_type property_env_base<c>::value;
 
+	template<typename c>
+	typename property_env_base<c>::clock::time_point property_env_base<c>::local_timestamp =
+		property_env_base<c>::clock::time_point::min();
 }
 #endif
