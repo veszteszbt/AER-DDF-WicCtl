@@ -7,6 +7,8 @@ namespace process
 	template<typename TEnv>
 	class sync_remote
 	{
+		typedef typename TEnv::clock           clock;
+
 		typedef typename TEnv::command_id_type command_id_type;
 
 		typedef typename TEnv::value_type      value_type;
@@ -23,32 +25,42 @@ namespace process
 		{
 			if(remote.ip == ip)
 			{
-				TEnv::finish_sync_remote(remote,v);
-				if(v)
-					std::cout << "\e[32;01m - \e[0mwicp sync remote: sync successful" << std::endl;
-				else
+				if(!v)
+				{
+					++remote.failures;
 					std::cout << "\e[31;01m - \e[0mwicp sync remote: sync failed" << std::endl;
+				}
+				else
+				{
+//					std::cout << "\e[32;01m - \e[0mwicp sync remote: sync successful" << std::endl;
+				}
 
+				TEnv::finish_sync_remote(remote,v);
 				notify();
 				return;
 			}
 
-			std::cout << "\e[33;01m - \e[0mwicp sync remote: ip address mismatch" << std::endl;
+///			std::cout << "\e[33;01m - \e[0mwicp sync remote: ip address mismatch" << std::endl;
 			notify();
 		}
 
 	public:
 		static void init()
-		{ std::cout << "\e[37;01m - \e[0mwicp sync remote: initialized" << std::endl; }
+		{
+//			std::cout << "\e[37;01m - \e[0mwicp sync remote: initialized" << std::endl;
+		}
 
 		static void uninit()
-		{}
+		{
+//			std::cout << "\e[37;01m - \e[0mwicp sync remote: uninitialized" << std::endl;
+		
+		}
 
 		static void notify()
 		{
 			if(history.empty())
 			{
-				std::cout << "\e[37;01m - \e[0mwicp sync remote: nothing to do; suspending until next notify" << std::endl;
+//				std::cout << "\e[37;01m - \e[0mwicp sync remote: nothing to do; suspending until next notify" << std::endl;
 				return;
 			}
 

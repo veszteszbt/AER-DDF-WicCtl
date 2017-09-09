@@ -58,7 +58,8 @@ namespace process
 					TEnv::member_id << ",X'" << std::hex;
 
 				for(int i = 0; i < sizeof(value_type); ++i)
-					s << std::setfill('0') << std::setw(2) << static_cast<uint32_t>(*reinterpret_cast<const uint8_t*>(&r.value));
+					s << std::setfill('0') << std::setw(2) <<
+						static_cast<uint32_t>(reinterpret_cast<const uint8_t*>(&r.value)[i]);
 					
 				s << "');";
 				::process::sql_executor::notify(s.str());

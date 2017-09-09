@@ -100,7 +100,7 @@ namespace wicp
 				command_id | types::function::set,
 				set_handler
 			);
-			std::cout << "\e[32;01m - \e[0mwicp local property: initialized; command id is " << std::hex << command_id << std::endl;
+//			std::cout << "\e[32;01m - \e[0mwicp local property: initialized; command id is " << std::hex << command_id << std::endl;
 		}
 
 		static void uninit()

@@ -82,6 +82,8 @@ namespace net
 			return r.str();
 		}
 	};
+
 }
+
 #endif
 

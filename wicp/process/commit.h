@@ -5,6 +5,7 @@
 # include <thread>
 # include <condition_variable>
 # include <net/ipv4_address.h>
+# include <pthread.h>
 namespace wicp {
 namespace process
 {
@@ -46,32 +47,31 @@ namespace process
 
 		static void cooldown_finish()
 		{
-			std::cout << "\e[37;01m - \e[0mwicp commit process: cooldown finished" << std::endl;
+//			std::cout << "\e[37;01m - \e[0mwicp commit process: cooldown finished" << std::endl;
 			if(change_only || value != history.front().value)
 				notify();
 		}
 
 		static void start()
 		{
-			std::cout << "\e[32;01m - \e[0mwicp commit process: initialized" << std::endl;
-
+//			std::cout << "\e[32;01m - \e[0mwicp commit process: initialized" << std::endl;
 			while(1)
 			{
 				std::unique_lock<std::mutex> ul(suspend_lock);
 				history_lock.lock();
 				if(change_only && value == history.front().value)
 				{
-					std::cout << "\e[37;01m - \e[0mwicp commit process: no change" << std::endl;
+//					std::cout << "\e[37;01m - \e[0mwicp commit process: no change" << std::endl;
 					history_lock.unlock();
 					suspend_cv.wait(ul);
 					continue;
 				}
 				else
 					cooldown_pending = true;
-				std::cout <<
-					"\e[37;01m - \e[0mwicp commit process: comitting new value to history; length is " <<
-					history.size() <<
-				std::endl;
+//				std::cout <<
+//					"\e[37;01m - \e[0mwicp commit process: comitting new value to history; length is " <<
+//					history.size() <<
+//				std::endl;
 
 
 				const history_record hr(value);
@@ -94,6 +94,7 @@ namespace process
 		static void init()
 		{
 			proc_thread = new std::thread(start);
+			pthread_setname_np(proc_thread->native_handle(),"wicp commit");
 		}
 
 		static void uninit()
@@ -105,7 +106,7 @@ namespace process
 		{
 			if(cooldown_pending)
 			{
-				std::cout << "\e[33;01m - \e[0mwicp commit process: cooldown pending; omitting new value" << std::endl;
+//				std::cout << "\e[33;01m - \e[0mwicp commit process: cooldown pending; omitting new value" << std::endl;
 				return;
 			}
 			std::lock_guard<std::mutex> lg(suspend_lock);

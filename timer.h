@@ -70,7 +70,6 @@ namespace wic
 				}
 				start_time = t;
 				lock.unlock();
-				std::cout << "<<< timer fire >>>" << std::endl;
 				property::value(property::value()+1);
 
 			}
@@ -100,10 +99,12 @@ namespace wic
 			running = true;
 			start_time = clock::now();
 			lock.unlock();
-			property::value(0);
 			std::lock_guard<std::mutex> lg(suspend_lock);
 			suspend_cv.notify_one();
 		}
+
+		static void reset()
+		{ property::value(0); }
 
 		static void stop()
 		{

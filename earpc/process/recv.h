@@ -53,7 +53,9 @@ namespace process
 			)
 				if(i->call_id == h.call_id && i->ip == ip)
 				{
-					if((size - sizeof(earpc_header_type)) == i->return_size)
+					const command_id_type cmd = i->command_id;
+					const typename buf_outgoing_call::callback_type f = i->callback;
+					if(i->return_size == 0xffff)
 					{
 						proc_feedback::notify(
 							ip,
@@ -61,18 +63,35 @@ namespace process
 							h.call_id,
 							command_id_ack
 						);
-						const command_id_type cmd = i->command_id;
-						const typename buf_outgoing_call::callback_type f = i->callback;
+						buf_outgoing_call::erase(i);
+						buf_outgoing_call::unlock();
+
+						std::string r(
+							reinterpret_cast<char*>(buffer+sizeof(earpc_header_type)),
+							size-sizeof(earpc_header_type)
+						);
+					
+						f(ip,cmd,reinterpret_cast<void*>(&r));
+						return;
+					}
+
+					else if((size - sizeof(earpc_header_type)) == i->return_size)
+					{
+						proc_feedback::notify(
+							ip,
+							port,
+							h.call_id,
+							command_id_ack
+						);
 						buf_outgoing_call::erase(i);
 						buf_outgoing_call::unlock();
 
 						f(
-							ip,
-							cmd,
+							ip,cmd,
 							reinterpret_cast<void*>(buffer+sizeof(earpc_header_type))
 						);
 						return;
-					}
+					} 
 
 					else
 					{
@@ -84,6 +103,7 @@ namespace process
 							h.call_id,
 							command_id_nak
 						);
+						f(ip,cmd,0);
 						return;
 
 					}

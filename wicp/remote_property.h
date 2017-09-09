@@ -66,7 +66,7 @@ namespace wicp
 		{
 			if(v && env::value != *v)
 			{
-				std::cout << "\e[32;01m - \e[0mwicp remote property: new value on remote" << std::endl;
+//				std::cout << "\e[32;01m - \e[0mwicp remote property: new value on remote" << std::endl;
 
 				history_lock.lock();
 				env::value = *v;
@@ -81,7 +81,7 @@ namespace wicp
 			}
 			else
 			{
-				std::cout << "\e[37;01m - \e[0mwicp remote property: notify from remote" << std::endl;
+//				std::cout << "\e[37;01m - \e[0mwicp remote property: notify from remote" << std::endl;
 				h.respond(false);
 			}
 		}
@@ -100,7 +100,7 @@ namespace wicp
 				command_id | types::function::notify,
 				notify_handler
 			);
-			std::cout << "\e[32;01m - \e[0mwicp remote property: initialized; command id is " << std::hex << command_id << std::endl;
+//			std::cout << "\e[32;01m - \e[0mwicp remote property: initialized; command id is " << std::hex << command_id << std::endl;
 		}
 
 		static void uninit()
@@ -109,11 +109,17 @@ namespace wicp
 			proc_sync::uninit();
 			proc_log::uninit();
 			rpc::clear_command(command_id | types::function::notify);
-			std::cout << "\e[32;01m - \e[0mwicp remote property: uninitialized; command id is " << command_id << std::endl;
+//			std::cout << "\e[32;01m - \e[0mwicp remote property: uninitialized; command id is " << command_id << std::endl;
 		}
 
 		static value_type value()
 		{ return env::value; }
+
+		static uint32_t failures()
+		{ return env::remote::failures; }
+
+		static typename clock::duration latency()
+		{ return env::remote::latency; }
 
 		static value_type value(value_type v)
 		{

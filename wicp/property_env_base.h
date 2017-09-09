@@ -55,6 +55,13 @@ namespace wicp
 
 			typename clock::time_point pending_timestamp;
 
+			typename clock::time_point sync_start;
+
+			typename clock::duration latency;
+
+			uint32_t failures;
+
+
 			remote_record() {}
 
 			remote_record(net::ipv4_address i)
@@ -133,6 +140,11 @@ namespace wicp
 				}
 
 				r.pending_timestamp = i->time;
+				if(r.sync_start == clock::time_point::min())
+				{
+					r.sync_start = clock::now();
+					r.failures = 0;
+				}
 				history_lock.unlock();
 				rpc::call(r.ip,command_id|function,i->value,callback);
 			}
@@ -144,8 +156,18 @@ namespace wicp
 		{
 		
 			history_lock.lock();
+			if(r.sync_start != clock::time_point::min())
+				r.latency = clock::now() - r.sync_start;
+
 			if(v && (r.sync_timestamp < r.pending_timestamp))
+			{
 				r.sync_timestamp = r.pending_timestamp;
+				r.sync_start = clock::time_point::min();
+			}
+			else
+			{
+				++r.failures;
+			}
 
 			r.pending_timestamp = clock::time_point::min();
 

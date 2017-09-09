@@ -33,16 +33,20 @@ namespace process
 				}
 
 			TEnv::remotes_lock.unlock();
-			std::cout << "\e[33;01m - \e[0mwicp sync local: could not find remote for finished change notify" << std::endl;
+//			std::cout << "\e[33;01m - \e[0mwicp sync local: could not find remote for finished change notify" << std::endl;
 			notify();
 		}
 
 	public:
 		static void init()
-		{ std::cout << "\e[37;01m - \e[0mwicp sync local: initialized" << std::endl; }
+		{
+//			std::cout << "\e[37;01m - \e[0mwicp sync local: initialized" << std::endl;
+		}
 
 		static void uninit()
-		{ std::cout << "\e[37;01m - \e[0mwicp sync local: uninitialized" << std::endl; }
+		{
+//			std::cout << "\e[37;01m - \e[0mwicp sync local: uninitialized" << std::endl;
+		}
 
 		static void notify()
 		{
@@ -50,7 +54,7 @@ namespace process
 			if(TEnv::history.empty())
 			{
 				TEnv::history_lock.unlock();
-				std::cout << "\e[37;01m - \e[0mwicp sync local: nothing to do; suspending until next notify" << std::endl;
+//				std::cout << "\e[37;01m - \e[0mwicp sync local: nothing to do; suspending until next notify" << std::endl;
 				return;
 			}
 			TEnv::history_lock.unlock();

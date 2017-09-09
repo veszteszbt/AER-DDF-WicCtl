@@ -3,6 +3,7 @@
 # include <cstdint>
 # include <fstream>
 # include <thread>
+# include <pthread.h>
 # include <chrono>
 # include <types/integer.h>
 # include <net/ipv4_address.h>
@@ -136,12 +137,16 @@ namespace earpc
 		static void start()
 		{
 			std::thread feedback(proc_feedback::start);
+			pthread_setname_np(feedback.native_handle(),"earpc feedback");
 
 			std::thread send(proc_send::start);
+			pthread_setname_np(send.native_handle(),"earpc send");
 
 			std::thread recv(proc_recv::start);
+			pthread_setname_np(recv.native_handle(),"earpc recv");
 
 			std::thread expiry(proc_expiry::start);
+			pthread_setname_np(expiry.native_handle(),"earpc expiry");
 
 			recv.join();
 
@@ -212,8 +217,33 @@ namespace earpc
 			proc_expiry::notify();
 		}
 
+		template<typename Targ>
+		static void call(
+			net::ipv4_address ip,
+			command_id_type cmd,
+			const Targ &arg,
+			void(*c)(net::ipv4_address,command_id_type,const std::string&)
+		)
+		{
+			buf_outgoing_call::lock();
+			buf_incoming_call::lock();
+			call_id_type cid = generate_call_id(ip);
+			buf_outgoing_call::push(
+				ip,cmd,cid,&arg,sizeof(Targ),c
+			);
+			buf_incoming_call::unlock();
+			buf_outgoing_call::unlock();
+//			std::cout << "\e[37;01m - \e[0mearpc: initiating send for call " << std::hex << cid << std::endl;
+			proc_send::notify(ip,1234,cid,cmd,&arg,sizeof(Targ));
+			proc_expiry::notify();
+		}
+
 		static std::thread init()
-		{ return std::thread(start); }
+		{
+			std::thread r(start);
+			pthread_setname_np(r.native_handle(),"earpc master");
+			return r;
+		}
 	};
 
 	template<typename c>

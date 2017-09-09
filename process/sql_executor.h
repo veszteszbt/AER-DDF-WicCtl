@@ -4,7 +4,7 @@
 # include <cppconn/exception.h>
 # include <cppconn/resultset.h>
 # include <cppconn/statement.h>
-
+# include <pthread.h>
 namespace process
 {
 	class sql_executor
@@ -61,7 +61,7 @@ namespace process
 		{
 			connect();
 
-			std::cout << "\e[32;01m - \e[0msql executor process: initialized" << std::endl;
+//			std::cout << "\e[32;01m - \e[0msql executor process: initialized" << std::endl;
 
 			while(1)
 			{
@@ -70,7 +70,7 @@ namespace process
 				if(!bs)
 				{
 					buffer_lock.unlock();
-					std::cout << "\e[37;01m - \e[0msql executor process: nothing to do; suspending until next notify" << std::endl;
+//					std::cout << "\e[37;01m - \e[0msql executor process: nothing to do; suspending until next notify" << std::endl;
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait(ul);
 					continue;
@@ -78,8 +78,8 @@ namespace process
 				buffer_lock.unlock();
 
 				try {
-					std::cout << 
-						"\e[37;01m - \e[0msql executor process: executing " <<std::dec<< bs << " statements" << std::endl;
+//					std::cout << 
+//						"\e[37;01m - \e[0msql executor process: executing " <<std::dec<< bs << " statements" << std::endl;
 					sql::Statement *s = con->createStatement();
 					s->execute("START TRANSACTION");
 					while(1)
@@ -113,6 +113,7 @@ namespace process
 		{
 			con = 0;
 			proc_thread = new std::thread(start);
+			pthread_setname_np(proc_thread->native_handle(),"sql executor");
 		}
 
 		static void uninit()
