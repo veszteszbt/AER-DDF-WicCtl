@@ -94,7 +94,9 @@ namespace process
 		static void init()
 		{
 			proc_thread = new std::thread(start);
-			pthread_setname_np(proc_thread->native_handle(),"wicp commit");
+			#ifdef __linux__
+				pthread_setname_np(proc_thread->native_handle(),"wicp commit");
+			#endif
 		}
 
 		static void uninit()

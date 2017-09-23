@@ -1,5 +1,6 @@
 #ifndef EARPC_EARPC_H
 # define EARPC_EARPC_H
+
 # include <cstdint>
 # include <fstream>
 # include <thread>
@@ -137,16 +138,16 @@ namespace earpc
 		static void start()
 		{
 			std::thread feedback(proc_feedback::start);
-			pthread_setname_np(feedback.native_handle(),"earpc feedback");
-
 			std::thread send(proc_send::start);
-			pthread_setname_np(send.native_handle(),"earpc send");
-
 			std::thread recv(proc_recv::start);
-			pthread_setname_np(recv.native_handle(),"earpc recv");
-
 			std::thread expiry(proc_expiry::start);
-			pthread_setname_np(expiry.native_handle(),"earpc expiry");
+			
+			#ifdef __linux__
+				pthread_setname_np(feedback.native_handle(),"earpc feedback");
+				pthread_setname_np(send.native_handle(),"earpc send");
+				pthread_setname_np(recv.native_handle(),"earpc recv");
+				pthread_setname_np(expiry.native_handle(),"earpc expiry");
+			#endif
 
 			recv.join();
 
@@ -241,7 +242,9 @@ namespace earpc
 		static std::thread init()
 		{
 			std::thread r(start);
-			pthread_setname_np(r.native_handle(),"earpc master");
+			#ifdef __linux__
+				pthread_setname_np(r.native_handle(),"earpc master");
+			#endif
 			return r;
 		}
 	};

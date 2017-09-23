@@ -113,7 +113,9 @@ namespace process
 		{
 			con = 0;
 			proc_thread = new std::thread(start);
-			pthread_setname_np(proc_thread->native_handle(),"sql executor");
+			#ifdef __linux__
+				pthread_setname_np(proc_thread->native_handle(),"sql executor");
+			#endif
 		}
 
 		static void uninit()
