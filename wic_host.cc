@@ -4,6 +4,7 @@
 #include <list>
 #include <condition_variable>
 #include <cstdint>
+#include <alsa_host.h>
 #include <earpc/udp.h>
 #include <earpc/earpc.h>
 #include <net/algorithm.h>
@@ -1534,6 +1535,7 @@ namespace ddf
 
 int main()
 {
+	alsa_host::init();
 	std::thread t = wicc_earpc::init();
 
 	ddf::pirate::init();
