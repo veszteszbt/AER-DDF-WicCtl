@@ -5,7 +5,27 @@ namespace peripheral
 	template<typename TConfig>
 	struct pin_pad
 	{
-		typedef char value_type;
+		struct value_type
+		{
+			uint8_t key;
+			bool    state;
+
+			constexpr value_type()
+				: key(0)
+				, state(false)
+			{}
+
+			constexpr value_type(uint8_t pkey, bool pstate)
+				: key(pkey)
+				, state(pstate)
+			{}
+
+			bool operator==(const value_type &that)
+			{ return that.key == key && that.state == state; }
+
+			bool operator!=(const value_type &that)
+			{ return that.key != key || that.state != state; }
+		};
 	private:
 		struct property_config : public TConfig
 		{
