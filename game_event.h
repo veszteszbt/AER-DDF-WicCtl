@@ -15,7 +15,7 @@ public:
 
 	void propagate()
 	{
-		std::cout << "\e[36;01mEvent " << site << '.' << room << '.' << event << "\e[0m" << std::endl	;
+//		std::cout << "\e[36;01mEvent " << site << '.' << room << '.' << event << "\e[0m" << std::endl	;
 	}
 };
 #endif
