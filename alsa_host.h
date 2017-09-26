@@ -71,7 +71,8 @@ class alsa_host
 
 			snd_ctl_card_info(ctl,info);
 
-			std::cout << "Components: " << snd_ctl_card_info_get_components(info) << std::endl;
+			//std::cout << "Components: " << snd_ctl_card_info_get_components(info) << std::endl;
+
 			snd_ctl_card_info_free(info);
 
 			std::cout << "alsa host: registered sound card #" << id << " - " << name << " ("<<longname<<")" << std::endl;
