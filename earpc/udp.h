@@ -50,11 +50,7 @@ namespace earpc
 			: local_port(lp)
 			, remote_port(rp)
 		{
-			// udp server socket
-			// localport = ezen a porton figyel a server socket
-			// remote portarra a portra küldunk // destination ip
-			// küldés, fogadás
-			
+						
 			int yes = 1;
 			int no = 0;
 
@@ -66,20 +62,18 @@ namespace earpc
 			memset(&sock_in, 0, sinlen);
 
 			sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-			#ifdef __linux__
-				
-				setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-
-			#elif defined __MINGW32__
-				// Initialize Winsock
-				int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-				if (iResult != 0) {
-					printf("WSAStartup failed: %d\n", iResult);
-					return;
-				}
-				setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout));
-
-			#endif
+			
+#ifdef __linux__			
+			setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+#elif defined __MINGW32__
+			// Initialize Winsock
+			int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+			if (iResult != 0) {
+				printf("WSAStartup failed: %d\n", iResult);
+				return;
+			}
+			setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout));
+#endif
 
 			sock_in.sin_addr.s_addr = htonl(INADDR_ANY);
 			sock_in.sin_port = htons(lp);
@@ -92,13 +86,15 @@ namespace earpc
 
 		~udp()
 		{
-			#ifdef __linux__
-				shutdown(sock, 2);
-				close(sock);
-			#elif defined __MINGW32__
-				shutdown(sock, 2);
-				closesocket(sock);
-			#endif
+
+#ifdef __linux__			
+			shutdown(sock, 2);
+			close(sock);
+#elif defined __MINGW32__			
+			shutdown(sock, 2);
+			closesocket(sock);
+#endif
+
 		}
 
 		int send(net::ipv4_address ip, uint16_t port, const void *buffer, uint16_t size)
@@ -106,11 +102,12 @@ namespace earpc
 			
 			sock_in.sin_addr.s_addr = htonl(ip);
 			sock_in.sin_port = htons(port);
-			#ifdef __linux__
-				return sendto(sock, buffer, size, 0, (struct sockaddr*)&sock_in, sinlen);
-			#elif defined __MINGW32__
-				return sendto(sock, reinterpret_cast<const char*>(buffer), size, 0, (struct sockaddr*)&sock_in, sinlen);
-			#endif
+
+#ifdef __linux__		
+			return sendto(sock, buffer, size, 0, (struct sockaddr*)&sock_in, sinlen);
+#elif defined __MINGW32__
+			return sendto(sock, reinterpret_cast<const char*>(buffer), size, 0, (struct sockaddr*)&sock_in, sinlen);
+#endif
 
 		}
 
@@ -121,11 +118,11 @@ namespace earpc
 
 			unsigned l = sizeof(struct sockaddr_in);
 
-			#ifdef __linux__
-				const int rv = recvfrom(sock, buffer, size, 0, (struct sockaddr*)&x, &l);
-			#elif defined __MINGW32__
-				const int rv = recvfrom(sock, reinterpret_cast<char*>(buffer), size, 0, (struct sockaddr*)&x, reinterpret_cast<signed int*>(&l));
-			#endif
+#ifdef __linux__
+			const int rv = recvfrom(sock, buffer, size, 0, (struct sockaddr*)&x, &l);
+#elif defined __MINGW32__
+			const int rv = recvfrom(sock, reinterpret_cast<char*>(buffer), size, 0, (struct sockaddr*)&x, reinterpret_cast<signed int*>(&l));
+#endif
 
 			ip = htonl(x.sin_addr.s_addr);
 

@@ -21,6 +21,5 @@ wic_host: wic_host.cc
 	-lpsapi \
 	-lshell32
 	
-
 clean:
 	rm *.o wicctl wic_host 

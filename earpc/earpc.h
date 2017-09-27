@@ -142,12 +142,12 @@ namespace earpc
 			std::thread recv(proc_recv::start);
 			std::thread expiry(proc_expiry::start);
 			
-			#ifdef __linux__
-				pthread_setname_np(feedback.native_handle(),"earpc feedback");
-				pthread_setname_np(send.native_handle(),"earpc send");
-				pthread_setname_np(recv.native_handle(),"earpc recv");
-				pthread_setname_np(expiry.native_handle(),"earpc expiry");
-			#endif
+#ifdef __linux__
+			pthread_setname_np(feedback.native_handle(),"earpc feedback");
+			pthread_setname_np(send.native_handle(),"earpc send");
+			pthread_setname_np(recv.native_handle(),"earpc recv");
+			pthread_setname_np(expiry.native_handle(),"earpc expiry");
+#endif
 
 			recv.join();
 
@@ -242,9 +242,11 @@ namespace earpc
 		static std::thread init()
 		{
 			std::thread r(start);
-			#ifdef __linux__
-				pthread_setname_np(r.native_handle(),"earpc master");
-			#endif
+
+#ifdef __linux__			
+			pthread_setname_np(r.native_handle(),"earpc master");
+#endif
+			
 			return r;
 		}
 	};
