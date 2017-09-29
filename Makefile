@@ -1,7 +1,44 @@
+ifeq ($(OS),Windows_NT)
+   PLATFORM=WINDOWS
+else
+   _UNAME=$(shell uname -s)
+   ifeq ($(_UNAME),Linux)
+      PLATFORM=LINUX
+   endif
+   ifeq ($(_UNAME),Darwin)
+      PLATFORM=OSX
+   endif
+endif
+
+
+ifeq ($(PLATFORM),LINUX)
+
 all: wicctl wic_host
 
 wicctl: wicctl.cc wicctl.h
 	g++ -I. -std=c++14 -lusb-1.0 -o wicctl wicctl.cc
+
+%.o: %.cc %.h
+	g++ -I. -g3 -std=c++14 -fdiagnostics-color -c $<
+
+%.o: %.cc
+	g++ -I. -g3 -std=c++14 -fdiagnostics-color -c $<
+
+wic_host: wic_host.o alsa_host.o
+	g++ -I. -g3 -std=c++14 -fdiagnostics-color -pthread -lmysqlcppconn -o wic_host wic_host.o alsa_host.o -lasound
+
+clean:
+	rm *.o wicctl wic_host 
+
+else
+ifeq ($(PLATFORM),WINDOWS)
+	
+
+all: wicctl wic_host
+
+
+wicctl:
+	$(error wicctl cannot be built for platform $(PLATFORM))
 
 wic_host: wic_host.cc
 	g++ -I. \
@@ -22,4 +59,12 @@ wic_host: wic_host.cc
 	-lshell32
 	
 clean:
-	rm *.o wicctl wic_host 
+	rm *.o *.exe
+else
+wicctl:
+	$(error wicctl cannot be built for platform $(PLATFORM))
+
+wic_host:
+	$(error wic host cannot be built for platform $(PLATFORM))
+endif
+endif	

@@ -44,7 +44,9 @@ namespace earpc
 		int sock, sinlen;
 		uint16_t local_port;
 		uint16_t remote_port;
+#ifdef __MINGW32__
 		WSADATA wsaData;
+#endif
 	public:
 		udp(uint16_t lp, uint16_t rp)
 			: local_port(lp)
