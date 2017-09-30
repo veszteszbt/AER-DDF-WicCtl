@@ -62,17 +62,24 @@ namespace earpc
 
 			sinlen = sizeof(struct sockaddr_in);
 			memset(&sock_in, 0, sinlen);
-
-			sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-			
-#ifdef __linux__			
-			setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-#elif defined __MINGW32__
+#if defined __MINGW32__
 			// Initialize Winsock
 			int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 			if (iResult != 0) {
 				printf("WSAStartup failed: %d\n", iResult);
 				return;
+			}
+#endif
+
+#ifdef __linux__			
+			sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+			setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+#elif defined __MINGW32__
+			
+			//Create a socket
+			if((sock = socket(AF_INET , SOCK_DGRAM , 0 )) == INVALID_SOCKET)
+			{
+				printf("Could not create socket : %d" , WSAGetLastError());
 			}
 			setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout));
 #endif
