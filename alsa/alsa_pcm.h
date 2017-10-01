@@ -3,6 +3,7 @@
 # include <exception>
 # include <string>
 # include <cstring>
+# include <list>
 # include <functional>
 # include <thread>
 # include <mutex>
@@ -159,7 +160,6 @@ namespace pcm {
 
 	class player
 	{
-		std::istream &stream;
 
 		alsa::pcm::pcm_t pcm;
 
@@ -169,17 +169,30 @@ namespace pcm {
 
 		uint8_t device;
 
-		uint8_t channel;
-
 		unsigned channels;
 
 		unsigned rate;
 
-		unsigned frame_pos;
-
 		snd_pcm_uframes_t period;
 
 		volatile bool disposed;
+
+		struct stream_type
+		{
+			uint8_t channel;
+			std::istream &stream;
+
+			stream_type(uint8_t pchannel, std::istream &pstream)
+				: channel(pchannel)
+				, stream(pstream)
+			{}
+		};
+
+		typedef std::list<stream_type> streams_type;
+
+		streams_type             streams;
+
+		std::mutex               streams_lock;
 
 		std::mutex               suspend_lock;
 
@@ -208,40 +221,51 @@ namespace pcm {
 		{
 			sleep();
 
-			std::cout << "\e[37;01m - \e[0malsa player: process initialized on line " << (int)device << "." << (int)channel << std::endl;
+			std::cout << "\e[37;01m - \e[0malsa player: process initialized for device " << (int)device << std::endl;
 
 			while(!disposed)
 			{
 				const size_t rbytes = period*2;
-				stream.read(reinterpret_cast<char*>(sbuffer),rbytes);
-				const size_t wbytes = stream.gcount();
-				for(size_t i = 0; i < period; ++i)
-					buffer[i*channels+channel] = sbuffer[i];
-				pcm.writei(reinterpret_cast<void*>(buffer),wbytes/2);
-				while(!stream.good())
+				memset(buffer,0,rbytes*channels);
+				streams_lock.lock();
+/*				while(streams.empty())
 				{
-					std::cout << "\e[33;01m - \e[0malsa player: bad stream; suspending until next notify" << std::endl;
+					streams_lock.unlock();
+					std::cout << "\e[37;01m - \e[0malsa player: nothing to do; suspending until next notify" << std::endl;
 					sleep();
+					streams_lock.lock();
 				}
-				++frame_pos;
-				std::cout << "\e[37;01m - \e[0malsa player: position is " << static_cast<double>(frame_pos)*period/rate << " sec" << std::endl;
+*/
+				for(
+					streams_type::iterator stream = streams.begin();
+					stream != streams.end();
+				)
+				{
+					stream->stream.read(reinterpret_cast<char*>(sbuffer),rbytes);
+					const size_t wbytes = stream->stream.gcount();
+					for(size_t i = 0; i < wbytes/2; ++i)
+						buffer[i*channels+stream->channel] += sbuffer[i];
 
+					if(!stream->stream.good())
+						stream = streams.erase(stream);
+					else
+						++stream;
+				}
+				streams_lock.unlock();
 
+				pcm.writei(reinterpret_cast<void*>(buffer),period);
 			}
-			std::cout << "\e[37;01m - \e[0malsa player: process uninitialized on line " << (int)device << "." << (int)channel << std::endl;
+			std::cout << "\e[37;01m - \e[0malsa player: process uninitialized for device " << (int)device << std::endl;
 		}
 
 
 		std::thread process;
 
 	public:
-		player(uint8_t pdevice, uint8_t pchannel, std::istream &pstream, unsigned prate = 44100)
-			: stream(pstream)
-			, pcm(itos(pdevice).c_str(),SND_PCM_STREAM_PLAYBACK,0)
+		player(uint8_t pdevice, unsigned prate = 44100)
+			: pcm(itos(pdevice).c_str(),SND_PCM_STREAM_PLAYBACK,0)
 			, device(pdevice)
-			, channel(pchannel)
 			, rate(prate)
-			, frame_pos(0)
 			, disposed(false)
 			, process(&alsa::player::start,this)
 		{
@@ -265,8 +289,14 @@ namespace pcm {
 			const unsigned l = period*channels;
 			buffer = new uint16_t[l];
 			sbuffer = new uint16_t[period];
-			memset(buffer,0,l*2);
+			notify();
+		}
 
+		void play(std::istream &stream, uint8_t channel)
+		{
+			streams_lock.lock();
+			streams.push_back(stream_type(channel,stream));
+			streams_lock.unlock();
 			notify();
 		}
 
