@@ -1,42 +1,27 @@
 #include <iostream>
+#include <sstream>
 #include "alsa_pcm.h"
 
 int main()
 {
+	std::stringstream s;
 
-	alsa::pcm::pcm_t pcm("hw:0",SND_PCM_STREAM_PLAYBACK,0);
+	short x = 0;
+	for(int i = 0; i < 1048576; ++i)
+	{
+		s.write(reinterpret_cast<char*>(&x),2);
+		x+=100;
+	}
 
-	alsa::pcm::hw_params_t params(pcm);
-
-	std::cout << "Setting access" << std::endl;
-	params.access(SND_PCM_ACCESS_RW_INTERLEAVED);
-
-	std::cout << "Setting format" << std::endl;
-	params.format(SND_PCM_FORMAT_S16_LE);
-
-
-	std::cout << "Channels: " << params.channels() << "; max: " << params.channels_max() << "; min: " << params.channels_min() << std::endl;
-
-	int dir = 0;
-
-	unsigned rate = 44100;
-
-	std::cout << "Setting rate" << std::endl;
-	params.set_rate_near(&rate,&dir);
-
-	params.apply();
-
-	snd_pcm_uframes_t period;
-
-	dir = 0;
-
-	params.get_period_size(&period,&dir);
-
-	std::cout << "PCM name: " << pcm.name() << std::endl;
-
-	std::cout << "PCM state: " << pcm.state_name() << " (" << pcm.state() << ")" << std::endl;
-
-	std::cout << "Period size: " << period << std::endl;
-
+			
+	alsa::player p1(0,0,s);
+	alsa::player p2(0,0,s);
+/*	alsa::player p3(0,0,s);
+	alsa::player p4(0,0,s);
+	alsa::player p5(0,0,s);
+	alsa::player p6(0,0,s);
+	alsa::player p7(0,0,s);
+*/		
+	while(true);
 	return 0;
 }

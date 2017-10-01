@@ -107,7 +107,7 @@ public:
 
 	}
 
-	static void reg(uint8_t card_id, uint8_t channel_id)
+	static void play(uint8_t card_id, uint8_t channel_id)
 	{
 
 	}
