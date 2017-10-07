@@ -131,6 +131,8 @@ namespace earpc
 		typedef typename env_recv::command_id_type command_id_type;
 	private:
 
+		static std::thread *main_process;
+
 		static std::ifstream urandom;
 
 		static void start()
@@ -237,23 +239,26 @@ namespace earpc
 			proc_expiry::notify();
 		}
 
-		static std::thread init()
+		static void init()
 		{
-			std::thread r(start);
+			main_process = new std::thread(start);
 
 #ifdef __linux__			
-			pthread_setname_np(r.native_handle(),"earpc master");
+			pthread_setname_np(main_process->native_handle(),"earpc master");
 #endif
-			
-			return r;
 		}
 
 		static void uninit()
 		{
+			main_process->join();
+			delete main_process;
 		}
 	};
 
 	template<typename c>
 	std::ifstream earpc<c>::urandom("/dev/urandom");
+
+	template<typename c>
+	std::thread *earpc<c>::main_process;
 }
 #endif
