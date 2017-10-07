@@ -3,9 +3,11 @@
 #include <sstream>
 #include <cstring>
 #include <cstdio>
+#include <thread>
+#include <chrono>
 #include <errno.h>
-#include <error.h>
 #include "wicctl.h"
+#include <error.h>
 namespace
 {
 	bool assert_rdonly(const std::string &property, int argc)
@@ -403,7 +405,7 @@ int main(int argc, char **argv)
 								return 1;
 							}
 							std::cerr << "\e[31;01m - \e[0mchunk error" << std::endl;
-							usleep(20000);
+							std::this_thread::sleep_for(std::chrono::microseconds(20000));
 							s = w->app_install_chunk(idx,std::string(buf,64));
 							continue;
 						}

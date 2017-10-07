@@ -19,7 +19,6 @@
 #include <peripheral/text_display.h>
 #include <peripheral/voltage_level.h>
 
-
 struct wicc_earpc_config
 {
 	static earpc::udp connection;
@@ -1553,3 +1552,72 @@ int main()
 	return 0;
 }
 
+extern "C"
+{
+	/// villa
+	bool villa_safe_controller_lock()
+	{
+		return ddf::villa::devices::safe_controller::lock::value();
+	}
+
+	bool villa_fireplace_controller_key_switch_1()
+	{
+		return ddf::villa::devices::fireplace_controller::key_switch_1::value();
+	}
+
+	bool villa_fireplace_controller_key_switch_2()
+	{
+		return ddf::villa::devices::fireplace_controller::key_switch_2::value();
+	}
+
+	bool villa_fireplace_controller_key_switch_3()
+	{
+		return ddf::villa::devices::fireplace_controller::key_switch_3::value();
+	}
+
+	bool villa_fireplace_controller_lock()
+	{
+		return ddf::villa::devices::fireplace_controller::lock::value();
+	}
+
+	bool villa_fireplace_controller_flask_lock()
+	{
+		return ddf::villa::devices::fireplace_controller::flask_lock::value();
+	}
+
+	uint8_t villa_control_room_controller_switch_2()
+	{
+		return ddf::villa::devices::control_room_controller::switch_2::value();
+	}
+
+	uint8_t villa_control_room_controller_switch_3()
+	{
+		return ddf::villa::devices::control_room_controller::switch_3::value();
+	}
+
+	uint8_t villa_control_room_controller_switch_4()
+	{
+		return ddf::villa::devices::control_room_controller::switch_4::value();
+	}
+
+	uint8_t villa_control_room_controller_switch_5()
+	{
+		return ddf::villa::devices::control_room_controller::switch_5::value();
+	}
+
+	unsigned long long villa_control_room_controller_rfid()
+	{
+		return ddf::villa::devices::control_room_controller::rfid::value();
+	}
+
+	bool villa_control_room_controller_eject()
+	{
+		return ddf::villa::devices::control_room_controller::eject::value();
+	}
+}
+
+extern "C" __declspec(dllexport)
+uint8_t villa_control_room_controller_switch_1()
+{
+	return ddf::villa::devices::control_room_controller::switch_1::value();
+}

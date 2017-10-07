@@ -19,7 +19,7 @@
 #endif
 
 
-#ifdef __MINGW32__
+#if defined(_MSC_VER) || defined(__MINGW32__)
 
 #include <winsock2.h>
 #include <stdlib.h>
@@ -44,7 +44,7 @@ namespace earpc
 		int sock, sinlen;
 		uint16_t local_port;
 		uint16_t remote_port;
-#ifdef __MINGW32__
+#if defined(_MSC_VER) || defined(__MINGW32__)
 		WSADATA wsaData;
 #endif
 	public:
@@ -62,7 +62,7 @@ namespace earpc
 
 			sinlen = sizeof(struct sockaddr_in);
 			memset(&sock_in, 0, sinlen);
-#if defined __MINGW32__
+#if defined(_MSC_VER) || defined(__MINGW32__)
 			// Initialize Winsock
 			int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 			if (iResult != 0) {
@@ -74,7 +74,7 @@ namespace earpc
 #ifdef __linux__			
 			sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 			setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-#elif defined __MINGW32__
+#elif defined(_MSC_VER) || defined(__MINGW32__)
 			
 			//Create a socket
 			if((sock = socket(AF_INET , SOCK_DGRAM , 0 )) == INVALID_SOCKET)
@@ -99,7 +99,7 @@ namespace earpc
 #ifdef __linux__			
 			shutdown(sock, 2);
 			close(sock);
-#elif defined __MINGW32__			
+#elif defined(_MSC_VER) || defined(__MINGW32__)			
 			shutdown(sock, 2);
 			closesocket(sock);
 #endif
@@ -114,7 +114,7 @@ namespace earpc
 
 #ifdef __linux__		
 			return sendto(sock, buffer, size, 0, (struct sockaddr*)&sock_in, sinlen);
-#elif defined __MINGW32__
+#elif defined(_MSC_VER) || defined(__MINGW32__)
 			return sendto(sock, reinterpret_cast<const char*>(buffer), size, 0, (struct sockaddr*)&sock_in, sinlen);
 #endif
 
@@ -129,7 +129,7 @@ namespace earpc
 
 #ifdef __linux__
 			const int rv = recvfrom(sock, buffer, size, 0, (struct sockaddr*)&x, &l);
-#elif defined __MINGW32__
+#elif defined(_MSC_VER) || defined(__MINGW32__)
 			const int rv = recvfrom(sock, reinterpret_cast<char*>(buffer), size, 0, (struct sockaddr*)&x, reinterpret_cast<signed int*>(&l));
 #endif
 

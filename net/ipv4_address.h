@@ -4,8 +4,8 @@
 # include <sstream>
 namespace net 
 {
+#pragma pack(push,1)
 	struct
-	__attribute__((__packed__))
 	ipv4_address
 	{
 		uint8_t octet[4];
@@ -82,7 +82,7 @@ namespace net
 			return r.str();
 		}
 	};
-
+#pragma pack(pop)
 }
 
 #endif

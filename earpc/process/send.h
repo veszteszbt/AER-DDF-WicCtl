@@ -5,6 +5,10 @@
 # include <mutex>
 # include <condition_variable>
 # include <net/ipv4_address.h>
+#ifdef _MSC_VER
+	#undef max
+	#undef min
+#endif
 namespace earpc {
 namespace process
 {
@@ -88,7 +92,7 @@ namespace process
 
 		static queue_type               queue;
 
-		constexpr static earpc::udp    &conn = TEnv::conn;
+		constexpr static ::earpc::udp    &conn = TEnv::conn;
 
 		static int64_t tp2msec(time_point p)
 		{ return std::chrono::time_point_cast<std::chrono::milliseconds>(p).time_since_epoch().count(); }

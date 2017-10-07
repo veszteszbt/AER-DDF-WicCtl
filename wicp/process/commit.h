@@ -59,7 +59,7 @@ namespace process
 			{
 				std::unique_lock<std::mutex> ul(suspend_lock);
 				history_lock.lock();
-				if(change_only && value == history.front().value)
+				if(change_only && !history.empty() && value == history.front().value)
 				{
 //					std::cout << "\e[37;01m - \e[0mwicp commit process: no change" << std::endl;
 					history_lock.unlock();

@@ -16,7 +16,6 @@
 # include <earpc/process/send.h>
 # include <earpc/process/recv.h>
 # include <earpc/process/expiry.h>
-
 namespace earpc
 {
 	template<typename TConfig>
@@ -31,9 +30,8 @@ namespace earpc
 			typedef typename TConfig::command_id_type     command_id_type;
 
 			typedef typename TConfig::call_id_type        call_id_type;
-
+#pragma pack(push,1)
 			class
-			__attribute__((__packed__))
 			earpc_header_type
 			{
 			public:
@@ -55,7 +53,7 @@ namespace earpc
 				bool checksum_verify() const
 				{ return net::algorithm::checksum_verify(this,sizeof(earpc_header_type)); }
 			};
-
+#pragma pack(pop)
 			struct call_handle_base
 			{
 				const call_id_type call_id;

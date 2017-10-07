@@ -8,7 +8,10 @@
 # include <iomanip>
 # include <chrono>
 # include <process/sql_executor.h>
-
+#ifdef _MSC_VER
+	#undef max
+	#undef min
+#endif
 namespace wicp {
 namespace process
 {

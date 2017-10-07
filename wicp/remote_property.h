@@ -94,8 +94,8 @@ namespace wicp
 			proc_commit::init();
 			proc_sync::init();
 			env::remote.ip = ip;
-			env::remote.sync_timestamp = clock::time_point::min();
-			env::remote.pending_timestamp = clock::time_point::min();
+			//env::remote.sync_timestamp = clock::time_point::min();
+			//env::remote.pending_timestamp = clock::time_point::min();
 			rpc::set_command(
 				command_id | types::function::notify,
 				notify_handler

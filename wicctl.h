@@ -5,9 +5,12 @@
 # include <cstring>
 # include <string>
 # include <cstdio>
-# include <error.h>
+# include <thread>
 # include <unistd.h>
+# include <thread>
+# include <chrono>
 # include <libusb-1.0/libusb.h>
+#include <error.h>
 
 class wicctl
 {
@@ -118,7 +121,7 @@ class wicctl
 	{
 		uint8_t r;
 		while((r = app_state()) == EINPROGRESS)
-			usleep(10000);
+			std::this_thread::sleep_for(std::chrono::microseconds(10000));
 		return r;
 	}
 
