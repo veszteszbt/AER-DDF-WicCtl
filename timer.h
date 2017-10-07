@@ -126,7 +126,7 @@ namespace wic
 		static void value(uint64_t v)
 		{ property::value(v); }
 
-		constexpr static listener_t  &on_change = property::on_change;
+		constexpr static sched::listener  &on_change = property::on_change;
 	};
 
 	template<typename c>

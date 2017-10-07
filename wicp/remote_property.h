@@ -4,7 +4,7 @@
 # include <wicp/process/sync_remote.h>
 # include <wicp/process/commit.h>
 # include <wicp/process/log.h>
-# include <listener.h>
+# include <sched/listener.h>
 namespace wicp
 {
 	template<typename TConfig>
@@ -50,7 +50,7 @@ namespace wicp
 		typedef typename env::rpc::template call_handle<bool>  notify_call_handle_type;
 
 	public:
-		constexpr static listener_t &on_change = env::on_change;
+		constexpr static sched::listener &on_change = env::on_change;
 
 	private:
 

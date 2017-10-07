@@ -28,5 +28,8 @@ struct property_config_base
 	typedef uint32_t cfg_class_id_type;
 
 	typedef uint32_t cfg_member_id_type;
+
+	static const bool cfg_commit_change_only = true;
+
 };
 #endif

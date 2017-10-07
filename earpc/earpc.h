@@ -247,6 +247,10 @@ namespace earpc
 			
 			return r;
 		}
+
+		static void uninit()
+		{
+		}
 	};
 
 	template<typename c>

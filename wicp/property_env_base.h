@@ -3,7 +3,7 @@
 # include <mutex>
 # include <list>
 # include <net/ipv4_address.h>
-# include <listener.h>
+# include <sched/listener.h>
 namespace wicp
 {
 	template<typename TConfig>
@@ -23,7 +23,7 @@ namespace wicp
 
 		static typename clock::time_point            local_timestamp;
 
-		static listener_t on_change;
+		static sched::listener on_change;
 
 		static_assert(
 			sizeof(command_id_type) >= sizeof(class_id_type) + sizeof(member_id_type),
@@ -182,7 +182,7 @@ namespace wicp
 	std::mutex property_env_base<c>::history_lock;
 
 	template<typename c>
-	listener_t property_env_base<c>::on_change;
+	sched::listener property_env_base<c>::on_change;
 
 	template<typename c>
 	typename property_env_base<c>::value_type property_env_base<c>::value;
