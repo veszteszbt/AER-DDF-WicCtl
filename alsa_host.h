@@ -10,6 +10,7 @@
 
 class alsa_host
 {
+public:
 	class player_t
 	{
 		alsa::pcm::pcm_t pcm;
@@ -32,8 +33,9 @@ class alsa_host
 		{
 			uint8_t channel;
 			std::istream &stream;
+			void (*callback)(std::istream&);
 
-			stream_type(uint8_t pchannel, std::istream &pstream);
+			stream_type(uint8_t pchannel, std::istream &pstream, void(*pcallback)(std::istream&));
 		};
 
 		typedef std::list<stream_type> streams_type;
@@ -59,7 +61,9 @@ class alsa_host
 	public:
 		player_t(uint8_t pdevice, unsigned prate = 44100);
 
-		void play(std::istream &stream, uint8_t channel);
+		uint8_t num_channels();
+
+		void play(std::istream &stream, uint8_t channel, void(*callback)(std::istream&));
 
 		~player_t();
 	};
@@ -72,7 +76,7 @@ class alsa_host
 
 		static std::string ll_get_hwid(int id);
 
-		player_t *player;
+		player_t *_player;
 
 	public:
 
@@ -89,16 +93,23 @@ class alsa_host
 		alsa_card_t(int id);
 
 		~alsa_card_t();
+
+		player_t &player();
 	};
 
+private:
 	typedef std::map<int,alsa_card_t*> cards_by_id_t;
 
 	static cards_by_id_t cards_by_id;
+
+	static void file_play_finish(std::istream &stream);
 public:
 
 	static void init();
 
 	static void uninit();
+
+	static bool exists(uint8_t card, uint8_t channel);
 
 	static void play(
 		const std::string &file,

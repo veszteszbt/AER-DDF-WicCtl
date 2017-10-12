@@ -171,7 +171,7 @@ namespace earpc
 			return r;
 		}
 
-
+		static std::thread *master_process;
 	public:
 		template<typename Treturn>
 		using call_handle = typename proc_recv::template call_handle<Treturn>;
@@ -239,19 +239,24 @@ namespace earpc
 			proc_expiry::notify();
 		}
 
-		static std::thread init()
+		static void init()
 		{
-			std::thread r(start);
+			master_process = new std::thread(start);
 
 #ifdef __linux__			
-			pthread_setname_np(r.native_handle(),"earpc master");
+			pthread_setname_np(master_process->native_handle(),"earpc master");
 #endif
 			
-			return r;
 		}
+
+		static void uninit()
+		{ delete master_process; }
 	};
 
 	template<typename c>
 	std::ifstream earpc<c>::urandom("/dev/urandom");
+
+	template<typename c>
+	std::thread *earpc<c>::master_process;
 }
 #endif

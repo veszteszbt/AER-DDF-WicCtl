@@ -1,1 +1,1 @@
-../src/output/pin_pad_test/host.cc
+../apps/pin_pad_test/host.cc
