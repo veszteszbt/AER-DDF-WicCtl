@@ -84,7 +84,7 @@ namespace wicp
 
 
 	public:
-		constexpr static listener_t &on_change = env::on_change;
+		constexpr static sched::listener &on_change = env::on_change;
 
 		static void init()
 		{

@@ -19,7 +19,7 @@ namespace process
 
 		typedef typename TEnv::earpc_header_type earpc_header_type;
 
-		constexpr static earpc::udp &conn = TEnv::conn;
+		constexpr static ::earpc::udp &conn = TEnv::conn;
 
 		struct queue_record
 		{

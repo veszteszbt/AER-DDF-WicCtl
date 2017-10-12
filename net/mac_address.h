@@ -3,8 +3,8 @@
 # include <cstdint>
 namespace net
 {
+#pragma pack(push,1)
 	struct
-	__attribute__((__packed__))
 	mac_address
 	{
 		uint8_t octet[6];
@@ -37,5 +37,6 @@ namespace net
 			return false;
 		}
 	};
+#pragma pack(pop)
 }
 #endif

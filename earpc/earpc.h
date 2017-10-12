@@ -16,7 +16,6 @@
 # include <earpc/process/send.h>
 # include <earpc/process/recv.h>
 # include <earpc/process/expiry.h>
-
 namespace earpc
 {
 	template<typename TConfig>
@@ -31,9 +30,8 @@ namespace earpc
 			typedef typename TConfig::command_id_type     command_id_type;
 
 			typedef typename TConfig::call_id_type        call_id_type;
-
+#pragma pack(push,1)
 			class
-			__attribute__((__packed__))
 			earpc_header_type
 			{
 			public:
@@ -55,7 +53,7 @@ namespace earpc
 				bool checksum_verify() const
 				{ return net::algorithm::checksum_verify(this,sizeof(earpc_header_type)); }
 			};
-
+#pragma pack(pop)
 			struct call_handle_base
 			{
 				const call_id_type call_id;
@@ -135,6 +133,8 @@ namespace earpc
 
 		static std::ifstream urandom;
 
+		static std::thread *master_process;
+
 		static void start()
 		{
 			std::thread feedback(proc_feedback::start);
@@ -171,7 +171,6 @@ namespace earpc
 			return r;
 		}
 
-		static std::thread *master_process;
 	public:
 		template<typename Treturn>
 		using call_handle = typename proc_recv::template call_handle<Treturn>;
@@ -250,7 +249,10 @@ namespace earpc
 		}
 
 		static void uninit()
-		{ delete master_process; }
+		{
+			master_process->join();
+			delete master_process;
+		}
 	};
 
 	template<typename c>

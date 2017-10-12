@@ -7,6 +7,10 @@
 # include <condition_variable>
 # include <net/ipv4_address.h>
 # include <earpc/udp.h>
+#ifdef _MSC_VER
+	#undef max
+	#undef min
+#endif
 namespace earpc {
 namespace process
 {
