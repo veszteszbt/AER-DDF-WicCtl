@@ -1,5 +1,6 @@
 #include <alsa_host.h>
 #include <fstream>
+#include <errno.h>
 
 alsa_host::player_t::stream_type::stream_type(uint8_t pchannel, std::istream &pstream, void (*pcallback)(std::istream&))
 	: channel(pchannel)
@@ -68,7 +69,35 @@ void alsa_host::player_t::start()
 		}
 		streams_lock.unlock();
 
-		pcm.writei(reinterpret_cast<void*>(buffer),period);
+		uint8_t *p = reinterpret_cast<uint8_t*>(buffer);
+
+		for(int size = period; size > 0;)
+		{
+			int result = pcm.writei(reinterpret_cast<void*>(p),size);
+			if(result >= 0)
+			{
+				size -= result;
+				p += result*channels*2;
+			}
+
+			else switch(result)
+			{
+				case -EAGAIN:
+					continue;
+
+				case -EPIPE:
+					std::cout << "\e[33;01m - \e[0malsa host: pcm buffer underrun for device " << (int)device << std::endl;
+					pcm.prepare();
+					break;
+
+				case -ESTRPIPE:
+					pcm.resume();
+					break;
+					
+			}
+
+		}
+				
 	}
 	std::cout << "\e[37;01m - \e[0malsa host: player uninitialized for device " << (int)device << std::endl;
 }

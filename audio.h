@@ -1,6 +1,7 @@
 #ifndef WIC_AUDIO_H
 # define WIC_AUDIO_H
 # include <alsa_host.h>
+# include <exception>
 namespace wic
 {
 	template<typename TConfig>
@@ -13,7 +14,12 @@ namespace wic
 		static void init()
 		{
 			if(!alsa_host::exists(device,channel))
-				throw "bad channel";
+			{
+				std::cout << "\e[31;01m - \e[0mFATAL: cannot initialize audio on channel " << std::dec << 
+					(int)device << '.' << (int)channel << std::endl;
+				throw std::exception();
+
+			}
 		}
 
 		static void uninit()

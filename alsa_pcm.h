@@ -153,8 +153,11 @@ namespace pcm {
 		{ return std::string(snd_pcm_state_name(state())); }
 
 
-		void prepare()
-		{ snd_pcm_prepare(_pcm); }
+		int prepare()
+		{ return snd_pcm_prepare(_pcm); }
+
+		int resume()
+		{ return snd_pcm_resume(_pcm); }
 
 		snd_pcm_sframes_t writei(const void *buffer, snd_pcm_uframes_t frames)
 		{ return snd_pcm_writei(_pcm,buffer,frames); }
