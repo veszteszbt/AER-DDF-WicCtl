@@ -12,6 +12,6 @@ int main(int argc, char **argv)
     };
     color_sensor c(x);
     color_sensor::picture p("colortest.png");
-    color_sensor::check_for_color(p);
+    c.color_sensor::check_for_color(p);
     return 0;
 }
