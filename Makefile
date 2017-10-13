@@ -25,7 +25,7 @@ wicctl: wicctl.cc wicctl.h
 	g++ -I. -g3 -std=c++14 -fdiagnostics-color -c $<
 
 wic_host: wic_host.o alsa_host.o
-	g++ -I. -g3 -std=c++14 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o -lasound -pthread -lmysqlcppconn
+	g++ -I. -g3 -std=c++14 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o -lasound -lsndfile -pthread -lmysqlcppconn
 
 clean:
 	rm *.o wicctl wic_host 

@@ -15,9 +15,9 @@ public:
 	{
 		alsa::pcm::pcm_t pcm;
 
-		uint16_t *buffer;
+		int16_t *buffer;
 
-		uint16_t *sbuffer;
+		int16_t *sbuffer;
 
 		uint8_t device;
 
@@ -32,10 +32,10 @@ public:
 		struct stream_type
 		{
 			uint8_t channel;
-			std::istream &stream;
-			void (*callback)(std::istream&);
+			std::basic_istream<int16_t> &stream;
+			void (*callback)(std::basic_istream<int16_t>&);
 
-			stream_type(uint8_t pchannel, std::istream &pstream, void(*pcallback)(std::istream&));
+			stream_type(uint8_t pchannel, std::basic_istream<int16_t> &pstream, void(*pcallback)(std::basic_istream<int16_t>&));
 		};
 
 		typedef std::list<stream_type> streams_type;
@@ -63,7 +63,7 @@ public:
 
 		uint8_t num_channels();
 
-		void play(std::istream &stream, uint8_t channel, void(*callback)(std::istream&));
+		void play(std::basic_istream<int16_t> &stream, uint8_t channel, void(*callback)(std::basic_istream<int16_t>&));
 
 		~player_t();
 	};
@@ -102,7 +102,7 @@ private:
 
 	static cards_by_id_t cards_by_id;
 
-	static void file_play_finish(std::istream &stream);
+	static void file_play_finish(std::basic_istream<int16_t> &stream);
 public:
 
 	static void init();
