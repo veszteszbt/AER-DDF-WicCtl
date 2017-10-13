@@ -81,6 +81,14 @@ alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
 	, disposed(false)
 	, process(&alsa_host::player_t::start,this)
 {
+	
+#ifdef __linux__
+	{
+		std::stringstream s;
+		s << "alsa host " << std::dec << (int)pdevice;
+		pthread_setname_np(process.native_handle(),s.str().c_str());
+	}
+#endif
 	pcm.params.access(SND_PCM_ACCESS_RW_INTERLEAVED);
 	pcm.params.format(SND_PCM_FORMAT_S16_LE);
 	channels = pcm.params.channels_max();
@@ -88,9 +96,16 @@ alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
 
 	int dir = 0;
 	pcm.params.set_rate_near(&rate,&dir);
-	pcm.params.apply();
+	pcm.params.get_period_size_min(&period,&dir);
 	dir = 0;
+	pcm.params.set_period_size(period,dir);
+
+	pcm.params.apply();
+
 	pcm.params.get_period_size(&period,&dir);
+	double period_msec = static_cast<double>(period)*1000/rate;
+
+	std::cout << "\e[37;01m - \e[0malsa host: period for card " << std::dec << (int)device << ": " << period_msec << " msec" << std::endl;
 
 	const unsigned l = period*channels;
 	buffer = new uint16_t[l];
@@ -130,7 +145,6 @@ alsa_host::alsa_card_t::alsa_card_t(int pid)
 	, hwid(ll_get_hwid(pid))
 	
 {
-	// collect information about sound card
 	snd_ctl_t *ctl;
 
 	if(snd_ctl_open(&ctl,hwid.c_str(),0))
@@ -138,15 +152,6 @@ alsa_host::alsa_card_t::alsa_card_t(int pid)
 		std::cout << "\e[31;01m - \e[0malsa host: error obtaining ctl for sound card #" << id << std::endl;
 		return;
 	}
-
-	snd_ctl_card_info_t *info;
-	snd_ctl_card_info_malloc(&info);
-
-	snd_ctl_card_info(ctl,info);
-
-	//std::cout << "Components: " << snd_ctl_card_info_get_components(info) << std::endl;
-
-	snd_ctl_card_info_free(info);
 
 	std::cout << "\e[32;01m - \e[0malsa host: registered sound card #" << id << " - " << name << " ("<<longname<<")" << std::endl;
 	_player = new player_t(id);

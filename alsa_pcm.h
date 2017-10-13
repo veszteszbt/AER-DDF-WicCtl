@@ -106,6 +106,15 @@ namespace pcm {
 		void get_period_size(snd_pcm_uframes_t *v, int *dir)
 		{ get(snd_pcm_hw_params_get_period_size,v,dir); }
 
+		void get_period_size_min(snd_pcm_uframes_t *v, int *dir)
+		{ get(snd_pcm_hw_params_get_period_size_min,v,dir); }
+
+		void get_period_size_max(snd_pcm_uframes_t *v, int *dir)
+		{ get(snd_pcm_hw_params_get_period_size_max,v,dir); }
+
+		void set_period_size(snd_pcm_uframes_t v, int dir)
+		{ set(snd_pcm_hw_params_set_period_size,v,dir); }
+
 		void apply()
 		{ set(snd_pcm_hw_params); }
 
