@@ -1,16 +1,24 @@
 #ifndef PICTURE
 #define PICTURE
-#include <Imlib2.h>
-#include "color.h""
-//#include <cstdint> already included in color.h ??
+#include <stdio.h>
+extern "C"
+{
+	#include <libavcodec/avcodec.h>
+	#include <libavformat/avformat.h>
+	#include <libswscale/swscale.h>
+}
+#include <vector>
+#include "color.h"
 
 struct picture 
 {
 	int width;
 	int height;
-	DATA32* data;
+	AVFrame* data; //todo: private
+	
 
-	picture(const std::string &path) {
+	
+	/*picture(const std::string &path) {
 		Imlib_Image image;
 		image = imlib_load_image(path.c_str());
 		if (image)
@@ -24,17 +32,23 @@ struct picture
 		{
 			std::cerr << "Error: cannot load image!" << std::endl;
 		}
+	}*/
+	picture(int _width,int _height, AVFrame* frame) : width(_width), height(_height)
+	{
+		data=frame;
+		//std::cout << "width: " << width << "  height: " << height;
 	}
+	
+
 
 	color get(int x, int y) const
 	{
 		color c;
-		uint8_t *p = reinterpret_cast<uint8_t*>(&data[y*width + x]);
-		c.red = p[1];
-		c.green = p[2];
-		c.blue = p[3];
+		uint8_t *p = reinterpret_cast<uint8_t*>(data->data[0]+y*data->linesize[0]+x*3);
+		c.red = p[0];
+		c.green = p[1];
+		c.blue = p[2];
 		return c;
 	}
-
 };
 #endif

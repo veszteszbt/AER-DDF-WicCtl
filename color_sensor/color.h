@@ -1,5 +1,6 @@
 #ifndef COLOR
 #define COLOR
+
 #include <cmath>
 #include <cstdint>
 struct color {
@@ -9,9 +10,9 @@ struct color {
 	bool is_near(color _c, uint8_t _eps)
 	{
 		return
-			((abs(_c.red - red) <= _eps) &&
-			(abs(_c.green - green) <= _eps) &&
-				(abs(_c.blue - blue) <= _eps));
+			((abs((int)_c.red - (int)red) <= (int)_eps) &&
+			(abs((int)_c.green - (int)green) <= (int)_eps) &&
+				(abs((int)_c.blue - (int)blue) <= (int)_eps));
 	}
 };
 
