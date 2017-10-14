@@ -25,7 +25,7 @@ struct color_sensor
 
         bool contains(int _x, int _y) const
         {
-            return (x <= _x && _x < x+h && y <= _y && _y < y+w);
+            return (x <= _x && _x < x+w && y <= _y && _y < y+h);
         }
     };
 
@@ -68,10 +68,6 @@ struct color_sensor
                         totalred[i] += _c.red;
                         totalgreen[i] += _c.green;
                         totalblue[i] += _c.blue;
-                        if (_x==300 && _y==50)
-                        {
-                            std::cout << static_cast<int>(_c.red) << " " << static_cast<int>(_c.green) << " " << static_cast<int>(_c.blue) << std::endl; 
-                        }
                     }
                 }
             }

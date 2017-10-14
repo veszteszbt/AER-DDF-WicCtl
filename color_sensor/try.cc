@@ -8,7 +8,7 @@ int main(int argc, char **argv)
     
     std::vector<color_sensor::area> x = 
     {
-        color_sensor::area(290,40,20,20,color(186,193,192),25)
+        color_sensor::area(0,0,1280,720,color(186,193,192),25)
     };
     color_sensor c(x);
     //picture p("colortest2.png");
