@@ -1,8 +1,8 @@
 #include <alsa_host.h>
-#include <fstream>
+#include <soundstream.h>
 #include <errno.h>
 
-alsa_host::player_t::stream_type::stream_type(uint8_t pchannel, std::istream &pstream, void (*pcallback)(std::istream&))
+alsa_host::player_t::stream_type::stream_type(uint8_t pchannel, std::basic_istream<int16_t> &pstream, void (*pcallback)(std::basic_istream<int16_t>&))
 	: channel(pchannel)
 	, stream(pstream)
 	, callback(pcallback)
@@ -36,8 +36,7 @@ void alsa_host::player_t::start()
 
 	while(!disposed)
 	{
-		const size_t rbytes = period*2;
-		memset(buffer,0,rbytes*channels);
+		memset(buffer,0,period*channels*2);
 		streams_lock.lock();
 /*				while(streams.empty())
 		{
@@ -54,9 +53,9 @@ void alsa_host::player_t::start()
 			stream != streams.end();
 		)
 		{
-			stream->stream.read(reinterpret_cast<char*>(sbuffer),rbytes);
+			stream->stream.read(sbuffer,period);
 			const size_t wbytes = stream->stream.gcount();
-			for(size_t i = 0; i < wbytes/2; ++i)
+			for(size_t i = 0; i < wbytes; ++i)
 				buffer[i*channels+stream->channel] += sbuffer[i];
 
 			if(!stream->stream.good())
@@ -69,7 +68,7 @@ void alsa_host::player_t::start()
 		}
 		streams_lock.unlock();
 
-		uint8_t *p = reinterpret_cast<uint8_t*>(buffer);
+		int16_t *p = buffer;
 
 		for(int size = period; size > 0;)
 		{
@@ -77,7 +76,7 @@ void alsa_host::player_t::start()
 			if(result >= 0)
 			{
 				size -= result;
-				p += result*channels*2;
+				p += result*channels;
 			}
 
 			else switch(result)
@@ -137,15 +136,15 @@ alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
 	std::cout << "\e[37;01m - \e[0malsa host: period for card " << std::dec << (int)device << ": " << period_msec << " msec" << std::endl;
 
 	const unsigned l = period*channels;
-	buffer = new uint16_t[l];
-	sbuffer = new uint16_t[period];
+	buffer = new int16_t[l];
+	sbuffer = new int16_t[period];
 	notify();
 }
 
 uint8_t alsa_host::player_t::num_channels()
 { return channels; }
 
-void alsa_host::player_t::play(std::istream &stream, uint8_t channel, void (*callback)(std::istream&))
+void alsa_host::player_t::play(std::basic_istream<int16_t> &stream, uint8_t channel, void (*callback)(std::basic_istream<int16_t>&))
 {
 	streams_lock.lock();
 	streams.push_back(stream_type(channel,stream,callback));
@@ -258,12 +257,11 @@ bool alsa_host::exists(uint8_t card_id, uint8_t channel_id)
 	return (card != cards_by_id.end() && card->second->player().num_channels() > channel_id);
 }
 
-void alsa_host::file_play_finish(std::istream &stream)
+void alsa_host::file_play_finish(std::basic_istream<int16_t> &stream)
 {
-	std::ifstream *f = dynamic_cast<std::ifstream*>(&stream);
+	isoundstream *f = dynamic_cast<isoundstream*>(&stream);
 	if(!f)
 		return;
-	f->close();
 	delete f;
 }
 
@@ -273,9 +271,10 @@ void alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_i
 	if(card == cards_by_id.end())
 	{
 		std::cout << "\e[31;01m - \e[0malsa host: play error: invalid card id `" << (int)card_id << "' specified" << std::endl;
+		return;
 	}
 	
-	std::ifstream *f = new std::ifstream(file.c_str());
+	isoundstream *f = new isoundstream(file);
 	card->second->player().play(*f,channel_id,file_play_finish);
 }
 alsa_host::cards_by_id_t alsa_host::cards_by_id;
