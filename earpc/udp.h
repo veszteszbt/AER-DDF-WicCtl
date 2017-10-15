@@ -128,7 +128,7 @@ namespace earpc
 			unsigned l = sizeof(struct sockaddr_in);
 
 #ifdef __linux__
-			const int rv = recvfrom(sock, buffer, size, 0, (struct sockaddr*)&x, &l);
+			const int rv = recvfrom(sock, buffer, size, 0, (struct sockaddr*)&x, (socklen_t*)&l);
 #elif defined(_MSC_VER) || defined(__MINGW32__)
 			const int rv = recvfrom(sock, reinterpret_cast<char*>(buffer), size, 0, (struct sockaddr*)&x, reinterpret_cast<signed int*>(&l));
 #endif

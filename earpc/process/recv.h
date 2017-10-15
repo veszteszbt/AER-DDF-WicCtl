@@ -160,8 +160,9 @@ namespace process
 					h.call_id,
 					command_id_nak
 				);
-				std::cout << "\e[31;01m - \e[0mearpc recv process: dropping due to argument size mismatch "
-					<< std::hex << h.call_id
+				std::cout << "\e[31;01m - \e[0mearpc recv process: dropping due to argument size mismatch; expected " <<
+					std::dec << i->arg_size << ", received " << (size-sizeof(earpc_header_type)) << "; call id is " <<
+					std::hex << h.call_id
 				<<std::endl;
 				return;
 			}
