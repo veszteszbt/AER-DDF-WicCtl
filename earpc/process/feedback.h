@@ -69,9 +69,6 @@ namespace process
 			command_id_type feedback
 		)
 		{
-//			std::cout <<
-//				"\e[37;01m - \e[0mearpc feedback process: notified\n";
-
 			queue_lock.lock();
 			queue.push_back(queue_record(ip,port,call_id,feedback));
 			queue_lock.unlock();
@@ -82,26 +79,17 @@ namespace process
 
 		static void start()
 		{
-//			std::cout <<
-//				"\e[37;01m - \e[0mearpc feedback process: initializing\n";
 			std::cout.flush();
 			while(1)
 			{
 				queue_lock.lock();
 				if(!queue.size())
 				{
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc feedback process: nothing to do; "
-//						"suspending until next notify\n";
 					queue_lock.unlock();
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait(ul);
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc feedback process: resuming\n";
-//					continue;
+					continue;
 				}
-//				std::cout <<
-//					"\e[37;01m - \e[0mearpc feedback process: doing send operation\n";
 
 				for(
 					typename queue_type::iterator i = queue.begin();

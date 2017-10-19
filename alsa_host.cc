@@ -275,6 +275,11 @@ void alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_i
 	}
 	
 	isoundstream *f = new isoundstream(file);
+	if(!*f)
+	{
+		delete f;
+		return; 
+	}
 	card->second->player().play(*f,channel_id,file_play_finish);
 }
 alsa_host::cards_by_id_t alsa_host::cards_by_id;
