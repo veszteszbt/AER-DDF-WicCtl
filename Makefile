@@ -13,6 +13,8 @@ endif
 
 ifeq ($(PLATFORM),LINUX)
 
+LIBS=-pthread -lmysqlcppconn -lasound -lsndfile -lavformat -lavcodec -lswresample -lswscale -lavutil -lm
+
 all: wicctl wic_host
 
 wicctl: wicctl.cc wicctl.h
@@ -25,7 +27,7 @@ wicctl: wicctl.cc wicctl.h
 	g++ -I. -g3 -std=c++14 -fdiagnostics-color -c $<
 
 wic_host: wic_host.o alsa_host.o
-	g++ -I. -g3 -std=c++14 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o -lasound -lsndfile -pthread -lmysqlcppconn
+	g++ -I. -g3 -std=c++14 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o $(LIBS)
 
 clean:
 	rm *.o wicctl wic_host 

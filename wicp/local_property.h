@@ -41,8 +41,9 @@ namespace wicp
 
 		typedef typename env::command_id_type         command_id_type;
 
+	public:
 		typedef typename env::value_type              value_type;
-
+	private:
 		typedef typename env::remotes_type            remotes_type;
 
 		typedef typename env::remote_record           remote_record;

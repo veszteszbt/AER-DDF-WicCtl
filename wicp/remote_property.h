@@ -39,8 +39,6 @@ namespace wicp
 
 		typedef typename env::command_id_type         command_id_type;
 
-		typedef typename env::value_type              value_type;
-
 		typedef typename env::remote_record           remote_record;
 
 		typedef typename env::history_record          history_record;
@@ -50,6 +48,8 @@ namespace wicp
 		typedef typename env::rpc::template call_handle<bool>  notify_call_handle_type;
 
 	public:
+		typedef typename env::value_type              value_type;
+
 		constexpr static sched::listener &on_change = env::on_change;
 
 	private:
