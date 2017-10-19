@@ -131,9 +131,9 @@ namespace earpc
 		typedef typename env_recv::command_id_type command_id_type;
 	private:
 
-		static std::thread *main_process;
-
 		static std::ifstream urandom;
+
+		static std::thread *master_process;
 
 		static void start()
 		{
@@ -170,7 +170,6 @@ namespace earpc
 			);
 			return r;
 		}
-
 
 	public:
 		template<typename Treturn>
@@ -241,17 +240,19 @@ namespace earpc
 
 		static void init()
 		{
-			main_process = new std::thread(start);
+			std::cout << "size of header is " << sizeof(typename env_base::earpc_header_type) << std::endl;
+			master_process = new std::thread(start);
 
 #ifdef __linux__			
-			pthread_setname_np(main_process->native_handle(),"earpc master");
+			pthread_setname_np(master_process->native_handle(),"earpc master");
 #endif
+			
 		}
 
 		static void uninit()
 		{
-			main_process->join();
-			delete main_process;
+			master_process->join();
+			delete master_process;
 		}
 	};
 
@@ -259,6 +260,6 @@ namespace earpc
 	std::ifstream earpc<c>::urandom("/dev/urandom");
 
 	template<typename c>
-	std::thread *earpc<c>::main_process;
+	std::thread *earpc<c>::master_process;
 }
 #endif

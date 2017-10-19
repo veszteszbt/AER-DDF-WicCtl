@@ -32,6 +32,8 @@ namespace wic
 
 		static volatile bool running;
 
+		static volatile bool silent;
+
 		static typename clock::time_point start_time;
 
 		static std::mutex lock;
@@ -68,17 +70,30 @@ namespace wic
 					lock.unlock();
 					continue;
 				}
+				if(silent)
+				{
+					silent = false;
+					lock.unlock();
+					continue;
+				}
 				start_time = t;
 				lock.unlock();
 				property::value(property::value()+1);
 
 			}
 		}
+
+		static void notify()
+		{
+			std::lock_guard<std::mutex> lg(suspend_lock);
+			suspend_cv.notify_one();
+		}
 	public:
 		static void init()
 		{
 			property::init();
 			running = false;
+			silent = false;
 			proc = new std::thread(thread_start);
 		}
 
@@ -86,6 +101,19 @@ namespace wic
 		{
 			delete proc;
 			property::uninit();
+		}
+
+		static uint64_t value()
+		{ return property::value(); }
+
+		static void value(uint64_t v)
+		{
+			property::value(v);
+			lock.lock();
+			silent = true;
+			start_time = clock::now();
+			lock.unlock();
+			notify();
 		}
 
 		static void start()
@@ -99,12 +127,11 @@ namespace wic
 			running = true;
 			start_time = clock::now();
 			lock.unlock();
-			std::lock_guard<std::mutex> lg(suspend_lock);
-			suspend_cv.notify_one();
+			notify();
 		}
 
 		static void reset()
-		{ property::value(0); }
+		{ value(0); }
 
 		static void stop()
 		{
@@ -120,11 +147,6 @@ namespace wic
 			suspend_cv.notify_one();
 		}
 
-		static uint64_t value()
-		{ return property::value(); }
-
-		static void value(uint64_t v)
-		{ property::value(v); }
 
 		constexpr static sched::listener  &on_change = property::on_change;
 	};
@@ -134,6 +156,9 @@ namespace wic
 
 	template<typename c>
 	volatile bool timer<c>::running;
+
+	template<typename c>
+	volatile bool timer<c>::silent;
 
 	template<typename c>
 	typename timer<c>::clock::time_point timer<c>::start_time;

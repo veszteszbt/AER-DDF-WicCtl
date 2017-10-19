@@ -13,7 +13,7 @@ endif
 
 ifeq ($(PLATFORM),LINUX)
 
-LIBS=-pthread -lmysqlcppconn -lasound -lavformat -lavcodec -lswresample -lswscale -lavutil -lm
+LIBS=-pthread -lmysqlcppconn -lasound -lsndfile -lavformat -lavcodec -lswresample -lswscale -lavutil -lm
 
 all: wicctl wic_host
 
@@ -43,7 +43,7 @@ wicctl:
 	$(error wicctl cannot be built for platform $(PLATFORM))
 
 wic_host: wic_host.cc
-	g++ -I. \
+	g++ -DSQL_EXECUTOR -I. \
 	-I"C:\Program Files\MySQL\MySQL Connector C++ 1.1.9\include" \
 	-g3 \
 	-std=c++14 \

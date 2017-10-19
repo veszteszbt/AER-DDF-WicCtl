@@ -7,7 +7,9 @@
 # include <list>
 # include <iomanip>
 # include <chrono>
+#ifdef LOG_SQL
 # include <process/sql_executor.h>
+#endif
 #ifdef _MSC_VER
 	#undef max
 	#undef min
@@ -54,6 +56,8 @@ namespace process
 				time = r.time;
 				history_lock.unlock();
 
+#ifdef LOG_SQL
+
 				std::stringstream s;
 				s << "INSERT INTO `wic`.`log_wicp` VALUES (" << 
 					std::chrono::time_point_cast<std::chrono::nanoseconds>(r.time).time_since_epoch().count() << ',' <<
@@ -66,6 +70,7 @@ namespace process
 					
 				s << "');";
 				::process::sql_executor::notify(s.str());
+#endif
 
 			}
 			else

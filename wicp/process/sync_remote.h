@@ -21,6 +21,8 @@ namespace process
 
 		constexpr static history_type         &history = TEnv::history;
 
+		constexpr static std::mutex           &history_lock = TEnv::history_lock;
+
 		static void call_finish(net::ipv4_address ip, command_id_type cmd, const bool *v)
 		{
 			if(remote.ip == ip)
@@ -58,12 +60,15 @@ namespace process
 
 		static void notify()
 		{
+			history_lock.lock();
 			if(history.empty())
 			{
 //				std::cout << "\e[37;01m - \e[0mwicp sync remote: nothing to do; suspending until next notify" << std::endl;
+				history_lock.unlock();
 				return;
 			}
 
+			history_lock.unlock();
 			TEnv::sync_remote(remote,types::function::set,call_finish);
 		}
 	};
