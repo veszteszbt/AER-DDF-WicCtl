@@ -1,6 +1,11 @@
+#include <ctgmath>
 #include <alsa_host.h>
 #include <soundstream.h>
 #include <errno.h>
+
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
 
 alsa_host::player_t::stream_type::stream_type(uint8_t pchannel, std::basic_istream<int16_t> &pstream, void (*pcallback)(std::basic_istream<int16_t>&))
 	: channel(pchannel)
@@ -56,7 +61,20 @@ void alsa_host::player_t::start()
 			stream->stream.read(sbuffer,period);
 			const size_t wbytes = stream->stream.gcount();
 			for(size_t i = 0; i < wbytes; ++i)
-				buffer[i*channels+stream->channel] += sbuffer[i];
+			{
+				const int16_t a = buffer[i*channels+stream->channel];
+				const int16_t b = sbuffer[i];
+
+				buffer[i*channels+stream->channel] = 
+					a < 0 && b < 0
+						? ((int)a + (int)b) - (((int)a * (int)b)/INT16_MIN)
+						: (
+					a > 0 && b > 0
+						? ((int)a + (int)b) - (((int)a * (int)b)/INT16_MAX)
+						: a + b
+					);
+
+			}
 
 			if(!stream->stream.good())
 			{
@@ -110,13 +128,18 @@ alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
 	, process(&alsa_host::player_t::start,this)
 {
 	
-#ifdef __linux__
 	{
+#ifdef __linux__
 		std::stringstream s;
 		s << "alsa host " << std::dec << (int)pdevice;
+		sched_param p;
+		int policy;
 		pthread_setname_np(process.native_handle(),s.str().c_str());
-	}
 #endif
+		pthread_getschedparam(process.native_handle(),&policy,&p);
+		p.sched_priority = sched_get_priority_max(SCHED_RR);
+		pthread_setschedparam(process.native_handle(),SCHED_RR,&p);
+	}
 	pcm.params.access(SND_PCM_ACCESS_RW_INTERLEAVED);
 	pcm.params.format(SND_PCM_FORMAT_S16_LE);
 	channels = pcm.params.channels_max();
