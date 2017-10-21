@@ -151,8 +151,8 @@ namespace process
 			}
 
 
-			if(i->arg_size != size-sizeof(earpc_header_type))
-			{
+			if(i->arg_size != size-sizeof(earpc_header_type) && i->arg_size!=0)
+			{ 
 				buf_command::unlock();
 				proc_feedback::notify(
 					ip,
@@ -165,6 +165,7 @@ namespace process
 					std::hex << h.call_id
 				<<std::endl;
 				return;
+				
 			}
 
 			buf_incoming_call::lock();
