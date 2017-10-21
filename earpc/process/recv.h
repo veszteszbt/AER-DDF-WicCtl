@@ -151,7 +151,7 @@ namespace process
 			}
 
 
-			if(i->arg_size != size-sizeof(earpc_header_type) && i->arg_size!=0)
+			if(i->arg_size != size-sizeof(earpc_header_type) && i->arg_size!=0xffff)
 			{ 
 				buf_command::unlock();
 				proc_feedback::notify(
@@ -238,10 +238,23 @@ namespace process
 //			std::cout << "\e[37;01m - \e[0mearpc recv process: serving call " << std::hex << h.call_id << std::endl;
 			const typename buf_command::callback_type f = i->callback;
 			buf_command::unlock();
-			f(
-				call_handle_base(ip,port,h.call_id),
-				buffer+sizeof(earpc_header_type)
-			);
+
+			if(i->arg_size!=0xffff)
+				f(
+					call_handle_base(ip,port,h.call_id),
+					buffer+sizeof(earpc_header_type)
+				);
+			else
+			{
+				std::string *x = new std::string(
+					reinterpret_cast<char*>(buffer+sizeof(earpc_header_type)),
+					size-sizeof(earpc_header_type)
+				);
+
+				f(call_handle_base(ip,port,h.call_id),x);
+
+				delete x;
+			}
 		}
 
 		static void process_ack(net::ipv4_address ip, uint16_t port, uint16_t size)
@@ -373,7 +386,7 @@ namespace process
 		}
 
 	public:
-		template<typename Treturn>
+		template<typename Treturn,bool dummy = false>
 		struct call_handle : public call_handle_base
 		{
 			void respond(const Treturn &ret)
@@ -387,6 +400,32 @@ namespace process
 					&ret,sizeof(Treturn)
 				);
 			}
+
+
+			call_handle(
+				net::ipv4_address i,
+				uint16_t p,
+				call_id_type cid
+			)
+				: call_handle_base(i,p,cid)
+			{}
+		};
+		
+		template<bool dummy>
+		struct call_handle<std::string,dummy> : public call_handle_base
+		{
+			void respond(const std::string &ret)
+			{
+//				std::cout << "\e[37;01m - \e[0mearpc return: notifying send process" << std::endl;
+				proc_send::notify(
+					call_handle_base::ip,
+					call_handle_base::port,
+					call_handle_base::call_id,
+					command_id_return,
+					ret.c_str(),ret.size()
+				);
+			}
+
 
 			call_handle(
 				net::ipv4_address i,

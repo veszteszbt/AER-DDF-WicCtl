@@ -197,7 +197,7 @@ namespace earpc
 		{
 			env_recv::buf_command::lock();
 			env_recv::buf_command::push(
-				id,0,sizeof(Treturn),
+				id,0xffff,sizeof(Treturn),
 				reinterpret_cast<typename env_recv::buf_command::callback_type>(callback)
 			);
 			env_recv::buf_command::unlock();
@@ -211,7 +211,7 @@ namespace earpc
 		{
 			env_recv::buf_command::lock();
 			env_recv::buf_command::push(
-				id,sizeof(Targ),0,
+				id,sizeof(Targ),0xffff,
 				reinterpret_cast<typename env_recv::buf_command::callback_type>(callback)
 			);
 			env_recv::buf_command::unlock();
@@ -225,7 +225,7 @@ namespace earpc
 		{
 			env_recv::buf_command::lock();
 			env_recv::buf_command::push(
-				id,0,0,
+				id,0xffff,0xffff,
 				reinterpret_cast<typename env_recv::buf_command::callback_type>(callback)
 			);
 			env_recv::buf_command::unlock();
@@ -267,6 +267,7 @@ namespace earpc
 			void(*c)(net::ipv4_address,command_id_type,const std::string&)
 		)
 		{
+			std::cout << "calling Targ,string "<< std::endl;
 			buf_outgoing_call::lock();
 			buf_incoming_call::lock();
 			call_id_type cid = generate_call_id(ip);
@@ -288,6 +289,7 @@ namespace earpc
 			void(*c)(net::ipv4_address,command_id_type,const Treturn*)
 		)
 		{
+			std::cout << "calling string,Treturn "<< std::endl;
 			buf_outgoing_call::lock();
 			buf_incoming_call::lock();
 			call_id_type cid = generate_call_id(ip);
@@ -308,6 +310,7 @@ namespace earpc
 			void(*c)(net::ipv4_address,command_id_type,const std::string&)
 		)
 		{
+			std::cout << "calling string,string "<< std::endl;
 			buf_outgoing_call::lock();
 			buf_incoming_call::lock();
 			call_id_type cid = generate_call_id(ip);

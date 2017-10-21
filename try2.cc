@@ -29,12 +29,12 @@ void asd(asd_handle_type a,
     const std::string& b
 )
 {
-    a.respond(b + " hello a");
+	a.respond("response to " + b);
 }
 
 void visszater(net::ipv4_address,wicc_earpc::command_id_type,const std::string& xx){
     if(&xx)
-        std::cout << xx << std::endl;
+	std::cout << "received " << xx << std::endl;
     else
         std::cout << "(error)" << std::endl;
 }
@@ -43,14 +43,18 @@ int main()
 {
     wicc_earpc::init();
     wicc_earpc::set_command(14, asd);
-    wicc_earpc::call(
-        net::ipv4_address(127,0,0,1),
-        14,
-        std::string("hello string"),
-        visszater
-    );
+
     std::string x;
     while(true)
+    {
         std::cin >> x;
+
+    wicc_earpc::call(
+        net::ipv4_address(192,168,1,46),
+        14,
+        std::string("hello string from 55"),
+        visszater
+    );
+    }
     return 0;
 }
