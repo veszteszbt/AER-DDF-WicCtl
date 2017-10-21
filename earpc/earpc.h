@@ -190,6 +190,48 @@ namespace earpc
 			env_recv::buf_command::unlock();
 		}
 
+		template<typename Treturn>//
+		static void set_command(
+			command_id_type id,
+			void(*callback)(call_handle<Treturn>,const std::string&)
+		)
+		{
+			env_recv::buf_command::lock();
+			env_recv::buf_command::push(
+				id,0xffff,sizeof(Treturn),
+				reinterpret_cast<typename env_recv::buf_command::callback_type>(callback)
+			);
+			env_recv::buf_command::unlock();
+		}
+
+		template<typename Targ>//
+		static void set_command(
+			command_id_type id,
+			void(*callback)(call_handle<std::string>,const Targ*)
+		)
+		{
+			env_recv::buf_command::lock();
+			env_recv::buf_command::push(
+				id,sizeof(Targ),0xffff,
+				reinterpret_cast<typename env_recv::buf_command::callback_type>(callback)
+			);
+			env_recv::buf_command::unlock();
+		}
+
+		//
+		static void set_command(
+			command_id_type id,
+			void(*callback)(call_handle<std::string>,const std::string&)
+		)
+		{
+			env_recv::buf_command::lock();
+			env_recv::buf_command::push(
+				id,0xffff,0xffff,
+				reinterpret_cast<typename env_recv::buf_command::callback_type>(callback)
+			);
+			env_recv::buf_command::unlock();
+		}
+
 		static void clear_command(command_id_type id)
 		{
 			typename env_recv::buf_command::iterator i = env_recv::buf_command::find(id);
@@ -247,6 +289,55 @@ namespace earpc
 				log::end;
 
 			proc_send::notify(ip,1234,cid,cmd,&arg,sizeof(Targ));
+			proc_expiry::notify();
+		}
+
+		template<typename Treturn>
+		static void call(
+			net::ipv4_address ip,
+			command_id_type cmd,
+			const std::string &arg,
+			void(*c)(net::ipv4_address,command_id_type,const Treturn*)
+		)
+		{
+			buf_outgoing_call::lock();
+			buf_incoming_call::lock();
+			call_id_type cid = generate_call_id(ip);
+			buf_outgoing_call::push(
+				ip,cmd,cid,arg.c_str(),arg.size(),c
+			);
+			buf_incoming_call::unlock();
+			buf_outgoing_call::unlock();
+			log(log::debug,"earpc.api.call") << "initiating send" << std::endl <<
+				"command: " << std::hex << cmd << std::endl <<
+				" target: " << (std::string)ip << std::endl <<
+				"call id: " << std::hex << cid << std::endl <<
+				log::end;
+			proc_send::notify(ip,1234,cid,cmd,arg.c_str(),arg.size());
+			proc_expiry::notify();
+		}
+
+		static void call(
+			net::ipv4_address ip,
+			command_id_type cmd,
+			const std::string &arg,
+			void(*c)(net::ipv4_address,command_id_type,const std::string&)
+		)
+		{
+			buf_outgoing_call::lock();
+			buf_incoming_call::lock();
+			call_id_type cid = generate_call_id(ip);
+			buf_outgoing_call::push(
+				ip,cmd,cid,arg.c_str(),arg.size(),c
+			);
+			buf_incoming_call::unlock();
+			buf_outgoing_call::unlock();
+			log(log::debug,"earpc.api.call") << "initiating send" << std::endl <<
+				"command: " << std::hex << cmd << std::endl <<
+				" target: " << (std::string)ip << std::endl <<
+				"call id: " << std::hex << cid << std::endl <<
+				log::end;
+			proc_send::notify(ip,1234,cid,cmd,arg.c_str(),arg.size());
 			proc_expiry::notify();
 		}
 
