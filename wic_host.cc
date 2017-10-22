@@ -1,22 +1,25 @@
 #include <iostream>
+#include <string>
 #include <thread>
 #include <mutex>
 #include <list>
 #include <condition_variable>
 #include <cstdint>
-#include <audio.h>
-#include <audio_effect.h>
 #include <earpc/udp.h>
 #include <earpc/earpc.h>
 #include <net/algorithm.h>
 #include <wicp/local_property.h>
 #include <wicp/remote_property.h>
-#include <string>
+#include <property_config_base.h>
+#include <process/sql_executor.h>
+
 #include <device_state.h>
 #include <game_event.h>
+
+#include <audio.h>
+#include <audio_effect.h>
+#include <audio_speech.h>
 #include <timer.h>
-#include <process/sql_executor.h>
-#include <property_config_base.h>
 
 
 
@@ -109,7 +112,7 @@ namespace gmclient_test
 			struct speaker_1_config
 			{
                 		static const uint8_t cfg_device = 0;
-				static const uint8_t cfg_channel = 1;
+				static const uint8_t cfg_channel = 0;
 			};
 			typedef wic::audio<speaker_1_config> speaker_1;
 
@@ -118,6 +121,117 @@ namespace gmclient_test
 				struct chord_config
 				{
 					typedef speaker_1 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// Speaker 2
+			struct speaker_2_config
+			{
+                		static const uint8_t cfg_device = 0;
+				static const uint8_t cfg_channel = 1;
+			};
+			typedef wic::audio<speaker_2_config> speaker_2;
+
+			namespace speaker_2_content
+			{
+				struct chord_config
+				{
+					typedef speaker_2 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// Speaker 3
+			struct speaker_3_config
+			{
+                		static const uint8_t cfg_device = 0;
+				static const uint8_t cfg_channel = 2;
+			};
+			typedef wic::audio<speaker_3_config> speaker_3;
+
+			namespace speaker_3_content
+			{
+				struct chord_config
+				{
+					typedef speaker_3 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+				struct test_speech_config
+				{
+					typedef speaker_3 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/1";
+
+					static const uint32_t cfg_class_id = 0x100070;
+
+					static const uint32_t cfg_member_id = 0x20;
+				};
+				typedef wic::audio_speech<test_speech_config> test_speech;
+
+			}
+
+			/// Speaker 4
+			struct speaker_4_config
+			{
+                		static const uint8_t cfg_device = 0;
+				static const uint8_t cfg_channel = 3;
+			};
+			typedef wic::audio<speaker_4_config> speaker_4;
+
+			namespace speaker_4_content
+			{
+				struct chord_config
+				{
+					typedef speaker_4 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// Speaker 5
+			struct speaker_5_config
+			{
+                		static const uint8_t cfg_device = 0;
+				static const uint8_t cfg_channel = 4;
+			};
+			typedef wic::audio<speaker_5_config> speaker_5;
+
+			namespace speaker_5_content
+			{
+				struct chord_config
+				{
+					typedef speaker_5 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// Speaker 6
+			struct speaker_6_config
+			{
+                		static const uint8_t cfg_device = 0;
+				static const uint8_t cfg_channel = 5;
+			};
+			typedef wic::audio<speaker_6_config> speaker_6;
+
+			namespace speaker_6_content
+			{
+				struct chord_config
+				{
+					typedef speaker_6 cfg_audio;
 
 					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
 				};
@@ -161,7 +275,7 @@ namespace gmclient_test
 
 				if(true && ( fr::value() ))
 				{
-					game_event(1,1,7).propagate();
+					game_event(1,1,13).propagate();
 					(void)0; { 
         gs::value(2);
 	tmr::start();
@@ -176,7 +290,7 @@ namespace gmclient_test
 
 				if(true && ( !fr::value() ))
 				{
-					game_event(1,1,8).propagate();
+					game_event(1,1,14).propagate();
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
@@ -191,7 +305,7 @@ namespace gmclient_test
 
 				if(true && ( tmr::value() ))
 				{
-					game_event(1,1,9).propagate();
+					game_event(1,1,15).propagate();
 					(void)0; { fr::value(false); }
 				}
 			}
@@ -203,7 +317,7 @@ namespace gmclient_test
 
 				if(true && ( fr::value() ))
 				{
-					game_event(1,1,10).propagate();
+					game_event(1,1,16).propagate();
 					(void)0; { 
         gs::value(2);
 	tmr::start();
@@ -218,7 +332,7 @@ namespace gmclient_test
 
 				if(true && ( !fr::value() ))
 				{
-					game_event(1,1,11).propagate();
+					game_event(1,1,17).propagate();
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
@@ -233,7 +347,7 @@ namespace gmclient_test
 
 				if(true && ( tmr::value() ))
 				{
-					game_event(1,1,12).propagate();
+					game_event(1,1,18).propagate();
 					(void)0; { fr::value(false); }
 				}
 			}
@@ -247,7 +361,7 @@ namespace gmclient_test
 
 				if(true)
 				{
-					game_event(1,1,13).propagate();
+					game_event(1,1,19).propagate();
 					(void)0; { 
       	chord::play();
       	switch(gs::value())
@@ -286,8 +400,20 @@ namespace gmclient_test
 
 				if(true)
 				{
-					game_event(1,1,6).propagate();
+					game_event(1,1,12).propagate();
 					(void)0; { gt::value(tmr::value()); }
+				}
+			}
+			void speech_test()
+			{
+			typedef speaker_3_content::test_speech p;
+
+				if(true)
+				{
+					game_event(1,1,11).propagate();
+					(void)0; { 
+      	std::cout << "\e[32;01mspeech " << (p::playing()?"playing":"finished") << "\e[0m" << std::endl;
+       }
 				}
 			}
 
@@ -304,10 +430,27 @@ namespace gmclient_test
 			freezetimer5::on_change += freeze_5_timeout;
 			gmclient::gamestate::on_change += game_state_changed;
 			gametimer::on_change += game_timer_changed;
+			speaker_3_content::test_speech::playing::on_change += speech_test;
 
 
 			gmclient_test::test_room_1::speaker_1::init();
 			speaker_1_content::chord::init();
+
+			gmclient_test::test_room_1::speaker_2::init();
+			speaker_2_content::chord::init();
+
+			gmclient_test::test_room_1::speaker_3::init();
+			speaker_3_content::chord::init();
+			speaker_3_content::test_speech::init();
+
+			gmclient_test::test_room_1::speaker_4::init();
+			speaker_4_content::chord::init();
+
+			gmclient_test::test_room_1::speaker_5::init();
+			speaker_5_content::chord::init();
+
+			gmclient_test::test_room_1::speaker_6::init();
+			speaker_6_content::chord::init();
 
 
 			freezetimer1::init();
@@ -326,6 +469,7 @@ namespace gmclient_test
 			freezetimer5::on_change -= freeze_5_timeout;
 			gmclient::gamestate::on_change -= game_state_changed;
 			gametimer::on_change -= game_timer_changed;
+			speaker_3_content::test_speech::playing::on_change -= speech_test;
 
 			gmclient::uninit();
 
@@ -333,6 +477,22 @@ namespace gmclient_test
 			speaker_1_content::chord::uninit();
 
 			gmclient_test::test_room_1::speaker_1::uninit();
+			speaker_2_content::chord::uninit();
+
+			gmclient_test::test_room_1::speaker_2::uninit();
+			speaker_3_content::chord::uninit();
+			speaker_3_content::test_speech::uninit();
+
+			gmclient_test::test_room_1::speaker_3::uninit();
+			speaker_4_content::chord::uninit();
+
+			gmclient_test::test_room_1::speaker_4::uninit();
+			speaker_5_content::chord::uninit();
+
+			gmclient_test::test_room_1::speaker_5::uninit();
+			speaker_6_content::chord::uninit();
+
+			gmclient_test::test_room_1::speaker_6::uninit();
 
 			freezetimer1::init();
 			freezetimer5::init();
@@ -362,6 +522,40 @@ int main()
 		std::cin >> x;
 		if(x == "exit")
 			break;
+		else if(x=="start")
+                        gmclient_test::test_room_1::speaker_3_content::test_speech::playing(true);
+                else if(x=="stop")
+                        gmclient_test::test_room_1::speaker_3_content::test_speech::playing(false);
+		else if(x == "1")
+			gmclient_test::test_room_1::speaker_1_content::chord::play();
+		else if(x == "2")
+			gmclient_test::test_room_1::speaker_2_content::chord::play();
+		else if(x == "3")
+			gmclient_test::test_room_1::speaker_3_content::chord::play();
+		else if(x == "4")
+			gmclient_test::test_room_1::speaker_4_content::chord::play();
+		else if(x == "5")
+			gmclient_test::test_room_1::speaker_5_content::chord::play();
+		else if(x == "6")
+			gmclient_test::test_room_1::speaker_6_content::chord::play();
+		else if(x == "hallo")
+			gmclient_test::test_room_1::speaker_6::play("/home/torokg/work/escape/audio/test/1");
+		else if(x == "delay")
+		{
+			int delay;
+			std::cin >> delay;
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+		}
+
+		else if(x == "gamestate")
+		{
+			int state;
+			std::cin >> state;
+			gmclient_test::test_room_1::gmclient::gamestate::value(state);
+
+		}
+
 	}
 
 	gmclient_test::test_room_1::init();

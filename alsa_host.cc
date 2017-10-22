@@ -7,12 +7,17 @@ template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
 
-alsa_host::player_t::stream_type::stream_type(uint8_t pchannel, std::basic_istream<int16_t> &pstream, void (*pcallback)(std::basic_istream<int16_t>&))
+alsa_host::player_t::stream_type::stream_type(
+	uint8_t pchannel,
+	std::basic_istream<int16_t> &pstream,
+	std::function<void()> pcallback
+)
 	: channel(pchannel)
 	, stream(pstream)
 	, callback(pcallback)
 {}
-std::string alsa_host::player_t::itos(uint8_t v)
+
+std::string alsa_host::player_t::hwname(uint8_t v)
 {
 	std::stringstream s;
 	s << "hw:" << static_cast<unsigned>(v);
@@ -78,7 +83,8 @@ void alsa_host::player_t::start()
 
 			if(!stream->stream.good())
 			{
-				stream->callback(stream->stream);
+				// TODO: do on worker thread
+				stream->callback();
 				stream = streams.erase(stream);
 			}
 			else
@@ -121,7 +127,7 @@ void alsa_host::player_t::start()
 
 
 alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
-	: pcm(itos(pdevice).c_str(),SND_PCM_STREAM_PLAYBACK,0)
+	: pcm(hwname(pdevice).c_str(),SND_PCM_STREAM_PLAYBACK,0)
 	, device(pdevice)
 	, rate(prate)
 	, disposed(false)
@@ -167,7 +173,7 @@ alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
 uint8_t alsa_host::player_t::num_channels()
 { return channels; }
 
-void alsa_host::player_t::play(std::basic_istream<int16_t> &stream, uint8_t channel, void (*callback)(std::basic_istream<int16_t>&))
+void alsa_host::player_t::play(std::basic_istream<int16_t> &stream, uint8_t channel, std::function<void()> callback)
 {
 	streams_lock.lock();
 	streams.push_back(stream_type(channel,stream,callback));
@@ -239,6 +245,22 @@ std::string alsa_host::alsa_card_t::ll_get_hwid(int id)
 alsa_host::player_t &alsa_host::alsa_card_t::player()
 { return *_player; }
 
+alsa_host::file_play_handle::file_play_handle(const std::string &file, std::function<void()> callback)
+	: _stream(new isoundstream(file))
+	, _callback(callback)
+{}
+
+alsa_host::file_play_handle::file_play_handle(const file_play_handle &that)
+	: _stream(that._stream)
+	, _callback(that._callback)
+{}
+
+void alsa_host::file_play_handle::operator()()
+{
+	delete _stream;
+	_callback();
+}
+
 void alsa_host::init()
 {
 	int card = -1;
@@ -280,15 +302,7 @@ bool alsa_host::exists(uint8_t card_id, uint8_t channel_id)
 	return (card != cards_by_id.end() && card->second->player().num_channels() > channel_id);
 }
 
-void alsa_host::file_play_finish(std::basic_istream<int16_t> &stream)
-{
-	isoundstream *f = dynamic_cast<isoundstream*>(&stream);
-	if(!f)
-		return;
-	delete f;
-}
-
-void alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_id)
+void alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_id, std::function<void()> callback)
 {
 	cards_by_id_t::iterator card = cards_by_id.find(card_id);
 	if(card == cards_by_id.end())
@@ -297,12 +311,8 @@ void alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_i
 		return;
 	}
 	
-	isoundstream *f = new isoundstream(file);
-	if(!*f)
-	{
-		delete f;
-		return; 
-	}
-	card->second->player().play(*f,channel_id,file_play_finish);
+	file_play_handle f(file,callback);
+
+	card->second->player().play(f.stream(),channel_id,f);
 }
 alsa_host::cards_by_id_t alsa_host::cards_by_id;
