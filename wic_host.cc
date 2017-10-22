@@ -1,24 +1,26 @@
 #include <iostream>
+#include <string>
 #include <thread>
 #include <mutex>
 #include <list>
 #include <condition_variable>
 #include <cstdint>
-#include <audio.h>
 #include <earpc/udp.h>
 #include <earpc/earpc.h>
 #include <net/algorithm.h>
 #include <wicp/local_property.h>
 #include <wicp/remote_property.h>
-#include <string>
+#include <property_config_base.h>
+#include <process/sql_executor.h>
+
 #include <device_state.h>
 #include <game_event.h>
-#include <timer.h>
-#include <process/sql_executor.h>
-#include <property_config_base.h>
 
-#include <peripheral/gpio_output.h>
-#include <peripheral/pin_pad.h>
+#include <audio.h>
+#include <audio_effect.h>
+#include <audio_speech.h>
+#include <timer.h>
+
 
 
 earpc::udp wicc_earpc_config::connection(1234, 1234);
@@ -29,236 +31,472 @@ struct devstat_config
 };
 typedef device_state<devstat_config> devstat;
 
-/// Site Pin Pad Test
-namespace pin_pad_test
+/// Site GMClient Test
+namespace gmclient_test
 {
 
 	/// Room Test Room 1
 	namespace test_room_1
 	{
-		namespace devices
-		{
 
-			/// Test Device 1
-			namespace test_device_1
+			/// GMClient
+			namespace gmclient
 			{
 
-				/// Pin Pad ///
-				struct pin_pad_config : public property_config_base
+				/// GameTime ///
+				struct gametime_config : public property_config_base
 				{
-					static const uint32_t cfg_class_id = 0x100010;
+					typedef uint32_t cfg_value_type;
 
-					static const uint32_t cfg_member_id = 0x10;
-
-					static const uint32_t cfg_cooldown_time = 50;
+					static const uint32_t cfg_class_id           = 0x100010;
+					static const uint32_t cfg_member_id          = 0x10;
+					static const uint32_t cfg_cooldown_time      = 10;
 				};
-				typedef peripheral::pin_pad<pin_pad_config> pin_pad;
+				typedef wicp::remote_property<gametime_config> gametime;
 
-				/// Magnet Lock ///
-				struct magnet_lock_config : public property_config_base
+				/// GameState ///
+				struct gamestate_config : public property_config_base
 				{
-					static const uint32_t cfg_class_id = 0x100010;
+					typedef uint8_t cfg_value_type;
 
-					static const uint32_t cfg_member_id = 0x20;
-
-					static const uint32_t cfg_cooldown_time = 50;
+					static const uint32_t cfg_class_id           = 0x100010;
+					static const uint32_t cfg_member_id          = 0x20;
+					static const uint32_t cfg_cooldown_time      = 10;
 				};
-				typedef peripheral::gpio_output<magnet_lock_config> magnet_lock;
+				typedef wicp::remote_property<gamestate_config> gamestate;
+
+				/// Freezed1 ///
+				struct freezed1_config : public property_config_base
+				{
+					typedef bool cfg_value_type;
+
+					static const uint32_t cfg_class_id           = 0x100010;
+					static const uint32_t cfg_member_id          = 0x30;
+					static const uint32_t cfg_cooldown_time      = 10;
+				};
+				typedef wicp::remote_property<freezed1_config> freezed1;
+
+				/// Freezed5 ///
+				struct freezed5_config : public property_config_base
+				{
+					typedef bool cfg_value_type;
+
+					static const uint32_t cfg_class_id           = 0x100010;
+					static const uint32_t cfg_member_id          = 0x40;
+					static const uint32_t cfg_cooldown_time      = 10;
+				};
+				typedef wicp::remote_property<freezed5_config> freezed5;
 
 				static void init(net::ipv4_address ip)
 				{
-					pin_pad::init(ip);
-					magnet_lock::init(ip);
+					gmclient::gametime::init(ip);
+					gmclient::gamestate::init(ip);
+					gmclient::freezed1::init(ip);
+					gmclient::freezed5::init(ip);
 
 				}
 
 				static void uninit()
 				{
-					pin_pad::uninit();
-					magnet_lock::uninit();
+					gmclient::gametime::uninit();
+					gmclient::gamestate::uninit();
+					gmclient::freezed1::uninit();
+					gmclient::freezed5::uninit();
 
 				}
 			}
 
-		}
 
-		namespace properties
-		{
 
-			/// Pin Code ///
-			struct pin_code_config : public property_config_base
+			/// Speaker 1
+			struct speaker_1_config
 			{
-				typedef std::string cfg_value_type;
-
-				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x20;
-				static const uint32_t cfg_cooldown_time      = 10;
-				static const bool     cfg_commit_change_only = true;
+                		static const uint8_t cfg_device = 0;
+				static const uint8_t cfg_channel = 0;
 			};
-			typedef wicp::local_property<pin_code_config> pin_code;
+			typedef wic::audio<speaker_1_config> speaker_1;
 
-			/// Typed Pin Code ///
-			struct typed_pin_code_config : public property_config_base
+			namespace speaker_1_content
 			{
-				typedef std::string cfg_value_type;
+				struct chord_config
+				{
+					typedef speaker_1 cfg_audio;
 
-				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x30;
-				static const uint32_t cfg_cooldown_time      = 10;
-				static const bool     cfg_commit_change_only = true;
-			};
-			typedef wicp::local_property<typed_pin_code_config> typed_pin_code;
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
 
-		}
+			}
 
-		namespace audio
-		{
-
-			/// Beeper
-			struct beeper_config
+			/// Speaker 2
+			struct speaker_2_config
 			{
                 		static const uint8_t cfg_device = 0;
 				static const uint8_t cfg_channel = 1;
 			};
-			typedef wic::audio<beeper_config> beeper;
+			typedef wic::audio<speaker_2_config> speaker_2;
 
-		}
+			namespace speaker_2_content
+			{
+				struct chord_config
+				{
+					typedef speaker_2 cfg_audio;
 
-		namespace timers
-		{
-			/// Pin Timeout Timer
-			struct pin_timeout_timer_config
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// Speaker 3
+			struct speaker_3_config
+			{
+                		static const uint8_t cfg_device = 0;
+				static const uint8_t cfg_channel = 2;
+			};
+			typedef wic::audio<speaker_3_config> speaker_3;
+
+			namespace speaker_3_content
+			{
+				struct chord_config
+				{
+					typedef speaker_3 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+				struct test_speech_config
+				{
+					typedef speaker_3 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/1";
+
+					static const uint32_t cfg_class_id = 0x100070;
+
+					static const uint32_t cfg_member_id = 0x20;
+				};
+				typedef wic::audio_speech<test_speech_config> test_speech;
+
+			}
+
+			/// Speaker 4
+			struct speaker_4_config
+			{
+                		static const uint8_t cfg_device = 0;
+				static const uint8_t cfg_channel = 3;
+			};
+			typedef wic::audio<speaker_4_config> speaker_4;
+
+			namespace speaker_4_content
+			{
+				struct chord_config
+				{
+					typedef speaker_4 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// Speaker 5
+			struct speaker_5_config
+			{
+                		static const uint8_t cfg_device = 0;
+				static const uint8_t cfg_channel = 4;
+			};
+			typedef wic::audio<speaker_5_config> speaker_5;
+
+			namespace speaker_5_content
+			{
+				struct chord_config
+				{
+					typedef speaker_5 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// Speaker 6
+			struct speaker_6_config
+			{
+                		static const uint8_t cfg_device = 0;
+				static const uint8_t cfg_channel = 5;
+			};
+			typedef wic::audio<speaker_6_config> speaker_6;
+
+			namespace speaker_6_content
+			{
+				struct chord_config
+				{
+					typedef speaker_6 cfg_audio;
+
+					constexpr static const char *cfg_source = "/home/torokg/work/escape/audio/test/4";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// FreezeTimer1
+			struct freezetimer1_config
+			{
+				static const uint32_t cfg_class_id  = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x30;
+				static const uint32_t cfg_interval  = 3000;
+			};
+			typedef typename wic::timer<freezetimer1_config> freezetimer1;
+
+			/// FreezeTimer5
+			struct freezetimer5_config
 			{
 				static const uint32_t cfg_class_id  = 0x1ffff0;
 				static const uint32_t cfg_member_id = 0x40;
-				static const uint32_t cfg_interval  = 3000;
+				static const uint32_t cfg_interval  = 15000;
 			};
-			typedef typename wic::timer<pin_timeout_timer_config> pin_timeout_timer;
+			typedef typename wic::timer<freezetimer5_config> freezetimer5;
 
-
-		}
-
-		namespace events
-		{
-			void pin_timeout()
+			/// GameTimer
+			struct gametimer_config
 			{
-				typedef typename test_room_1::timers::pin_timeout_timer tmr;
-				typedef typename test_room_1::devices::test_device_1::magnet_lock l;
-				typedef typename test_room_1::properties::typed_pin_code code;
-				typedef typename test_room_1::audio::beeper b;
+				static const uint32_t cfg_class_id  = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x20;
+				static const uint32_t cfg_interval  = 1000;
+			};
+			typedef typename wic::timer<gametimer_config> gametimer;
+
+
+			void freeze_1_start()
+			{
+				typedef typename test_room_1::gmclient::freezed1 fr;
+				typedef typename test_room_1::freezetimer1 tmr;
+				typedef typename test_room_1::gmclient::gamestate gs;
+
+				if(true && ( fr::value() ))
+				{
+					game_event(1,1,13).propagate();
+					(void)0; { 
+        gs::value(2);
+	tmr::start();
+       }
+				}
+			}
+			void freeze_1_stop()
+			{
+				typedef typename test_room_1::gmclient::freezed1 fr;
+				typedef typename test_room_1::freezetimer1 tmr;
+				typedef typename test_room_1::gmclient::gamestate gs;
+
+				if(true && ( !fr::value() ))
+				{
+					game_event(1,1,14).propagate();
+					(void)0; { 
+	tmr::stop();
+	tmr::reset();
+	gs::value(1);
+       }
+				}
+			}
+			void freeze_1_timeout()
+			{
+				typedef typename test_room_1::freezetimer1 tmr;
+				typedef typename test_room_1::gmclient::freezed1 fr;
 
 				if(true && ( tmr::value() ))
 				{
-					game_event(1,1,6).propagate();
+					game_event(1,1,15).propagate();
+					(void)0; { fr::value(false); }
+				}
+			}
+			void freeze_5_start()
+			{
+				typedef typename test_room_1::gmclient::freezed5 fr;
+				typedef typename test_room_1::freezetimer5 tmr;
+				typedef typename test_room_1::gmclient::gamestate gs;
+
+				if(true && ( fr::value() ))
+				{
+					game_event(1,1,16).propagate();
+					(void)0; { 
+        gs::value(2);
+	tmr::start();
+       }
+				}
+			}
+			void freeze_5_stop()
+			{
+				typedef typename test_room_1::gmclient::freezed5 fr;
+				typedef typename test_room_1::freezetimer5 tmr;
+				typedef typename test_room_1::gmclient::gamestate gs;
+
+				if(true && ( !fr::value() ))
+				{
+					game_event(1,1,17).propagate();
 					(void)0; { 
 	tmr::stop();
-        tmr::reset();
-	l::value(1);
-	code::value("");
-	b::play("/home/torokg/work/escape/audio/test/1");
-	std::cout << "\e[33;01mResetting code and closing lock\e[0m" << std::endl;
+	tmr::reset();
+	gs::value(1);
        }
 				}
 			}
-			void code_test()
+			void freeze_5_timeout()
 			{
-				typedef typename test_room_1::properties::typed_pin_code code;
-				typedef typename test_room_1::properties::pin_code pin;
-				typedef typename test_room_1::devices::test_device_1::magnet_lock l;
-				typedef typename test_room_1::timers::pin_timeout_timer tmr;
-				typedef typename test_room_1::audio::beeper b;
+				typedef typename test_room_1::freezetimer5 tmr;
+				typedef typename test_room_1::gmclient::freezed5 fr;
 
-				if(true && ( code::value().size() > 4 ))
+				if(true && ( tmr::value() ))
 				{
-					game_event(1,1,7).propagate();
-					(void)0; { 
-        const std::string v = code::value();
-	code::value("");
-        if(v == pin::value())
-	{
-		std::cout << "\e[32;01m";
-		l::value(0);
-		tmr::stop();
-		b::play("/home/torokg/work/escape/audio/test/2");
-	}
-	else if(!l::value())
-	{
-		std::cout << "\e[31;01m"; 
-		l::value(1);
-		pin::value(v);
-		tmr::stop();
-		b::play("/home/torokg/work/escape/audio/test/3");
-	}
-	std::cout << v << "\e[0m" << std::endl;
-       }
+					game_event(1,1,18).propagate();
+					(void)0; { fr::value(false); }
 				}
 			}
-			void code_accumulate()
+			void game_state_changed()
 			{
-				typedef typename test_room_1::devices::test_device_1::pin_pad pp;
-				typedef typename test_room_1::properties::typed_pin_code code;
-				typedef typename test_room_1::timers::pin_timeout_timer tmr;
-				typedef typename test_room_1::audio::beeper b;
+				typedef typename test_room_1::gametimer tmr;
+			typedef speaker_1_content::chord chord;
+				typedef typename test_room_1::gmclient::gamestate gs;
+				typedef typename test_room_1::gmclient::freezed1 fr1;
+				typedef typename test_room_1::gmclient::freezed5 fr5;
 
-				if(true && ( pp::value().state ))
+				if(true)
 				{
-					game_event(1,1,8).propagate();
+					game_event(1,1,19).propagate();
 					(void)0; { 
-      	tmr::reset();
-        tmr::start();
-      	const uint8_t k = pp::value().key;
-      	char c;
-        if(k < 9)
-		c = static_cast<char>(k+49);
-	else switch(k)
+      	chord::play();
+      	switch(gs::value())
 	{
-		b::play("/home/torokg/work/escape/audio/test/4");
-		case 9: c = '*'; break;
-		case 10: c = '0'; break;
-		case 11: c = '#'; break;
-		default: c = '?'; break;
-	}
+		// Not started
+		case 0:
+			tmr::stop();
+			tmr::reset();
+			break;
 
-	code::value(code::value()+c);
+		// Started
+		case 1:
+			tmr::start();
+			fr1::value(false);
+			fr5::value(false);
+			break;
+
+		// Paused
+		case 2:
+			tmr::stop();
+			break;
+
+		// Finished
+		case 3:
+			tmr::stop();
+			tmr::reset();
+			break;
+	}
+       }
+				}
+			}
+			void game_timer_changed()
+			{
+				typedef typename test_room_1::gametimer tmr;
+				typedef typename test_room_1::gmclient::gametime gt;
+
+				if(true)
+				{
+					game_event(1,1,12).propagate();
+					(void)0; { gt::value(tmr::value()); }
+				}
+			}
+			void speech_test()
+			{
+			typedef speaker_3_content::test_speech p;
+
+				if(true)
+				{
+					game_event(1,1,11).propagate();
+					(void)0; { 
+      	std::cout << "\e[32;01mspeech " << (p::playing()?"playing":"finished") << "\e[0m" << std::endl;
        }
 				}
 			}
 
-		}
 
 		static void init()
 		{
-			devices::test_device_1::init(net::ipv4_address(192,168,100,17));
+			gmclient::init(net::ipv4_address(192,168,1,64));
 
-			timers::pin_timeout_timer::on_change += events::pin_timeout;
-			properties::typed_pin_code::on_change += events::code_test;
-			devices::test_device_1::pin_pad::on_change += events::code_accumulate;
+			gmclient::freezed1::on_change += freeze_1_start;
+			gmclient::freezed1::on_change += freeze_1_stop;
+			freezetimer1::on_change += freeze_1_timeout;
+			gmclient::freezed5::on_change += freeze_5_start;
+			gmclient::freezed5::on_change += freeze_5_stop;
+			freezetimer5::on_change += freeze_5_timeout;
+			gmclient::gamestate::on_change += game_state_changed;
+			gametimer::on_change += game_timer_changed;
+			speaker_3_content::test_speech::playing::on_change += speech_test;
 
-			properties::pin_code::init();
 
-			properties::typed_pin_code::init();
+			gmclient_test::test_room_1::speaker_1::init();
+			speaker_1_content::chord::init();
+
+			gmclient_test::test_room_1::speaker_2::init();
+			speaker_2_content::chord::init();
+
+			gmclient_test::test_room_1::speaker_3::init();
+			speaker_3_content::chord::init();
+			speaker_3_content::test_speech::init();
+
+			gmclient_test::test_room_1::speaker_4::init();
+			speaker_4_content::chord::init();
+
+			gmclient_test::test_room_1::speaker_5::init();
+			speaker_5_content::chord::init();
+
+			gmclient_test::test_room_1::speaker_6::init();
+			speaker_6_content::chord::init();
 
 
-            pin_pad_test::test_room_1::audio::beeper::init();
-
-			timers::pin_timeout_timer::init();
+			freezetimer1::init();
+			freezetimer5::init();
+			gametimer::init();
 
 		}
 
 		static void uninit()
 		{
-			timers::pin_timeout_timer::on_change -= events::pin_timeout;
-			properties::typed_pin_code::on_change -= events::code_test;
-			devices::test_device_1::pin_pad::on_change -= events::code_accumulate;
+			gmclient::freezed1::on_change -= freeze_1_start;
+			gmclient::freezed1::on_change -= freeze_1_stop;
+			freezetimer1::on_change -= freeze_1_timeout;
+			gmclient::freezed5::on_change -= freeze_5_start;
+			gmclient::freezed5::on_change -= freeze_5_stop;
+			freezetimer5::on_change -= freeze_5_timeout;
+			gmclient::gamestate::on_change -= game_state_changed;
+			gametimer::on_change -= game_timer_changed;
+			speaker_3_content::test_speech::playing::on_change -= speech_test;
 
-			devices::test_device_1::uninit();
+			gmclient::uninit();
 
-			properties::pin_code::uninit();
-			properties::typed_pin_code::uninit();
 
-            pin_pad_test::test_room_1::audio::beeper::uninit();
+			speaker_1_content::chord::uninit();
 
-			timers::pin_timeout_timer::init();
+			gmclient_test::test_room_1::speaker_1::uninit();
+			speaker_2_content::chord::uninit();
+
+			gmclient_test::test_room_1::speaker_2::uninit();
+			speaker_3_content::chord::uninit();
+			speaker_3_content::test_speech::uninit();
+
+			gmclient_test::test_room_1::speaker_3::uninit();
+			speaker_4_content::chord::uninit();
+
+			gmclient_test::test_room_1::speaker_4::uninit();
+			speaker_5_content::chord::uninit();
+
+			gmclient_test::test_room_1::speaker_5::uninit();
+			speaker_6_content::chord::uninit();
+
+			gmclient_test::test_room_1::speaker_6::uninit();
+
+			freezetimer1::init();
+			freezetimer5::init();
+			gametimer::init();
 
 		}
 	}
@@ -275,7 +513,7 @@ int main()
 
 	devstat::init();
 
-	pin_pad_test::test_room_1::init();
+	gmclient_test::test_room_1::init();
 
 
 	std::string x;
@@ -284,9 +522,43 @@ int main()
 		std::cin >> x;
 		if(x == "exit")
 			break;
+		else if(x=="start")
+                        gmclient_test::test_room_1::speaker_3_content::test_speech::playing(true);
+                else if(x=="stop")
+                        gmclient_test::test_room_1::speaker_3_content::test_speech::playing(false);
+		else if(x == "1")
+			gmclient_test::test_room_1::speaker_1_content::chord::play();
+		else if(x == "2")
+			gmclient_test::test_room_1::speaker_2_content::chord::play();
+		else if(x == "3")
+			gmclient_test::test_room_1::speaker_3_content::chord::play();
+		else if(x == "4")
+			gmclient_test::test_room_1::speaker_4_content::chord::play();
+		else if(x == "5")
+			gmclient_test::test_room_1::speaker_5_content::chord::play();
+		else if(x == "6")
+			gmclient_test::test_room_1::speaker_6_content::chord::play();
+		else if(x == "hallo")
+			gmclient_test::test_room_1::speaker_6::play("/home/torokg/work/escape/audio/test/1");
+		else if(x == "delay")
+		{
+			int delay;
+			std::cin >> delay;
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+		}
+
+		else if(x == "gamestate")
+		{
+			int state;
+			std::cin >> state;
+			gmclient_test::test_room_1::gmclient::gamestate::value(state);
+
+		}
+
 	}
 
-	pin_pad_test::test_room_1::init();
+	gmclient_test::test_room_1::init();
 
 
 	return 0;

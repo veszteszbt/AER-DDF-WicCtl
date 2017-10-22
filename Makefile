@@ -24,7 +24,7 @@ wicctl: wicctl.cc wicctl.h
 	g++ -I. -g3 -std=c++14 -fdiagnostics-color -c $<
 
 %.o: %.cc
-	g++ -I. -g3 -std=c++14 -fdiagnostics-color -c $<
+	g++ -DLOG_SQL -I. -g3 -std=c++14 -fdiagnostics-color -c $<
 
 wic_host: wic_host.o alsa_host.o
 	g++ -I. -g3 -std=c++14 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o $(LIBS)
@@ -43,7 +43,7 @@ wicctl:
 	$(error wicctl cannot be built for platform $(PLATFORM))
 
 wic_host: wic_host.cc
-	g++ -DSQL_EXECUTOR -I. \
+	g++ -DLOG_SQL -I. \
 	-I"C:\Program Files\MySQL\MySQL Connector C++ 1.1.9\include" \
 	-g3 \
 	-std=c++14 \

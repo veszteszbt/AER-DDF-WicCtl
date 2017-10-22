@@ -1,12 +1,15 @@
 #ifndef ALSA_HOST_H
 # define ALSA_HOST_H
 # include <iostream>
+# include <functional>
 # include <string>
 # include <sstream>
 # include <map>
 # include <alsa_pcm.h>
 # include <alsa/asoundlib.h>
 # include <alsa/control.h>
+
+class isoundstream;
 
 class alsa_host
 {
@@ -19,7 +22,7 @@ public:
 
 		int16_t *sbuffer;
 
-		uint8_t device;
+		uint8_t  device;
 
 		unsigned channels;
 
@@ -31,11 +34,17 @@ public:
 
 		struct stream_type
 		{
-			uint8_t channel;
-			std::basic_istream<int16_t> &stream;
-			void (*callback)(std::basic_istream<int16_t>&);
+			const uint8_t                channel;
 
-			stream_type(uint8_t pchannel, std::basic_istream<int16_t> &pstream, void(*pcallback)(std::basic_istream<int16_t>&));
+			std::basic_istream<int16_t> &stream;
+
+			std::function<void()>        callback;
+
+			stream_type(
+				uint8_t pchannel,
+				std::basic_istream<int16_t> &pstream,
+				std::function<void()> pcallback
+			);
 		};
 
 		typedef std::list<stream_type> streams_type;
@@ -48,7 +57,7 @@ public:
 
 		std::condition_variable  suspend_cv;
 
-		std::string itos(uint8_t v);
+		std::string hwname(uint8_t v);
 
 		void sleep();
 
@@ -63,7 +72,11 @@ public:
 
 		uint8_t num_channels();
 
-		void play(std::basic_istream<int16_t> &stream, uint8_t channel, void(*callback)(std::basic_istream<int16_t>&));
+		void play(
+			std::basic_istream<int16_t> &stream,
+			uint8_t channel,
+			std::function<void()> callback
+		);
 
 		~player_t();
 	};
@@ -102,7 +115,24 @@ private:
 
 	static cards_by_id_t cards_by_id;
 
-	static void file_play_finish(std::basic_istream<int16_t> &stream);
+	static void nop() {}
+
+	class file_play_handle
+	{
+		isoundstream *_stream;
+
+		std::function<void()> _callback;
+	public:
+		void operator()();
+
+		isoundstream &stream()
+		{ return *_stream; }
+
+		file_play_handle(const file_play_handle &that);
+
+		file_play_handle(const std::string &file, std::function<void()> callback);
+	};
+
 public:
 
 	static void init();
@@ -114,9 +144,8 @@ public:
 	static void play(
 		const std::string &file,
 		uint8_t card_id,
-		uint8_t channel_id
+		uint8_t channel_id,
+		std::function<void()> callback = nop
 	);
-
-	
 };
 #endif

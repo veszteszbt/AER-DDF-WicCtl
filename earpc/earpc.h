@@ -240,7 +240,6 @@ namespace earpc
 
 		static void init()
 		{
-			std::cout << "size of header is " << sizeof(typename env_base::earpc_header_type) << std::endl;
 			master_process = new std::thread(start);
 
 #ifdef __linux__			

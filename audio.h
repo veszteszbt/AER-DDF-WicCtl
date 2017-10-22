@@ -2,6 +2,7 @@
 # define WIC_AUDIO_H
 # include <alsa_host.h>
 # include <exception>
+# include <functional>
 namespace wic
 {
 	template<typename TConfig>
@@ -27,6 +28,9 @@ namespace wic
 
 		static void play(const std::string &file)
 		{ alsa_host::play(file,device,channel); }
+
+		static void play(const std::string &file, std::function<void()> callback)
+		{ alsa_host::play(file,device,channel,callback); }
 	};
 }
 #endif

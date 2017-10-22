@@ -30,7 +30,8 @@ namespace process
 				if(!v)
 				{
 					++remote.failures;
-					std::cout << "\e[31;01m - \e[0mwicp sync remote: sync failed" << std::endl;
+					std::cout << "\e[31;01m - \e[0mwicp sync remote: sync of " << std::hex << TEnv::class_id << "::" << TEnv::member_id << " with " <<
+					(std::string)ip << " failed" << std::endl;
 				}
 				else
 				{
