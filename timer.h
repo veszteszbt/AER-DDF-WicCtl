@@ -147,6 +147,9 @@ namespace wic
 			suspend_cv.notify_one();
 		}
 
+		static void remote_add(net::ipv4_address ip)
+		{ property::remote_add(ip); }
+
 
 		constexpr static sched::listener  &on_change = property::on_change;
 	};
