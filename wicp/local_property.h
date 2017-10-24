@@ -87,10 +87,11 @@ namespace wicp
 	public:
 		constexpr static sched::listener &on_change = env::on_change;
 
-		static void init()
+		static void init(value_type v = value_type())
 		{
 			remotes.clear();
 			history.clear();
+			env::value = v;
 			proc_commit::init();
 			proc_sync::init();
 			rpc::set_command(

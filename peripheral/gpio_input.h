@@ -1,11 +1,15 @@
 #ifndef PERIPHERAL_GPIO_INPUT_H
 # define PERIPHERAL_GPIO_INPUT_H
+# include <wicp/remote_property.h>
+# include <wicp/forward_property.h>
+# include <type_traits>
 namespace peripheral
 {
 	template<typename TConfig>
 	struct gpio_input
 	{
 		typedef bool value_type;
+
 	private:
 		struct property_config : public TConfig
 		{
@@ -18,7 +22,11 @@ namespace peripheral
 			static const bool cfg_write = false;
 		
 		};
-		typedef wicp::remote_property<property_config> property;
+		typedef std::conditional_t<
+			TConfig::cfg_replicate_locally,
+			wicp::forward_property<property_config>,
+			wicp::remote_property<property_config>
+		> property;
 
 
 	public:
@@ -30,6 +38,12 @@ namespace peripheral
 
 		static value_type value()
 		{ return property::value(); }
+
+		static void remote_add(net::ipv4_address ip)
+		{ property::remote_add(ip); }
+
+		static void remote_del(net::ipv4_address ip)
+		{ property::remote_del(ip); }
 
 		constexpr static sched::listener &on_change = property::on_change;
 	};

@@ -68,6 +68,9 @@ namespace wic
 			property::uninit();
 		}
 
+		static void remote_add(net::ipv4_address ip)
+		{ property::remote_add(ip); }
+
 		typedef expose_property<property> playing;
 	};
 

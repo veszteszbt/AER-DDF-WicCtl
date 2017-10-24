@@ -32,5 +32,7 @@ struct property_config_base
 	static const bool cfg_commit_change_only = true;
 
 	static const uint32_t cfg_cooldown_time = 0;
+
+	static const bool cfg_replicate_locally = true;
 };
 #endif
