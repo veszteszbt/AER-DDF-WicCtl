@@ -66,7 +66,9 @@ namespace wicp
 		{
 			if(v && env::value != *v)
 			{
-//				std::cout << "\e[32;01m - \e[0mwicp remote property: new value on remote" << std::endl;
+				log(log::trace,"wicp.property.remote") << "new value on remote" << std::endl <<
+					"property: " << std::hex << env::class_id << "::" << env::member_id <<
+					log::end;
 
 				history_lock.lock();
 				env::value = *v;
@@ -81,7 +83,9 @@ namespace wicp
 			}
 			else
 			{
-//				std::cout << "\e[37;01m - \e[0mwicp remote property: notify from remote" << std::endl;
+				log(log::warning,"wicp.property.remote") << "notify from remote with no change" << std::endl <<
+					"property: " << std::hex << env::class_id << "::" << env::member_id <<
+					log::end;
 				h.respond(false);
 			}
 		}
@@ -90,17 +94,20 @@ namespace wicp
 		static void init(net::ipv4_address ip)
 		{
 			history.clear();
-			proc_log::init();
-			proc_commit::init();
-			proc_sync::init();
 			env::remote.ip = ip;
 			env::remote.sync_timestamp = clock::time_point::min();
 			env::remote.pending_timestamp = clock::time_point::min();
+			proc_log::init();
+			proc_commit::init();
+			proc_sync::init();
 			rpc::set_command(
 				command_id | types::function::notify,
 				notify_handler
 			);
-//			std::cout << "\e[32;01m - \e[0mwicp remote property: initialized; command id is " << std::hex << command_id << std::endl;
+			log(log::debug,"wicp.property.remote") << "initialized" << std::endl <<
+				"  remote: " << (std::string)ip << std::endl <<
+				"property: " << std::hex << env::class_id << "::" << env::member_id <<
+				log::end;
 		}
 
 		static void uninit()
@@ -109,7 +116,10 @@ namespace wicp
 			proc_sync::uninit();
 			proc_log::uninit();
 			rpc::clear_command(command_id | types::function::notify);
-//			std::cout << "\e[32;01m - \e[0mwicp remote property: uninitialized; command id is " << command_id << std::endl;
+			log(log::debug,"wicp.property.remote") << "uninitialized" << std::endl <<
+				"  remote: " << (std::string)env::remote.ip << std::endl <<
+				"property: " << std::hex << env::class_id << "::" << env::member_id <<
+				log::end;
 		}
 
 		static value_type value()
@@ -125,6 +135,9 @@ namespace wicp
 		{
 			if(v == env::value)
 				return v;
+			log(log::trace,"wicp.property.remote") << "new local value" << std::endl <<
+				"property: " << std::hex << env::class_id << "::" << env::member_id <<
+				log::end;
 			env::value = v;
 			proc_commit::notify();
 			return env::value;

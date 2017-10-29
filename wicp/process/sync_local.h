@@ -1,5 +1,6 @@
 #ifndef WICP_PROCESS_SYNC_LOCAL_H
 # define WICP_PROCESS_SYNC_LOCAL_H
+# include <log.h>
 namespace wicp {
 namespace process
 {
@@ -33,19 +34,26 @@ namespace process
 				}
 
 			TEnv::remotes_lock.unlock();
-//			std::cout << "\e[33;01m - \e[0mwicp sync local: could not find remote for finished change notify" << std::endl;
+			log(log::warning,"wicp.sync.local") << "could not find remote for finished change" << std::endl << 
+				"remote: " << (std::string)ip << std::endl <<
+				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+				log::end;
 			notify();
 		}
 
 	public:
 		static void init()
 		{
-//			std::cout << "\e[37;01m - \e[0mwicp sync local: initialized" << std::endl;
+			log(log::debug,"wicp.sync.local") << "initialized" << std::endl <<
+				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+				log::end;
 		}
 
 		static void uninit()
 		{
-//			std::cout << "\e[37;01m - \e[0mwicp sync local: uninitialized" << std::endl;
+			log(log::debug,"wicp.sync.local") << "uninitialized" << std::endl <<
+				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+				log::end;
 		}
 
 		static void notify()
@@ -54,7 +62,7 @@ namespace process
 			if(TEnv::history.empty())
 			{
 				TEnv::history_lock.unlock();
-//				std::cout << "\e[37;01m - \e[0mwicp sync local: nothing to do; suspending until next notify" << std::endl;
+				log(log::trace,"wicp.sync.local") << "nothing to do; suspending until next notify" << log::end;
 				return;
 			}
 			TEnv::history_lock.unlock();

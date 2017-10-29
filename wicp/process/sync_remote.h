@@ -1,5 +1,6 @@
 #ifndef WICP_PROCESS_SYNC_REMOTE_H
 # define WICP_PROCESS_SYNC_REMOTE_H
+# include <log.h>
 # include <wicp/types.h>
 namespace wicp {
 namespace process
@@ -30,12 +31,17 @@ namespace process
 				if(!v)
 				{
 					++remote.failures;
-					std::cout << "\e[31;01m - \e[0mwicp sync remote: sync of " << std::hex << TEnv::class_id << "::" << TEnv::member_id << " with " <<
-					(std::string)ip << " failed" << std::endl;
+					::log(::log::error,"wicp.sync.remote") << "sync failed" << std::endl <<
+						"  remote: " << (std::string)ip << std::endl <<
+						"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+						::log::end;
 				}
 				else
 				{
-//					std::cout << "\e[32;01m - \e[0mwicp sync remote: sync successful" << std::endl;
+					::log(::log::trace,"wicp.sync.remote") << "sync succeeded" << std::endl <<
+						"  remote: " << (std::string)ip << std::endl <<
+						"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+						::log::end;
 				}
 
 				TEnv::finish_sync_remote(remote,v);
@@ -43,20 +49,29 @@ namespace process
 				return;
 			}
 
-///			std::cout << "\e[33;01m - \e[0mwicp sync remote: ip address mismatch" << std::endl;
+			::log(::log::warning,"wicp.sync.remote") << "ip address mismatch" << std::endl <<
+				"expected: " << (std::string)remote.ip << std::endl <<
+				"received: " << (std::string)ip << std::endl <<
+				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+				::log::end;
 			notify();
 		}
 
 	public:
 		static void init()
 		{
-//			std::cout << "\e[37;01m - \e[0mwicp sync remote: initialized" << std::endl;
+			::log(::log::debug,"wicp.sync.remote") << "initialized" << std::endl <<
+				"  remote: " << (std::string)remote.ip << std::endl <<
+				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+				::log::end;
 		}
 
 		static void uninit()
 		{
-//			std::cout << "\e[37;01m - \e[0mwicp sync remote: uninitialized" << std::endl;
-		
+			::log(::log::debug,"wicp.sync.remote") << "uninitialized" << std::endl <<
+				"  remote: " << (std::string)remote.ip << std::endl <<
+				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<		
+				::log::end;
 		}
 
 		static void notify()
@@ -64,7 +79,7 @@ namespace process
 			history_lock.lock();
 			if(history.empty())
 			{
-//				std::cout << "\e[37;01m - \e[0mwicp sync remote: nothing to do; suspending until next notify" << std::endl;
+				::log(::log::trace,"wicp.sync.remote") << "nothing to do; suspending until next notify" << ::log::end;
 				history_lock.unlock();
 				return;
 			}

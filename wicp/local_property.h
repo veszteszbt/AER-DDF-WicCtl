@@ -102,7 +102,9 @@ namespace wicp
 				command_id | types::function::set,
 				set_handler
 			);
-//			std::cout << "\e[32;01m - \e[0mwicp local property: initialized; command id is " << std::hex << command_id << std::endl;
+			log(log::debug,"wicp.property.local") << "initialied" << std::endl <<
+				"property: " << std::hex << env::class_id << "::" << env::member_id <<
+				log::end;
 		}
 
 		static void uninit()
@@ -113,6 +115,9 @@ namespace wicp
 			history.clear();
 			proc_commit::uninit();
 			proc_sync::uninit();
+			log(log::debug,"wicp.property.local") << "uninitialied" << std::endl <<
+				"property: " << std::hex << env::class_id << "::" << env::member_id <<
+				log::end;
 		}
 
 		static value_type value()

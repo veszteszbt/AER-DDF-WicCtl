@@ -100,15 +100,11 @@ namespace process
 	public:
 		static void start()
 		{
-//			std::cout <<
-//				"\e[37;01m - \e[0mearpc send process: initializing\n";
+			log(log::debug,"earpc.process.send") << "initializing" << log::end;
 
 			while(1)
 			{
 				queue_lock.lock();
-
-				std::cout.flush();
-
 
 				time_point ns = time_point::max();
 
@@ -137,10 +133,11 @@ namespace process
 					h.checksum_create();
 					memcpy(buf+sizeof(earpc_header_type),i->buffer,i->size);
 
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc send process: doing send operation for call " << std::hex << i->call_id <<
-//						std::endl
-//					;
+					log(log::debug,"earpc.process.send") << "doing send operation" << std::endl <<
+						"command: " << std::hex << i->command_id  << std::endl <<
+						" target: " << (std::string)i->ip << std::endl <<
+						"call id: " << std::hex << i->call_id << std::endl <<
+						log::end;
 
 					const net::ipv4_address ip = i->ip;
 					const uint16_t port = i->port;
@@ -156,26 +153,25 @@ namespace process
 
 				if(ns == time_point::max())
 				{
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc send process: nothing to do; "
-//						"suspending until next notify\n"
-//					;
+					log(log::trace,"earpc.process.send") <<
+						"nothing to do; suspending until next notify" <<
+						log::end;
+
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait(ul);
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc send process: resuming on notify\n";
+					log(log::trace,"earpc.process.send") << "resuming on notify" << log::end;
 				}
 
 				else
 				{
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc send process: nothing to do; "
-//						"suspending for " << std::dec << tp2msec(time_point(ns-clock::now())) << " msec\n"
-//					;
+					log(log::trace,"earpc.process.send") <<
+						"nothing to do; suspending for " <<
+						std::dec << tp2msec(time_point(ns-clock::now())) << " msec" <<
+						log::end;
+
 					std::unique_lock<std::mutex> ul(suspend_lock);
-					suspend_cv.wait_until(ul,ns);
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc send process: resuming on timeout\n";
+					suspend_cv.wait(ul);
+					log(log::trace,"earpc.process.send") << "resuming on timeout" << log::end;
 				}
 			}
 		}
@@ -207,8 +203,11 @@ namespace process
 			)
 				if(i->call_id == cid && i->ip == ip)
 				{
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc send process: removing call "<< std::hex << cid << std::endl;
+					log(log::debug,"earpc.process.send") <<	"removing call" <<  std::endl <<
+						"command: " << std::hex << i->command_id << std::endl <<
+						" target: " << (std::string)i->ip << std::endl <<
+						"call id: " << std::hex << i->call_id << std::endl <<
+						log::end;
 					queue.erase(i);
 					break;
 				}

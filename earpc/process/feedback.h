@@ -79,15 +79,19 @@ namespace process
 
 		static void start()
 		{
-			std::cout.flush();
+			log(log::debug,"earpc.process.feedback") << "initializing" << log::end;
 			while(1)
 			{
 				queue_lock.lock();
 				if(!queue.size())
 				{
 					queue_lock.unlock();
+					log(log::trace,"earpc.process.feedback") << 
+						"nothing to do; suspending until next notify" <<
+						log::end;
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait(ul);
+					log(log::trace,"earpc.process.expiry") << "resuming on notify" << log::end;
 					continue;
 				}
 

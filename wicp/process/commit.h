@@ -1,8 +1,10 @@
 #ifndef WICP_PROCESS_COMMIT_H
 # define WICP_PROCESS_COMMIT_H
+# include <log.h>
 # include <cstdint>
 # include <mutex>
 # include <thread>
+# include <atomic>
 # include <condition_variable>
 # include <net/ipv4_address.h>
 # include <pthread.h>
@@ -44,35 +46,43 @@ namespace process
 
 		static std::thread             *proc_thread;
 
+		static std::atomic<bool>        is_running;
+
 
 		static void cooldown_finish()
 		{
-//			std::cout << "\e[37;01m - \e[0mwicp commit process: cooldown finished" << std::endl;
+			log(log::trace,"wicp.commit") << "cooldown finished" << std::endl <<
+				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+				log::end;
+				
 			if(change_only || value != history.front().value)
 				notify();
 		}
 
 		static void start()
 		{
-//			std::cout << "\e[32;01m - \e[0mwicp commit process: initialized" << std::endl;
-			while(1)
+			log(log::debug,"wicp.commit") << "initialized" << std::endl <<
+				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+				log::end;
+			while(is_running)
 			{
 				std::unique_lock<std::mutex> ul(suspend_lock);
 				history_lock.lock();
 				if(change_only && !history.empty() && value == history.front().value)
 				{
-//					std::cout << "\e[37;01m - \e[0mwicp commit process: no change" << std::endl;
+					log(log::trace,"wicp.commit") << "no change; suspending until next notify" << std::endl <<
+						"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+						log::end;
 					history_lock.unlock();
 					suspend_cv.wait(ul);
 					continue;
 				}
 				else
 					cooldown_pending = true;
-//				std::cout <<
-//					"\e[37;01m - \e[0mwicp commit process: comitting new value to history; length is " <<
-//					history.size() <<
-//				std::endl;
-
+					log(log::trace,"wicp.commit") << "comitting new value to history" << std::endl <<
+						"  length: " << history.size() << std::endl <<
+						"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+						log::end;
 
 				const history_record hr(value);
 				history.push_front(hr);
@@ -88,11 +98,15 @@ namespace process
 				suspend_cv.wait_until(ul,hr.time + std::chrono::milliseconds(static_cast<uint32_t>(cooldown_time)));
 				cooldown_pending = false;
 			}
+			log(log::debug,"wicp.commit") << "uninitialized" << std::endl <<
+				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+				log::end;
 		}
 	public:
 
 		static void init()
 		{
+			is_running = true;
 			proc_thread = new std::thread(start);
 
 #ifdef __linux__			
@@ -103,6 +117,8 @@ namespace process
 
 		static void uninit()
 		{
+			is_running = false;
+			proc_thread->join();
 			delete proc_thread;
 		}
 
@@ -110,12 +126,14 @@ namespace process
 		{
 			if(cooldown_pending)
 			{
-//				std::cout << "\e[33;01m - \e[0mwicp commit process: cooldown pending; omitting new value" << std::endl;
+				log(log::trace,"wicp.commit") << "cooldown pending; ignoring notify" << std::endl <<
+					"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
+					log::end;
+
 				return;
 			}
 			std::lock_guard<std::mutex> lg(suspend_lock);
 			suspend_cv.notify_one();
-
 		}
 	};
 
@@ -130,5 +148,8 @@ namespace process
 
 	template<typename c>
 	std::condition_variable commit<c>::suspend_cv;
+
+	template<typename c>
+	std::atomic<bool>        commit<c>::is_running;
 }}
 #endif

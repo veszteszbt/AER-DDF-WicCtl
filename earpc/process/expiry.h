@@ -1,5 +1,6 @@
 #ifndef EARPC_PROCESS_EXPIRY_H
 # define EARPC_PROCESS_EXPIRY_H
+# include <log.h>
 # include <iostream>
 # include <cstdint>
 # include <list>
@@ -45,13 +46,11 @@ namespace process
 	public:
 		static void start()
 		{
-//			std::cout << "\e[37;01m - \e[0mearpc expiry process: initializing" << std::endl;
+			log(log::debug,"earpc.process.expiry") << "initializing" << log::end;
 
 			while(1)
 			{
 				buf_outgoing_call::lock();
-
-				std::cout.flush();
 
 				time_point ns = time_point::max();
 				for(
@@ -67,18 +66,19 @@ namespace process
 					}
 					else
 					{
-						std::cout << "\e[31;01m - \e[0mearpc expiry process: outgoing call " << std::hex <<
-							i->call_id << " to " << std::dec <<
-							(int)i->ip.octet[0] << '.' <<
-							(int)i->ip.octet[1] << '.' <<
-							(int)i->ip.octet[2] << '.' <<
-							(int)i->ip.octet[3] <<
-							" expired" << std::endl
-						;
-						proc_send::remove(i->ip,i->call_id);
 						const net::ipv4_address ip = i->ip;
 						const command_id_type cmd = i->command_id;
+						const call_id_type cid = i->call_id;
 						const typename buf_outgoing_call::callback_type f = i->callback;
+
+						log(log::error,"earpc.process.expiry") << "outgoing call expired" << std::endl << 
+							"command: " << std::hex << cmd << std::endl <<
+							" target: " << (std::string)ip << std::endl <<
+							"call id: " << std::hex << cid << std::endl <<
+							log::end;
+
+						proc_send::remove(ip,cid);
+
 						buf_outgoing_call::erase(i);
 						buf_outgoing_call::unlock();
 						f(ip,cmd,0);
@@ -102,17 +102,15 @@ namespace process
 					}
 					else
 					{
-						std::cout << "\e[31;01m - \e[0mearpc expiry process: incoming call " << std::hex <<
-							i->call_id << " to " << std::dec <<
-							(int)i->ip.octet[0] << '.' <<
-							(int)i->ip.octet[1] << '.' <<
-							(int)i->ip.octet[2] << '.' <<
-							(int)i->ip.octet[3] <<
-							" expired" << std::endl
-						;
-						proc_send::remove(i->ip,i->call_id);
 						const net::ipv4_address ip = i->ip;
 						const command_id_type cmd = i->command_id;
+						const call_id_type cid = i->call_id;
+						log(log::error,"earpc.process.expiry") << "incoming call expired" << std::endl << 
+							"command: " << std::hex << cmd << std::endl <<
+							" caller: " << (std::string)ip << std::endl <<
+							"call id: " << std::hex << cid << std::endl <<
+							log::end;
+						proc_send::remove(ip,cid);
 						buf_incoming_call::erase(i);
 						buf_incoming_call::unlock();
 						buf_incoming_call::lock();
@@ -123,26 +121,25 @@ namespace process
 
 				if(ns == time_point::max())
 				{
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc expiry process: nothing to do; "
-//						"suspending until next notify\n"
-//					;
+					log(log::trace,"earpc.process.expiry") << 
+						"nothing to do; suspending until next notify" <<
+						log::end;
+
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait(ul);
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc expiry process: resuming on notify\n";
+					log(log::trace,"earpc.process.expiry") << "resuming on notify" << log::end;
 				}
 
 				else
 				{
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc expiry process: nothing to do; "
-//						"suspending for " << std::dec << tp2msec(time_point(ns-clock::now())) << " msec\n"
-//					;
+					log(log::trace,"earpc.process.expiry") << 
+						"nothing to do; suspending for " <<
+						std::dec << tp2msec(time_point(ns-clock::now())) << " msec" <<
+						log::end;
+
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait_until(ul,ns);
-//					std::cout <<
-//						"\e[37;01m - \e[0mearpc expiry process: resuming on timeout\n";
+					log(log::trace,"earpc.process.expiry") << "resuming on timeout" << log::end;
 				}
 			}
 		}
