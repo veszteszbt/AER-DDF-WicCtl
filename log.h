@@ -4,10 +4,14 @@
 # include <fstream>
 # include <sstream>
 # include <cstdint>
+# include <mutex>
+# include <set>
 
 class log
 {
 	static std::ostream *out_stream;
+
+	static std::set<std::string> domains;
 
 	const std::string   &domain;
 
@@ -99,21 +103,21 @@ public:
 	template<typename T>
 	log &operator<<(T v)
 	{
-		if(level <= min_level)
+		if(level <= min_level && domains.find(domain) != domains.end())
 			buffer << v;
 		return *this;
 	}
 
 	log &operator<<(std::ostream&(*f)(std::ostream&))
 	{
-		if(level <= min_level)
+		if(level <= min_level && domains.find(domain) != domains.end())
 			buffer << f;
 		return *this;
 	}
 
 	log &operator<<(end_type)
 	{
-		if(level <= min_level)
+		if(level <= min_level && domains.find(domain) != domains.end())
 		{
 			const std::string prefix = get_timestamp() + " ["+get_level()+"] ("+domain+") ";
 			std::string payload = buffer.str();
@@ -128,13 +132,18 @@ public:
 			get_stream(domain) << prefix + payload << std::endl;
 			file_lock.unlock();
 		}
+		buffer.str(std::string());
 		return *this;
 	}
+
+	~log()
+	{
+		buffer.seekg(0,std::ios::end);
+		if(buffer.tellg())
+		{
+			buffer.seekg(0,std::ios::beg);
+			*this << end;
+		}
+	}
 };
-
-std::ostream *log::out_stream = 0;
-
-std::mutex    log::file_lock;
-
-uint8_t       log::min_level = log::info;
 #endif
