@@ -126,12 +126,13 @@ namespace process
 			if(i == buf_command::end())
 			{
 				buf_command::unlock();
-				proc_feedback::notify(
+/*				proc_feedback::notify(
 					ip,
 					port,
 					h.call_id,
 					command_id_nak
 				);
+*/
 				log(log::error,"earpc.process.recv.call") << "unknown command" << std::endl <<
 					"command: " << std::hex << h.command_id << std::endl <<
 					" caller: " << (std::string)ip << std::endl <<
@@ -293,7 +294,7 @@ namespace process
 			typename buf_incoming_call::iterator i = buf_incoming_call::find(ip,h.call_id);
 			if(i != buf_incoming_call::end())
 			{
-				log(log::error,"earpc.process.recv.nak") << "return value rejected" <<
+				log(log::error,"earpc.process.recv.nak") << "return value rejected" << std::endl <<
 					"command: " << std::hex << i->command_id << std::endl <<
 					" caller: " << (std::string)i->ip << std::endl <<
 					"call id: " << std::hex << i->call_id << std::endl <<

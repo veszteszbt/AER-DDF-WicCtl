@@ -121,12 +121,17 @@ namespace wicp
 		)
 		{
 			history_lock.lock();
+			if(history.empty())
+			{
+				history_lock.unlock();
+				return;
+			}
 			if(
 				r.pending_timestamp == clock::time_point::min() &&
 				r.sync_timestamp < history.front().time
 			)
 			{
-				typename history_type::iterator i;
+				typename history_type::iterator i = history.end();
 				for(
 					typename history_type::iterator j = history.begin();
 					j != history.end();
@@ -139,14 +144,19 @@ namespace wicp
 					i = j;
 				}
 
-				r.pending_timestamp = i->time;
-				if(r.sync_start == clock::time_point::min())
+				if(i != history.end())
 				{
-					r.sync_start = clock::now();
-					r.failures = 0;
+					r.pending_timestamp = i->time;
+					if(r.sync_start == clock::time_point::min())
+					{
+						r.sync_start = clock::now();
+						r.failures = 0;
+					}
+					history_lock.unlock();
+					rpc::call(r.ip,command_id|function,i->value,callback);
 				}
-				history_lock.unlock();
-				rpc::call(r.ip,command_id|function,i->value,callback);
+				else
+					history_lock.unlock();
 			}
 			else
 				history_lock.unlock();

@@ -35,11 +35,15 @@ class device
 
 	typedef std::map<uint64_t, device<TConfig>*>          dev_by_serial_type;
 
-	static dev_by_ip_type     dev_by_ip;
+	typedef std::map<std::string, device<TConfig>*>       dev_by_app_name_type;
 
-	static dev_by_serial_type dev_by_serial;
+	static dev_by_ip_type       dev_by_ip;
 
-	static std::mutex         cont_lock;
+	static dev_by_serial_type   dev_by_serial;
+
+	static dev_by_app_name_type dev_by_app_name;
+
+	static std::mutex           cont_lock;
 
 
 	volatile uint32_t          heartbeat_count;
@@ -64,7 +68,6 @@ class device
 
 	bool                       app_running;
 
-
 	static device<TConfig> *get(net::ipv4_address ip)
 	{
 		device<TConfig> *r = 0;
@@ -83,6 +86,18 @@ class device
 		cont_lock.lock();
 		typename dev_by_serial_type::iterator i = dev_by_serial.find(serial);
 		if(i != dev_by_serial.end())
+			r = i->second;
+
+		cont_lock.unlock();
+		return r;
+	}
+
+	static device<TConfig> *get(const std::string &name)
+	{
+		device<TConfig> *r = 0;
+		cont_lock.lock();
+		typename dev_by_app_name_type::iterator i = dev_by_app_name.find(name);
+		if(i != dev_by_app_name.end())
 			r = i->second;
 
 		cont_lock.unlock();
@@ -198,16 +213,14 @@ class device
 
 			const clock::time_point finish = clock::now();
 
-
-
 			inst_lock.lock();
 			if(heartbeat_count == hb_value)
 			{
 				++hb_outages;
-				if(hb_outages > 20)
+				if(hb_outages > 5)
 				{
 					initialized = false;
-					std::cout << (std::string)ip << " -x-> " << app_name << "\e[31;01m(gone)\e[0m" << std::endl;
+					std::cout << (std::string)ip << " -x-> " << app_name << " \e[31;01m(gone)\e[0m" << std::endl;
 					log(log::error,"wic.device.client") << (std::string)ip << ": too many heartbeat outages; " <<
 						"resetting to uninitialized state" << log::end;
 				}
@@ -295,7 +308,56 @@ class device
 	}
 
 public:
-	const uint64_t        serial;
+	const uint64_t serial;
+
+	static const dev_by_serial_type &devices()
+	{ return dev_by_serial; }
+
+	bool get_app_state()
+	{
+		inst_lock.lock();
+		const bool r = app_running;
+		inst_lock.unlock();
+		return r;
+	}
+
+	std::string get_app_name()
+	{
+		inst_lock.lock();
+		const std::string r = app_name;
+		inst_lock.unlock();
+		return r;
+	}
+
+	net::ipv4_address get_ip()
+	{
+		inst_lock.lock();
+		const net::ipv4_address r = ip;
+		inst_lock.unlock();
+		return r;
+	}
+
+	uint8_t get_state()
+	{
+		inst_lock.lock();
+		if(!initialized)
+		{
+			inst_lock.unlock();
+			return 0;
+		}
+
+		const double v = (254.0*(types::time::nsec(clock::now()-last_seen)/1000000000-1)/5);
+		inst_lock.unlock();
+
+		if(v < 0)
+			return 255;
+
+		if(v > 254)
+			return 0;
+
+		return static_cast<uint8_t>(255-v);
+	}
+
 
 	static void init()
 	{
@@ -305,6 +367,7 @@ public:
 		);
 		log(log::debug,"wic.device.host") << "initialized" << log::end;
 	}
+
 };
 
 template<typename c>
@@ -312,6 +375,9 @@ typename device<c>::dev_by_ip_type device<c>::dev_by_ip;
 
 template<typename c>
 typename device<c>::dev_by_serial_type device<c>::dev_by_serial;
+
+template<typename c>
+typename device<c>::dev_by_app_name_type device<c>::dev_by_app_name;
 
 template<typename c>
 std::mutex device<c>::cont_lock;

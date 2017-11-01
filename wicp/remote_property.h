@@ -64,26 +64,39 @@ namespace wicp
 
 		static void notify_handler(notify_call_handle_type  h, const value_type *v)
 		{
-			if(v && env::value != *v)
+			if(v)
 			{
-				log(log::trace,"wicp.property.remote") << "new value on remote" << std::endl <<
-					"property: " << std::hex << env::class_id << "::" << env::member_id <<
-					log::end;
+				if(env::value != *v)
+				{
+					log(log::trace,"wicp.property.remote") << "new value on remote" << std::endl <<
+						"  remote: " << (std::string)h.ip << std::endl <<
+						"property: " << std::hex << env::class_id << "::" << env::member_id <<
+						log::end;
 
-				history_lock.lock();
-				env::value = *v;
-				history.push_front(history_record(*v));
-				if(history.size() > 16)
-					history.pop_back();
-				remote.sync_timestamp = history.front().time;
-				history_lock.unlock();
-				h.respond(true);
-				proc_log::notify();
-				env::sync_local();
+					history_lock.lock();
+					env::value = *v;
+					history.push_front(history_record(*v));
+					if(history.size() > 16)
+						history.pop_back();
+					remote.sync_timestamp = history.front().time;
+					history_lock.unlock();
+					h.respond(true);
+					proc_log::notify();
+					env::sync_local();
+				}
+				else
+				{
+					log(log::warning,"wicp.property.remote") << "notify from remote with no change" << std::endl <<
+						"  remote: " << (std::string)h.ip << std::endl <<
+						"property: " << std::hex << env::class_id << "::" << env::member_id <<
+						log::end;
+					h.respond(false);
+				}
 			}
 			else
 			{
-				log(log::warning,"wicp.property.remote") << "notify from remote with no change" << std::endl <<
+				log(log::error,"wicp.property.remote") << "notify from remote with no value" << std::endl <<
+					"  remote: " << (std::string)h.ip << std::endl <<
 					"property: " << std::hex << env::class_id << "::" << env::member_id <<
 					log::end;
 				h.respond(false);
