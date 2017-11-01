@@ -28,6 +28,8 @@ namespace peripheral
 		> property;
 
 	public:
+		typedef TConfig config;
+
 		static void init(net::ipv4_address ip)
 		{ property::init(ip); }
 

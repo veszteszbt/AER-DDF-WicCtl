@@ -8,6 +8,8 @@ namespace peripheral
 	template<typename TConfig>
 	struct rfid
 	{
+		typedef TConfig config;
+
 		typedef uint64_t value_type;
 	private:
 		struct property_config : public TConfig

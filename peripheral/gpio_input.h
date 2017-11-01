@@ -8,6 +8,8 @@ namespace peripheral
 	template<typename TConfig>
 	struct gpio_input
 	{
+		typedef TConfig config;
+
 		typedef bool value_type;
 
 	private:

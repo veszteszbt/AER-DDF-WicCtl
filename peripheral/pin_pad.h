@@ -8,6 +8,8 @@ namespace peripheral
 	template<typename TConfig>
 	struct pin_pad
 	{
+		typedef TConfig config;
+
 		struct value_type
 		{
 			uint8_t key;

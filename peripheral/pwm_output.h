@@ -8,6 +8,8 @@ namespace peripheral
 	template<typename TConfig>
 	struct pwm_output
 	{
+		typedef TConfig config;
+
 		typedef uint16_t value_type;
 	private:
 		struct property_config : public TConfig
@@ -28,6 +30,7 @@ namespace peripheral
 		> property;
 
 	public:
+
 		static void init(net::ipv4_address ip)
 		{ property::init(ip); }
 

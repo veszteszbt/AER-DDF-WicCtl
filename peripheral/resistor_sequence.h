@@ -24,6 +24,8 @@ namespace peripheral
 		> property;
 
 	public:
+		typedef TConfig config;
+
 		typedef typename TConfig::cfg_value_type value_type;
 
 		static void init(net::ipv4_address ip)

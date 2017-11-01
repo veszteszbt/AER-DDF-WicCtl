@@ -8,6 +8,8 @@ namespace peripheral
 	template<typename TConfig>
 	struct pwm_adjuster
 	{
+		typedef TConfig config;
+
 		typedef uint16_t value_type;
 	private:
 		struct property_config : public TConfig

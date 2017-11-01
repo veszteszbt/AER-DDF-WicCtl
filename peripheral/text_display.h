@@ -8,6 +8,8 @@ namespace peripheral
 	template<typename TConfig>
 	struct text_display
 	{
+		typedef TConfig config;
+
 		struct value_type
 		{
 			char data[32];

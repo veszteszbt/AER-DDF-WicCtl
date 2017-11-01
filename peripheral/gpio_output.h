@@ -8,8 +8,11 @@ namespace peripheral
 	template<typename TConfig>
 	struct gpio_output
 	{
+		typedef TConfig config;
+
 		typedef bool value_type;
 	private:
+
 		struct property_config : public TConfig
 		{
 			typedef value_type cfg_value_type;
