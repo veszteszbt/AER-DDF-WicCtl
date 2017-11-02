@@ -91,7 +91,7 @@ namespace process
 						log::end;
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait(ul);
-					log(log::trace,"earpc.process.expiry") << "resuming on notify" << log::end;
+					log(log::trace,"earpc.process.feedback") << "resuming on notify" << log::end;
 					continue;
 				}
 

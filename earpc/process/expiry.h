@@ -70,20 +70,18 @@ namespace process
 						const command_id_type cmd = i->command_id;
 						const call_id_type cid = i->call_id;
 						const typename buf_outgoing_call::callback_type f = i->callback;
+						proc_send::remove(ip,cid);
+						buf_outgoing_call::erase(i);
+						buf_outgoing_call::unlock();
+						f(ip,cmd,0);
+						buf_outgoing_call::lock();
+						i = buf_outgoing_call::begin();
 
 						log(log::error,"earpc.process.expiry") << "outgoing call expired" << std::endl << 
 							"command: " << std::hex << cmd << std::endl <<
 							" target: " << (std::string)ip << std::endl <<
 							"call id: " << std::hex << cid << std::endl <<
 							log::end;
-
-						proc_send::remove(ip,cid);
-
-						buf_outgoing_call::erase(i);
-						buf_outgoing_call::unlock();
-						f(ip,cmd,0);
-						buf_outgoing_call::lock();
-						i = buf_outgoing_call::begin();
 					}
 				}
 				buf_outgoing_call::unlock();
@@ -105,16 +103,17 @@ namespace process
 						const net::ipv4_address ip = i->ip;
 						const command_id_type cmd = i->command_id;
 						const call_id_type cid = i->call_id;
-						log(log::error,"earpc.process.expiry") << "incoming call expired" << std::endl << 
-							"command: " << std::hex << cmd << std::endl <<
-							" caller: " << (std::string)ip << std::endl <<
-							"call id: " << std::hex << cid << std::endl <<
-							log::end;
 						proc_send::remove(ip,cid);
 						buf_incoming_call::erase(i);
 						buf_incoming_call::unlock();
 						buf_incoming_call::lock();
 						i = buf_incoming_call::begin();
+
+						log(log::error,"earpc.process.expiry") << "incoming call expired" << std::endl << 
+							"command: " << std::hex << cmd << std::endl <<
+							" caller: " << (std::string)ip << std::endl <<
+							"call id: " << std::hex << cid << std::endl <<
+							log::end;
 					}
 				}
 				buf_incoming_call::unlock();

@@ -6,6 +6,9 @@
 # include <cstdint>
 # include <mutex>
 # include <map>
+# include <queue>
+# include <thread>
+# include <condition_variable>
 
 class log
 {
@@ -13,13 +16,24 @@ class log
 
 	static std::map<std::string,uint8_t> domains;
 
+	static std::mutex    item_lock;
+
+	static std::mutex    suspend_lock;
+
+	static std::queue<std::string*> item_list;
+
+	static std::thread *process;
+
+	static std::condition_variable suspend_cv;
+
+
 	const std::string   &domain;
 
 	const uint8_t        level;
 
 	std::stringstream    buffer;
 
-	static std::mutex    file_lock;
+
 
 
 	static std::ostream &get_stream(const std::string&);
@@ -31,6 +45,15 @@ class log
 	std::string get_level();
 
 	bool needs_output();
+
+	static volatile bool is_running;
+
+	static void process_start();
+
+	static void suspend();
+
+	static void notify(const std::string &s);
+
 
 public:
 	struct end_type {};
@@ -46,6 +69,10 @@ public:
 	static const uint8_t info = 64;
 	static const uint8_t debug = 80;
 	static const uint8_t trace = 255;
+
+	static void init();
+
+	static void uninit();
 
 	log(uint8_t plevel, const std::string &pdomain)
 		: domain(pdomain)

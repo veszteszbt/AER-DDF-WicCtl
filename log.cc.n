@@ -2,6 +2,11 @@
 #include <cctype>
 std::ostream &log::get_stream(const std::string&)
 {
+	if(!out_stream)	
+	{
+		out_stream = new std::ofstream("/var/log/wic_host.log",std::ios_base::app);
+	}
+
 	if(!out_stream || !*out_stream)
 	{
 		std:: cout << "\e[31;01m - \e[0mlog error: cannot write to output stream" << std::endl;
@@ -96,7 +101,11 @@ log &log::operator<<(end_type)
 		)
 			payload.insert(p+1,std::string(prefix.size(),' '));
 
-		notify(prefix + payload + "\n\n");
+		file_lock.lock();
+		std::ostream &o = get_stream(domain);
+		o << prefix + payload + "\n\n";
+		o.flush();
+		file_lock.unlock();
 	}
 	buffer.str(std::string());
 	return *this;
@@ -113,88 +122,13 @@ log::~log()
 }
 
 
-void log::suspend()
-{
-	std::unique_lock<std::mutex> ul(suspend_lock);
-	suspend_cv.wait(ul);
-}
+std::ostream *log::out_stream;
 
-void log::notify(const std::string &s)
-{
-	item_lock.lock();
-	item_list.push(new std::string(s));
-	item_lock.unlock();
-	std::lock_guard<std::mutex> lg(suspend_lock);
-	suspend_cv.notify_one();
-
-}
-
-void log::process_start()
-{
-	out_stream = new std::ofstream("/var/log/wic_host.log",std::ios_base::app);
-
-	while(is_running)
-	{
-		item_lock.lock();
-		if(item_list.empty())
-		{
-			item_lock.unlock();
-			out_stream->flush();
-			suspend();
-			continue;
-		}
-
-		std::string *e = item_list.front();
-		item_list.pop();
-		item_lock.unlock();
-		
-		if(!((*out_stream) << *e))
-			std::cout << *e;
-		delete e;
-	}
-
-	delete out_stream;
-}
-
-void log::init()
-{
-	if(process)
-		return;
-
-	is_running = true;
-	process = new std::thread(process_start);
-#ifdef __linux__
-	pthread_setname_np(process->native_handle(),"log file writer");
-#endif
-}
-
-void log::uninit()
-{
-	if(process)
-	{
-		is_running = false;
-		process->join();
-		delete process;
-	}
-}
-
-
-std::ostream  *log::out_stream;
-
-std::mutex    log::item_lock;
-
-std::mutex    log::suspend_lock;
-
-std::condition_variable log::suspend_cv;
-
-std::queue<std::string*> log::item_list;
+std::mutex    log::file_lock;
 
 uint8_t       log::min_level = log::info;
 
-volatile bool          log::is_running = true;
-
-std::thread   *log::process = 0;
-
+std::thread   log::process = new std::thread(process_start);
 
 std::map<std::string,uint8_t> log::domains = {
 {"earpc.api.call",255},

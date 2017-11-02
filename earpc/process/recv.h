@@ -170,32 +170,32 @@ namespace process
 				buf_incoming_call::unlock();
 				if(icall->checksum == h.checksum)
 				{
-					log(log::warning,"earpc.process.recv.call") << "retransmitted call" << std::endl <<
-						"command: " << std::hex << h.command_id << std::endl <<
-						" caller: " << (std::string)ip << std::endl <<
-						"call id: " << std::hex << h.call_id << std::endl <<
-						log::end;
 					proc_feedback::notify(
 						ip,
 						port,
 						h.call_id,
 						command_id_ack
 					);
-				}
-
-				else
-				{
-					log(log::warning,"earpc.process.recv.call") << "duplicate call id" << std::endl <<
+					log(log::warning,"earpc.process.recv.call") << "retransmitted call" << std::endl <<
 						"command: " << std::hex << h.command_id << std::endl <<
 						" caller: " << (std::string)ip << std::endl <<
 						"call id: " << std::hex << h.call_id << std::endl <<
 						log::end;
+				}
+
+				else
+				{
 					proc_feedback::notify(
 						ip,
 						port,
 						h.call_id,
 						command_id_nak
 					);
+					log(log::warning,"earpc.process.recv.call") << "duplicate call id" << std::endl <<
+						"command: " << std::hex << h.command_id << std::endl <<
+						" caller: " << (std::string)ip << std::endl <<
+						"call id: " << std::hex << h.call_id << std::endl <<
+						log::end;
 				}
 				return;
 			}
@@ -207,17 +207,17 @@ namespace process
 			{
 				buf_command::unlock();
 				buf_outgoing_call::unlock();
-				log(log::error,"earpc.process.recv.call") << "duplicate call id" << std::endl <<
-					"command: " << std::hex << h.command_id << std::endl <<
-					" caller: " << (std::string)ip << std::endl <<
-					"call id: " << std::hex << h.call_id << std::endl <<
-					log::end;
 				proc_feedback::notify(
 					ip,
 					port,
 					h.call_id,
 					command_id_nak
 				);
+				log(log::error,"earpc.process.recv.call") << "duplicate call id" << std::endl <<
+					"command: " << std::hex << h.command_id << std::endl <<
+					" caller: " << (std::string)ip << std::endl <<
+					"call id: " << std::hex << h.call_id << std::endl <<
+					log::end;
 				return;
 			}
 			buf_outgoing_call::unlock();
