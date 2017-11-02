@@ -152,8 +152,9 @@ namespace wicp
 						r.sync_start = clock::now();
 						r.failures = 0;
 					}
+					const value_type v = i->value;
 					history_lock.unlock();
-					rpc::call(r.ip,command_id|function,i->value,callback);
+					rpc::call(r.ip,command_id|function,v,callback);
 				}
 				else
 					history_lock.unlock();

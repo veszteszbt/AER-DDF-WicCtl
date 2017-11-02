@@ -46,7 +46,7 @@ namespace process
 
 		static std::thread             *proc_thread;
 
-		static std::atomic<bool>        is_running;
+		static volatile bool            is_running;
 
 
 		static void cooldown_finish()
@@ -150,6 +150,6 @@ namespace process
 	std::condition_variable commit<c>::suspend_cv;
 
 	template<typename c>
-	std::atomic<bool>        commit<c>::is_running;
+	volatile bool           commit<c>::is_running;
 }}
 #endif
