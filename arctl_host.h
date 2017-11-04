@@ -67,7 +67,7 @@ class arctl_host
 	static void get_app_running(typename rpc::template call_handle<bool> h, const bool*)
 	{ h.respond(true); }
 
-	static void get_app_name(typename rpc::template call_handle<std::string&> h, const bool*)
+	static void get_app_name(typename rpc::template call_handle<const std::string&> h, const bool*)
 	{
 		static std::string n = "(unimplemented)";
 		h.respond(n);
