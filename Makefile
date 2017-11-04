@@ -23,8 +23,8 @@ wicctl: wicctl.cc wicctl.h
 %.o: %.cc
 	g++ -DLOG_SQL -I. -g3 -std=c++14 -fdiagnostics-color -o $@ -c $<
 
-wic_host: wic_host.o alsa_host.o log.o sched/process.o
-	g++ -I. -g3 -std=c++14 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o log.o sched/process.o $(LIBS)
+wic_host: wic_host.o alsa_host.o journal.o sched/process.o
+	g++ -I. -g3 -std=c++14 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o journal.o sched/process.o $(LIBS)
 
 clean:
 	rm *.o wicctl wic_host 
@@ -46,7 +46,7 @@ wic_host: wic_host.cc
 	-std=c++14 \
 	-fdiagnostics-color \
 	-pthread \
-	-o wic_host wic_host.cc log.cc sched/process.cc \
+	-o wic_host wic_host.cc journal.cc sched/process.cc \
 	-L"C:\Program Files\MySQL\MySQL Connector C++ 1.1.9\lib\opt" \
 	-lmysqlcppconn \
 	-lwsock32 \

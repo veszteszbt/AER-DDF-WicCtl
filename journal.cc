@@ -1,10 +1,10 @@
-#include <log.h>
+#include <journal.h>
 #include <cctype>
-std::ostream &log::get_stream(const std::string&)
+std::ostream &journal::get_stream(const std::string&)
 {
 	if(!out_stream || !*out_stream)
 	{
-		std:: cout << "\e[31;01m - \e[0mlog error: cannot write to output stream" << std::endl;
+		std:: cout << "\e[31;01m - \e[0mjournal error: cannot write to output stream" << std::endl;
 		delete out_stream;
 		out_stream = 0;
 		return std::cout;
@@ -13,7 +13,7 @@ std::ostream &log::get_stream(const std::string&)
 	return *out_stream;
 }
 
-std::string log::get_timestamp()
+std::string journal::get_timestamp()
 {
 	time_t now;
 	time(&now);
@@ -22,7 +22,7 @@ std::string log::get_timestamp()
 	return buf;
 }
 
-std::string log::level_to_string(const char *p, uint8_t limit)
+std::string journal::level_to_string(const char *p, uint8_t limit)
 {
 	std::stringstream s;
 	s << p;
@@ -33,7 +33,7 @@ std::string log::level_to_string(const char *p, uint8_t limit)
 	return s.str();
 }
 
-std::string log::get_level()
+std::string journal::get_level()
 {
 	if(level > debug)
 		return level_to_string("TRACE",trace);
@@ -51,7 +51,7 @@ std::string log::get_level()
 		return level_to_string("FATAL",fatal);
 }
 
-bool log::needs_output()
+bool journal::needs_output()
 {
 	if(level > min_level)
 		return false;
@@ -66,14 +66,14 @@ bool log::needs_output()
 	return true;
 }
 
-log &log::operator<<(std::ostream&(*f)(std::ostream&))
+journal &journal::operator<<(std::ostream&(*f)(std::ostream&))
 {
 	if(needs_output())
 		buffer << f;
 	return *this;
 }
 
-log &log::operator<<(end_type)
+journal &journal::operator<<(end_type)
 {
 	if(needs_output())
 	{
@@ -102,7 +102,7 @@ log &log::operator<<(end_type)
 	return *this;
 }
 
-log::~log()
+journal::~journal()
 {
 	buffer.seekg(0,std::ios::end);
 	if(buffer.tellg())
@@ -113,13 +113,13 @@ log::~log()
 }
 
 
-void log::suspend()
+void journal::suspend()
 {
 	std::unique_lock<std::mutex> ul(suspend_lock);
 	suspend_cv.wait(ul);
 }
 
-void log::notify(const std::string &s)
+void journal::notify(const std::string &s)
 {
 	item_lock.lock();
 	item_list.push(new std::string(s));
@@ -129,9 +129,9 @@ void log::notify(const std::string &s)
 
 }
 
-void log::process_start()
+void journal::process_start()
 {
-	out_stream = new std::ofstream("/var/log/wic_host.log",std::ios_base::app);
+	out_stream = new std::ofstream("/var/journal/wic_host.journal",std::ios_base::app);
 
 	while(is_running)
 	{
@@ -156,7 +156,7 @@ void log::process_start()
 	delete out_stream;
 }
 
-void log::init()
+void journal::init()
 {
 	if(process)
 		return;
@@ -164,11 +164,11 @@ void log::init()
 	is_running = true;
 	process = new std::thread(process_start);
 #ifdef __linux__
-	pthread_setname_np(process->native_handle(),"log file writer");
+	pthread_setname_np(process->native_handle(),"journal file writer");
 #endif
 }
 
-void log::uninit()
+void journal::uninit()
 {
 	if(process)
 	{
@@ -179,24 +179,24 @@ void log::uninit()
 }
 
 
-std::ostream  *log::out_stream;
+std::ostream  *journal::out_stream;
 
-std::mutex    log::item_lock;
+std::mutex    journal::item_lock;
 
-std::mutex    log::suspend_lock;
+std::mutex    journal::suspend_lock;
 
-std::condition_variable log::suspend_cv;
+std::condition_variable journal::suspend_cv;
 
-std::queue<std::string*> log::item_list;
+std::queue<std::string*> journal::item_list;
 
-uint8_t       log::min_level = log::info;
+uint8_t       journal::min_level = journal::info;
 
-volatile bool          log::is_running = true;
+volatile bool          journal::is_running = true;
 
-std::thread   *log::process = 0;
+std::thread   *journal::process = 0;
 
 
-std::map<std::string,uint8_t> log::domains = {
+std::map<std::string,uint8_t> journal::domains = {
 {"earpc.api.call",255},
 {"earpc.api.respond",255},
 {"earpc.process.expiry",255},

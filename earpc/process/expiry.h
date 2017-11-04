@@ -1,6 +1,6 @@
 #ifndef EARPC_PROCESS_EXPIRY_H
 # define EARPC_PROCESS_EXPIRY_H
-# include <log.h>
+# include <journal.h>
 # include <iostream>
 # include <cstdint>
 # include <list>
@@ -46,7 +46,7 @@ namespace process
 	public:
 		static void start()
 		{
-			log(log::debug,"earpc.process.expiry") << "initializing" << log::end;
+			journal(journal::debug,"earpc.process.expiry") << "initializing" << journal::end;
 
 			while(1)
 			{
@@ -77,11 +77,11 @@ namespace process
 						buf_outgoing_call::lock();
 						i = buf_outgoing_call::begin();
 
-						log(log::error,"earpc.process.expiry") << "outgoing call expired" << std::endl << 
+						journal(journal::error,"earpc.process.expiry") << "outgoing call expired" << std::endl << 
 							"command: " << std::hex << cmd << std::endl <<
 							" target: " << (std::string)ip << std::endl <<
 							"call id: " << std::hex << cid << std::endl <<
-							log::end;
+							journal::end;
 					}
 				}
 				buf_outgoing_call::unlock();
@@ -109,36 +109,36 @@ namespace process
 						buf_incoming_call::lock();
 						i = buf_incoming_call::begin();
 
-						log(log::error,"earpc.process.expiry") << "incoming call expired" << std::endl << 
+						journal(journal::error,"earpc.process.expiry") << "incoming call expired" << std::endl << 
 							"command: " << std::hex << cmd << std::endl <<
 							" caller: " << (std::string)ip << std::endl <<
 							"call id: " << std::hex << cid << std::endl <<
-							log::end;
+							journal::end;
 					}
 				}
 				buf_incoming_call::unlock();
 
 				if(ns == time_point::max())
 				{
-					log(log::trace,"earpc.process.expiry") << 
+					journal(journal::trace,"earpc.process.expiry") << 
 						"nothing to do; suspending until next notify" <<
-						log::end;
+						journal::end;
 
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait(ul);
-					log(log::trace,"earpc.process.expiry") << "resuming on notify" << log::end;
+					journal(journal::trace,"earpc.process.expiry") << "resuming on notify" << journal::end;
 				}
 
 				else
 				{
-					log(log::trace,"earpc.process.expiry") << 
+					journal(journal::trace,"earpc.process.expiry") << 
 						"nothing to do; suspending for " <<
 						std::dec << tp2msec(time_point(ns-clock::now())) << " msec" <<
-						log::end;
+						journal::end;
 
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait_until(ul,ns);
-					log(log::trace,"earpc.process.expiry") << "resuming on timeout" << log::end;
+					journal(journal::trace,"earpc.process.expiry") << "resuming on timeout" << journal::end;
 				}
 			}
 		}

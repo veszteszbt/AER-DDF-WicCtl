@@ -133,11 +133,11 @@ namespace process
 					command_id_nak
 				);
 */
-				log(log::error,"earpc.process.recv.call") << "unknown command" << std::endl <<
+				journal(journal::error,"earpc.process.recv.call") << "unknown command" << std::endl <<
 					"command: " << std::hex << h.command_id << std::endl <<
 					" caller: " << (std::string)ip << std::endl <<
 					"call id: " << std::hex << h.call_id << std::endl <<
-					log::end;
+					journal::end;
 				return;
 			}
 
@@ -151,13 +151,13 @@ namespace process
 					h.call_id,
 					command_id_nak
 				);
-				log(log::error,"earpc.process.recv.call") << "argument size mismatch" << std::endl <<
+				journal(journal::error,"earpc.process.recv.call") << "argument size mismatch" << std::endl <<
 					"expected" << std::dec << i->arg_size <<
 					"; received " << (size-sizeof(earpc_header_type)) << std::endl <<
 					"command: " << std::hex << h.command_id << std::endl <<
 					" caller: " << (std::string)ip << std::endl <<
 					"call id: " << std::hex << h.call_id << std::endl <<
-					log::end;
+					journal::end;
 
 				return;
 			}
@@ -176,11 +176,11 @@ namespace process
 						h.call_id,
 						command_id_ack
 					);
-					log(log::warning,"earpc.process.recv.call") << "retransmitted call" << std::endl <<
+					journal(journal::warning,"earpc.process.recv.call") << "retransmitted call" << std::endl <<
 						"command: " << std::hex << h.command_id << std::endl <<
 						" caller: " << (std::string)ip << std::endl <<
 						"call id: " << std::hex << h.call_id << std::endl <<
-						log::end;
+						journal::end;
 				}
 
 				else
@@ -191,11 +191,11 @@ namespace process
 						h.call_id,
 						command_id_nak
 					);
-					log(log::warning,"earpc.process.recv.call") << "duplicate call id" << std::endl <<
+					journal(journal::warning,"earpc.process.recv.call") << "duplicate call id" << std::endl <<
 						"command: " << std::hex << h.command_id << std::endl <<
 						" caller: " << (std::string)ip << std::endl <<
 						"call id: " << std::hex << h.call_id << std::endl <<
-						log::end;
+						journal::end;
 				}
 				return;
 			}
@@ -213,11 +213,11 @@ namespace process
 					h.call_id,
 					command_id_nak
 				);
-				log(log::error,"earpc.process.recv.call") << "duplicate call id" << std::endl <<
+				journal(journal::error,"earpc.process.recv.call") << "duplicate call id" << std::endl <<
 					"command: " << std::hex << h.command_id << std::endl <<
 					" caller: " << (std::string)ip << std::endl <<
 					"call id: " << std::hex << h.call_id << std::endl <<
-					log::end;
+					journal::end;
 				return;
 			}
 			buf_outgoing_call::unlock();
@@ -234,11 +234,11 @@ namespace process
 			buf_incoming_call::unlock();
 
 			proc_expiry::notify();
-			log(log::trace,"earpc.process.recv.call") << "serving" << std::endl <<
+			journal(journal::trace,"earpc.process.recv.call") << "serving" << std::endl <<
 				"command: " << std::hex << h.command_id << std::endl <<
 				" caller: " << (std::string)ip << std::endl <<
 				"call id: " << std::hex << h.call_id << std::endl <<
-				log::end;
+				journal::end;
 
 			const typename buf_command::callback_type f = i->callback;
 			buf_command::unlock();
@@ -270,11 +270,11 @@ namespace process
 			typename buf_incoming_call::iterator i = buf_incoming_call::find(ip,h.call_id);
 			if(i != buf_incoming_call::end())
 			{
-				log(log::trace,"earpc.process.recv.ack") << "return value accepted; call finished" << std::endl <<
+				journal(journal::trace,"earpc.process.recv.ack") << "return value accepted; call finished" << std::endl <<
 					"command: " << std::hex << i->command_id << std::endl <<
 					" target: " << (std::string)i->ip << std::endl <<
 					"call id: " << std::hex << i->call_id << std::endl <<
-					log::end;
+					journal::end;
 				buf_incoming_call::erase(i);
 				buf_incoming_call::unlock();
 				return;
@@ -284,16 +284,16 @@ namespace process
 			buf_outgoing_call::lock();
 			typename buf_outgoing_call::iterator j = buf_outgoing_call::find(ip,h.call_id);
 			if(j == buf_outgoing_call::end())
-				log(log::warning,"earpc.process.recv.ack") << "ACK on unknown call id" << std::endl <<
+				journal(journal::warning,"earpc.process.recv.ack") << "ACK on unknown call id" << std::endl <<
 					" remote: " << (std::string)ip << std::endl <<
 					"call id: " << std::hex << h.call_id << std::endl <<
-					log::end;
+					journal::end;
 			else
-				log(log::trace,"earpc.process.recv.ack") << "outgoing call accepted" << std::endl <<
+				journal(journal::trace,"earpc.process.recv.ack") << "outgoing call accepted" << std::endl <<
 					"command: " << std::hex << j->command_id << std::endl <<
 					" target: " << (std::string)j->ip << std::endl <<
 					"call id: " << std::hex << j->call_id << std::endl <<
-					log::end;
+					journal::end;
 
 			buf_outgoing_call::unlock();
 		}
@@ -307,11 +307,11 @@ namespace process
 			typename buf_incoming_call::iterator i = buf_incoming_call::find(ip,h.call_id);
 			if(i != buf_incoming_call::end())
 			{
-				log(log::error,"earpc.process.recv.nak") << "return value rejected" << std::endl <<
+				journal(journal::error,"earpc.process.recv.nak") << "return value rejected" << std::endl <<
 					"command: " << std::hex << i->command_id << std::endl <<
 					" caller: " << (std::string)i->ip << std::endl <<
 					"call id: " << std::hex << i->call_id << std::endl <<
-					log::end;
+					journal::end;
 
 				buf_incoming_call::erase(i);
 				buf_incoming_call::unlock();
@@ -323,11 +323,11 @@ namespace process
 			typename buf_outgoing_call::iterator j = buf_outgoing_call::find(ip,h.call_id);
 			if(j != buf_outgoing_call::end())
 			{
-				log(log::error,"earpc.process.recv.nak") << "outgoing call rejected; returning failure to API" << std::endl <<
+				journal(journal::error,"earpc.process.recv.nak") << "outgoing call rejected; returning failure to API" << std::endl <<
 					"command: " << std::hex << j->command_id << std::endl <<
 					" target: " << (std::string)j->ip << std::endl <<
 					"call id: " << std::hex << j->call_id << std::endl <<
-					log::end;
+					journal::end;
 
 				const typename buf_outgoing_call::callback_type f = j->callback;
 				const command_id_type cmd = j->command_id;
@@ -338,10 +338,10 @@ namespace process
 			}
 			else
 			{
-				log(log::warning,"earpc.process.recv.nak") << "unknown call id " << std::endl <<
+				journal(journal::warning,"earpc.process.recv.nak") << "unknown call id " << std::endl <<
 					" source: " << (std::string)ip << std::endl <<
 					"call id: " << std::hex << h.call_id << std::endl <<
-					log::end;
+					journal::end;
 				buf_outgoing_call::unlock();
 			}
 		}
@@ -356,9 +356,9 @@ namespace process
 
 			if(size < sizeof(earpc_header_type))
 			{
-				log(log::warning,"earpc.process.recv") << "dropping due to size error" << std::endl <<
+				journal(journal::warning,"earpc.process.recv") << "dropping due to size error" << std::endl <<
 					"caller: " << (std::string)ip << std::endl <<
-					log::end;
+					journal::end;
 					
 				return;
 			}
@@ -367,9 +367,9 @@ namespace process
 
 			if(!h.checksum_verify())
 			{
-				log(log::warning,"earpc.process.recv") << "dropping due to size error" << std::endl <<
+				journal(journal::warning,"earpc.process.recv") << "dropping due to size error" << std::endl <<
 					"caller: " << (std::string)ip << std::endl <<
-					log::end;
+					journal::end;
 				return;
 			}
 
@@ -408,7 +408,7 @@ namespace process
 		{
 			void respond(const Treturn &ret)
 			{
-				log(log::trace,"earpc.api.respond") << "notifying send process" << log::end;
+				journal(journal::trace,"earpc.api.respond") << "notifying send process" << journal::end;
 				proc_send::notify(
 					call_handle_base::ip,
 					call_handle_base::port,
@@ -455,7 +455,7 @@ namespace process
 
 		static void start()
 		{
-			log(log::debug,"earpc.process.recv") << "initializing" << log::end;
+			journal(journal::debug,"earpc.process.recv") << "initializing" << journal::end;
 			buffer = new uint8_t[65536];
 			while(1)
 				process();

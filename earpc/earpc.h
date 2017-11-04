@@ -1,6 +1,6 @@
 #ifndef EARPC_EARPC_H
 # define EARPC_EARPC_H
-# include <log.h>
+# include <journal.h>
 # include <cstdint>
 # include <fstream>
 # include <thread>
@@ -137,7 +137,7 @@ namespace earpc
 
 		static void start()
 		{
-			log(log::debug,"earpc.process.master") << "initializing" << log::end;
+			journal(journal::debug,"earpc.process.master") << "initializing" << journal::end;
 			std::thread feedback(proc_feedback::start);
 			std::thread send(proc_send::start);
 			std::thread recv(proc_recv::start);
@@ -256,11 +256,11 @@ namespace earpc
 			buf_incoming_call::unlock();
 			buf_outgoing_call::unlock();
 
-			log(log::debug,"earpc.api.call") <<  "initiating send" << std::endl <<
+			journal(journal::debug,"earpc.api.call") <<  "initiating send" << std::endl <<
 				"command: " << std::hex << cmd << std::endl <<
 				" target: " << (std::string)ip << std::endl <<
 				"call id: " << std::hex << cid << std::endl <<
-				log::end;
+				journal::end;
 
 			proc_send::notify(ip,1234,cid,cmd,&arg,sizeof(Targ));
 			proc_expiry::notify();
@@ -282,11 +282,11 @@ namespace earpc
 			);
 			buf_incoming_call::unlock();
 			buf_outgoing_call::unlock();
-			log(log::debug,"earpc.api.call") << "initiating send" << std::endl <<
+			journal(journal::debug,"earpc.api.call") << "initiating send" << std::endl <<
 				"command: " << std::hex << cmd << std::endl <<
 				" target: " << (std::string)ip << std::endl <<
 				"call id: " << std::hex << cid << std::endl <<
-				log::end;
+				journal::end;
 
 			proc_send::notify(ip,1234,cid,cmd,&arg,sizeof(Targ));
 			proc_expiry::notify();
@@ -308,11 +308,11 @@ namespace earpc
 			);
 			buf_incoming_call::unlock();
 			buf_outgoing_call::unlock();
-			log(log::debug,"earpc.api.call") << "initiating send" << std::endl <<
+			journal(journal::debug,"earpc.api.call") << "initiating send" << std::endl <<
 				"command: " << std::hex << cmd << std::endl <<
 				" target: " << (std::string)ip << std::endl <<
 				"call id: " << std::hex << cid << std::endl <<
-				log::end;
+				journal::end;
 			proc_send::notify(ip,1234,cid,cmd,arg.c_str(),arg.size());
 			proc_expiry::notify();
 		}
@@ -332,11 +332,11 @@ namespace earpc
 			);
 			buf_incoming_call::unlock();
 			buf_outgoing_call::unlock();
-			log(log::debug,"earpc.api.call") << "initiating send" << std::endl <<
+			journal(journal::debug,"earpc.api.call") << "initiating send" << std::endl <<
 				"command: " << std::hex << cmd << std::endl <<
 				" target: " << (std::string)ip << std::endl <<
 				"call id: " << std::hex << cid << std::endl <<
-				log::end;
+				journal::end;
 			proc_send::notify(ip,1234,cid,cmd,arg.c_str(),arg.size());
 			proc_expiry::notify();
 		}

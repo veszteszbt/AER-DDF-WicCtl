@@ -10,7 +10,7 @@
 # include <thread>
 # include <condition_variable>
 
-class log
+class journal
 {
 	static std::ostream *out_stream;
 
@@ -74,24 +74,24 @@ public:
 
 	static void uninit();
 
-	log(uint8_t plevel, const std::string &pdomain)
+	journal(uint8_t plevel, const std::string &pdomain)
 		: domain(pdomain)
 		, level(plevel)
 	{}
 
 
 	template<typename T>
-	log &operator<<(T v)
+	journal &operator<<(T v)
 	{
 		if(needs_output())
 			buffer << v;
 		return *this;
 	}
 
-	log &operator<<(std::ostream&(*f)(std::ostream&));
+	journal &operator<<(std::ostream&(*f)(std::ostream&));
 
-	log &operator<<(end_type);
+	journal &operator<<(end_type);
 
-	~log();
+	~journal();
 };
 #endif

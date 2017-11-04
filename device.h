@@ -6,7 +6,7 @@
 # include <types/time.h>
 # include <net/ipv4_address.h>
 # include <arctl.h>
-# include <log.h>
+# include <journal.h>
 
 namespace wic {
 
@@ -137,9 +137,9 @@ class device
 
 		else if(o)
 		{
-			log(log::critical,"wic.device.client") << "ip collision on device arrival: " << (std::string)h.ip <<
+			journal(journal::critical,"wic.device.client") << "ip collision on device arrival: " << (std::string)h.ip <<
 				" bound to two devices: " << std::hex << v->serial << " amd " << o->serial <<
-				log::end;
+				journal::end;
 		}
 		else
 			set(new device(v->serial, h.ip, v->counter));
@@ -152,8 +152,8 @@ class device
 		uint32_t hb_value = 0, hb_outages = 0;
 
 
-		log(log::debug,"wic.device.client") << "process initialized for " << std::hex << serial << " (" <<
-			(std::string)ip << ")" << log::end;
+		journal(journal::debug,"wic.device.client") << "process initialized for " << std::hex << serial << " (" <<
+			(std::string)ip << ")" << journal::end;
 
 
 		while(process_running)
@@ -163,8 +163,8 @@ class device
 			{
 				delete ctl;
 				ctl = new wifictl(ip);
-				log(log::debug,"wic.device.client")  << "recreated control for new ip " << (std::string)ip <<
-					log::end;
+				journal(journal::debug,"wic.device.client")  << "recreated control for new ip " << (std::string)ip <<
+					journal::end;
 			}
 			inst_lock.unlock();
 
@@ -173,16 +173,16 @@ class device
 				std::string t_app_name;
 				if(!ctl->app_name(t_app_name))
 				{
-					log(log::error,"wic.device.client") << "unable to get app name from " <<
-						(std::string)ctl->ip << log::end;
+					journal(journal::error,"wic.device.client") << "unable to get app name from " <<
+						(std::string)ctl->ip << journal::end;
 					continue;
 				}
 
 				bool t_app_running;
 				if(!ctl->app_is_running(t_app_running))
 				{
-					log(log::error,"wic.device.client")  << "unable to get state of app " << t_app_name <<
-						" from "  << (std::string)ip << log::end;
+					journal(journal::error,"wic.device.client")  << "unable to get state of app " << t_app_name <<
+						" from "  << (std::string)ip << journal::end;
 					continue;
 				}
 
@@ -196,8 +196,8 @@ class device
 				std::cout << (std::string)ip << " --> " << app_name << " "  <<
 					(app_running?"\e[32;01m(running)":"\e[31;01m(not running)") << "\e[0m" <<
 					std::endl;
-				log(log::info,"wic.device.client") << (std::string)ip << ": app " << app_name << " " <<
-					(app_running?"(running)":"(not running)") << log::end;
+				journal(journal::info,"wic.device.client") << (std::string)ip << ": app " << app_name << " " <<
+					(app_running?"(running)":"(not running)") << journal::end;
 
 				inst_lock.unlock();
 			}
@@ -221,21 +221,21 @@ class device
 				{
 					initialized = false;
 					std::cout << (std::string)ip << " -x-> " << app_name << " \e[31;01m(gone)\e[0m" << std::endl;
-					log(log::error,"wic.device.client") << (std::string)ip << ": too many heartbeat outages; " <<
-						"resetting to uninitialized state" << log::end;
+					journal(journal::error,"wic.device.client") << (std::string)ip << ": too many heartbeat outages; " <<
+						"resetting to uninitialized state" << journal::end;
 				}
 				else
-					log(log::warning,"wic.device.client")  << (std::string)ip <<
-						": heartbeat outage " << hb_outages << log::end;
+					journal(journal::warning,"wic.device.client")  << (std::string)ip <<
+						": heartbeat outage " << hb_outages << journal::end;
 			}
 
 			else
 			{
 				if(hb_outages)
 				{
-					log(log::warning,"wic.device.client") << (std::string)ip << ": back in place after " <<
+					journal(journal::warning,"wic.device.client") << (std::string)ip << ": back in place after " <<
 						static_cast<double>(types::time::nsec(finish-last_seen))/1000000000-1  <<
-						" sec" << log::end;
+						" sec" << journal::end;
 				}
 				hb_outages = 0;
 				hb_value = heartbeat_count;
@@ -246,8 +246,8 @@ class device
 
 		delete ctl;
 		inst_lock.lock();
-		log(log::debug,"wic.device.client") << "process uninitialized for " << std::hex << serial << " (" <<
-			(std::string)ip << ")" << log::end;
+		journal(journal::debug,"wic.device.client") << "process uninitialized for " << std::hex << serial << " (" <<
+			(std::string)ip << ")" << journal::end;
 		inst_lock.unlock();
 
 	}
@@ -284,18 +284,18 @@ class device
 			typename dev_by_ip_type::iterator j = dev_by_ip.find(ip);
 			if(j->second != this)
 			{
-				log(log::critical,"wic.device.client") << "ip collision on ip change from " << (std::string)ip <<
+				journal(journal::critical,"wic.device.client") << "ip collision on ip change from " << (std::string)ip <<
 					" to " << (std::string)pip << ": " << std::hex << j->second->serial <<
-					" and " << j->second->serial << log::end;
+					" and " << j->second->serial << journal::end;
 			}
 			else
 			{
 				dev_by_ip.erase(j);
 				ip = pip;
 				dev_by_ip[pip] = this;
-				log(log::info,"wic.device.client") << "ip change on device " << std::hex << j->second->serial <<
+				journal(journal::info,"wic.device.client") << "ip change on device " << std::hex << j->second->serial <<
 					"; old ip: " << (std::string)ip << "; new ip: " << 
-					(std::string)pip << log::end;
+					(std::string)pip << journal::end;
 
 			}
 			cont_lock.unlock();
@@ -365,7 +365,7 @@ public:
 			0xffffffff0ffff000,
 			heartbeat_handler
 		);
-		log(log::debug,"wic.device.host") << "initialized" << log::end;
+		journal(journal::debug,"wic.device.host") << "initialized" << journal::end;
 	}
 
 };
