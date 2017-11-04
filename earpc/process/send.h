@@ -2,6 +2,7 @@
 # define EARPC_PROCESS_SEND_H
 # include <cstdint>
 # include <list>
+# include <forward_list>
 # include <mutex>
 # include <condition_variable>
 # include <net/ipv4_address.h>
@@ -97,6 +98,25 @@ namespace process
 		static int64_t tp2msec(time_point p)
 		{ return std::chrono::time_point_cast<std::chrono::milliseconds>(p).time_since_epoch().count(); }
 
+		struct packet
+		{
+			uint8_t *buf;
+			const net::ipv4_address ip;
+			const uint16_t port;
+			const uint16_t size;
+			packet(
+				net::ipv4_address pip,
+				uint16_t pport,
+				uint8_t *pbuf,
+				uint16_t psize
+			)
+				:buf(pbuf)
+				,ip(pip)
+				,port(pport)
+				,size(psize)
+			{}
+		};
+
 	public:
 		static void start()
 		{
@@ -104,19 +124,20 @@ namespace process
 
 			while(1)
 			{
-				queue_lock.lock();
-
 				time_point ns = time_point::max();
+				
+				std::forward_list<packet> packets_to_send;
 
+				queue_lock.lock();
 				for(
 					typename queue_type::iterator i = queue.begin();
 					i != queue.end();
+					++i
 				) {
 					if(i->resend_time > clock::now())
 					{
 						if(ns > i->resend_time)
 							ns = i->resend_time;
-						++i;
 						continue;
 					}
 
@@ -142,14 +163,21 @@ namespace process
 					const net::ipv4_address ip = i->ip;
 					const uint16_t port = i->port;
 
-					queue_lock.unlock();
-					conn.send(ip,port,buf,size);
-					delete buf;
-					queue_lock.lock();
-					i = queue.begin();
+					packets_to_send.push_front(packet(ip,port,buf,size));
 				}
 
 				queue_lock.unlock();
+
+				for(
+					auto i = packets_to_send.begin();
+					i != packets_to_send.end();
+					++i
+				)
+				{
+					
+					conn.send(i->ip,i->port,i->buf,i->size);
+					delete i->buf;
+				}
 
 				if(ns == time_point::max())
 				{
