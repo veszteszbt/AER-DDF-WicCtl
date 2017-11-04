@@ -198,7 +198,7 @@ namespace process
 						log::end;
 
 					std::unique_lock<std::mutex> ul(suspend_lock);
-					suspend_cv.wait(ul);
+					suspend_cv.wait_until(ul,ns);
 					log(log::trace,"earpc.process.send") << "resuming on timeout" << log::end;
 				}
 			}
