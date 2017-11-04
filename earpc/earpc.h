@@ -1,6 +1,7 @@
 #ifndef EARPC_EARPC_H
 # define EARPC_EARPC_H
 # include <journal.h>
+# include <type_traits>
 # include <cstdint>
 # include <fstream>
 # include <thread>
@@ -177,7 +178,9 @@ namespace earpc
 		using call_handle = typename proc_recv::template call_handle<Treturn>;
 
 		template<typename Treturn, typename Targ>
-		static void set_command(
+		static 
+		std::enable_if_t<!std::is_same<Treturn,std::string>::value && !std::is_same<Targ,std::string>::value>
+		set_command(
 			command_id_type id,
 			void(*callback)(call_handle<Treturn>,const Targ*)
 		)
@@ -191,7 +194,9 @@ namespace earpc
 		}
 
 		template<typename Treturn>//
-		static void set_command(
+		static
+		std::enable_if_t<!std::is_same<Treturn,std::string>::value>
+		set_command(
 			command_id_type id,
 			void(*callback)(call_handle<Treturn>,const std::string&)
 		)
@@ -205,7 +210,9 @@ namespace earpc
 		}
 
 		template<typename Targ>//
-		static void set_command(
+		static
+		std::enable_if_t<!std::is_same<Targ,std::string>::value>
+		set_command(
 			command_id_type id,
 			void(*callback)(call_handle<std::string>,const Targ*)
 		)

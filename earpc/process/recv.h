@@ -403,10 +403,12 @@ namespace process
 		}
 
 	public:
-		template<typename Treturn,bool dummy = false>
+		template<typename Treturn>
 		struct call_handle : public call_handle_base
 		{
-			void respond(const Treturn &ret)
+			template<typename T = Treturn>
+			std::enable_if_t<!std::is_same<std::remove_reference_t<std::remove_cv_t<T>>,std::string>::value>
+			respond(const T&ret)
 			{
 				journal(journal::trace,"earpc.api.respond") << "notifying send process" << journal::end;
 				proc_send::notify(
@@ -418,22 +420,11 @@ namespace process
 				);
 			}
 
-
-			call_handle(
-				net::ipv4_address i,
-				uint16_t p,
-				call_id_type cid
-			)
-				: call_handle_base(i,p,cid)
-			{}
-		};
-		
-		template<bool dummy>
-		struct call_handle<std::string,dummy> : public call_handle_base
-		{
-			void respond(const std::string &ret)
+			template<typename T = Treturn>
+			std::enable_if_t<std::is_same<std::remove_reference_t<std::remove_cv_t<T>>,std::string>::value>
+			respond(const std::string &ret)
 			{
-//				std::cout << "\e[37;01m - \e[0mearpc return: notifying send process" << std::endl;
+				journal(journal::trace,"earpc.api.respond") << "notifying send process" << journal::end;
 				proc_send::notify(
 					call_handle_base::ip,
 					call_handle_base::port,

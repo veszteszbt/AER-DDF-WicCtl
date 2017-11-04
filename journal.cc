@@ -131,7 +131,7 @@ void journal::notify(const std::string &s)
 
 void journal::process_start()
 {
-	out_stream = new std::ofstream("/var/journal/wic_host.journal",std::ios_base::app);
+	out_stream = new std::ofstream("/var/log/wic_host.log",std::ios_base::app);
 
 	while(is_running)
 	{
