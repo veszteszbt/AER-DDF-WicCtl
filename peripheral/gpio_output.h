@@ -3,10 +3,11 @@
 # include <wicp/remote_property.h>
 # include <wicp/forward_property.h>
 # include <type_traits>
+# include <entity.h>
 namespace peripheral
 {
 	template<typename TConfig>
-	struct gpio_output
+	struct gpio_output : wic::entity
 	{
 		typedef TConfig config;
 
@@ -38,17 +39,13 @@ namespace peripheral
 		static void uninit()
 		{ property::uninit(); }
 
-		static value_type value()
-		{ return property::value(); }
-
-		static void value(value_type v)
-		{ property::value(v); }
-
 		static void remote_add(net::ipv4_address ip)
 		{ property::remote_add(ip); }
 
 		static void remote_del(net::ipv4_address ip)
 		{ property::remote_del(ip); }
+
+		typedef expose_property<property> value;
 	};
 }
 #endif

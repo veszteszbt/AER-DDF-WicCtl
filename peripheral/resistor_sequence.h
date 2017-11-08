@@ -3,10 +3,11 @@
 # include <wicp/remote_property.h>
 # include <wicp/forward_property.h>
 # include <type_traits>
+# include <entity.h>
 namespace peripheral
 {
 	template<typename TConfig>
-	class resistor_sequence
+	class resistor_sequence : wic::entity
 	{
 		struct property_config : public TConfig
 		{
@@ -34,16 +35,14 @@ namespace peripheral
 		static void uninit()
 		{ property::uninit(); }
 
-		static value_type value()
-		{ return property::value(); }
-
 		static void remote_add(net::ipv4_address ip)
 		{ property::remote_add(ip); }
 
 		static void remote_del(net::ipv4_address ip)
 		{ property::remote_del(ip); }
 
-		constexpr static sched::listener &on_change = property::on_change;
+		typedef expose_property<property,false> value;
+
 	};
 }
 #endif
