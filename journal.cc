@@ -16,9 +16,10 @@ std::ostream &journal::get_stream(const std::string&)
 std::string journal::get_timestamp()
 {
 	time_t now;
+	tm t; 
 	time(&now);
 	char buf[64];
-	strftime(buf, sizeof buf, "%FT%TZ", gmtime(&now));	
+	strftime(buf, sizeof buf, "%FT%TZ", &t);	
 	return buf;
 }
 
