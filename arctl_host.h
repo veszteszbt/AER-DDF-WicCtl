@@ -9,13 +9,14 @@ class arctl_host
 	typedef typename TConfig::cfg_earpc rpc;
 
 	struct
-	__attribute__((packed))
+#pragma pack(push,1)
 	heartbeat_payload_type
 	{
 		uint64_t serial;
 		uint32_t counter;
 	};
-	
+#pragma pack(pop)
+
 	static heartbeat_payload_type heartbeat_payload;
 
 	static net::ipv4_address server;

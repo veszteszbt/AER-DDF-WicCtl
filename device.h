@@ -21,12 +21,13 @@ class device
 
 
 	struct
-	__attribute__((packed))
+#pragma pack(push,1)
 	heartbeat_payload_type
 	{
 		uint64_t serial;
 		uint32_t counter;
 	};
+#pragma pack(pop)
 
 	typedef typename rpc::template call_handle<bool> heartbeat_call_handle_type;
 
