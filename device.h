@@ -20,8 +20,8 @@ class device
 	typedef std::chrono::high_resolution_clock     clock;
 
 
-	struct
 #pragma pack(push,1)
+	struct
 	heartbeat_payload_type
 	{
 		uint64_t serial;
