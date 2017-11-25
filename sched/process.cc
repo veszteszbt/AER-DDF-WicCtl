@@ -1,4 +1,5 @@
 #include <sched/process.h>
+#include <functional>
 namespace sched {
 
 void process::init() {}	
