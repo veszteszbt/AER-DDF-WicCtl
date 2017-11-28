@@ -176,19 +176,11 @@ namespace earpc
 			{
 				call_id_type r = get_random<call_id_type>();
 
-				buf_incoming_call::lock();
-				bool x = (buf_incoming_call::find(ip,r) != buf_incoming_call::end());
-				buf_incoming_call::unlock();
-				if(x)
+				if(buf_incoming_call::find(ip,r) != buf_incoming_call::end())
 					continue;
-				buf_outgoing_call::lock();
-				x = (buf_outgoing_call::find(ip,r) != buf_outgoing_call::end());
-				buf_outgoing_call::unlock();
-				if(x)
+				if(buf_outgoing_call::find(ip,r) != buf_outgoing_call::end())
 					continue;
-
 				return r;
-
 			}
 		}
 
