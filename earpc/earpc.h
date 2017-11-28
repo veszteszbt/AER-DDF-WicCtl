@@ -3,7 +3,7 @@
 # include <journal.h>
 # include <type_traits>
 # include <cstdint>
-# include <fstream>
+# include <random>
 # include <thread>
 # include <pthread.h>
 # include <chrono>
@@ -22,6 +22,7 @@ namespace earpc
 	template<typename TConfig>
 	class earpc
 	{
+
 		struct env_base
 		{
 			typedef std::chrono::high_resolution_clock    clock;
@@ -132,8 +133,6 @@ namespace earpc
 		typedef typename env_recv::command_id_type command_id_type;
 	private:
 
-		static std::ifstream urandom;
-
 		static std::thread *master_process;
 
 		static void start()
@@ -160,17 +159,37 @@ namespace earpc
 			expiry.join();
 		}
 
+		template<typename T>
+		static T get_random()
+		{
+			static std::default_random_engine generator(
+				std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::time_point_cast<std::chrono::nanoseconds>(clock::now()).time_since_epoch()).count()
+			);
+			static std::uniform_int_distribution<T> distribution(1,-1);
+	
+			return distribution(generator);
+		}
+
 		static call_id_type generate_call_id(net::ipv4_address ip)
 		{
-			call_id_type r;
-			do
+			while(true)
 			{
-				urandom.read(reinterpret_cast<char*>(&r),sizeof(call_id_type));
-			} while(
-				buf_incoming_call::find(ip,r) != buf_incoming_call::end() ||
-				buf_outgoing_call::find(ip,r) != buf_outgoing_call::end()
-			);
-			return r;
+				call_id_type r = get_random<call_id_type>();
+
+				buf_incoming_call::lock();
+				bool x = (buf_incoming_call::find(ip,r) != buf_incoming_call::end());
+				buf_incoming_call::unlock();
+				if(x)
+					continue;
+				buf_outgoing_call::lock();
+				x = (buf_outgoing_call::find(ip,r) != buf_outgoing_call::end());
+				buf_outgoing_call::unlock();
+				if(x)
+					continue;
+
+				return r;
+
+			}
 		}
 
 	public:
@@ -364,9 +383,6 @@ namespace earpc
 			delete master_process;
 		}
 	};
-
-	template<typename c>
-	std::ifstream earpc<c>::urandom("/dev/urandom");
 
 	template<typename c>
 	std::thread *earpc<c>::master_process;
