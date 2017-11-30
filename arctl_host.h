@@ -8,8 +8,8 @@ class arctl_host
 {
 	typedef typename TConfig::cfg_earpc rpc;
 
-	struct
 #pragma pack(push,1)
+	struct
 	heartbeat_payload_type
 	{
 		uint64_t serial;
