@@ -4,39 +4,44 @@
 # include <wicp/forward_property.h>
 # include <type_traits>
 # include <entity.h>
+
+struct keystroke_t
+{
+	uint8_t key;
+	bool    state;
+
+	constexpr keystroke_t()
+		: key(0)
+		, state(false)
+	{}
+
+	constexpr keystroke_t(uint8_t pkey, bool pstate)
+		: key(pkey)
+		, state(pstate)
+	{}
+
+	constexpr keystroke_t(const keystroke_t &that)
+		: key(that.key)
+		, state(that.state)
+	{}
+
+	explicit operator uint16_t()
+	{ return (uint16_t)key+(state?0x100:0); }
+
+	bool operator==(const keystroke_t &that)
+	{ return that.key == key && that.state == state; }
+
+	bool operator!=(const keystroke_t &that)
+	{ return that.key != key || that.state != state; }
+};
+
 namespace peripheral
 {
 	template<typename TConfig>
 	struct pin_pad : wic::entity
 	{
 		typedef TConfig config;
-
-		struct value_type
-		{
-			uint8_t key;
-			bool    state;
-
-			constexpr value_type()
-				: key(0)
-				, state(false)
-			{}
-
-			constexpr value_type(uint8_t pkey, bool pstate)
-				: key(pkey)
-				, state(pstate)
-			{}
-
-			constexpr value_type(const value_type &that)
-				: key(that.key)
-				, state(that.state)
-			{}
-
-			bool operator==(const value_type &that)
-			{ return that.key == key && that.state == state; }
-
-			bool operator!=(const value_type &that)
-			{ return that.key != key || that.state != state; }
-		};
+		typedef keystroke_t value_type;
 	private:
 		struct property_config : public TConfig
 		{
