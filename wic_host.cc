@@ -131,22 +131,22 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					laser::init(ip);
-					laser::remote_add(net::ipv4_address(10,1,0,100));
+					laser::remote_add(net::ipv4_address(10,1,0,40));
 
 					lcd::init(ip);
-					lcd::remote_add(net::ipv4_address(10,1,0,100));
+					lcd::remote_add(net::ipv4_address(10,1,0,40));
 
 					pin_pad::init(ip);
-					pin_pad::remote_add(net::ipv4_address(10,1,0,100));
+					pin_pad::remote_add(net::ipv4_address(10,1,0,40));
 
 					cash_box::init(ip);
-					cash_box::remote_add(net::ipv4_address(10,1,0,100));
+					cash_box::remote_add(net::ipv4_address(10,1,0,40));
 
 					switch_1::init(ip);
-					switch_1::remote_add(net::ipv4_address(10,1,0,100));
+					switch_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					led_strip::init(ip);
-					led_strip::remote_add(net::ipv4_address(10,1,0,100));
+					led_strip::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -222,16 +222,16 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					debouncer_1::init(ip);
-					debouncer_1::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					led::init(ip);
-					led::remote_add(net::ipv4_address(10,1,0,100));
+					led::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_sensor::init(ip);
-					magnetic_sensor::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_2::init(ip);
-					debouncer_2::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_2::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -370,31 +370,31 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					magnetic_lock_1::init(ip);
-					magnetic_lock_1::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_2::init(ip);
-					magnetic_lock_2::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_3::init(ip);
-					magnetic_lock_3::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_3::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer::init(ip);
-					debouncer::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer::remote_add(net::ipv4_address(10,1,0,40));
 
 					photosensor::init(ip);
-					photosensor::remote_add(net::ipv4_address(10,1,0,100));
+					photosensor::remote_add(net::ipv4_address(10,1,0,40));
 
 					knock_sensor::init(ip);
-					knock_sensor::remote_add(net::ipv4_address(10,1,0,100));
+					knock_sensor::remote_add(net::ipv4_address(10,1,0,40));
 
 					led_strip_1::init(ip);
-					led_strip_1::remote_add(net::ipv4_address(10,1,0,100));
+					led_strip_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					led_strip_2::init(ip);
-					led_strip_2::remote_add(net::ipv4_address(10,1,0,100));
+					led_strip_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					potentiometer::init(ip);
-					potentiometer::remote_add(net::ipv4_address(10,1,0,100));
+					potentiometer::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -460,13 +460,13 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					magnetic_sensor_1::init(ip);
-					magnetic_sensor_1::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_sensor_2::init(ip);
-					magnetic_sensor_2::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					led_strip::init(ip);
-					led_strip::remote_add(net::ipv4_address(10,1,0,100));
+					led_strip::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -695,52 +695,52 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					light_controller_1::init(ip);
-					light_controller_1::remote_add(net::ipv4_address(10,1,0,100));
+					light_controller_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					light_controller_2::init(ip);
-					light_controller_2::remote_add(net::ipv4_address(10,1,0,100));
+					light_controller_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					light_controller_3::init(ip);
-					light_controller_3::remote_add(net::ipv4_address(10,1,0,100));
+					light_controller_3::remote_add(net::ipv4_address(10,1,0,40));
 
 					light_controller_4::init(ip);
-					light_controller_4::remote_add(net::ipv4_address(10,1,0,100));
+					light_controller_4::remote_add(net::ipv4_address(10,1,0,40));
 
 					light_controller_5::init(ip);
-					light_controller_5::remote_add(net::ipv4_address(10,1,0,100));
+					light_controller_5::remote_add(net::ipv4_address(10,1,0,40));
 
 					light_controller_6::init(ip);
-					light_controller_6::remote_add(net::ipv4_address(10,1,0,100));
+					light_controller_6::remote_add(net::ipv4_address(10,1,0,40));
 
 					light_controller_7::init(ip);
-					light_controller_7::remote_add(net::ipv4_address(10,1,0,100));
+					light_controller_7::remote_add(net::ipv4_address(10,1,0,40));
 
 					photosensor_1::init(ip);
-					photosensor_1::remote_add(net::ipv4_address(10,1,0,100));
+					photosensor_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					photosensor_2::init(ip);
-					photosensor_2::remote_add(net::ipv4_address(10,1,0,100));
+					photosensor_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					photosensor_3::init(ip);
-					photosensor_3::remote_add(net::ipv4_address(10,1,0,100));
+					photosensor_3::remote_add(net::ipv4_address(10,1,0,40));
 
 					photosensor_4::init(ip);
-					photosensor_4::remote_add(net::ipv4_address(10,1,0,100));
+					photosensor_4::remote_add(net::ipv4_address(10,1,0,40));
 
 					photosensor_5::init(ip);
-					photosensor_5::remote_add(net::ipv4_address(10,1,0,100));
+					photosensor_5::remote_add(net::ipv4_address(10,1,0,40));
 
 					photosensor_6::init(ip);
-					photosensor_6::remote_add(net::ipv4_address(10,1,0,100));
+					photosensor_6::remote_add(net::ipv4_address(10,1,0,40));
 
 					photosensor_7::init(ip);
-					photosensor_7::remote_add(net::ipv4_address(10,1,0,100));
+					photosensor_7::remote_add(net::ipv4_address(10,1,0,40));
 
 					rfid_reader::init(ip);
-					rfid_reader::remote_add(net::ipv4_address(10,1,0,100));
+					rfid_reader::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock::init(ip);
-					magnetic_lock::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -878,28 +878,28 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					magnetic_sensor_1::init(ip);
-					magnetic_sensor_1::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_sensor_2::init(ip);
-					magnetic_sensor_2::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_sensor_3::init(ip);
-					magnetic_sensor_3::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor_3::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_sensor_4::init(ip);
-					magnetic_sensor_4::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor_4::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_sensor_5::init(ip);
-					magnetic_sensor_5::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor_5::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_1::init(ip);
-					magnetic_lock_1::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_2::init(ip);
-					magnetic_lock_2::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					led_strip::init(ip);
-					led_strip::remote_add(net::ipv4_address(10,1,0,100));
+					led_strip::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -1024,6 +1024,141 @@ namespace ddf
 			typedef typename wic::timer<gametimer_config> gametimer;
 
 
+			void freeze_1_start()
+			{
+				typedef typename pirate::freezed1 fr;
+				typedef typename pirate::freezetimer1 tmr;
+				typedef typename pirate::gamestate gs;
+
+				if(true && ( fr::value() ))
+				{
+					game_event(1,1,17).propagate();
+					(void)0; { 
+        gs::value(2);
+	tmr::start();
+       }
+				}
+			}
+			void freeze_1_stop()
+			{
+				typedef typename pirate::freezed1 fr;
+				typedef typename pirate::freezetimer1 tmr;
+				typedef typename pirate::gamestate gs;
+
+				if(true && ( !fr::value() ))
+				{
+					game_event(1,1,18).propagate();
+					(void)0; { 
+	tmr::stop();
+	tmr::reset();
+	gs::value(1);
+       }
+				}
+			}
+			void freeze_1_timeout()
+			{
+				typedef typename pirate::freezetimer1 tmr;
+				typedef typename pirate::freezed1 fr;
+
+				if(true && ( tmr::value() ))
+				{
+					game_event(1,1,19).propagate();
+					(void)0; { fr::value(false); }
+				}
+			}
+			void freeze_5_start()
+			{
+				typedef typename pirate::freezed5 fr;
+				typedef typename pirate::freezetimer5 tmr;
+				typedef typename pirate::gamestate gs;
+
+				if(true && ( fr::value() ))
+				{
+					game_event(1,1,20).propagate();
+					(void)0; { 
+        gs::value(2);
+	tmr::start();
+       }
+				}
+			}
+			void freeze_5_stop()
+			{
+				typedef typename pirate::freezed5 fr;
+				typedef typename pirate::freezetimer5 tmr;
+				typedef typename pirate::gamestate gs;
+
+				if(true && ( !fr::value() ))
+				{
+					game_event(1,1,21).propagate();
+					(void)0; { 
+	tmr::stop();
+	tmr::reset();
+	gs::value(1);
+       }
+				}
+			}
+			void freeze_5_timeout()
+			{
+				typedef typename pirate::freezetimer5 tmr;
+				typedef typename pirate::freezed5 fr;
+
+				if(true && ( tmr::value() ))
+				{
+					game_event(1,1,22).propagate();
+					(void)0; { fr::value(false); }
+				}
+			}
+			void game_state_changed()
+			{
+				typedef typename pirate::gametimer tmr;
+				typedef typename pirate::gamestate gs;
+				typedef typename pirate::freezed1 fr1;
+				typedef typename pirate::freezed5 fr5;
+
+				if(true)
+				{
+					game_event(1,1,16).propagate();
+					(void)0; { 
+      switch(gs::value())
+      {
+      	// Not started
+      	case 0:
+      		tmr::stop();
+      		tmr::reset();
+      		break;
+
+      	// Started
+      	case 1:
+      		tmr::start();
+      		fr1::value(false);
+      		fr5::value(false);
+      		break;
+
+      	// Paused
+      	case 2:
+      		tmr::stop();
+      		break;
+
+      	// Finished
+      	case 3:
+      		tmr::stop();
+      		tmr::reset();
+      		break;
+      }
+     }
+				}
+			}
+			void game_timer_expired()
+			{
+				typedef typename pirate::gametimer tmr;
+				typedef typename pirate::gamestate gs;
+
+				if(true && ( tmr::value() >= 3600 ))
+				{
+					game_event(1,1,15).propagate();
+					(void)0; { gs::value(3); }
+				}
+			}
 			void rotation_update()
 			{
 				typedef typename pirate::map_controller::led_strip starlight;
@@ -1031,7 +1166,7 @@ namespace ddf
 
 				if(true)
 				{
-					game_event(1,1,15).propagate();
+					game_event(1,1,23).propagate();
 					(void)0; { 
         const uint16_t v = (potentiometer::value()>>5)+1;
         starlight::value(v*v);
@@ -1049,16 +1184,24 @@ namespace ddf
 			rex_flipper_controller::init(net::ipv4_address(10,1,1,54));
 			stone_chest_controller::init(net::ipv4_address(10,1,1,52));
 
+			freezed1::on_change += freeze_1_start;
+			freezed1::on_change += freeze_1_stop;
+			freezetimer1::on_change += freeze_1_timeout;
+			freezed5::on_change += freeze_5_start;
+			freezed5::on_change += freeze_5_stop;
+			freezetimer5::on_change += freeze_5_timeout;
+			gamestate::on_change += game_state_changed;
+			gametimer::on_change += game_timer_expired;
 			ghostbox_picture_laser_boat_wheel_controller::potentiometer::value::on_change += rotation_update;
 
 			freezed1::init();
-			freezed1::remote_add(net::ipv4_address(10,1,0,100));
+			freezed1::remote_add(net::ipv4_address(10,1,0,40));
 
 			freezed5::init();
-			freezed5::remote_add(net::ipv4_address(10,1,0,100));
+			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
 			gamestate::init();
-			gamestate::remote_add(net::ipv4_address(10,1,0,100));
+			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
 
 			ddf::pirate::room_1::init();
@@ -1069,19 +1212,27 @@ namespace ddf
 
 
 			freezetimer1::init();
-			freezetimer1::remote_add(net::ipv4_address(10,1,0,100));
+			freezetimer1::remote_add(net::ipv4_address(10,1,0,40));
 
 			freezetimer5::init();
-			freezetimer5::remote_add(net::ipv4_address(10,1,0,100));
+			freezetimer5::remote_add(net::ipv4_address(10,1,0,40));
 
 			gametimer::init();
-			gametimer::remote_add(net::ipv4_address(10,1,0,100));
+			gametimer::remote_add(net::ipv4_address(10,1,0,40));
 
 
 		}
 
 		static void uninit()
 		{
+			freezed1::on_change -= freeze_1_start;
+			freezed1::on_change -= freeze_1_stop;
+			freezetimer1::on_change -= freeze_1_timeout;
+			freezed5::on_change -= freeze_5_start;
+			freezed5::on_change -= freeze_5_stop;
+			freezetimer5::on_change -= freeze_5_timeout;
+			gamestate::on_change -= game_state_changed;
+			gametimer::on_change -= game_timer_expired;
 			ghostbox_picture_laser_boat_wheel_controller::potentiometer::value::on_change -= rotation_update;
 
 			cashier_laser_controller::uninit();
@@ -1172,16 +1323,16 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					debouncer::init(ip);
-					debouncer::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_sensor::init(ip);
-					magnetic_sensor::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock::init(ip);
-					magnetic_lock::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock::remote_add(net::ipv4_address(10,1,0,40));
 
 					led_strip::init(ip);
-					led_strip::remote_add(net::ipv4_address(10,1,0,100));
+					led_strip::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -1255,16 +1406,16 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					linear_magnetic_sensor_1::init(ip);
-					linear_magnetic_sensor_1::remote_add(net::ipv4_address(10,1,0,100));
+					linear_magnetic_sensor_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					linear_magnetic_sensor_2::init(ip);
-					linear_magnetic_sensor_2::remote_add(net::ipv4_address(10,1,0,100));
+					linear_magnetic_sensor_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					linear_magnetic_sensor_3::init(ip);
-					linear_magnetic_sensor_3::remote_add(net::ipv4_address(10,1,0,100));
+					linear_magnetic_sensor_3::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock::init(ip);
-					magnetic_lock::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -1325,13 +1476,13 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					debouncer::init(ip);
-					debouncer::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer::remote_add(net::ipv4_address(10,1,0,40));
 
 					led::init(ip);
-					led::remote_add(net::ipv4_address(10,1,0,100));
+					led::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_sensor::init(ip);
-					magnetic_sensor::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -1404,16 +1555,16 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					debouncer::init(ip);
-					debouncer::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer::remote_add(net::ipv4_address(10,1,0,40));
 
 					rfid_reader::init(ip);
-					rfid_reader::remote_add(net::ipv4_address(10,1,0,100));
+					rfid_reader::remote_add(net::ipv4_address(10,1,0,40));
 
 					pin_pad::init(ip);
-					pin_pad::remote_add(net::ipv4_address(10,1,0,100));
+					pin_pad::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock::init(ip);
-					magnetic_lock::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -1556,6 +1707,141 @@ namespace ddf
 			typedef typename wic::timer<gametimer_config> gametimer;
 
 
+			void freeze_1_start()
+			{
+				typedef typename magician::freezed1 fr;
+				typedef typename magician::freezetimer1 tmr;
+				typedef typename magician::gamestate gs;
+
+				if(true && ( fr::value() ))
+				{
+					game_event(1,2,15).propagate();
+					(void)0; { 
+        gs::value(2);
+	tmr::start();
+       }
+				}
+			}
+			void freeze_1_stop()
+			{
+				typedef typename magician::freezed1 fr;
+				typedef typename magician::freezetimer1 tmr;
+				typedef typename magician::gamestate gs;
+
+				if(true && ( !fr::value() ))
+				{
+					game_event(1,2,16).propagate();
+					(void)0; { 
+	tmr::stop();
+	tmr::reset();
+	gs::value(1);
+       }
+				}
+			}
+			void freeze_1_timeout()
+			{
+				typedef typename magician::freezetimer1 tmr;
+				typedef typename magician::freezed1 fr;
+
+				if(true && ( tmr::value() ))
+				{
+					game_event(1,2,17).propagate();
+					(void)0; { fr::value(false); }
+				}
+			}
+			void freeze_5_start()
+			{
+				typedef typename magician::freezed5 fr;
+				typedef typename magician::freezetimer5 tmr;
+				typedef typename magician::gamestate gs;
+
+				if(true && ( fr::value() ))
+				{
+					game_event(1,2,18).propagate();
+					(void)0; { 
+        gs::value(2);
+	tmr::start();
+       }
+				}
+			}
+			void freeze_5_stop()
+			{
+				typedef typename magician::freezed5 fr;
+				typedef typename magician::freezetimer5 tmr;
+				typedef typename magician::gamestate gs;
+
+				if(true && ( !fr::value() ))
+				{
+					game_event(1,2,19).propagate();
+					(void)0; { 
+	tmr::stop();
+	tmr::reset();
+	gs::value(1);
+       }
+				}
+			}
+			void freeze_5_timeout()
+			{
+				typedef typename magician::freezetimer5 tmr;
+				typedef typename magician::freezed5 fr;
+
+				if(true && ( tmr::value() ))
+				{
+					game_event(1,2,20).propagate();
+					(void)0; { fr::value(false); }
+				}
+			}
+			void game_state_changed()
+			{
+				typedef typename magician::gametimer tmr;
+				typedef typename magician::gamestate gs;
+				typedef typename magician::freezed1 fr1;
+				typedef typename magician::freezed5 fr5;
+
+				if(true)
+				{
+					game_event(1,2,14).propagate();
+					(void)0; { 
+      switch(gs::value())
+      {
+      	// Not started
+      	case 0:
+      		tmr::stop();
+      		tmr::reset();
+      		break;
+
+      	// Started
+      	case 1:
+      		tmr::start();
+      		fr1::value(false);
+      		fr5::value(false);
+      		break;
+
+      	// Paused
+      	case 2:
+      		tmr::stop();
+      		break;
+
+      	// Finished
+      	case 3:
+      		tmr::stop();
+      		tmr::reset();
+      		break;
+      }
+     }
+				}
+			}
+			void game_timer_expired()
+			{
+				typedef typename magician::gametimer tmr;
+				typedef typename magician::gamestate gs;
+
+				if(true && ( tmr::value() >= 3600 ))
+				{
+					game_event(1,2,13).propagate();
+					(void)0; { gs::value(3); }
+				}
+			}
 			void cupboard_controller_event_for_labyrinth_task()
 			{
 				typedef typename magician::cupboard_controller::debouncer debouncer;
@@ -1563,7 +1849,7 @@ namespace ddf
 
 				if(true && (  debouncer::value()  ))
 				{
-					game_event(1,2,13).propagate();
+					game_event(1,2,21).propagate();
 					(void)0; {  magnetic_lock::value(0);  }
 				}
 			}
@@ -1576,16 +1862,24 @@ namespace ddf
 			entrance_controller::init(net::ipv4_address(10,1,1,61));
 			futuristic_safe_controller::init(net::ipv4_address(10,1,1,60));
 
+			freezed1::on_change += freeze_1_start;
+			freezed1::on_change += freeze_1_stop;
+			freezetimer1::on_change += freeze_1_timeout;
+			freezed5::on_change += freeze_5_start;
+			freezed5::on_change += freeze_5_stop;
+			freezetimer5::on_change += freeze_5_timeout;
+			gamestate::on_change += game_state_changed;
+			gametimer::on_change += game_timer_expired;
 			cupboard_controller::debouncer::value::on_change += cupboard_controller_event_for_labyrinth_task;
 
 			freezed1::init();
-			freezed1::remote_add(net::ipv4_address(10,1,0,100));
+			freezed1::remote_add(net::ipv4_address(10,1,0,40));
 
 			freezed5::init();
-			freezed5::remote_add(net::ipv4_address(10,1,0,100));
+			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
 			gamestate::init();
-			gamestate::remote_add(net::ipv4_address(10,1,0,100));
+			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
 
 			ddf::magician::room_1::init();
@@ -1600,19 +1894,27 @@ namespace ddf
 
 
 			freezetimer1::init();
-			freezetimer1::remote_add(net::ipv4_address(10,1,0,100));
+			freezetimer1::remote_add(net::ipv4_address(10,1,0,40));
 
 			freezetimer5::init();
-			freezetimer5::remote_add(net::ipv4_address(10,1,0,100));
+			freezetimer5::remote_add(net::ipv4_address(10,1,0,40));
 
 			gametimer::init();
-			gametimer::remote_add(net::ipv4_address(10,1,0,100));
+			gametimer::remote_add(net::ipv4_address(10,1,0,40));
 
 
 		}
 
 		static void uninit()
 		{
+			freezed1::on_change -= freeze_1_start;
+			freezed1::on_change -= freeze_1_stop;
+			freezetimer1::on_change -= freeze_1_timeout;
+			freezed5::on_change -= freeze_5_start;
+			freezed5::on_change -= freeze_5_stop;
+			freezetimer5::on_change -= freeze_5_timeout;
+			gamestate::on_change -= game_state_changed;
+			gametimer::on_change -= game_timer_expired;
 			cupboard_controller::debouncer::value::on_change -= cupboard_controller_event_for_labyrinth_task;
 
 			cupboard_controller::uninit();
@@ -1716,19 +2018,19 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					switch_1::init(ip);
-					switch_1::remote_add(net::ipv4_address(10,1,0,100));
+					switch_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					rfid::init(ip);
-					rfid::remote_add(net::ipv4_address(10,1,0,100));
+					rfid::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock::init(ip);
-					magnetic_lock::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_1::init(ip);
-					debouncer_1::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_eject::init(ip);
-					video_eject::remote_add(net::ipv4_address(10,1,0,100));
+					video_eject::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -1777,10 +2079,10 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					debouncer_3::init(ip);
-					debouncer_3::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_3::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_4::init(ip);
-					debouncer_4::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_4::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -1910,34 +2212,34 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					desktop_pc::started::init(ip);
-			desktop_pc::started::remote_add(net::ipv4_address(10,1,0,100));
+			desktop_pc::started::remote_add(net::ipv4_address(10,1,0,40));
 
 					desktop_pc::shutdown::init(ip);
-			desktop_pc::shutdown::remote_add(net::ipv4_address(10,1,0,100));
+			desktop_pc::shutdown::remote_add(net::ipv4_address(10,1,0,40));
 
 					desktop_pc::logged_in::init(ip);
-			desktop_pc::logged_in::remote_add(net::ipv4_address(10,1,0,100));
+			desktop_pc::logged_in::remote_add(net::ipv4_address(10,1,0,40));
 
 					desktop_pc::recycled_restore::init(ip);
-			desktop_pc::recycled_restore::remote_add(net::ipv4_address(10,1,0,100));
+			desktop_pc::recycled_restore::remote_add(net::ipv4_address(10,1,0,40));
 
 					desktop_pc::audioplay_started::init(ip);
-			desktop_pc::audioplay_started::remote_add(net::ipv4_address(10,1,0,100));
+			desktop_pc::audioplay_started::remote_add(net::ipv4_address(10,1,0,40));
 
 					desktop_pc::audioplay_finished::init(ip);
-			desktop_pc::audioplay_finished::remote_add(net::ipv4_address(10,1,0,100));
+			desktop_pc::audioplay_finished::remote_add(net::ipv4_address(10,1,0,40));
 
 					desktop_pc::audioplay_paused::init(ip);
-			desktop_pc::audioplay_paused::remote_add(net::ipv4_address(10,1,0,100));
+			desktop_pc::audioplay_paused::remote_add(net::ipv4_address(10,1,0,40));
 
 					desktop_pc::restart_game::init(ip);
-			desktop_pc::restart_game::remote_add(net::ipv4_address(10,1,0,100));
+			desktop_pc::restart_game::remote_add(net::ipv4_address(10,1,0,40));
 
 					desktop_pc::audioplay_startevent::init(ip);
-			desktop_pc::audioplay_startevent::remote_add(net::ipv4_address(10,1,0,100));
+			desktop_pc::audioplay_startevent::remote_add(net::ipv4_address(10,1,0,40));
 
 					desktop_pc::audiopause_pauseevent::init(ip);
-			desktop_pc::audiopause_pauseevent::remote_add(net::ipv4_address(10,1,0,100));
+			desktop_pc::audiopause_pauseevent::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -2004,13 +2306,13 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					debouncer::init(ip);
-					debouncer::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer::remote_add(net::ipv4_address(10,1,0,40));
 
 					led::init(ip);
-					led::remote_add(net::ipv4_address(10,1,0,100));
+					led::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_sensor::init(ip);
-					magnetic_sensor::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -2083,16 +2385,16 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					pin_pad::init(ip);
-					pin_pad::remote_add(net::ipv4_address(10,1,0,100));
+					pin_pad::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock::init(ip);
-					magnetic_lock::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_1::init(ip);
-					debouncer_1::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_2::init(ip);
-					debouncer_2::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_2::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -2235,37 +2537,37 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					video_device::started::init(ip);
-			video_device::started::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::started::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_device::shutdown::init(ip);
-			video_device::shutdown::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::shutdown::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_device::livecam_started::init(ip);
-			video_device::livecam_started::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::livecam_started::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_device::livecamslides_started::init(ip);
-			video_device::livecamslides_started::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::livecamslides_started::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_device::restart_game::init(ip);
-			video_device::restart_game::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::restart_game::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_device::start_livecams::init(ip);
-			video_device::start_livecams::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::start_livecams::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_device::start_tape::init(ip);
-			video_device::start_tape::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::start_tape::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_device::stop_tape::init(ip);
-			video_device::stop_tape::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::stop_tape::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_device::enabled::init(ip);
-			video_device::enabled::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::enabled::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_device::casette_id::init(ip);
-			video_device::casette_id::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::casette_id::remote_add(net::ipv4_address(10,1,0,40));
 
 					video_device::play_ongoing::init(ip);
-			video_device::play_ongoing::remote_add(net::ipv4_address(10,1,0,100));
+			video_device::play_ongoing::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -2426,6 +2728,141 @@ namespace ddf
 			typedef typename wic::timer<gametimer_config> gametimer;
 
 
+			void freeze_1_start()
+			{
+				typedef typename villa::freezed1 fr;
+				typedef typename villa::freezetimer1 tmr;
+				typedef typename villa::gamestate gs;
+
+				if(true && ( fr::value() ))
+				{
+					game_event(1,3,17).propagate();
+					(void)0; { 
+        gs::value(2);
+	tmr::start();
+       }
+				}
+			}
+			void freeze_1_stop()
+			{
+				typedef typename villa::freezed1 fr;
+				typedef typename villa::freezetimer1 tmr;
+				typedef typename villa::gamestate gs;
+
+				if(true && ( !fr::value() ))
+				{
+					game_event(1,3,18).propagate();
+					(void)0; { 
+	tmr::stop();
+	tmr::reset();
+	gs::value(1);
+       }
+				}
+			}
+			void freeze_1_timeout()
+			{
+				typedef typename villa::freezetimer1 tmr;
+				typedef typename villa::freezed1 fr;
+
+				if(true && ( tmr::value() ))
+				{
+					game_event(1,3,19).propagate();
+					(void)0; { fr::value(false); }
+				}
+			}
+			void freeze_5_start()
+			{
+				typedef typename villa::freezed5 fr;
+				typedef typename villa::freezetimer5 tmr;
+				typedef typename villa::gamestate gs;
+
+				if(true && ( fr::value() ))
+				{
+					game_event(1,3,20).propagate();
+					(void)0; { 
+        gs::value(2);
+	tmr::start();
+       }
+				}
+			}
+			void freeze_5_stop()
+			{
+				typedef typename villa::freezed5 fr;
+				typedef typename villa::freezetimer5 tmr;
+				typedef typename villa::gamestate gs;
+
+				if(true && ( !fr::value() ))
+				{
+					game_event(1,3,21).propagate();
+					(void)0; { 
+	tmr::stop();
+	tmr::reset();
+	gs::value(1);
+       }
+				}
+			}
+			void freeze_5_timeout()
+			{
+				typedef typename villa::freezetimer5 tmr;
+				typedef typename villa::freezed5 fr;
+
+				if(true && ( tmr::value() ))
+				{
+					game_event(1,3,22).propagate();
+					(void)0; { fr::value(false); }
+				}
+			}
+			void game_state_changed()
+			{
+				typedef typename villa::gametimer tmr;
+				typedef typename villa::gamestate gs;
+				typedef typename villa::freezed1 fr1;
+				typedef typename villa::freezed5 fr5;
+
+				if(true)
+				{
+					game_event(1,3,16).propagate();
+					(void)0; { 
+      switch(gs::value())
+      {
+      	// Not started
+      	case 0:
+      		tmr::stop();
+      		tmr::reset();
+      		break;
+
+      	// Started
+      	case 1:
+      		tmr::start();
+      		fr1::value(false);
+      		fr5::value(false);
+      		break;
+
+      	// Paused
+      	case 2:
+      		tmr::stop();
+      		break;
+
+      	// Finished
+      	case 3:
+      		tmr::stop();
+      		tmr::reset();
+      		break;
+      }
+     }
+				}
+			}
+			void game_timer_expired()
+			{
+				typedef typename villa::gametimer tmr;
+				typedef typename villa::gamestate gs;
+
+				if(true && ( tmr::value() >= 3600 ))
+				{
+					game_event(1,3,15).propagate();
+					(void)0; { gs::value(3); }
+				}
+			}
 
 
 		static void init()
@@ -2437,15 +2874,23 @@ namespace ddf
 			safe_controller::init(net::ipv4_address(10,1,0,62));
 			video_device::init(net::ipv4_address(10,1,0,21));
 
+			freezed1::on_change += freeze_1_start;
+			freezed1::on_change += freeze_1_stop;
+			freezetimer1::on_change += freeze_1_timeout;
+			freezed5::on_change += freeze_5_start;
+			freezed5::on_change += freeze_5_stop;
+			freezetimer5::on_change += freeze_5_timeout;
+			gamestate::on_change += game_state_changed;
+			gametimer::on_change += game_timer_expired;
 
 			freezed1::init();
-			freezed1::remote_add(net::ipv4_address(10,1,0,100));
+			freezed1::remote_add(net::ipv4_address(10,1,0,40));
 
 			freezed5::init();
-			freezed5::remote_add(net::ipv4_address(10,1,0,100));
+			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
 			gamestate::init();
-			gamestate::remote_add(net::ipv4_address(10,1,0,100));
+			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
 
 			ddf::villa::room_1::init();
@@ -2462,19 +2907,27 @@ namespace ddf
 
 
 			freezetimer1::init();
-			freezetimer1::remote_add(net::ipv4_address(10,1,0,100));
+			freezetimer1::remote_add(net::ipv4_address(10,1,0,40));
 
 			freezetimer5::init();
-			freezetimer5::remote_add(net::ipv4_address(10,1,0,100));
+			freezetimer5::remote_add(net::ipv4_address(10,1,0,40));
 
 			gametimer::init();
-			gametimer::remote_add(net::ipv4_address(10,1,0,100));
+			gametimer::remote_add(net::ipv4_address(10,1,0,40));
 
 
 		}
 
 		static void uninit()
 		{
+			freezed1::on_change -= freeze_1_start;
+			freezed1::on_change -= freeze_1_stop;
+			freezetimer1::on_change -= freeze_1_timeout;
+			freezed5::on_change -= freeze_5_start;
+			freezed5::on_change -= freeze_5_stop;
+			freezetimer5::on_change -= freeze_5_timeout;
+			gamestate::on_change -= game_state_changed;
+			gametimer::on_change -= game_timer_expired;
 
 			control_room_controller::uninit();
 			desk_controller::uninit();
@@ -2554,13 +3007,13 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					debouncer::init(ip);
-					debouncer::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer::remote_add(net::ipv4_address(10,1,0,40));
 
 					led::init(ip);
-					led::remote_add(net::ipv4_address(10,1,0,100));
+					led::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_sensor::init(ip);
-					magnetic_sensor::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_sensor::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -2737,40 +3190,40 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					button_grid::init(ip);
-					button_grid::remote_add(net::ipv4_address(10,1,0,100));
+					button_grid::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_1::init(ip);
-					debouncer_1::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_2::init(ip);
-					debouncer_2::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_3::init(ip);
-					debouncer_3::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_3::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_4::init(ip);
-					debouncer_4::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_4::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_5::init(ip);
-					debouncer_5::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_5::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_6::init(ip);
-					debouncer_6::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_6::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_7::init(ip);
-					debouncer_7::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_7::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_1::init(ip);
-					magnetic_lock_1::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_2::init(ip);
-					magnetic_lock_2::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_3::init(ip);
-					magnetic_lock_3::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_3::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_4::init(ip);
-					magnetic_lock_4::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_4::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -3008,52 +3461,52 @@ namespace ddf
 				static void init(net::ipv4_address ip)
 				{
 					debouncer_1::init(ip);
-					debouncer_1::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_2::init(ip);
-					debouncer_2::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_3::init(ip);
-					debouncer_3::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_3::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_4::init(ip);
-					debouncer_4::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_4::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_5::init(ip);
-					debouncer_5::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_5::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_6::init(ip);
-					debouncer_6::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_6::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_7::init(ip);
-					debouncer_7::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_7::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_8::init(ip);
-					debouncer_8::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_8::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_9::init(ip);
-					debouncer_9::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_9::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_10::init(ip);
-					debouncer_10::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_10::remote_add(net::ipv4_address(10,1,0,40));
 
 					light_controller::init(ip);
-					light_controller::remote_add(net::ipv4_address(10,1,0,100));
+					light_controller::remote_add(net::ipv4_address(10,1,0,40));
 
 					debouncer_12::init(ip);
-					debouncer_12::remote_add(net::ipv4_address(10,1,0,100));
+					debouncer_12::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_1::init(ip);
-					magnetic_lock_1::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_1::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_2::init(ip);
-					magnetic_lock_2::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_2::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_3::init(ip);
-					magnetic_lock_3::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_3::remote_add(net::ipv4_address(10,1,0,40));
 
 					magnetic_lock_4::init(ip);
-					magnetic_lock_4::remote_add(net::ipv4_address(10,1,0,100));
+					magnetic_lock_4::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -3208,6 +3661,141 @@ namespace ddf
 			typedef typename wic::timer<gametimer_config> gametimer;
 
 
+			void freeze_1_start()
+			{
+				typedef typename junkyard::freezed1 fr;
+				typedef typename junkyard::freezetimer1 tmr;
+				typedef typename junkyard::gamestate gs;
+
+				if(true && ( fr::value() ))
+				{
+					game_event(1,4,14).propagate();
+					(void)0; { 
+        gs::value(2);
+	tmr::start();
+       }
+				}
+			}
+			void freeze_1_stop()
+			{
+				typedef typename junkyard::freezed1 fr;
+				typedef typename junkyard::freezetimer1 tmr;
+				typedef typename junkyard::gamestate gs;
+
+				if(true && ( !fr::value() ))
+				{
+					game_event(1,4,15).propagate();
+					(void)0; { 
+	tmr::stop();
+	tmr::reset();
+	gs::value(1);
+       }
+				}
+			}
+			void freeze_1_timeout()
+			{
+				typedef typename junkyard::freezetimer1 tmr;
+				typedef typename junkyard::freezed1 fr;
+
+				if(true && ( tmr::value() ))
+				{
+					game_event(1,4,16).propagate();
+					(void)0; { fr::value(false); }
+				}
+			}
+			void freeze_5_start()
+			{
+				typedef typename junkyard::freezed5 fr;
+				typedef typename junkyard::freezetimer5 tmr;
+				typedef typename junkyard::gamestate gs;
+
+				if(true && ( fr::value() ))
+				{
+					game_event(1,4,17).propagate();
+					(void)0; { 
+        gs::value(2);
+	tmr::start();
+       }
+				}
+			}
+			void freeze_5_stop()
+			{
+				typedef typename junkyard::freezed5 fr;
+				typedef typename junkyard::freezetimer5 tmr;
+				typedef typename junkyard::gamestate gs;
+
+				if(true && ( !fr::value() ))
+				{
+					game_event(1,4,18).propagate();
+					(void)0; { 
+	tmr::stop();
+	tmr::reset();
+	gs::value(1);
+       }
+				}
+			}
+			void freeze_5_timeout()
+			{
+				typedef typename junkyard::freezetimer5 tmr;
+				typedef typename junkyard::freezed5 fr;
+
+				if(true && ( tmr::value() ))
+				{
+					game_event(1,4,19).propagate();
+					(void)0; { fr::value(false); }
+				}
+			}
+			void game_state_changed()
+			{
+				typedef typename junkyard::gametimer tmr;
+				typedef typename junkyard::gamestate gs;
+				typedef typename junkyard::freezed1 fr1;
+				typedef typename junkyard::freezed5 fr5;
+
+				if(true)
+				{
+					game_event(1,4,13).propagate();
+					(void)0; { 
+      switch(gs::value())
+      {
+      	// Not started
+      	case 0:
+      		tmr::stop();
+      		tmr::reset();
+      		break;
+
+      	// Started
+      	case 1:
+      		tmr::start();
+      		fr1::value(false);
+      		fr5::value(false);
+      		break;
+
+      	// Paused
+      	case 2:
+      		tmr::stop();
+      		break;
+
+      	// Finished
+      	case 3:
+      		tmr::stop();
+      		tmr::reset();
+      		break;
+      }
+     }
+				}
+			}
+			void game_timer_expired()
+			{
+				typedef typename junkyard::gametimer tmr;
+				typedef typename junkyard::gamestate gs;
+
+				if(true && ( tmr::value() >= 3600 ))
+				{
+					game_event(1,4,12).propagate();
+					(void)0; { gs::value(3); }
+				}
+			}
 			void labirynth_1()
 			{
 				typedef typename junkyard::secret_box_controller_1::debouncer_5 button;
@@ -3215,7 +3803,7 @@ namespace ddf
 
 				if(true && (  button::value()  ))
 				{
-					game_event(1,4,12).propagate();
+					game_event(1,4,20).propagate();
 					(void)0; {  lock::value(0);  }
 				}
 			}
@@ -3226,7 +3814,7 @@ namespace ddf
 
 				if(true && (  button::value()  ))
 				{
-					game_event(1,4,13).propagate();
+					game_event(1,4,21).propagate();
 					(void)0; {  lock::value(0);  }
 				}
 			}
@@ -3237,7 +3825,7 @@ namespace ddf
 
 				if(true && (  button::value()  ))
 				{
-					game_event(1,4,14).propagate();
+					game_event(1,4,22).propagate();
 					(void)0; {  lock::value(0);  }
 				}
 			}
@@ -3249,18 +3837,26 @@ namespace ddf
 			secret_box_controller_1::init(net::ipv4_address(10,1,0,69));
 			secret_box_controller_2::init(net::ipv4_address(10,1,0,70));
 
+			freezed1::on_change += freeze_1_start;
+			freezed1::on_change += freeze_1_stop;
+			freezetimer1::on_change += freeze_1_timeout;
+			freezed5::on_change += freeze_5_start;
+			freezed5::on_change += freeze_5_stop;
+			freezetimer5::on_change += freeze_5_timeout;
+			gamestate::on_change += game_state_changed;
+			gametimer::on_change += game_timer_expired;
 			secret_box_controller_1::debouncer_5::value::on_change += labirynth_1;
 			secret_box_controller_1::debouncer_6::value::on_change += labirynth_2;
 			secret_box_controller_1::debouncer_7::value::on_change += labirynth_3;
 
 			freezed1::init();
-			freezed1::remote_add(net::ipv4_address(10,1,0,100));
+			freezed1::remote_add(net::ipv4_address(10,1,0,40));
 
 			freezed5::init();
-			freezed5::remote_add(net::ipv4_address(10,1,0,100));
+			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
 			gamestate::init();
-			gamestate::remote_add(net::ipv4_address(10,1,0,100));
+			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
 
 			ddf::junkyard::room_1::init();
@@ -3275,19 +3871,27 @@ namespace ddf
 
 
 			freezetimer1::init();
-			freezetimer1::remote_add(net::ipv4_address(10,1,0,100));
+			freezetimer1::remote_add(net::ipv4_address(10,1,0,40));
 
 			freezetimer5::init();
-			freezetimer5::remote_add(net::ipv4_address(10,1,0,100));
+			freezetimer5::remote_add(net::ipv4_address(10,1,0,40));
 
 			gametimer::init();
-			gametimer::remote_add(net::ipv4_address(10,1,0,100));
+			gametimer::remote_add(net::ipv4_address(10,1,0,40));
 
 
 		}
 
 		static void uninit()
 		{
+			freezed1::on_change -= freeze_1_start;
+			freezed1::on_change -= freeze_1_stop;
+			freezetimer1::on_change -= freeze_1_timeout;
+			freezed5::on_change -= freeze_5_start;
+			freezed5::on_change -= freeze_5_stop;
+			freezetimer5::on_change -= freeze_5_timeout;
+			gamestate::on_change -= game_state_changed;
+			gametimer::on_change -= game_timer_expired;
 			secret_box_controller_1::debouncer_5::value::on_change -= labirynth_1;
 			secret_box_controller_1::debouncer_6::value::on_change -= labirynth_2;
 			secret_box_controller_1::debouncer_7::value::on_change -= labirynth_3;
@@ -3342,7 +3946,7 @@ namespace ddf
 
 		static void init()
 		{
-			gmclient::init(net::ipv4_address(10,1,0,100));
+			gmclient::init(net::ipv4_address(10,1,0,40));
 
 
 

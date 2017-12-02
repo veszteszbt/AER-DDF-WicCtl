@@ -98,7 +98,7 @@ journal &journal::operator<<(end_type)
 		)
 			payload.insert(p+1,std::string(prefix.size(),' '));
 
-		notify(prefix + payload + "\n\n");
+		notify(prefix + payload + "\n");
 	}
 	buffer.str(std::string());
 	return *this;
@@ -106,12 +106,13 @@ journal &journal::operator<<(end_type)
 
 journal::~journal()
 {
-	buffer.seekg(0,std::ios::end);
+/*	buffer.seekg(0,std::ios::end);
 	if(buffer.tellg())
 	{
 		buffer.seekg(0,std::ios::beg);
 		*this << end;
 	}
+*/
 }
 
 
@@ -191,7 +192,7 @@ std::condition_variable journal::suspend_cv;
 
 std::queue<std::string*> journal::item_list;
 
-uint8_t       journal::min_level = journal::info;
+uint8_t       journal::min_level = 255;
 
 volatile bool          journal::is_running = true;
 
@@ -214,6 +215,7 @@ std::map<std::string,uint8_t> journal::domains = {
 {"wicp.commit",255},
 {"wicp.property.local",255},
 {"wicp.property.remote",255},
+{"wicp.property.forward",255},
 {"wicp.sync.local",255},
 {"wicp.sync.remote",255}
 };

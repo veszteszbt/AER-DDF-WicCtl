@@ -26,6 +26,12 @@ namespace wicp
 			static std::mutex   remotes_lock;
 		};
 
+		static journal jrn(uint8_t level)
+		{
+			return journal(level,"wicp.property.local") << "property: " << std::hex <<
+				env::class_id << "::" << env::member_id << ' ';
+		}
+
 
 		struct env_commit : public env
 		{
@@ -67,6 +73,7 @@ namespace wicp
 
 		static void get_handler(get_handle_type h,const uint8_t*)
 		{
+			jrn(journal::trace) << "get from remote " << (std::string)h.ip << journal::end;
 			history_lock.lock();
 			value_type rv(history.empty() ? env::value : history.front().value);
 			history_lock.unlock();
@@ -78,8 +85,9 @@ namespace wicp
 			history_lock.lock();
 			env::value = *v;
 			history_lock.unlock();
-			proc_commit::notify();
+			jrn(journal::trace) << "set from remote " << (std::string)h.ip << journal::end;
 			h.respond(true);
+			proc_commit::notify();
 		}
 
 
@@ -92,6 +100,8 @@ namespace wicp
 			remotes.clear();
 			history.clear();
 			env::value = v;
+			history.push_back(typename env::history_record(v));
+			env::local_timestamp = history.back().time;
 			proc_commit::init();
 			proc_sync::init();
 			rpc::set_command(
@@ -102,9 +112,7 @@ namespace wicp
 				command_id | types::function::set,
 				set_handler
 			);
-			journal(journal::debug,"wicp.property.local") << "initialized" << std::endl <<
-				"property: " << std::hex << env::class_id << "::" << env::member_id <<
-				journal::end;
+			jrn(journal::debug) << "initialized" << journal::end;
 		}
 
 		static void uninit()
@@ -115,9 +123,7 @@ namespace wicp
 			history.clear();
 			proc_commit::uninit();
 			proc_sync::uninit();
-			journal(journal::debug,"wicp.property.local") << "uninitialied" << std::endl <<
-				"property: " << std::hex << env::class_id << "::" << env::member_id <<
-				journal::end;
+			jrn(journal::debug) << "uninitialied" << journal::end;
 		}
 
 		static value_type value()
@@ -144,6 +150,7 @@ namespace wicp
 			}
 			env::value = v;
 			history_lock.unlock();
+			jrn(journal::trace) << "set from API" << journal::end;
 			proc_commit::notify();
 			return v;
 		}
@@ -153,6 +160,7 @@ namespace wicp
 			remotes_lock.lock();
 			remotes.push_back(remote_record(ip));
 			remotes_lock.unlock();
+			jrn(journal::trace) << "added remote " << (std::string)ip << journal::end;
 
 			proc_sync::notify();
 			return true;
@@ -172,6 +180,7 @@ namespace wicp
 					remotes.erase(i);
 					remotes_lock.unlock();
 					proc_sync::notify();
+					jrn(journal::trace) << "deleted remote " << (std::string)ip << journal::end;
 					return true;
 				}
 			remotes_lock.unlock();

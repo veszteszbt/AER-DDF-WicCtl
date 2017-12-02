@@ -62,17 +62,19 @@ namespace wicp
 
 		constexpr static remote_record              &remote  = env::remote;
 
+		static journal jrn(uint8_t level)
+		{
+			return journal(level,"wicp.property.remote") << "property: " << std::hex <<
+				env::class_id << "::" << env::member_id << ' ';
+		}
+
 		static void notify_handler(notify_call_handle_type  h, const value_type *v)
 		{
 			if(v)
 			{
 				if(env::value != *v)
 				{
-					journal(journal::trace,"wicp.property.remote") << "new value on remote" << std::endl <<
-						"  remote: " << (std::string)h.ip << std::endl <<
-						"property: " << std::hex << env::class_id << "::" << env::member_id <<
-						journal::end;
-
+					jrn(journal::trace) << "new value on remote " << (std::string)h.ip << journal::end;
 					history_lock.lock();
 					env::value = *v;
 					history.push_front(history_record(*v));
@@ -86,19 +88,13 @@ namespace wicp
 				}
 				else
 				{
-					journal(journal::warning,"wicp.property.remote") << "notify from remote with no change" << std::endl <<
-						"  remote: " << (std::string)h.ip << std::endl <<
-						"property: " << std::hex << env::class_id << "::" << env::member_id <<
-						journal::end;
+					jrn(journal::warning) << "notify from remote " << (std::string)h.ip << " with no change" << journal::end;
 					h.respond(false);
 				}
 			}
 			else
 			{
-				journal(journal::error,"wicp.property.remote") << "notify from remote with no value" << std::endl <<
-					"  remote: " << (std::string)h.ip << std::endl <<
-					"property: " << std::hex << env::class_id << "::" << env::member_id <<
-					journal::end;
+				jrn(journal::error) << "notify from remote " << (std::string)h.ip << " with no value" << journal::end;
 				h.respond(false);
 			}
 		}
@@ -119,10 +115,7 @@ namespace wicp
 				command_id | types::function::notify,
 				notify_handler
 			);
-			journal(journal::debug,"wicp.property.remote") << "initialized" << std::endl <<
-				"  remote: " << (std::string)ip << std::endl <<
-				"property: " << std::hex << env::class_id << "::" << env::member_id <<
-				journal::end;
+			jrn(journal::debug) << "initialized" << journal::end;
 		}
 
 		static void uninit()
@@ -131,10 +124,7 @@ namespace wicp
 			proc_sync::uninit();
 			proc_log::uninit();
 			rpc::clear_command(command_id | types::function::notify);
-			journal(journal::debug,"wicp.property.remote") << "uninitialized" << std::endl <<
-				"  remote: " << (std::string)env::remote.ip << std::endl <<
-				"property: " << std::hex << env::class_id << "::" << env::member_id <<
-				journal::end;
+			jrn(journal::debug) << "uninitialized" << journal::end;
 		}
 
 		static value_type value()
@@ -150,9 +140,7 @@ namespace wicp
 		{
 			if(v == env::value)
 				return v;
-			journal(journal::trace,"wicp.property.remote") << "new local value" << std::endl <<
-				"property: " << std::hex << env::class_id << "::" << env::member_id <<
-				journal::end;
+			jrn(journal::trace) << "value set via API" << journal::end;
 			env::value = v;
 			proc_commit::notify();
 			return env::value;

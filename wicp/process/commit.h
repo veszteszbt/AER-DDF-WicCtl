@@ -48,41 +48,37 @@ namespace process
 
 		static volatile bool            is_running;
 
+		static journal jrn(uint8_t level)
+		{
+			return journal(level,"wicp.commit") << "property: " << std::hex <<
+				TEnv::class_id << "::" << TEnv::member_id << ' ';
+		}
+
 
 		static void cooldown_finish()
 		{
-			journal(journal::trace,"wicp.commit") << "cooldown finished" << std::endl <<
-				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-				journal::end;
-				
+			jrn(journal::trace) << "cooldown finished" << journal::end;
 			if(change_only || value != history.front().value)
 				notify();
 		}
 
 		static void start()
 		{
-			journal(journal::debug,"wicp.commit") << "initialized" << std::endl <<
-				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-				journal::end;
+			jrn(journal::debug) << "initialized" << journal::end;
 			while(is_running)
 			{
 				std::unique_lock<std::mutex> ul(suspend_lock);
 				history_lock.lock();
 				if(change_only && !history.empty() && value == history.front().value)
 				{
-					journal(journal::trace,"wicp.commit") << "no change; suspending until next notify" << std::endl <<
-						"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-						journal::end;
+					jrn(journal::trace) << "no change; suspending until next notify" << journal::end;
 					history_lock.unlock();
 					suspend_cv.wait(ul);
 					continue;
 				}
 				else
 					cooldown_pending = true;
-					journal(journal::trace,"wicp.commit") << "comitting new value to history" << std::endl <<
-						"  length: " << history.size() << std::endl <<
-						"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-						journal::end;
+					jrn(journal::trace) << "comitting new value to history; length is " << history.size() << journal::end;
 
 				const history_record hr(value);
 				history.push_front(hr);
@@ -98,9 +94,7 @@ namespace process
 				suspend_cv.wait_until(ul,hr.time + std::chrono::milliseconds(static_cast<uint32_t>(cooldown_time)));
 				cooldown_pending = false;
 			}
-			journal(journal::debug,"wicp.commit") << "uninitialized" << std::endl <<
-				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-				journal::end;
+			jrn(journal::debug) << "uninitialized" << journal::end;
 		}
 	public:
 
@@ -126,10 +120,7 @@ namespace process
 		{
 			if(cooldown_pending)
 			{
-				journal(journal::trace,"wicp.commit") << "cooldown pending; ignoring notify" << std::endl <<
-					"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-					journal::end;
-
+				jrn(journal::trace) << "cooldown pending; ignoring notify" << journal::end;
 				return;
 			}
 			std::lock_guard<std::mutex> lg(suspend_lock);

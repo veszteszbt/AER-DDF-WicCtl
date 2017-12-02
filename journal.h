@@ -27,7 +27,7 @@ class journal
 	static std::condition_variable suspend_cv;
 
 
-	const std::string   &domain;
+	const std::string    domain;
 
 	const uint8_t        level;
 
@@ -78,6 +78,11 @@ public:
 		: domain(pdomain)
 		, level(plevel)
 	{}
+
+	journal(const journal &t)
+		: domain(t.domain)
+		, level(t.level)
+	{ buffer << t.buffer.str(); }
 
 
 	template<typename T>
