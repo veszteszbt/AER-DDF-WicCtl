@@ -108,8 +108,10 @@ namespace wicp
 		{
 			history.clear();
 			env::remote.ip = ip;
-			env::remote.sync_timestamp = clock::time_point::min();
+			history.push_back(history_record(env::value));
+			env::local_timestamp = env::remote.sync_timestamp = history.back().time;
 			env::remote.pending_timestamp = clock::time_point::min();
+
 			proc_log::init();
 			proc_commit::init();
 			proc_sync::init();

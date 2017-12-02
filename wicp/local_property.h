@@ -102,7 +102,7 @@ namespace wicp
 				command_id | types::function::set,
 				set_handler
 			);
-			journal(journal::debug,"wicp.property.local") << "initialied" << std::endl <<
+			journal(journal::debug,"wicp.property.local") << "initialized" << std::endl <<
 				"property: " << std::hex << env::class_id << "::" << env::member_id <<
 				journal::end;
 		}
