@@ -11,6 +11,8 @@ namespace wicp
 	class local_property
 	{
 	public:
+		typedef TConfig config;
+
 		typedef void (*change_handler_type)();
 	private:
 		struct env : public property_env_base<TConfig>

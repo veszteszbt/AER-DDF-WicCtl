@@ -922,6 +922,8 @@ namespace ddf
 			/// Freezed1 ///
 			struct freezed1_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::pirate::freezed1";
+
 				typedef bool cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x1ffff0;
@@ -934,6 +936,8 @@ namespace ddf
 			/// Freezed5 ///
 			struct freezed5_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::pirate::freezed5";
+
 				typedef bool cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x1ffff0;
@@ -946,6 +950,8 @@ namespace ddf
 			/// GameState ///
 			struct gamestate_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::pirate::gamestate";
+
 				typedef uint8_t cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x1ffff0;
@@ -1583,6 +1589,8 @@ namespace ddf
 			/// Freezed1 ///
 			struct freezed1_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::magician::freezed1";
+
 				typedef bool cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x2ffff0;
@@ -1595,6 +1603,8 @@ namespace ddf
 			/// Freezed5 ///
 			struct freezed5_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::magician::freezed5";
+
 				typedef bool cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x2ffff0;
@@ -1607,6 +1617,8 @@ namespace ddf
 			/// GameState ///
 			struct gamestate_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::magician::gamestate";
+
 				typedef uint8_t cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x2ffff0;
@@ -2102,6 +2114,8 @@ namespace ddf
 				/// Started ///
 				struct started_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::desktop_pc::started";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300050;
@@ -2113,6 +2127,8 @@ namespace ddf
 				/// Shutdown ///
 				struct shutdown_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::desktop_pc::shutdown";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300050;
@@ -2124,6 +2140,8 @@ namespace ddf
 				/// Logged In ///
 				struct logged_in_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::desktop_pc::logged_in";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300050;
@@ -2135,6 +2153,8 @@ namespace ddf
 				/// Recycled Restore ///
 				struct recycled_restore_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::desktop_pc::recycled_restore";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300050;
@@ -2146,6 +2166,8 @@ namespace ddf
 				/// Audioplay started ///
 				struct audioplay_started_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::desktop_pc::audioplay_started";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300050;
@@ -2157,6 +2179,8 @@ namespace ddf
 				/// Audioplay finished ///
 				struct audioplay_finished_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::desktop_pc::audioplay_finished";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300050;
@@ -2168,6 +2192,8 @@ namespace ddf
 				/// Audioplay paused ///
 				struct audioplay_paused_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::desktop_pc::audioplay_paused";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300050;
@@ -2179,6 +2205,8 @@ namespace ddf
 				/// Restart Game ///
 				struct restart_game_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::desktop_pc::restart_game";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300050;
@@ -2190,6 +2218,8 @@ namespace ddf
 				/// Audioplay startevent ///
 				struct audioplay_startevent_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::desktop_pc::audioplay_startevent";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300050;
@@ -2201,6 +2231,8 @@ namespace ddf
 				/// Audiopause pauseevent ///
 				struct audiopause_pauseevent_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::desktop_pc::audiopause_pauseevent";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300050;
@@ -2416,6 +2448,8 @@ namespace ddf
 				/// Started ///
 				struct started_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::started";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2427,6 +2461,8 @@ namespace ddf
 				/// Shutdown ///
 				struct shutdown_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::shutdown";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2438,6 +2474,8 @@ namespace ddf
 				/// LiveCam started ///
 				struct livecam_started_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::livecam_started";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2449,6 +2487,8 @@ namespace ddf
 				/// LiveCamSlides started ///
 				struct livecamslides_started_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::livecamslides_started";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2460,6 +2500,8 @@ namespace ddf
 				/// Restart Game ///
 				struct restart_game_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::restart_game";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2471,6 +2513,8 @@ namespace ddf
 				/// Start LiveCams ///
 				struct start_livecams_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::start_livecams";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2482,6 +2526,8 @@ namespace ddf
 				/// Start Tape ///
 				struct start_tape_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::start_tape";
+
 					typedef int32_t cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2493,6 +2539,8 @@ namespace ddf
 				/// Stop Tape ///
 				struct stop_tape_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::stop_tape";
+
 					typedef int32_t cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2504,6 +2552,8 @@ namespace ddf
 				/// enabled ///
 				struct enabled_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::enabled";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2515,6 +2565,8 @@ namespace ddf
 				/// casette_id ///
 				struct casette_id_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::casette_id";
+
 					typedef uint64_t cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2526,6 +2578,8 @@ namespace ddf
 				/// play_ongoing ///
 				struct play_ongoing_config : public property_config_base
 				{
+					constexpr static const char *name = "ddf::villa::video_device::play_ongoing";
+
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
@@ -2593,6 +2647,8 @@ namespace ddf
 			/// Freezed1 ///
 			struct freezed1_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::villa::freezed1";
+
 				typedef bool cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x3ffff0;
@@ -2605,6 +2661,8 @@ namespace ddf
 			/// Freezed5 ///
 			struct freezed5_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::villa::freezed5";
+
 				typedef bool cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x3ffff0;
@@ -2617,6 +2675,8 @@ namespace ddf
 			/// GameState ///
 			struct gamestate_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::villa::gamestate";
+
 				typedef uint8_t cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x3ffff0;
@@ -2869,7 +2929,7 @@ namespace ddf
 		{
 			control_room_controller::init(net::ipv4_address(10,1,0,74));
 			desk_controller::init(net::ipv4_address(10,1,0,75));
-			desktop_pc::init(net::ipv4_address(10,1,0,20));
+			desktop_pc::init(net::ipv4_address(192,168,1,57));
 			entrance_controller::init(net::ipv4_address(10,1,0,67));
 			safe_controller::init(net::ipv4_address(10,1,0,62));
 			video_device::init(net::ipv4_address(10,1,0,21));
@@ -3537,6 +3597,8 @@ namespace ddf
 			/// Freezed1 ///
 			struct freezed1_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::junkyard::freezed1";
+
 				typedef bool cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x4ffff0;
@@ -3549,6 +3611,8 @@ namespace ddf
 			/// Freezed5 ///
 			struct freezed5_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::junkyard::freezed5";
+
 				typedef bool cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x4ffff0;
@@ -3561,6 +3625,8 @@ namespace ddf
 			/// GameState ///
 			struct gamestate_config : public property_config_base
 			{
+				constexpr static const char *name = "ddf::junkyard::gamestate";
+
 				typedef uint8_t cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x4ffff0;
@@ -3966,6 +4032,45 @@ namespace ddf
 	}
 
 }
+template<typename T>
+bool set_property(const std::string &x)
+{
+	if(T::config::name == x)
+	{
+		typename T::value_type v;
+		std::cin >> v;
+		if(!std::cin.good())
+		{
+			std::string y;
+			std::cin >> y;
+			std::cout << "\e[31;01m[NOK]\e[0m Invalid value `"<<y<<"'" << std::endl;
+		}
+		else
+		{
+			T::value(v);
+			std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
+		}
+
+		return true;
+	}
+
+	else
+		return false;
+}
+
+template<typename T>
+bool get_property(const std::string &x)
+{
+	if(T::config::name == x)
+	{
+		typename T::value_type v = T::value();
+		std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
+		return true;
+	}
+
+	else
+		return false;
+}
 
 template<typename T>
 bool set_peripheral(const std::string &x)
@@ -4003,6 +4108,7 @@ bool get_peripheral(const std::string &x)
 	else
 		return false;
 }
+
 int main()
 {
 	journal::init();
@@ -4105,6 +4211,16 @@ std::cout << "initializing " << std::endl;
 			if(get_peripheral<ddf::villa::control_room_controller::debouncer_1>(x)) continue;
 			if(get_peripheral<ddf::villa::entrance_controller::debouncer>(x)) continue;
 			if(get_peripheral<ddf::villa::entrance_controller::magnetic_sensor>(x)) continue;
+			if(get_property<ddf::villa::desktop_pc::started>(x)) continue;
+			if(get_property<ddf::villa::desktop_pc::shutdown>(x)) continue;
+			if(get_property<ddf::villa::desktop_pc::logged_in>(x)) continue;
+			if(get_property<ddf::villa::desktop_pc::recycled_restore>(x)) continue;
+			if(get_property<ddf::villa::desktop_pc::audioplay_started>(x)) continue;
+			if(get_property<ddf::villa::desktop_pc::audioplay_finished>(x)) continue;
+			if(get_property<ddf::villa::desktop_pc::audioplay_paused>(x)) continue;
+			if(get_property<ddf::villa::desktop_pc::restart_game>(x)) continue;
+			if(get_property<ddf::villa::desktop_pc::audioplay_startevent>(x)) continue;
+			if(get_property<ddf::villa::desktop_pc::audiopause_pauseevent>(x)) continue;
 //			if(get_peripheral<ddf::junkyard::secret_box_controller_1::button_grid>(x)) continue;
 			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_1>(x)) continue;
 			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_2>(x)) continue;
@@ -4168,6 +4284,16 @@ std::cout << "initializing " << std::endl;
 			if(set_peripheral<ddf::villa::control_room_controller::magnetic_lock>(x)) continue;
 			if(set_peripheral<ddf::villa::control_room_controller::video_eject>(x)) continue;
 			if(set_peripheral<ddf::villa::entrance_controller::led>(x)) continue;
+			if(set_property<ddf::villa::desktop_pc::started>(x)) continue;
+			if(set_property<ddf::villa::desktop_pc::shutdown>(x)) continue;
+			if(set_property<ddf::villa::desktop_pc::logged_in>(x)) continue;
+			if(set_property<ddf::villa::desktop_pc::recycled_restore>(x)) continue;
+			if(set_property<ddf::villa::desktop_pc::audioplay_started>(x)) continue;
+			if(set_property<ddf::villa::desktop_pc::audioplay_finished>(x)) continue;
+			if(set_property<ddf::villa::desktop_pc::audioplay_paused>(x)) continue;
+			if(set_property<ddf::villa::desktop_pc::restart_game>(x)) continue;
+			if(set_property<ddf::villa::desktop_pc::audioplay_startevent>(x)) continue;
+			if(set_property<ddf::villa::desktop_pc::audiopause_pauseevent>(x)) continue;
 			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_1>(x)) continue;
 			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_2>(x)) continue;
 			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_3>(x)) continue;

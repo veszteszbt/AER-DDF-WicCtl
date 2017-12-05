@@ -48,6 +48,8 @@ namespace wicp
 		typedef typename env::rpc::template call_handle<bool>  notify_call_handle_type;
 
 	public:
+		typedef TConfig config;
+
 		typedef typename env::value_type              value_type;
 
 		constexpr static sched::listener &on_change = env::on_change;

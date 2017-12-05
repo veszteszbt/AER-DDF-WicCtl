@@ -31,6 +31,8 @@ namespace wicp {
 		}
 
 	public:
+		typedef TConfig config;
+
 		typedef typename property::value_type value_type;
 
 		static void init(net::ipv4_address ip)
