@@ -13,6 +13,7 @@
 #include <property_config_base.h>
 #include <process/sql_executor.h>
 
+#include <status.h>
 #include <device.h>
 #include <game_event.h>
 
@@ -947,6 +948,20 @@ namespace ddf
 			};
 			typedef wicp::local_property<freezed5_config> freezed5;
 
+			/// GM Help Status ///
+			struct gm_help_status_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::gm_help_status";
+
+				typedef bool cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x180;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<gm_help_status_config> gm_help_status;
+
 			/// GameState ///
 			struct gamestate_config : public property_config_base
 			{
@@ -960,6 +975,48 @@ namespace ddf
 				static const bool     cfg_commit_change_only = true;
 			};
 			typedef wicp::local_property<gamestate_config> gamestate;
+
+			/// Incoming Call ///
+			struct incoming_call_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::incoming_call";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x190;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<incoming_call_config> incoming_call;
+
+			/// Incoming Call Status ///
+			struct incoming_call_status_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::incoming_call_status";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x1a0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<incoming_call_status_config> incoming_call_status;
+
+			/// Restart Game ///
+			struct restart_game_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::restart_game";
+
+				typedef bool cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x170;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<restart_game_config> restart_game;
 
 
 			/// room_1
@@ -1172,7 +1229,7 @@ namespace ddf
 
 				if(true)
 				{
-					game_event(1,1,23).propagate();
+					game_event(1,1,27).propagate();
 					(void)0; { 
         const uint16_t v = (potentiometer::value()>>5)+1;
         starlight::value(v*v);
@@ -1206,8 +1263,24 @@ namespace ddf
 			freezed5::init();
 			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
+			gm_help_status::init();
+			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
+			gm_help_status::remote_add(net::ipv4_address(192,168,1,62));
+
 			gamestate::init();
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
+
+			incoming_call::init();
+			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
+			incoming_call::remote_add(net::ipv4_address(192,168,1,62));
+
+			incoming_call_status::init();
+			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
+			incoming_call_status::remote_add(net::ipv4_address(192,168,1,62));
+
+			restart_game::init();
+			restart_game::remote_add(net::ipv4_address(10,1,0,40));
+			restart_game::remote_add(net::ipv4_address(192,168,1,62));
 
 
 			ddf::pirate::room_1::init();
@@ -1250,7 +1323,11 @@ namespace ddf
 
 			freezed1::uninit();
 			freezed5::uninit();
+			gm_help_status::uninit();
 			gamestate::uninit();
+			incoming_call::uninit();
+			incoming_call_status::uninit();
+			restart_game::uninit();
 
 			room_1_content::chord::uninit();
 
@@ -1614,6 +1691,20 @@ namespace ddf
 			};
 			typedef wicp::local_property<freezed5_config> freezed5;
 
+			/// GM Help Status ///
+			struct gm_help_status_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::magician::gm_help_status";
+
+				typedef bool cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x2ffff0;
+				static const uint32_t cfg_member_id          = 0x160;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<gm_help_status_config> gm_help_status;
+
 			/// GameState ///
 			struct gamestate_config : public property_config_base
 			{
@@ -1627,6 +1718,48 @@ namespace ddf
 				static const bool     cfg_commit_change_only = true;
 			};
 			typedef wicp::local_property<gamestate_config> gamestate;
+
+			/// Incoming Call ///
+			struct incoming_call_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::magician::incoming_call";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x2ffff0;
+				static const uint32_t cfg_member_id          = 0x170;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<incoming_call_config> incoming_call;
+
+			/// Incoming Call Status ///
+			struct incoming_call_status_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::magician::incoming_call_status";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x2ffff0;
+				static const uint32_t cfg_member_id          = 0x180;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<incoming_call_status_config> incoming_call_status;
+
+			/// Restart Game ///
+			struct restart_game_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::magician::restart_game";
+
+				typedef bool cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x2ffff0;
+				static const uint32_t cfg_member_id          = 0x150;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<restart_game_config> restart_game;
 
 
 			/// room_1
@@ -1861,7 +1994,7 @@ namespace ddf
 
 				if(true && (  debouncer::value()  ))
 				{
-					game_event(1,2,21).propagate();
+					game_event(1,2,25).propagate();
 					(void)0; {  magnetic_lock::value(0);  }
 				}
 			}
@@ -1890,8 +2023,24 @@ namespace ddf
 			freezed5::init();
 			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
+			gm_help_status::init();
+			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
+			gm_help_status::remote_add(net::ipv4_address(192,168,1,62));
+
 			gamestate::init();
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
+
+			incoming_call::init();
+			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
+			incoming_call::remote_add(net::ipv4_address(192,168,1,62));
+
+			incoming_call_status::init();
+			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
+			incoming_call_status::remote_add(net::ipv4_address(192,168,1,62));
+
+			restart_game::init();
+			restart_game::remote_add(net::ipv4_address(10,1,0,40));
+			restart_game::remote_add(net::ipv4_address(192,168,1,62));
 
 
 			ddf::magician::room_1::init();
@@ -1936,7 +2085,11 @@ namespace ddf
 
 			freezed1::uninit();
 			freezed5::uninit();
+			gm_help_status::uninit();
 			gamestate::uninit();
+			incoming_call::uninit();
+			incoming_call_status::uninit();
+			restart_game::uninit();
 
 			room_1_content::chord::uninit();
 			room_1_content::event_1::uninit();
@@ -2672,6 +2825,20 @@ namespace ddf
 			};
 			typedef wicp::local_property<freezed5_config> freezed5;
 
+			/// GM Help Status ///
+			struct gm_help_status_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::villa::gm_help_status";
+
+				typedef bool cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x3ffff0;
+				static const uint32_t cfg_member_id          = 0x180;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<gm_help_status_config> gm_help_status;
+
 			/// GameState ///
 			struct gamestate_config : public property_config_base
 			{
@@ -2685,6 +2852,48 @@ namespace ddf
 				static const bool     cfg_commit_change_only = true;
 			};
 			typedef wicp::local_property<gamestate_config> gamestate;
+
+			/// Incoming Call ///
+			struct incoming_call_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::villa::incoming_call";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x3ffff0;
+				static const uint32_t cfg_member_id          = 0x190;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<incoming_call_config> incoming_call;
+
+			/// Incoming Call Status ///
+			struct incoming_call_status_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::villa::incoming_call_status";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x3ffff0;
+				static const uint32_t cfg_member_id          = 0x1a0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<incoming_call_status_config> incoming_call_status;
+
+			/// Restart Game ///
+			struct restart_game_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::villa::restart_game";
+
+				typedef bool cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x3ffff0;
+				static const uint32_t cfg_member_id          = 0x170;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<restart_game_config> restart_game;
 
 
 			/// room_1
@@ -2929,10 +3138,10 @@ namespace ddf
 		{
 			control_room_controller::init(net::ipv4_address(10,1,0,74));
 			desk_controller::init(net::ipv4_address(10,1,0,75));
-			desktop_pc::init(net::ipv4_address(192,168,1,57));
+			desktop_pc::init(net::ipv4_address(192,168,1,10));
 			entrance_controller::init(net::ipv4_address(10,1,0,67));
 			safe_controller::init(net::ipv4_address(10,1,0,62));
-			video_device::init(net::ipv4_address(10,1,0,21));
+			video_device::init(net::ipv4_address(192,168,1,11));
 
 			freezed1::on_change += freeze_1_start;
 			freezed1::on_change += freeze_1_stop;
@@ -2949,8 +3158,24 @@ namespace ddf
 			freezed5::init();
 			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
+			gm_help_status::init();
+			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
+			gm_help_status::remote_add(net::ipv4_address(192,168,1,62));
+
 			gamestate::init();
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
+
+			incoming_call::init();
+			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
+			incoming_call::remote_add(net::ipv4_address(192,168,1,62));
+
+			incoming_call_status::init();
+			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
+			incoming_call_status::remote_add(net::ipv4_address(192,168,1,62));
+
+			restart_game::init();
+			restart_game::remote_add(net::ipv4_address(10,1,0,40));
+			restart_game::remote_add(net::ipv4_address(192,168,1,62));
 
 
 			ddf::villa::room_1::init();
@@ -2998,7 +3223,11 @@ namespace ddf
 
 			freezed1::uninit();
 			freezed5::uninit();
+			gm_help_status::uninit();
 			gamestate::uninit();
+			incoming_call::uninit();
+			incoming_call_status::uninit();
+			restart_game::uninit();
 
 			room_1_content::chord::uninit();
 			room_1_content::event_1::uninit();
@@ -3020,6 +3249,72 @@ namespace ddf
 	/// Room junkyard
 	namespace junkyard
 	{
+
+			/// email_client
+			namespace email_client
+			{
+
+				/// Started ///
+				struct started_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::email_client::started";
+
+					typedef bool cfg_value_type;
+
+					static const uint32_t cfg_class_id           = 0x400040;
+					static const uint32_t cfg_member_id          = 0x10;
+					static const uint32_t cfg_cooldown_time      = 0;
+				};
+				typedef wicp::forward_property<started_config> started;
+
+				/// Shutdown ///
+				struct shutdown_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::email_client::shutdown";
+
+					typedef bool cfg_value_type;
+
+					static const uint32_t cfg_class_id           = 0x400040;
+					static const uint32_t cfg_member_id          = 0x20;
+					static const uint32_t cfg_cooldown_time      = 0;
+				};
+				typedef wicp::forward_property<shutdown_config> shutdown;
+
+				/// Restart Game ///
+				struct restart_game_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::email_client::restart_game";
+
+					typedef bool cfg_value_type;
+
+					static const uint32_t cfg_class_id           = 0x400040;
+					static const uint32_t cfg_member_id          = 0x30;
+					static const uint32_t cfg_cooldown_time      = 0;
+				};
+				typedef wicp::forward_property<restart_game_config> restart_game;
+
+				static void init(net::ipv4_address ip)
+				{
+					email_client::started::init(ip);
+			email_client::started::remote_add(net::ipv4_address(10,1,0,40));
+
+					email_client::shutdown::init(ip);
+			email_client::shutdown::remote_add(net::ipv4_address(10,1,0,40));
+
+					email_client::restart_game::init(ip);
+			email_client::restart_game::remote_add(net::ipv4_address(10,1,0,40));
+
+
+				}
+
+				static void uninit()
+				{
+					email_client::started::uninit();
+					email_client::shutdown::uninit();
+					email_client::restart_game::uninit();
+
+				}
+			}
 
 			/// entrance_controller
 			namespace entrance_controller
@@ -3602,7 +3897,7 @@ namespace ddf
 				typedef bool cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0x70;
+				static const uint32_t cfg_member_id          = 0x80;
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -3616,11 +3911,25 @@ namespace ddf
 				typedef bool cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0x80;
+				static const uint32_t cfg_member_id          = 0x90;
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
 			typedef wicp::local_property<freezed5_config> freezed5;
+
+			/// GM Help Status ///
+			struct gm_help_status_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::junkyard::gm_help_status";
+
+				typedef bool cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x4ffff0;
+				static const uint32_t cfg_member_id          = 0x160;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<gm_help_status_config> gm_help_status;
 
 			/// GameState ///
 			struct gamestate_config : public property_config_base
@@ -3630,11 +3939,53 @@ namespace ddf
 				typedef uint8_t cfg_value_type;
 
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0x60;
+				static const uint32_t cfg_member_id          = 0x70;
 				static const uint32_t cfg_cooldown_time      = 1000;
 				static const bool     cfg_commit_change_only = true;
 			};
 			typedef wicp::local_property<gamestate_config> gamestate;
+
+			/// Incoming Call ///
+			struct incoming_call_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::junkyard::incoming_call";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x4ffff0;
+				static const uint32_t cfg_member_id          = 0x170;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<incoming_call_config> incoming_call;
+
+			/// Incoming Call Status ///
+			struct incoming_call_status_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::junkyard::incoming_call_status";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x4ffff0;
+				static const uint32_t cfg_member_id          = 0x180;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<incoming_call_status_config> incoming_call_status;
+
+			/// Restart Game ///
+			struct restart_game_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::junkyard::restart_game";
+
+				typedef bool cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x4ffff0;
+				static const uint32_t cfg_member_id          = 0x150;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<restart_game_config> restart_game;
 
 
 			/// room_1
@@ -3660,7 +4011,7 @@ namespace ddf
 
 					constexpr static const char *cfg_source = "/usr/share/ddf/junkyard/event_1.wav";
 
-					static const uint32_t cfg_class_id = 0x400050;
+					static const uint32_t cfg_class_id = 0x400060;
 
 					static const uint32_t cfg_member_id = 0x20;
 				};
@@ -3671,7 +4022,7 @@ namespace ddf
 
 					constexpr static const char *cfg_source = "/usr/share/ddf/junkyard/event_2.wav";
 
-					static const uint32_t cfg_class_id = 0x400050;
+					static const uint32_t cfg_class_id = 0x400060;
 
 					static const uint32_t cfg_member_id = 0x30;
 				};
@@ -3703,7 +4054,7 @@ namespace ddf
 			struct freezetimer1_config
 			{
 				static const uint32_t cfg_class_id  = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0xa0;
+				static const uint32_t cfg_member_id = 0xb0;
 				static const uint32_t cfg_interval  = 3000;
 			};
 			typedef typename wic::timer<freezetimer1_config> freezetimer1;
@@ -3712,7 +4063,7 @@ namespace ddf
 			struct freezetimer5_config
 			{
 				static const uint32_t cfg_class_id  = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0xb0;
+				static const uint32_t cfg_member_id = 0xc0;
 				static const uint32_t cfg_interval  = 15000;
 			};
 			typedef typename wic::timer<freezetimer5_config> freezetimer5;
@@ -3721,7 +4072,7 @@ namespace ddf
 			struct gametimer_config
 			{
 				static const uint32_t cfg_class_id  = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x90;
+				static const uint32_t cfg_member_id = 0xa0;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<gametimer_config> gametimer;
@@ -3735,7 +4086,7 @@ namespace ddf
 
 				if(true && ( fr::value() ))
 				{
-					game_event(1,4,14).propagate();
+					game_event(1,4,15).propagate();
 					(void)0; { 
         gs::value(2);
 	tmr::start();
@@ -3750,7 +4101,7 @@ namespace ddf
 
 				if(true && ( !fr::value() ))
 				{
-					game_event(1,4,15).propagate();
+					game_event(1,4,16).propagate();
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
@@ -3765,7 +4116,7 @@ namespace ddf
 
 				if(true && ( tmr::value() ))
 				{
-					game_event(1,4,16).propagate();
+					game_event(1,4,17).propagate();
 					(void)0; { fr::value(false); }
 				}
 			}
@@ -3777,7 +4128,7 @@ namespace ddf
 
 				if(true && ( fr::value() ))
 				{
-					game_event(1,4,17).propagate();
+					game_event(1,4,18).propagate();
 					(void)0; { 
         gs::value(2);
 	tmr::start();
@@ -3792,7 +4143,7 @@ namespace ddf
 
 				if(true && ( !fr::value() ))
 				{
-					game_event(1,4,18).propagate();
+					game_event(1,4,19).propagate();
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
@@ -3807,7 +4158,7 @@ namespace ddf
 
 				if(true && ( tmr::value() ))
 				{
-					game_event(1,4,19).propagate();
+					game_event(1,4,20).propagate();
 					(void)0; { fr::value(false); }
 				}
 			}
@@ -3820,7 +4171,7 @@ namespace ddf
 
 				if(true)
 				{
-					game_event(1,4,13).propagate();
+					game_event(1,4,14).propagate();
 					(void)0; { 
       switch(gs::value())
       {
@@ -3858,7 +4209,7 @@ namespace ddf
 
 				if(true && ( tmr::value() >= 3600 ))
 				{
-					game_event(1,4,12).propagate();
+					game_event(1,4,13).propagate();
 					(void)0; { gs::value(3); }
 				}
 			}
@@ -3869,7 +4220,7 @@ namespace ddf
 
 				if(true && (  button::value()  ))
 				{
-					game_event(1,4,20).propagate();
+					game_event(1,4,25).propagate();
 					(void)0; {  lock::value(0);  }
 				}
 			}
@@ -3880,7 +4231,7 @@ namespace ddf
 
 				if(true && (  button::value()  ))
 				{
-					game_event(1,4,21).propagate();
+					game_event(1,4,26).propagate();
 					(void)0; {  lock::value(0);  }
 				}
 			}
@@ -3891,7 +4242,7 @@ namespace ddf
 
 				if(true && (  button::value()  ))
 				{
-					game_event(1,4,22).propagate();
+					game_event(1,4,27).propagate();
 					(void)0; {  lock::value(0);  }
 				}
 			}
@@ -3899,6 +4250,7 @@ namespace ddf
 
 		static void init()
 		{
+			email_client::init(net::ipv4_address(192,168,1,12));
 			entrance_controller::init(net::ipv4_address(10,1,0,71));
 			secret_box_controller_1::init(net::ipv4_address(10,1,0,69));
 			secret_box_controller_2::init(net::ipv4_address(10,1,0,70));
@@ -3921,8 +4273,24 @@ namespace ddf
 			freezed5::init();
 			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
+			gm_help_status::init();
+			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
+			gm_help_status::remote_add(net::ipv4_address(192,168,1,62));
+
 			gamestate::init();
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
+
+			incoming_call::init();
+			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
+			incoming_call::remote_add(net::ipv4_address(192,168,1,62));
+
+			incoming_call_status::init();
+			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
+			incoming_call_status::remote_add(net::ipv4_address(192,168,1,62));
+
+			restart_game::init();
+			restart_game::remote_add(net::ipv4_address(10,1,0,40));
+			restart_game::remote_add(net::ipv4_address(192,168,1,62));
 
 
 			ddf::junkyard::room_1::init();
@@ -3962,13 +4330,18 @@ namespace ddf
 			secret_box_controller_1::debouncer_6::value::on_change -= labirynth_2;
 			secret_box_controller_1::debouncer_7::value::on_change -= labirynth_3;
 
+			email_client::uninit();
 			entrance_controller::uninit();
 			secret_box_controller_1::uninit();
 			secret_box_controller_2::uninit();
 
 			freezed1::uninit();
 			freezed5::uninit();
+			gm_help_status::uninit();
 			gamestate::uninit();
+			incoming_call::uninit();
+			incoming_call_status::uninit();
+			restart_game::uninit();
 
 			room_1_content::chord::uninit();
 			room_1_content::event_1::uninit();
@@ -3990,6 +4363,21 @@ namespace ddf
 	namespace service
 	{
 
+			/// ComDev
+			namespace comdev
+			{
+
+				static void init(net::ipv4_address ip)
+				{
+
+				}
+
+				static void uninit()
+				{
+
+				}
+			}
+
 			/// GMClient
 			namespace gmclient
 			{
@@ -4006,27 +4394,134 @@ namespace ddf
 			}
 
 
+			/// ServerCpuStatus ///
+			struct servercpustatus_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::service::servercpustatus";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x5ffff0;
+				static const uint32_t cfg_member_id          = 0x10;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<servercpustatus_config> servercpustatus;
+
+			/// ServerMemoryStatus ///
+			struct servermemorystatus_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::service::servermemorystatus";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x5ffff0;
+				static const uint32_t cfg_member_id          = 0x20;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<servermemorystatus_config> servermemorystatus;
+
+			/// ServerNetworkStatus ///
+			struct servernetworkstatus_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::service::servernetworkstatus";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x5ffff0;
+				static const uint32_t cfg_member_id          = 0x40;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<servernetworkstatus_config> servernetworkstatus;
+
+			/// ServerStorageStatus ///
+			struct serverstoragestatus_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::service::serverstoragestatus";
+
+				typedef uint8_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x5ffff0;
+				static const uint32_t cfg_member_id          = 0x30;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<serverstoragestatus_config> serverstoragestatus;
 
 
+			/// StatusTimer
+			struct statustimer_config
+			{
+				static const uint32_t cfg_class_id  = 0x5ffff0;
+				static const uint32_t cfg_member_id = 0x50;
+				static const uint32_t cfg_interval  = 3000;
+			};
+			typedef typename wic::timer<statustimer_config> statustimer;
+
+
+			void statustimertick()
+			{
+				typedef typename service::statustimer tmr;
+				typedef typename service::servercpustatus cpu;
+				typedef typename service::servermemorystatus mem;
+				typedef typename service::serverstoragestatus dsk;
+				typedef typename service::servernetworkstatus net;
+
+				if(true)
+				{
+					game_event(1,5,6).propagate();
+					(void)0; { 
+      cpu::value((uint8_t)(status::cpu::usage()*255));
+      mem::value((uint8_t)((double)status::memory::used()/status::memory::total()*255));
+      dsk::value((uint8_t)((double)status::storage::used()/status::storage::total()*255));
+      net::value(0);
+     }
+				}
+			}
 
 
 		static void init()
 		{
+			comdev::init(net::ipv4_address(192,168,1,62));
 			gmclient::init(net::ipv4_address(10,1,0,40));
 
+			statustimer::on_change += statustimertick;
+
+			servercpustatus::init();
+			servercpustatus::remote_add(net::ipv4_address(10,1,0,40));
+
+			servermemorystatus::init();
+			servermemorystatus::remote_add(net::ipv4_address(10,1,0,40));
+
+			servernetworkstatus::init();
+			servernetworkstatus::remote_add(net::ipv4_address(10,1,0,40));
+
+			serverstoragestatus::init();
+			serverstoragestatus::remote_add(net::ipv4_address(10,1,0,40));
 
 
+
+			statustimer::init();
 
 
 		}
 
 		static void uninit()
 		{
+			statustimer::on_change -= statustimertick;
 
+			comdev::uninit();
 			gmclient::uninit();
 
+			servercpustatus::uninit();
+			servermemorystatus::uninit();
+			servernetworkstatus::uninit();
+			serverstoragestatus::uninit();
 
 
+			statustimer::init();
 
 		}
 	}
@@ -4037,7 +4532,9 @@ bool set_property(const std::string &x)
 {
 	if(T::config::name == x)
 	{
-		typename T::value_type v;
+		typedef typename T::value_type Tv;
+		typedef typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type Td;
+		Td v;
 		std::cin >> v;
 		if(!std::cin.good())
 		{
@@ -4047,7 +4544,7 @@ bool set_property(const std::string &x)
 		}
 		else
 		{
-			T::value(v);
+			T::value((Tv)v);
 			std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
 		}
 
@@ -4063,7 +4560,9 @@ bool get_property(const std::string &x)
 {
 	if(T::config::name == x)
 	{
-		typename T::value_type v = T::value();
+		typedef typename T::value_type Tv;
+		typedef typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type Td;
+		Td v = T::value();
 		std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
 		return true;
 	}
@@ -4077,7 +4576,9 @@ bool set_peripheral(const std::string &x)
 {
 	if(T::config::name == x)
 	{
-		typename T::value_type v;
+		typedef typename T::value_type Tv;
+		typedef typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type Td;
+		Td v;
 		std::cin >> v;
 		if(!std::cin.good())
 		{
@@ -4086,7 +4587,7 @@ bool set_peripheral(const std::string &x)
 			std::cout << "\e[31;01m[NOK]\e[0m Invalid value `"<<y<<"'" << std::endl;
 		}
 		else
-			std::cout << "\e[32;01m[OK]\e[0m " << (typename T::value(v)) << std::endl;
+			std::cout << "\e[32;01m[OK]\e[0m " << (Td)(Tv)(typename T::value((Tv)v)) << std::endl;
 
 		return true;
 	}
@@ -4100,7 +4601,8 @@ bool get_peripheral(const std::string &x)
 {
 	if(T::config::name == x)
 	{
-		typename T::value_type v = typename T::value();
+		typedef typename T::value_type Tv;
+		typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type v = (typename T::value_type)typename T::value();
 		std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
 		return true;
 	}
@@ -4120,21 +4622,24 @@ int main()
 	wicc_earpc::init();
 
 	devstat::init();
-std::cout << "initializing pirate" << std::endl;
+std::cout << "initializing room pirate" << std::endl;
 	ddf::pirate::init();
-std::cout << "initializing magician" << std::endl;
+std::cout << "initializing room magician" << std::endl;
 	ddf::magician::init();
-std::cout << "initializing villa" << std::endl;
+std::cout << "initializing room villa" << std::endl;
 	ddf::villa::init();
-std::cout << "initializing junkyard" << std::endl;
+std::cout << "initializing room junkyard" << std::endl;
 	ddf::junkyard::init();
-std::cout << "initializing " << std::endl;
+std::cout << "initializing services" << std::endl;
 	ddf::service::init();
 
+//******
+	ddf::service::statustimer::start();
 
 	std::string x;
 	while(true)
 	{
+
 		std::cin >> x;
 		if(x == "exit")
 			break;
@@ -4191,6 +4696,10 @@ std::cout << "initializing " << std::endl;
 			if(get_peripheral<ddf::pirate::entrance_hanger_controller::debouncer_1>(x)) continue;
 			if(get_peripheral<ddf::pirate::entrance_hanger_controller::magnetic_sensor>(x)) continue;
 			if(get_peripheral<ddf::pirate::entrance_hanger_controller::debouncer_2>(x)) continue;
+			if(get_property<ddf::pirate::restart_game>(x)) continue;
+			if(get_property<ddf::pirate::gm_help_status>(x)) continue;
+			if(get_property<ddf::pirate::incoming_call>(x)) continue;
+			if(get_property<ddf::pirate::incoming_call_status>(x)) continue;
 			if(get_peripheral<ddf::magician::cupboard_controller::debouncer>(x)) continue;
 			if(get_peripheral<ddf::magician::cupboard_controller::magnetic_sensor>(x)) continue;
 			if(get_peripheral<ddf::magician::design_board_controller::linear_magnetic_sensor_1>(x)) continue;
@@ -4201,6 +4710,10 @@ std::cout << "initializing " << std::endl;
 //			if(get_peripheral<ddf::magician::futuristic_safe_controller::pin_pad>(x)) continue;
 			if(get_peripheral<ddf::magician::entrance_controller::debouncer>(x)) continue;
 			if(get_peripheral<ddf::magician::entrance_controller::magnetic_sensor>(x)) continue;
+			if(get_property<ddf::magician::restart_game>(x)) continue;
+			if(get_property<ddf::magician::gm_help_status>(x)) continue;
+			if(get_property<ddf::magician::incoming_call>(x)) continue;
+			if(get_property<ddf::magician::incoming_call_status>(x)) continue;
 //			if(get_peripheral<ddf::villa::safe_controller::pin_pad>(x)) continue;
 			if(get_peripheral<ddf::villa::safe_controller::debouncer_1>(x)) continue;
 			if(get_peripheral<ddf::villa::safe_controller::debouncer_2>(x)) continue;
@@ -4221,6 +4734,10 @@ std::cout << "initializing " << std::endl;
 			if(get_property<ddf::villa::desktop_pc::restart_game>(x)) continue;
 			if(get_property<ddf::villa::desktop_pc::audioplay_startevent>(x)) continue;
 			if(get_property<ddf::villa::desktop_pc::audiopause_pauseevent>(x)) continue;
+			if(get_property<ddf::villa::restart_game>(x)) continue;
+			if(get_property<ddf::villa::gm_help_status>(x)) continue;
+			if(get_property<ddf::villa::incoming_call>(x)) continue;
+			if(get_property<ddf::villa::incoming_call_status>(x)) continue;
 //			if(get_peripheral<ddf::junkyard::secret_box_controller_1::button_grid>(x)) continue;
 			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_1>(x)) continue;
 			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_2>(x)) continue;
@@ -4244,6 +4761,10 @@ std::cout << "initializing " << std::endl;
 //			if(get_peripheral<ddf::junkyard::secret_box_controller_2::spare_in2>(x)) continue;
 			if(get_peripheral<ddf::junkyard::entrance_controller::debouncer>(x)) continue;
 			if(get_peripheral<ddf::junkyard::entrance_controller::magnetic_sensor>(x)) continue;
+			if(get_property<ddf::junkyard::restart_game>(x)) continue;
+			if(get_property<ddf::junkyard::gm_help_status>(x)) continue;
+			if(get_property<ddf::junkyard::incoming_call>(x)) continue;
+			if(get_property<ddf::junkyard::incoming_call_status>(x)) continue;
 			std::cout << "\e[31;01m[NOK]\e[0m No such peripheral" << std::endl;
 		}
 
@@ -4273,6 +4794,10 @@ std::cout << "initializing " << std::endl;
 			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_3>(x)) continue;
 			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_1>(x)) continue;
 			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_2>(x)) continue;
+			if(set_property<ddf::pirate::restart_game>(x)) continue;
+			if(set_property<ddf::pirate::gm_help_status>(x)) continue;
+			if(set_property<ddf::pirate::incoming_call>(x)) continue;
+			if(set_property<ddf::pirate::incoming_call_status>(x)) continue;
 			if(set_peripheral<ddf::pirate::entrance_hanger_controller::led>(x)) continue;
 			if(set_peripheral<ddf::magician::cupboard_controller::magnetic_lock>(x)) continue;
 			if(set_peripheral<ddf::magician::cupboard_controller::led_strip>(x)) continue;
@@ -4280,6 +4805,10 @@ std::cout << "initializing " << std::endl;
 			if(set_peripheral<ddf::magician::futuristic_safe_controller::magnetic_lock>(x)) continue;
 //			if(get_peripheral<ddf::magician::futuristic_safe_controller::addressable_led_strip>(x)) continue;
 			if(set_peripheral<ddf::magician::entrance_controller::led>(x)) continue;
+			if(set_property<ddf::magician::restart_game>(x)) continue;
+			if(set_property<ddf::magician::gm_help_status>(x)) continue;
+			if(set_property<ddf::magician::incoming_call>(x)) continue;
+			if(set_property<ddf::magician::incoming_call_status>(x)) continue;
 			if(set_peripheral<ddf::villa::safe_controller::magnetic_lock>(x)) continue;
 			if(set_peripheral<ddf::villa::control_room_controller::magnetic_lock>(x)) continue;
 			if(set_peripheral<ddf::villa::control_room_controller::video_eject>(x)) continue;
@@ -4294,6 +4823,10 @@ std::cout << "initializing " << std::endl;
 			if(set_property<ddf::villa::desktop_pc::restart_game>(x)) continue;
 			if(set_property<ddf::villa::desktop_pc::audioplay_startevent>(x)) continue;
 			if(set_property<ddf::villa::desktop_pc::audiopause_pauseevent>(x)) continue;
+			if(set_property<ddf::villa::restart_game>(x)) continue;
+			if(set_property<ddf::villa::gm_help_status>(x)) continue;
+			if(set_property<ddf::villa::incoming_call>(x)) continue;
+			if(set_property<ddf::villa::incoming_call_status>(x)) continue;
 			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_1>(x)) continue;
 			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_2>(x)) continue;
 			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_3>(x)) continue;
@@ -4307,7 +4840,10 @@ std::cout << "initializing " << std::endl;
 //			if(set_peripheral<ddf::junkyard::secret_box_controller_2::spare_out1>(x)) continue;
 //			if(set_peripheral<ddf::junkyard::secret_box_controller_2::spare_out2>(x)) continue;
 			if(set_peripheral<ddf::junkyard::entrance_controller::led>(x)) continue;
-
+			if(set_property<ddf::junkyard::restart_game>(x)) continue;
+			if(set_property<ddf::junkyard::gm_help_status>(x)) continue;
+			if(set_property<ddf::junkyard::incoming_call>(x)) continue;
+			if(set_property<ddf::junkyard::incoming_call_status>(x)) continue;
 
 			std::cout << "\e[31;01m[NOK]\e[0m No such peripheral" << std::endl;
 		}

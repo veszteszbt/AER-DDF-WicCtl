@@ -51,6 +51,7 @@ namespace wicp
 
 	public:
 		typedef typename env::value_type              value_type;
+
 	private:
 		typedef typename env::remotes_type            remotes_type;
 
@@ -101,7 +102,7 @@ namespace wicp
 		{
 			remotes.clear();
 			history.clear();
-			env::value = v;
+			env::default_value = env::value = v;
 			history.push_back(typename env::history_record(v));
 			env::local_timestamp = history.back().time;
 			proc_commit::init();
@@ -156,6 +157,9 @@ namespace wicp
 			proc_commit::notify();
 			return v;
 		}
+
+		static value_type default_value()
+		{ return env::default_value; }
 
 		static bool remote_add(net::ipv4_address ip)
 		{

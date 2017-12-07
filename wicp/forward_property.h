@@ -35,10 +35,10 @@ namespace wicp {
 
 		typedef typename property::value_type value_type;
 
-		static void init(net::ipv4_address ip)
+		static void init(net::ipv4_address ip, value_type v = value_type())
 		{
-			property::init(ip);
-			replica::init(property::value());
+			property::init(ip,v);
+			replica::init(v);
 			replica::on_change += replica_change;
 			property::on_change += property_change;
 			jrn(journal::debug) << "initialized" << journal::end;

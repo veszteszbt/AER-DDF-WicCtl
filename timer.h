@@ -25,9 +25,9 @@ namespace wic
 			static const bool cfg_commit_change_only = true;
 		};
 		typedef wicp::local_property<property_config> property;
-
+	public:
 		static const uint32_t interval = TConfig::cfg_interval;
-
+	private:
 		static std::thread *proc;
 
 		static volatile bool running;

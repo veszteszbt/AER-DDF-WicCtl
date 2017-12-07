@@ -93,6 +93,8 @@ namespace wicp
 		static std::mutex   history_lock;
 
 	/// Local value ///
+		static value_type default_value;
+
 		static value_type value;
 
 		static void sync_local()
@@ -197,6 +199,9 @@ namespace wicp
 
 	template<typename c>
 	typename property_env_base<c>::value_type property_env_base<c>::value;
+
+	template<typename c>
+	typename property_env_base<c>::value_type property_env_base<c>::default_value;
 
 	template<typename c>
 	typename property_env_base<c>::clock::time_point property_env_base<c>::local_timestamp =

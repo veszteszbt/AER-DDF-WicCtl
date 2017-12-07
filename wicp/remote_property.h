@@ -102,11 +102,12 @@ namespace wicp
 		}
 
 	public:
-		static void init(net::ipv4_address ip)
+		static void init(net::ipv4_address ip, value_type v = value_type())
 		{
 			history.clear();
 			env::remote.ip = ip;
-			history.push_back(history_record(env::value));
+			env::value = env::default_value = v;
+			history.push_back(history_record(v));
 			env::local_timestamp = env::remote.sync_timestamp = history.back().time;
 			env::remote.pending_timestamp = clock::time_point::min();
 
@@ -128,6 +129,9 @@ namespace wicp
 			rpc::clear_command(command_id | types::function::notify);
 			jrn(journal::debug) << "uninitialized" << journal::end;
 		}
+
+		static value_type default_value()
+		{ return env::default_value; 
 
 		static value_type value()
 		{ return env::value; }
