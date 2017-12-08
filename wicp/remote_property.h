@@ -131,7 +131,7 @@ namespace wicp
 		}
 
 		static value_type default_value()
-		{ return env::default_value; 
+		{ return env::default_value; }
 
 		static value_type value()
 		{ return env::value; }
