@@ -12,7 +12,7 @@ namespace wic
 	{
 		typedef typename property_config_base::cfg_clock clock;
 
-		struct property_config : public property_config_base
+		struct prop_value_config : public property_config_base
 		{
 			typedef uint64_t cfg_value_type;
 
@@ -24,13 +24,27 @@ namespace wic
 
 			static const bool cfg_commit_change_only = true;
 		};
-		typedef wicp::local_property<property_config> property;
+		typedef wicp::local_property<prop_value_config> prop_value;
+
+		struct prop_running_config : public property_config_base
+		{
+			typedef bool cfg_value_type;
+
+			static const uint32_t cfg_class_id = TConfig::cfg_class_id;
+
+			static const uint32_t cfg_member_id = TConfig::cfg_member_id+1;
+
+			static const uint32_t cfg_cooldown_time = 0;
+
+			static const bool cfg_commit_change_only = true;
+		};
+		typedef wicp::local_property<prop_running_config> prop_running;
 	public:
 		static const uint32_t interval = TConfig::cfg_interval;
 	private:
 		static std::thread *proc;
 
-		static volatile bool running;
+		static volatile bool _running;
 
 		static volatile bool silent;
 
@@ -47,7 +61,7 @@ namespace wic
 			while(1)
 			{
 				lock.lock();
-				if(!running)
+				if(!_running)
 				{
 					lock.unlock();
 					std::unique_lock<std::mutex> ul(suspend_lock);
@@ -65,7 +79,7 @@ namespace wic
 				}
 
 				lock.lock();
-				if(!running)
+				if(!_running)
 				{
 					lock.unlock();
 					continue;
@@ -78,7 +92,7 @@ namespace wic
 				}
 				start_time = t;
 				lock.unlock();
-				property::value(property::value()+1);
+				prop_value::value(prop_value::value()+1);
 
 			}
 		}
@@ -88,27 +102,46 @@ namespace wic
 			std::lock_guard<std::mutex> lg(suspend_lock);
 			suspend_cv.notify_one();
 		}
+
+		static void running_change_handler()
+		{
+			const bool v = prop_running::value();
+			lock.lock();
+			if(_running == v)
+			{
+				lock.unlock();
+				return;
+			}
+			_running = v;
+			if(v)
+				start_time = clock::now();
+			lock.unlock();
+			notify();
+		}
 	public:
 		static void init()
 		{
-			property::init();
-			running = false;
+			prop_value::init(0);
+			prop_running::init(0);
+			_running = false;
 			silent = false;
+			prop_running::on_change += running_change_handler;
 			proc = new std::thread(thread_start);
 		}
 
 		static void uninit()
 		{
 			delete proc;
-			property::uninit();
+			prop_running::uninit();
+			prop_value::uninit();
 		}
 
 		static uint64_t value()
-		{ return property::value(); }
+		{ return prop_value::value(); }
 
 		static void value(uint64_t v)
 		{
-			property::value(v);
+			prop_value::value(v);
 			lock.lock();
 			silent = true;
 			start_time = clock::now();
@@ -116,49 +149,39 @@ namespace wic
 			notify();
 		}
 
+		static bool running()
+		{ return prop_running::value(); }
+
+		static void running(bool v)
+		{ prop_running::value(v); }
+
 		static void start()
-		{
-			lock.lock();
-			if(running)
-			{
-				lock.unlock();
-				return;
-			}
-			running = true;
-			start_time = clock::now();
-			lock.unlock();
-			notify();
-		}
+		{ running(true); }
 
 		static void reset()
 		{ value(0); }
 
 		static void stop()
-		{
-			lock.lock();
-			if(!running)
-			{
-				lock.unlock();
-				return;
-			}
-			running = false;
-			lock.unlock();
-			std::lock_guard<std::mutex> lg(suspend_lock);
-			suspend_cv.notify_one();
-		}
+		{ running(false); }
+
 
 		static void remote_add(net::ipv4_address ip)
-		{ property::remote_add(ip); }
+		{
+			prop_value::remote_add(ip);
+			prop_running::remote_add(ip);
+		}
 
 
-		constexpr static sched::listener  &on_change = property::on_change;
+		constexpr static sched::listener  &on_value_change = prop_value::on_change;
+
+		constexpr static sched::listener  &on_running_change = prop_running::on_change;
 	};
 
 	template<typename c>
 	std::thread *timer<c>::proc;
 
 	template<typename c>
-	volatile bool timer<c>::running;
+	volatile bool timer<c>::_running;
 
 	template<typename c>
 	volatile bool timer<c>::silent;

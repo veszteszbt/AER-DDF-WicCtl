@@ -1249,12 +1249,12 @@ namespace ddf
 
 			freezed1::on_change += freeze_1_start;
 			freezed1::on_change += freeze_1_stop;
-			freezetimer1::on_change += freeze_1_timeout;
+			freezetimer1::on_value_change += freeze_1_timeout;
 			freezed5::on_change += freeze_5_start;
 			freezed5::on_change += freeze_5_stop;
-			freezetimer5::on_change += freeze_5_timeout;
+			freezetimer5::on_value_change += freeze_5_timeout;
 			gamestate::on_change += game_state_changed;
-			gametimer::on_change += game_timer_expired;
+			gametimer::on_value_change += game_timer_expired;
 			ghostbox_picture_laser_boat_wheel_controller::potentiometer::value::on_change += rotation_update;
 
 			freezed1::init();
@@ -1265,22 +1265,22 @@ namespace ddf
 
 			gm_help_status::init();
 			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
-			gm_help_status::remote_add(net::ipv4_address(192,168,1,62));
+			gm_help_status::remote_add(net::ipv4_address(10,1,1,40));
 
 			gamestate::init();
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
 			incoming_call::init();
 			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
-			incoming_call::remote_add(net::ipv4_address(192,168,1,62));
+			incoming_call::remote_add(net::ipv4_address(10,1,1,40));
 
 			incoming_call_status::init();
 			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
-			incoming_call_status::remote_add(net::ipv4_address(192,168,1,62));
+			incoming_call_status::remote_add(net::ipv4_address(10,1,1,40));
 
 			restart_game::init();
 			restart_game::remote_add(net::ipv4_address(10,1,0,40));
-			restart_game::remote_add(net::ipv4_address(192,168,1,62));
+			restart_game::remote_add(net::ipv4_address(10,1,1,40));
 
 
 			ddf::pirate::room_1::init();
@@ -1306,12 +1306,12 @@ namespace ddf
 		{
 			freezed1::on_change -= freeze_1_start;
 			freezed1::on_change -= freeze_1_stop;
-			freezetimer1::on_change -= freeze_1_timeout;
+			freezetimer1::on_value_change -= freeze_1_timeout;
 			freezed5::on_change -= freeze_5_start;
 			freezed5::on_change -= freeze_5_stop;
-			freezetimer5::on_change -= freeze_5_timeout;
+			freezetimer5::on_value_change -= freeze_5_timeout;
 			gamestate::on_change -= game_state_changed;
-			gametimer::on_change -= game_timer_expired;
+			gametimer::on_value_change -= game_timer_expired;
 			ghostbox_picture_laser_boat_wheel_controller::potentiometer::value::on_change -= rotation_update;
 
 			cashier_laser_controller::uninit();
@@ -2009,12 +2009,12 @@ namespace ddf
 
 			freezed1::on_change += freeze_1_start;
 			freezed1::on_change += freeze_1_stop;
-			freezetimer1::on_change += freeze_1_timeout;
+			freezetimer1::on_value_change += freeze_1_timeout;
 			freezed5::on_change += freeze_5_start;
 			freezed5::on_change += freeze_5_stop;
-			freezetimer5::on_change += freeze_5_timeout;
+			freezetimer5::on_value_change += freeze_5_timeout;
 			gamestate::on_change += game_state_changed;
-			gametimer::on_change += game_timer_expired;
+			gametimer::on_value_change += game_timer_expired;
 			cupboard_controller::debouncer::value::on_change += cupboard_controller_event_for_labyrinth_task;
 
 			freezed1::init();
@@ -2025,22 +2025,22 @@ namespace ddf
 
 			gm_help_status::init();
 			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
-			gm_help_status::remote_add(net::ipv4_address(192,168,1,62));
+			gm_help_status::remote_add(net::ipv4_address(10,1,1,40));
 
 			gamestate::init();
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
 			incoming_call::init();
 			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
-			incoming_call::remote_add(net::ipv4_address(192,168,1,62));
+			incoming_call::remote_add(net::ipv4_address(10,1,1,40));
 
 			incoming_call_status::init();
 			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
-			incoming_call_status::remote_add(net::ipv4_address(192,168,1,62));
+			incoming_call_status::remote_add(net::ipv4_address(10,1,1,40));
 
 			restart_game::init();
 			restart_game::remote_add(net::ipv4_address(10,1,0,40));
-			restart_game::remote_add(net::ipv4_address(192,168,1,62));
+			restart_game::remote_add(net::ipv4_address(10,1,1,40));
 
 
 			ddf::magician::room_1::init();
@@ -2070,12 +2070,12 @@ namespace ddf
 		{
 			freezed1::on_change -= freeze_1_start;
 			freezed1::on_change -= freeze_1_stop;
-			freezetimer1::on_change -= freeze_1_timeout;
+			freezetimer1::on_value_change -= freeze_1_timeout;
 			freezed5::on_change -= freeze_5_start;
 			freezed5::on_change -= freeze_5_stop;
-			freezetimer5::on_change -= freeze_5_timeout;
+			freezetimer5::on_value_change -= freeze_5_timeout;
 			gamestate::on_change -= game_state_changed;
-			gametimer::on_change -= game_timer_expired;
+			gametimer::on_value_change -= game_timer_expired;
 			cupboard_controller::debouncer::value::on_change -= cupboard_controller_event_for_labyrinth_task;
 
 			cupboard_controller::uninit();
@@ -3145,12 +3145,12 @@ namespace ddf
 
 			freezed1::on_change += freeze_1_start;
 			freezed1::on_change += freeze_1_stop;
-			freezetimer1::on_change += freeze_1_timeout;
+			freezetimer1::on_value_change += freeze_1_timeout;
 			freezed5::on_change += freeze_5_start;
 			freezed5::on_change += freeze_5_stop;
-			freezetimer5::on_change += freeze_5_timeout;
+			freezetimer5::on_value_change += freeze_5_timeout;
 			gamestate::on_change += game_state_changed;
-			gametimer::on_change += game_timer_expired;
+			gametimer::on_value_change += game_timer_expired;
 
 			freezed1::init();
 			freezed1::remote_add(net::ipv4_address(10,1,0,40));
@@ -3160,22 +3160,22 @@ namespace ddf
 
 			gm_help_status::init();
 			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
-			gm_help_status::remote_add(net::ipv4_address(192,168,1,62));
+			gm_help_status::remote_add(net::ipv4_address(10,1,1,40));
 
 			gamestate::init();
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
 			incoming_call::init();
 			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
-			incoming_call::remote_add(net::ipv4_address(192,168,1,62));
+			incoming_call::remote_add(net::ipv4_address(10,1,1,40));
 
 			incoming_call_status::init();
 			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
-			incoming_call_status::remote_add(net::ipv4_address(192,168,1,62));
+			incoming_call_status::remote_add(net::ipv4_address(10,1,1,40));
 
 			restart_game::init();
 			restart_game::remote_add(net::ipv4_address(10,1,0,40));
-			restart_game::remote_add(net::ipv4_address(192,168,1,62));
+			restart_game::remote_add(net::ipv4_address(10,1,1,40));
 
 
 			ddf::villa::room_1::init();
@@ -3207,12 +3207,12 @@ namespace ddf
 		{
 			freezed1::on_change -= freeze_1_start;
 			freezed1::on_change -= freeze_1_stop;
-			freezetimer1::on_change -= freeze_1_timeout;
+			freezetimer1::on_value_change -= freeze_1_timeout;
 			freezed5::on_change -= freeze_5_start;
 			freezed5::on_change -= freeze_5_stop;
-			freezetimer5::on_change -= freeze_5_timeout;
+			freezetimer5::on_value_change -= freeze_5_timeout;
 			gamestate::on_change -= game_state_changed;
-			gametimer::on_change -= game_timer_expired;
+			gametimer::on_value_change -= game_timer_expired;
 
 			control_room_controller::uninit();
 			desk_controller::uninit();
@@ -4257,12 +4257,12 @@ namespace ddf
 
 			freezed1::on_change += freeze_1_start;
 			freezed1::on_change += freeze_1_stop;
-			freezetimer1::on_change += freeze_1_timeout;
+			freezetimer1::on_value_change += freeze_1_timeout;
 			freezed5::on_change += freeze_5_start;
 			freezed5::on_change += freeze_5_stop;
-			freezetimer5::on_change += freeze_5_timeout;
+			freezetimer5::on_value_change += freeze_5_timeout;
 			gamestate::on_change += game_state_changed;
-			gametimer::on_change += game_timer_expired;
+			gametimer::on_value_change += game_timer_expired;
 			secret_box_controller_1::debouncer_5::value::on_change += labirynth_1;
 			secret_box_controller_1::debouncer_6::value::on_change += labirynth_2;
 			secret_box_controller_1::debouncer_7::value::on_change += labirynth_3;
@@ -4275,22 +4275,22 @@ namespace ddf
 
 			gm_help_status::init();
 			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
-			gm_help_status::remote_add(net::ipv4_address(192,168,1,62));
+			gm_help_status::remote_add(net::ipv4_address(10,1,1,40));
 
 			gamestate::init();
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
 			incoming_call::init();
 			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
-			incoming_call::remote_add(net::ipv4_address(192,168,1,62));
+			incoming_call::remote_add(net::ipv4_address(10,1,1,40));
 
 			incoming_call_status::init();
 			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
-			incoming_call_status::remote_add(net::ipv4_address(192,168,1,62));
+			incoming_call_status::remote_add(net::ipv4_address(10,1,1,40));
 
 			restart_game::init();
 			restart_game::remote_add(net::ipv4_address(10,1,0,40));
-			restart_game::remote_add(net::ipv4_address(192,168,1,62));
+			restart_game::remote_add(net::ipv4_address(10,1,1,40));
 
 
 			ddf::junkyard::room_1::init();
@@ -4320,12 +4320,12 @@ namespace ddf
 		{
 			freezed1::on_change -= freeze_1_start;
 			freezed1::on_change -= freeze_1_stop;
-			freezetimer1::on_change -= freeze_1_timeout;
+			freezetimer1::on_value_change -= freeze_1_timeout;
 			freezed5::on_change -= freeze_5_start;
 			freezed5::on_change -= freeze_5_stop;
-			freezetimer5::on_change -= freeze_5_timeout;
+			freezetimer5::on_value_change -= freeze_5_timeout;
 			gamestate::on_change -= game_state_changed;
-			gametimer::on_change -= game_timer_expired;
+			gametimer::on_value_change -= game_timer_expired;
 			secret_box_controller_1::debouncer_5::value::on_change -= labirynth_1;
 			secret_box_controller_1::debouncer_6::value::on_change -= labirynth_2;
 			secret_box_controller_1::debouncer_7::value::on_change -= labirynth_3;
@@ -4484,10 +4484,10 @@ namespace ddf
 
 		static void init()
 		{
-			comdev::init(net::ipv4_address(192,168,1,62));
+			comdev::init(net::ipv4_address(10,1,1,40));
 			gmclient::init(net::ipv4_address(10,1,0,40));
 
-			statustimer::on_change += statustimertick;
+			statustimer::on_value_change += statustimertick;
 
 			servercpustatus::init();
 			servercpustatus::remote_add(net::ipv4_address(10,1,0,40));
@@ -4510,7 +4510,7 @@ namespace ddf
 
 		static void uninit()
 		{
-			statustimer::on_change -= statustimertick;
+			statustimer::on_value_change -= statustimertick;
 
 			comdev::uninit();
 			gmclient::uninit();
