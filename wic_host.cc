@@ -15,7 +15,7 @@
 
 #include <status.h>
 #include <device.h>
-#include <game_event.h>
+#include <event.h>
 
 #include <audio.h>
 #include <audio_effect.h>
@@ -1018,6 +1018,20 @@ namespace ddf
 			};
 			typedef wicp::local_property<restart_game_config> restart_game;
 
+			/// timedevent_test ///
+			struct timedevent_test_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::timedevent_test";
+
+				typedef uint64_t cfg_value_type;
+
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x1c0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef wicp::local_property<timedevent_test_config> timedevent_test;
+
 
 			/// room_1
 			struct room_1_config
@@ -1086,101 +1100,214 @@ namespace ddf
 			};
 			typedef typename wic::timer<gametimer_config> gametimer;
 
-
-			void freeze_1_start()
+			/// timedevent_test_timer
+			struct timedevent_test_timer_config
 			{
-				typedef typename pirate::freezed1 fr;
+				static const uint32_t cfg_class_id  = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x1d0;
+				static const uint32_t cfg_interval  = 1000;
+			};
+			typedef typename wic::timer<timedevent_test_timer_config> timedevent_test_timer;
+
+
+
+			/// Freeze 1 Start ///		
+			struct freeze_1_start_config
+			{
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x110;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::freezed1 fr;
 				typedef typename pirate::freezetimer1 tmr;
 				typedef typename pirate::gamestate gs;
 
-				if(true && ( fr::value() ))
+					return (true && ( fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,1,17).propagate();
+									typedef typename pirate::freezed1 fr;
+				typedef typename pirate::freezetimer1 tmr;
+				typedef typename pirate::gamestate gs;
+
 					(void)0; { 
         gs::value(2);
 	tmr::start();
        }
 				}
-			}
-			void freeze_1_stop()
+			};
+			typedef wic::event<freeze_1_start_config> freeze_1_start;
+
+			/// Freeze 1 Stop ///		
+			struct freeze_1_stop_config
 			{
-				typedef typename pirate::freezed1 fr;
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x120;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::freezed1 fr;
 				typedef typename pirate::freezetimer1 tmr;
 				typedef typename pirate::gamestate gs;
 
-				if(true && ( !fr::value() ))
+					return (true && ( !fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,1,18).propagate();
+									typedef typename pirate::freezed1 fr;
+				typedef typename pirate::freezetimer1 tmr;
+				typedef typename pirate::gamestate gs;
+
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
 	gs::value(1);
        }
 				}
-			}
-			void freeze_1_timeout()
+			};
+			typedef wic::event<freeze_1_stop_config> freeze_1_stop;
+
+			/// Freeze 1 Timeout ///		
+			struct freeze_1_timeout_config
 			{
-				typedef typename pirate::freezetimer1 tmr;
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x130;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::freezetimer1 tmr;
 				typedef typename pirate::freezed1 fr;
 
-				if(true && ( tmr::value() ))
+					return (true && ( tmr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,1,19).propagate();
+									typedef typename pirate::freezetimer1 tmr;
+				typedef typename pirate::freezed1 fr;
+
 					(void)0; { fr::value(false); }
 				}
-			}
-			void freeze_5_start()
+			};
+			typedef wic::event<freeze_1_timeout_config> freeze_1_timeout;
+
+			/// Freeze 5 Start ///		
+			struct freeze_5_start_config
 			{
-				typedef typename pirate::freezed5 fr;
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x140;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::freezed5 fr;
 				typedef typename pirate::freezetimer5 tmr;
 				typedef typename pirate::gamestate gs;
 
-				if(true && ( fr::value() ))
+					return (true && ( fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,1,20).propagate();
+									typedef typename pirate::freezed5 fr;
+				typedef typename pirate::freezetimer5 tmr;
+				typedef typename pirate::gamestate gs;
+
 					(void)0; { 
         gs::value(2);
 	tmr::start();
        }
 				}
-			}
-			void freeze_5_stop()
+			};
+			typedef wic::event<freeze_5_start_config> freeze_5_start;
+
+			/// Freeze 5 Stop ///		
+			struct freeze_5_stop_config
 			{
-				typedef typename pirate::freezed5 fr;
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x150;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::freezed5 fr;
 				typedef typename pirate::freezetimer5 tmr;
 				typedef typename pirate::gamestate gs;
 
-				if(true && ( !fr::value() ))
+					return (true && ( !fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,1,21).propagate();
+									typedef typename pirate::freezed5 fr;
+				typedef typename pirate::freezetimer5 tmr;
+				typedef typename pirate::gamestate gs;
+
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
 	gs::value(1);
        }
 				}
-			}
-			void freeze_5_timeout()
+			};
+			typedef wic::event<freeze_5_stop_config> freeze_5_stop;
+
+			/// Freeze 5 Timeout ///		
+			struct freeze_5_timeout_config
 			{
-				typedef typename pirate::freezetimer5 tmr;
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x160;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::freezetimer5 tmr;
 				typedef typename pirate::freezed5 fr;
 
-				if(true && ( tmr::value() ))
+					return (true && ( tmr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,1,22).propagate();
+									typedef typename pirate::freezetimer5 tmr;
+				typedef typename pirate::freezed5 fr;
+
 					(void)0; { fr::value(false); }
 				}
-			}
-			void game_state_changed()
+			};
+			typedef wic::event<freeze_5_timeout_config> freeze_5_timeout;
+
+			/// Game Timer Expired ///		
+			struct game_timer_expired_config
 			{
-				typedef typename pirate::gametimer tmr;
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0xf0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::gametimer tmr;
+				typedef typename pirate::gamestate gs;
+
+					return (true && ( tmr::value() >= 3600 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::gametimer tmr;
+				typedef typename pirate::gamestate gs;
+
+					(void)0; { gs::value(3); }
+				}
+			};
+			typedef wic::event<game_timer_expired_config> game_timer_expired;
+
+			/// gameevent_Game State Changed ///		
+			struct gameevent_game_state_changed_config
+			{
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x100;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::gametimer tmr;
 				typedef typename pirate::gamestate gs;
 				typedef typename pirate::freezed1 fr1;
 				typedef typename pirate::freezed5 fr5;
 
-				if(true)
+					return (true);
+				}
+				static void cfg_action()
 				{
-					game_event(1,1,16).propagate();
+									typedef typename pirate::gametimer tmr;
+				typedef typename pirate::gamestate gs;
+				typedef typename pirate::freezed1 fr1;
+				typedef typename pirate::freezed5 fr5;
+
 					(void)0; { 
       switch(gs::value())
       {
@@ -1210,32 +1337,85 @@ namespace ddf
       }
      }
 				}
-			}
-			void game_timer_expired()
-			{
-				typedef typename pirate::gametimer tmr;
-				typedef typename pirate::gamestate gs;
+			};
+			typedef wic::event<gameevent_game_state_changed_config> gameevent_game_state_changed;
 
-				if(true && ( tmr::value() >= 3600 ))
-				{
-					game_event(1,1,15).propagate();
-					(void)0; { gs::value(3); }
-				}
-			}
-			void rotation_update()
+			/// rotation_update ///		
+			struct rotation_update_config
 			{
-				typedef typename pirate::map_controller::led_strip starlight;
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x1b0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::map_controller::led_strip starlight;
 				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::potentiometer potentiometer;
 
-				if(true)
+					return (true);
+				}
+				static void cfg_action()
 				{
-					game_event(1,1,27).propagate();
+									typedef typename pirate::map_controller::led_strip starlight;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::potentiometer potentiometer;
+
 					(void)0; { 
         const uint16_t v = (potentiometer::value()>>5)+1;
         starlight::value(v*v);
        }
 				}
-			}
+			};
+			typedef wic::event<rotation_update_config> rotation_update;
+
+			/// timedevent_test_event_finished ///		
+			struct timedevent_test_event_finished_config
+			{
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x1e0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::timedevent_test at;
+				typedef typename pirate::timedevent_test_timer tmr;
+
+					return (true && ( at::value() <= tmr::value() ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::timedevent_test at;
+				typedef typename pirate::timedevent_test_timer tmr;
+
+					(void)0; { 
+	 tmr::value(at::value());
+         tmr::stop();
+        }
+				}
+			};
+			typedef wic::event<timedevent_test_event_finished_config> timedevent_test_event_finished;
+
+			/// timedevent_test_event_gamestate ///		
+			struct timedevent_test_event_gamestate_config
+			{
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x1f0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::gamestate gs;
+				typedef typename pirate::timedevent_test_timer tmr;
+
+					return (true);
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::gamestate gs;
+				typedef typename pirate::timedevent_test_timer tmr;
+
+					(void)0; { 
+       	 if(gs::value() == 1)
+	 	tmr::start();
+	 else
+	 	tmr::stop();
+        }
+				}
+			};
+			typedef wic::event<timedevent_test_event_gamestate_config> timedevent_test_event_gamestate;
 
 
 		static void init()
@@ -1247,40 +1427,89 @@ namespace ddf
 			rex_flipper_controller::init(net::ipv4_address(10,1,1,54));
 			stone_chest_controller::init(net::ipv4_address(10,1,1,52));
 
-			freezed1::on_change += freeze_1_start;
-			freezed1::on_change += freeze_1_stop;
-			freezetimer1::on_value_change += freeze_1_timeout;
-			freezed5::on_change += freeze_5_start;
-			freezed5::on_change += freeze_5_stop;
-			freezetimer5::on_value_change += freeze_5_timeout;
-			gamestate::on_change += game_state_changed;
-			gametimer::on_value_change += game_timer_expired;
-			ghostbox_picture_laser_boat_wheel_controller::potentiometer::value::on_change += rotation_update;
+		freeze_1_start::init();
+			freezed1::on_change += freeze_1_start::monitor;
 
-			freezed1::init();
+			freeze_1_start::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_1_stop::init();
+			freezed1::on_change += freeze_1_stop::monitor;
+
+			freeze_1_stop::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_1_timeout::init();
+			freezetimer1::on_value_change += freeze_1_timeout::monitor;
+
+			freeze_1_timeout::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_start::init();
+			freezed5::on_change += freeze_5_start::monitor;
+
+			freeze_5_start::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_stop::init();
+			freezed5::on_change += freeze_5_stop::monitor;
+
+			freeze_5_stop::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_timeout::init();
+			freezetimer5::on_value_change += freeze_5_timeout::monitor;
+
+			freeze_5_timeout::remote_add(net::ipv4_address(10,1,0,40));
+
+		game_timer_expired::init();
+			gametimer::on_value_change += game_timer_expired::monitor;
+
+			game_timer_expired::remote_add(net::ipv4_address(10,1,0,40));
+
+		gameevent_game_state_changed::init();
+			gamestate::on_change += gameevent_game_state_changed::monitor;
+
+			gameevent_game_state_changed::remote_add(net::ipv4_address(10,1,0,40));
+
+		rotation_update::init();
+			ghostbox_picture_laser_boat_wheel_controller::potentiometer::value::on_change += rotation_update::monitor;
+
+			rotation_update::remote_add(net::ipv4_address(10,1,0,40));
+
+		timedevent_test_event_finished::init();
+			timedevent_test_timer::on_value_change += timedevent_test_event_finished::monitor;
+
+			timedevent_test_event_finished::remote_add(net::ipv4_address(10,1,0,40));
+
+		timedevent_test_event_gamestate::init();
+			gamestate::on_change += timedevent_test_event_gamestate::monitor;
+
+			timedevent_test_event_gamestate::remote_add(net::ipv4_address(10,1,0,40));
+
+
+			freezed1::init(bool());
 			freezed1::remote_add(net::ipv4_address(10,1,0,40));
 
-			freezed5::init();
+			freezed5::init(bool());
 			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
-			gm_help_status::init();
+			gm_help_status::init(bool());
 			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
 			gm_help_status::remote_add(net::ipv4_address(10,1,1,40));
 
-			gamestate::init();
+			gamestate::init(uint8_t());
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
-			incoming_call::init();
+			incoming_call::init(uint8_t());
 			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
 			incoming_call::remote_add(net::ipv4_address(10,1,1,40));
 
-			incoming_call_status::init();
+			incoming_call_status::init(uint8_t());
 			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
 			incoming_call_status::remote_add(net::ipv4_address(10,1,1,40));
 
-			restart_game::init();
+			restart_game::init(bool());
 			restart_game::remote_add(net::ipv4_address(10,1,0,40));
 			restart_game::remote_add(net::ipv4_address(10,1,1,40));
+
+			timedevent_test::init(uint64_t(150));
+			timedevent_test::remote_add(net::ipv4_address(10,1,0,40));
 
 
 			ddf::pirate::room_1::init();
@@ -1299,20 +1528,25 @@ namespace ddf
 			gametimer::init();
 			gametimer::remote_add(net::ipv4_address(10,1,0,40));
 
+			timedevent_test_timer::init();
+			timedevent_test_timer::remote_add(net::ipv4_address(10,1,0,40));
+
 
 		}
 
 		static void uninit()
 		{
-			freezed1::on_change -= freeze_1_start;
-			freezed1::on_change -= freeze_1_stop;
-			freezetimer1::on_value_change -= freeze_1_timeout;
-			freezed5::on_change -= freeze_5_start;
-			freezed5::on_change -= freeze_5_stop;
-			freezetimer5::on_value_change -= freeze_5_timeout;
-			gamestate::on_change -= game_state_changed;
-			gametimer::on_value_change -= game_timer_expired;
-			ghostbox_picture_laser_boat_wheel_controller::potentiometer::value::on_change -= rotation_update;
+			freezed1::on_change -= freeze_1_start::monitor;
+			freezed1::on_change -= freeze_1_stop::monitor;
+			freezetimer1::on_value_change -= freeze_1_timeout::monitor;
+			freezed5::on_change -= freeze_5_start::monitor;
+			freezed5::on_change -= freeze_5_stop::monitor;
+			freezetimer5::on_value_change -= freeze_5_timeout::monitor;
+			gametimer::on_value_change -= game_timer_expired::monitor;
+			gamestate::on_change -= gameevent_game_state_changed::monitor;
+			ghostbox_picture_laser_boat_wheel_controller::potentiometer::value::on_change -= rotation_update::monitor;
+			timedevent_test_timer::on_value_change -= timedevent_test_event_finished::monitor;
+			gamestate::on_change -= timedevent_test_event_gamestate::monitor;
 
 			cashier_laser_controller::uninit();
 			entrance_hanger_controller::uninit();
@@ -1328,6 +1562,7 @@ namespace ddf
 			incoming_call::uninit();
 			incoming_call_status::uninit();
 			restart_game::uninit();
+			timedevent_test::uninit();
 
 			room_1_content::chord::uninit();
 
@@ -1339,6 +1574,7 @@ namespace ddf
 			freezetimer1::init();
 			freezetimer5::init();
 			gametimer::init();
+			timedevent_test_timer::init();
 
 		}
 	}
@@ -1852,100 +2088,226 @@ namespace ddf
 			typedef typename wic::timer<gametimer_config> gametimer;
 
 
-			void freeze_1_start()
+
+			/// Freeze 1 Start ///		
+			struct freeze_1_start_config
 			{
-				typedef typename magician::freezed1 fr;
+				static const uint32_t cfg_class_id = 0x2ffff0;
+				static const uint32_t cfg_member_id = 0xf0;
+				static bool cfg_condition()
+				{
+									typedef typename magician::freezed1 fr;
 				typedef typename magician::freezetimer1 tmr;
 				typedef typename magician::gamestate gs;
 
-				if(true && ( fr::value() ))
+					return (true && ( fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,2,15).propagate();
+									typedef typename magician::freezed1 fr;
+				typedef typename magician::freezetimer1 tmr;
+				typedef typename magician::gamestate gs;
+
 					(void)0; { 
         gs::value(2);
 	tmr::start();
        }
 				}
-			}
-			void freeze_1_stop()
+			};
+			typedef wic::event<freeze_1_start_config> freeze_1_start;
+
+			/// Freeze 1 Stop ///		
+			struct freeze_1_stop_config
 			{
-				typedef typename magician::freezed1 fr;
+				static const uint32_t cfg_class_id = 0x2ffff0;
+				static const uint32_t cfg_member_id = 0x100;
+				static bool cfg_condition()
+				{
+									typedef typename magician::freezed1 fr;
 				typedef typename magician::freezetimer1 tmr;
 				typedef typename magician::gamestate gs;
 
-				if(true && ( !fr::value() ))
+					return (true && ( !fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,2,16).propagate();
+									typedef typename magician::freezed1 fr;
+				typedef typename magician::freezetimer1 tmr;
+				typedef typename magician::gamestate gs;
+
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
 	gs::value(1);
        }
 				}
-			}
-			void freeze_1_timeout()
+			};
+			typedef wic::event<freeze_1_stop_config> freeze_1_stop;
+
+			/// Freeze 1 Timeout ///		
+			struct freeze_1_timeout_config
 			{
-				typedef typename magician::freezetimer1 tmr;
+				static const uint32_t cfg_class_id = 0x2ffff0;
+				static const uint32_t cfg_member_id = 0x110;
+				static bool cfg_condition()
+				{
+									typedef typename magician::freezetimer1 tmr;
 				typedef typename magician::freezed1 fr;
 
-				if(true && ( tmr::value() ))
+					return (true && ( tmr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,2,17).propagate();
+									typedef typename magician::freezetimer1 tmr;
+				typedef typename magician::freezed1 fr;
+
 					(void)0; { fr::value(false); }
 				}
-			}
-			void freeze_5_start()
+			};
+			typedef wic::event<freeze_1_timeout_config> freeze_1_timeout;
+
+			/// Freeze 5 Start ///		
+			struct freeze_5_start_config
 			{
-				typedef typename magician::freezed5 fr;
+				static const uint32_t cfg_class_id = 0x2ffff0;
+				static const uint32_t cfg_member_id = 0x120;
+				static bool cfg_condition()
+				{
+									typedef typename magician::freezed5 fr;
 				typedef typename magician::freezetimer5 tmr;
 				typedef typename magician::gamestate gs;
 
-				if(true && ( fr::value() ))
+					return (true && ( fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,2,18).propagate();
+									typedef typename magician::freezed5 fr;
+				typedef typename magician::freezetimer5 tmr;
+				typedef typename magician::gamestate gs;
+
 					(void)0; { 
         gs::value(2);
 	tmr::start();
        }
 				}
-			}
-			void freeze_5_stop()
+			};
+			typedef wic::event<freeze_5_start_config> freeze_5_start;
+
+			/// Freeze 5 Stop ///		
+			struct freeze_5_stop_config
 			{
-				typedef typename magician::freezed5 fr;
+				static const uint32_t cfg_class_id = 0x2ffff0;
+				static const uint32_t cfg_member_id = 0x130;
+				static bool cfg_condition()
+				{
+									typedef typename magician::freezed5 fr;
 				typedef typename magician::freezetimer5 tmr;
 				typedef typename magician::gamestate gs;
 
-				if(true && ( !fr::value() ))
+					return (true && ( !fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,2,19).propagate();
+									typedef typename magician::freezed5 fr;
+				typedef typename magician::freezetimer5 tmr;
+				typedef typename magician::gamestate gs;
+
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
 	gs::value(1);
        }
 				}
-			}
-			void freeze_5_timeout()
+			};
+			typedef wic::event<freeze_5_stop_config> freeze_5_stop;
+
+			/// Freeze 5 Timeout ///		
+			struct freeze_5_timeout_config
 			{
-				typedef typename magician::freezetimer5 tmr;
+				static const uint32_t cfg_class_id = 0x2ffff0;
+				static const uint32_t cfg_member_id = 0x140;
+				static bool cfg_condition()
+				{
+									typedef typename magician::freezetimer5 tmr;
 				typedef typename magician::freezed5 fr;
 
-				if(true && ( tmr::value() ))
+					return (true && ( tmr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,2,20).propagate();
+									typedef typename magician::freezetimer5 tmr;
+				typedef typename magician::freezed5 fr;
+
 					(void)0; { fr::value(false); }
 				}
-			}
-			void game_state_changed()
+			};
+			typedef wic::event<freeze_5_timeout_config> freeze_5_timeout;
+
+			/// Game Timer Expired ///		
+			struct game_timer_expired_config
 			{
-				typedef typename magician::gametimer tmr;
+				static const uint32_t cfg_class_id = 0x2ffff0;
+				static const uint32_t cfg_member_id = 0xd0;
+				static bool cfg_condition()
+				{
+									typedef typename magician::gametimer tmr;
+				typedef typename magician::gamestate gs;
+
+					return (true && ( tmr::value() >= 3600 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename magician::gametimer tmr;
+				typedef typename magician::gamestate gs;
+
+					(void)0; { gs::value(3); }
+				}
+			};
+			typedef wic::event<game_timer_expired_config> game_timer_expired;
+
+			/// cupboard_controller_event_for_labyrinth_task ///		
+			struct cupboard_controller_event_for_labyrinth_task_config
+			{
+				static const uint32_t cfg_class_id = 0x2ffff0;
+				static const uint32_t cfg_member_id = 0x190;
+				static bool cfg_condition()
+				{
+									typedef typename magician::cupboard_controller::debouncer debouncer;
+				typedef typename magician::cupboard_controller::magnetic_lock magnetic_lock;
+
+					return (true && (  debouncer::value()  ));
+				}
+				static void cfg_action()
+				{
+									typedef typename magician::cupboard_controller::debouncer debouncer;
+				typedef typename magician::cupboard_controller::magnetic_lock magnetic_lock;
+
+					(void)0; {  magnetic_lock::value(0);  }
+				}
+			};
+			typedef wic::event<cupboard_controller_event_for_labyrinth_task_config> cupboard_controller_event_for_labyrinth_task;
+
+			/// gameevent_Game State Changed ///		
+			struct gameevent_game_state_changed_config
+			{
+				static const uint32_t cfg_class_id = 0x2ffff0;
+				static const uint32_t cfg_member_id = 0xe0;
+				static bool cfg_condition()
+				{
+									typedef typename magician::gametimer tmr;
 				typedef typename magician::gamestate gs;
 				typedef typename magician::freezed1 fr1;
 				typedef typename magician::freezed5 fr5;
 
-				if(true)
+					return (true);
+				}
+				static void cfg_action()
 				{
-					game_event(1,2,14).propagate();
+									typedef typename magician::gametimer tmr;
+				typedef typename magician::gamestate gs;
+				typedef typename magician::freezed1 fr1;
+				typedef typename magician::freezed5 fr5;
+
 					(void)0; { 
       switch(gs::value())
       {
@@ -1975,29 +2337,8 @@ namespace ddf
       }
      }
 				}
-			}
-			void game_timer_expired()
-			{
-				typedef typename magician::gametimer tmr;
-				typedef typename magician::gamestate gs;
-
-				if(true && ( tmr::value() >= 3600 ))
-				{
-					game_event(1,2,13).propagate();
-					(void)0; { gs::value(3); }
-				}
-			}
-			void cupboard_controller_event_for_labyrinth_task()
-			{
-				typedef typename magician::cupboard_controller::debouncer debouncer;
-				typedef typename magician::cupboard_controller::magnetic_lock magnetic_lock;
-
-				if(true && (  debouncer::value()  ))
-				{
-					game_event(1,2,25).propagate();
-					(void)0; {  magnetic_lock::value(0);  }
-				}
-			}
+			};
+			typedef wic::event<gameevent_game_state_changed_config> gameevent_game_state_changed;
 
 
 		static void init()
@@ -2007,38 +2348,74 @@ namespace ddf
 			entrance_controller::init(net::ipv4_address(10,1,1,61));
 			futuristic_safe_controller::init(net::ipv4_address(10,1,1,60));
 
-			freezed1::on_change += freeze_1_start;
-			freezed1::on_change += freeze_1_stop;
-			freezetimer1::on_value_change += freeze_1_timeout;
-			freezed5::on_change += freeze_5_start;
-			freezed5::on_change += freeze_5_stop;
-			freezetimer5::on_value_change += freeze_5_timeout;
-			gamestate::on_change += game_state_changed;
-			gametimer::on_value_change += game_timer_expired;
-			cupboard_controller::debouncer::value::on_change += cupboard_controller_event_for_labyrinth_task;
+		freeze_1_start::init();
+			freezed1::on_change += freeze_1_start::monitor;
 
-			freezed1::init();
+			freeze_1_start::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_1_stop::init();
+			freezed1::on_change += freeze_1_stop::monitor;
+
+			freeze_1_stop::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_1_timeout::init();
+			freezetimer1::on_value_change += freeze_1_timeout::monitor;
+
+			freeze_1_timeout::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_start::init();
+			freezed5::on_change += freeze_5_start::monitor;
+
+			freeze_5_start::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_stop::init();
+			freezed5::on_change += freeze_5_stop::monitor;
+
+			freeze_5_stop::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_timeout::init();
+			freezetimer5::on_value_change += freeze_5_timeout::monitor;
+
+			freeze_5_timeout::remote_add(net::ipv4_address(10,1,0,40));
+
+		game_timer_expired::init();
+			gametimer::on_value_change += game_timer_expired::monitor;
+
+			game_timer_expired::remote_add(net::ipv4_address(10,1,0,40));
+
+		cupboard_controller_event_for_labyrinth_task::init();
+			cupboard_controller::debouncer::value::on_change += cupboard_controller_event_for_labyrinth_task::monitor;
+
+			cupboard_controller_event_for_labyrinth_task::remote_add(net::ipv4_address(10,1,0,40));
+
+		gameevent_game_state_changed::init();
+			gamestate::on_change += gameevent_game_state_changed::monitor;
+
+			gameevent_game_state_changed::remote_add(net::ipv4_address(10,1,0,40));
+
+
+			freezed1::init(bool());
 			freezed1::remote_add(net::ipv4_address(10,1,0,40));
 
-			freezed5::init();
+			freezed5::init(bool());
 			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
-			gm_help_status::init();
+			gm_help_status::init(bool());
 			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
 			gm_help_status::remote_add(net::ipv4_address(10,1,1,40));
 
-			gamestate::init();
+			gamestate::init(uint8_t());
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
-			incoming_call::init();
+			incoming_call::init(uint8_t());
 			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
 			incoming_call::remote_add(net::ipv4_address(10,1,1,40));
 
-			incoming_call_status::init();
+			incoming_call_status::init(uint8_t());
 			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
 			incoming_call_status::remote_add(net::ipv4_address(10,1,1,40));
 
-			restart_game::init();
+			restart_game::init(bool());
 			restart_game::remote_add(net::ipv4_address(10,1,0,40));
 			restart_game::remote_add(net::ipv4_address(10,1,1,40));
 
@@ -2068,15 +2445,15 @@ namespace ddf
 
 		static void uninit()
 		{
-			freezed1::on_change -= freeze_1_start;
-			freezed1::on_change -= freeze_1_stop;
-			freezetimer1::on_value_change -= freeze_1_timeout;
-			freezed5::on_change -= freeze_5_start;
-			freezed5::on_change -= freeze_5_stop;
-			freezetimer5::on_value_change -= freeze_5_timeout;
-			gamestate::on_change -= game_state_changed;
-			gametimer::on_value_change -= game_timer_expired;
-			cupboard_controller::debouncer::value::on_change -= cupboard_controller_event_for_labyrinth_task;
+			freezed1::on_change -= freeze_1_start::monitor;
+			freezed1::on_change -= freeze_1_stop::monitor;
+			freezetimer1::on_value_change -= freeze_1_timeout::monitor;
+			freezed5::on_change -= freeze_5_start::monitor;
+			freezed5::on_change -= freeze_5_stop::monitor;
+			freezetimer5::on_value_change -= freeze_5_timeout::monitor;
+			gametimer::on_value_change -= game_timer_expired::monitor;
+			cupboard_controller::debouncer::value::on_change -= cupboard_controller_event_for_labyrinth_task::monitor;
+			gamestate::on_change -= gameevent_game_state_changed::monitor;
 
 			cupboard_controller::uninit();
 			design_board_controller::uninit();
@@ -2396,34 +2773,34 @@ namespace ddf
 
 				static void init(net::ipv4_address ip)
 				{
-					desktop_pc::started::init(ip);
+					desktop_pc::started::init(ip,bool());
 			desktop_pc::started::remote_add(net::ipv4_address(10,1,0,40));
 
-					desktop_pc::shutdown::init(ip);
+					desktop_pc::shutdown::init(ip,bool());
 			desktop_pc::shutdown::remote_add(net::ipv4_address(10,1,0,40));
 
-					desktop_pc::logged_in::init(ip);
+					desktop_pc::logged_in::init(ip,bool());
 			desktop_pc::logged_in::remote_add(net::ipv4_address(10,1,0,40));
 
-					desktop_pc::recycled_restore::init(ip);
+					desktop_pc::recycled_restore::init(ip,bool());
 			desktop_pc::recycled_restore::remote_add(net::ipv4_address(10,1,0,40));
 
-					desktop_pc::audioplay_started::init(ip);
+					desktop_pc::audioplay_started::init(ip,bool());
 			desktop_pc::audioplay_started::remote_add(net::ipv4_address(10,1,0,40));
 
-					desktop_pc::audioplay_finished::init(ip);
+					desktop_pc::audioplay_finished::init(ip,bool());
 			desktop_pc::audioplay_finished::remote_add(net::ipv4_address(10,1,0,40));
 
-					desktop_pc::audioplay_paused::init(ip);
+					desktop_pc::audioplay_paused::init(ip,bool());
 			desktop_pc::audioplay_paused::remote_add(net::ipv4_address(10,1,0,40));
 
-					desktop_pc::restart_game::init(ip);
+					desktop_pc::restart_game::init(ip,bool());
 			desktop_pc::restart_game::remote_add(net::ipv4_address(10,1,0,40));
 
-					desktop_pc::audioplay_startevent::init(ip);
+					desktop_pc::audioplay_startevent::init(ip,bool());
 			desktop_pc::audioplay_startevent::remote_add(net::ipv4_address(10,1,0,40));
 
-					desktop_pc::audiopause_pauseevent::init(ip);
+					desktop_pc::audiopause_pauseevent::init(ip,bool());
 			desktop_pc::audiopause_pauseevent::remote_add(net::ipv4_address(10,1,0,40));
 
 
@@ -2676,15 +3053,28 @@ namespace ddf
 				};
 				typedef wicp::forward_property<start_livecams_config> start_livecams;
 
+				/// Stop LiveCams ///
+				struct stop_livecams_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::video_device::stop_livecams";
+
+					typedef bool cfg_value_type;
+
+					static const uint32_t cfg_class_id           = 0x300060;
+					static const uint32_t cfg_member_id          = 0x70;
+					static const uint32_t cfg_cooldown_time      = 0;
+				};
+				typedef wicp::forward_property<stop_livecams_config> stop_livecams;
+
 				/// Start Tape ///
 				struct start_tape_config : public property_config_base
 				{
 					constexpr static const char *name = "ddf::villa::video_device::start_tape";
 
-					typedef int32_t cfg_value_type;
+					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
-					static const uint32_t cfg_member_id          = 0x70;
+					static const uint32_t cfg_member_id          = 0x80;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
 				typedef wicp::forward_property<start_tape_config> start_tape;
@@ -2694,10 +3084,10 @@ namespace ddf
 				{
 					constexpr static const char *name = "ddf::villa::video_device::stop_tape";
 
-					typedef int32_t cfg_value_type;
+					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
-					static const uint32_t cfg_member_id          = 0x80;
+					static const uint32_t cfg_member_id          = 0x90;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
 				typedef wicp::forward_property<stop_tape_config> stop_tape;
@@ -2710,7 +3100,7 @@ namespace ddf
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
-					static const uint32_t cfg_member_id          = 0x90;
+					static const uint32_t cfg_member_id          = 0xa0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
 				typedef wicp::forward_property<enabled_config> enabled;
@@ -2723,7 +3113,7 @@ namespace ddf
 					typedef uint64_t cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
-					static const uint32_t cfg_member_id          = 0xa0;
+					static const uint32_t cfg_member_id          = 0xb0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
 				typedef wicp::forward_property<casette_id_config> casette_id;
@@ -2736,45 +3126,64 @@ namespace ddf
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
-					static const uint32_t cfg_member_id          = 0xb0;
+					static const uint32_t cfg_member_id          = 0xc0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
 				typedef wicp::forward_property<play_ongoing_config> play_ongoing;
 
+				/// livecam_ongoing ///
+				struct livecam_ongoing_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::video_device::livecam_ongoing";
+
+					typedef bool cfg_value_type;
+
+					static const uint32_t cfg_class_id           = 0x300060;
+					static const uint32_t cfg_member_id          = 0xd0;
+					static const uint32_t cfg_cooldown_time      = 0;
+				};
+				typedef wicp::forward_property<livecam_ongoing_config> livecam_ongoing;
+
 				static void init(net::ipv4_address ip)
 				{
-					video_device::started::init(ip);
+					video_device::started::init(ip,bool());
 			video_device::started::remote_add(net::ipv4_address(10,1,0,40));
 
-					video_device::shutdown::init(ip);
+					video_device::shutdown::init(ip,bool());
 			video_device::shutdown::remote_add(net::ipv4_address(10,1,0,40));
 
-					video_device::livecam_started::init(ip);
+					video_device::livecam_started::init(ip,bool());
 			video_device::livecam_started::remote_add(net::ipv4_address(10,1,0,40));
 
-					video_device::livecamslides_started::init(ip);
+					video_device::livecamslides_started::init(ip,bool());
 			video_device::livecamslides_started::remote_add(net::ipv4_address(10,1,0,40));
 
-					video_device::restart_game::init(ip);
+					video_device::restart_game::init(ip,bool());
 			video_device::restart_game::remote_add(net::ipv4_address(10,1,0,40));
 
-					video_device::start_livecams::init(ip);
+					video_device::start_livecams::init(ip,bool());
 			video_device::start_livecams::remote_add(net::ipv4_address(10,1,0,40));
 
-					video_device::start_tape::init(ip);
+					video_device::stop_livecams::init(ip,bool());
+			video_device::stop_livecams::remote_add(net::ipv4_address(10,1,0,40));
+
+					video_device::start_tape::init(ip,bool());
 			video_device::start_tape::remote_add(net::ipv4_address(10,1,0,40));
 
-					video_device::stop_tape::init(ip);
+					video_device::stop_tape::init(ip,bool());
 			video_device::stop_tape::remote_add(net::ipv4_address(10,1,0,40));
 
-					video_device::enabled::init(ip);
+					video_device::enabled::init(ip,bool());
 			video_device::enabled::remote_add(net::ipv4_address(10,1,0,40));
 
-					video_device::casette_id::init(ip);
+					video_device::casette_id::init(ip,uint64_t(0));
 			video_device::casette_id::remote_add(net::ipv4_address(10,1,0,40));
 
-					video_device::play_ongoing::init(ip);
+					video_device::play_ongoing::init(ip,bool(false));
 			video_device::play_ongoing::remote_add(net::ipv4_address(10,1,0,40));
+
+					video_device::livecam_ongoing::init(ip,bool(false));
+			video_device::livecam_ongoing::remote_add(net::ipv4_address(10,1,0,40));
 
 
 				}
@@ -2787,11 +3196,13 @@ namespace ddf
 					video_device::livecamslides_started::uninit();
 					video_device::restart_game::uninit();
 					video_device::start_livecams::uninit();
+					video_device::stop_livecams::uninit();
 					video_device::start_tape::uninit();
 					video_device::stop_tape::uninit();
 					video_device::enabled::uninit();
 					video_device::casette_id::uninit();
 					video_device::play_ongoing::uninit();
+					video_device::livecam_ongoing::uninit();
 
 				}
 			}
@@ -2997,100 +3408,204 @@ namespace ddf
 			typedef typename wic::timer<gametimer_config> gametimer;
 
 
-			void freeze_1_start()
+
+			/// Freeze 1 Start ///		
+			struct freeze_1_start_config
 			{
-				typedef typename villa::freezed1 fr;
+				static const uint32_t cfg_class_id = 0x3ffff0;
+				static const uint32_t cfg_member_id = 0x110;
+				static bool cfg_condition()
+				{
+									typedef typename villa::freezed1 fr;
 				typedef typename villa::freezetimer1 tmr;
 				typedef typename villa::gamestate gs;
 
-				if(true && ( fr::value() ))
+					return (true && ( fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,3,17).propagate();
+									typedef typename villa::freezed1 fr;
+				typedef typename villa::freezetimer1 tmr;
+				typedef typename villa::gamestate gs;
+
 					(void)0; { 
         gs::value(2);
 	tmr::start();
        }
 				}
-			}
-			void freeze_1_stop()
+			};
+			typedef wic::event<freeze_1_start_config> freeze_1_start;
+
+			/// Freeze 1 Stop ///		
+			struct freeze_1_stop_config
 			{
-				typedef typename villa::freezed1 fr;
+				static const uint32_t cfg_class_id = 0x3ffff0;
+				static const uint32_t cfg_member_id = 0x120;
+				static bool cfg_condition()
+				{
+									typedef typename villa::freezed1 fr;
 				typedef typename villa::freezetimer1 tmr;
 				typedef typename villa::gamestate gs;
 
-				if(true && ( !fr::value() ))
+					return (true && ( !fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,3,18).propagate();
+									typedef typename villa::freezed1 fr;
+				typedef typename villa::freezetimer1 tmr;
+				typedef typename villa::gamestate gs;
+
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
 	gs::value(1);
        }
 				}
-			}
-			void freeze_1_timeout()
+			};
+			typedef wic::event<freeze_1_stop_config> freeze_1_stop;
+
+			/// Freeze 1 Timeout ///		
+			struct freeze_1_timeout_config
 			{
-				typedef typename villa::freezetimer1 tmr;
+				static const uint32_t cfg_class_id = 0x3ffff0;
+				static const uint32_t cfg_member_id = 0x130;
+				static bool cfg_condition()
+				{
+									typedef typename villa::freezetimer1 tmr;
 				typedef typename villa::freezed1 fr;
 
-				if(true && ( tmr::value() ))
+					return (true && ( tmr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,3,19).propagate();
+									typedef typename villa::freezetimer1 tmr;
+				typedef typename villa::freezed1 fr;
+
 					(void)0; { fr::value(false); }
 				}
-			}
-			void freeze_5_start()
+			};
+			typedef wic::event<freeze_1_timeout_config> freeze_1_timeout;
+
+			/// Freeze 5 Start ///		
+			struct freeze_5_start_config
 			{
-				typedef typename villa::freezed5 fr;
+				static const uint32_t cfg_class_id = 0x3ffff0;
+				static const uint32_t cfg_member_id = 0x140;
+				static bool cfg_condition()
+				{
+									typedef typename villa::freezed5 fr;
 				typedef typename villa::freezetimer5 tmr;
 				typedef typename villa::gamestate gs;
 
-				if(true && ( fr::value() ))
+					return (true && ( fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,3,20).propagate();
+									typedef typename villa::freezed5 fr;
+				typedef typename villa::freezetimer5 tmr;
+				typedef typename villa::gamestate gs;
+
 					(void)0; { 
         gs::value(2);
 	tmr::start();
        }
 				}
-			}
-			void freeze_5_stop()
+			};
+			typedef wic::event<freeze_5_start_config> freeze_5_start;
+
+			/// Freeze 5 Stop ///		
+			struct freeze_5_stop_config
 			{
-				typedef typename villa::freezed5 fr;
+				static const uint32_t cfg_class_id = 0x3ffff0;
+				static const uint32_t cfg_member_id = 0x150;
+				static bool cfg_condition()
+				{
+									typedef typename villa::freezed5 fr;
 				typedef typename villa::freezetimer5 tmr;
 				typedef typename villa::gamestate gs;
 
-				if(true && ( !fr::value() ))
+					return (true && ( !fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,3,21).propagate();
+									typedef typename villa::freezed5 fr;
+				typedef typename villa::freezetimer5 tmr;
+				typedef typename villa::gamestate gs;
+
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
 	gs::value(1);
        }
 				}
-			}
-			void freeze_5_timeout()
+			};
+			typedef wic::event<freeze_5_stop_config> freeze_5_stop;
+
+			/// Freeze 5 Timeout ///		
+			struct freeze_5_timeout_config
 			{
-				typedef typename villa::freezetimer5 tmr;
+				static const uint32_t cfg_class_id = 0x3ffff0;
+				static const uint32_t cfg_member_id = 0x160;
+				static bool cfg_condition()
+				{
+									typedef typename villa::freezetimer5 tmr;
 				typedef typename villa::freezed5 fr;
 
-				if(true && ( tmr::value() ))
+					return (true && ( tmr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,3,22).propagate();
+									typedef typename villa::freezetimer5 tmr;
+				typedef typename villa::freezed5 fr;
+
 					(void)0; { fr::value(false); }
 				}
-			}
-			void game_state_changed()
+			};
+			typedef wic::event<freeze_5_timeout_config> freeze_5_timeout;
+
+			/// Game Timer Expired ///		
+			struct game_timer_expired_config
 			{
-				typedef typename villa::gametimer tmr;
+				static const uint32_t cfg_class_id = 0x3ffff0;
+				static const uint32_t cfg_member_id = 0xf0;
+				static bool cfg_condition()
+				{
+									typedef typename villa::gametimer tmr;
+				typedef typename villa::gamestate gs;
+
+					return (true && ( tmr::value() >= 3600 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename villa::gametimer tmr;
+				typedef typename villa::gamestate gs;
+
+					(void)0; { gs::value(3); }
+				}
+			};
+			typedef wic::event<game_timer_expired_config> game_timer_expired;
+
+			/// gameevent_Game State Changed ///		
+			struct gameevent_game_state_changed_config
+			{
+				static const uint32_t cfg_class_id = 0x3ffff0;
+				static const uint32_t cfg_member_id = 0x100;
+				static bool cfg_condition()
+				{
+									typedef typename villa::gametimer tmr;
 				typedef typename villa::gamestate gs;
 				typedef typename villa::freezed1 fr1;
 				typedef typename villa::freezed5 fr5;
 
-				if(true)
+					return (true);
+				}
+				static void cfg_action()
 				{
-					game_event(1,3,16).propagate();
+									typedef typename villa::gametimer tmr;
+				typedef typename villa::gamestate gs;
+				typedef typename villa::freezed1 fr1;
+				typedef typename villa::freezed5 fr5;
+
 					(void)0; { 
       switch(gs::value())
       {
@@ -3120,18 +3635,8 @@ namespace ddf
       }
      }
 				}
-			}
-			void game_timer_expired()
-			{
-				typedef typename villa::gametimer tmr;
-				typedef typename villa::gamestate gs;
-
-				if(true && ( tmr::value() >= 3600 ))
-				{
-					game_event(1,3,15).propagate();
-					(void)0; { gs::value(3); }
-				}
-			}
+			};
+			typedef wic::event<gameevent_game_state_changed_config> gameevent_game_state_changed;
 
 
 		static void init()
@@ -3143,37 +3648,69 @@ namespace ddf
 			safe_controller::init(net::ipv4_address(10,1,0,62));
 			video_device::init(net::ipv4_address(192,168,1,11));
 
-			freezed1::on_change += freeze_1_start;
-			freezed1::on_change += freeze_1_stop;
-			freezetimer1::on_value_change += freeze_1_timeout;
-			freezed5::on_change += freeze_5_start;
-			freezed5::on_change += freeze_5_stop;
-			freezetimer5::on_value_change += freeze_5_timeout;
-			gamestate::on_change += game_state_changed;
-			gametimer::on_value_change += game_timer_expired;
+		freeze_1_start::init();
+			freezed1::on_change += freeze_1_start::monitor;
 
-			freezed1::init();
+			freeze_1_start::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_1_stop::init();
+			freezed1::on_change += freeze_1_stop::monitor;
+
+			freeze_1_stop::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_1_timeout::init();
+			freezetimer1::on_value_change += freeze_1_timeout::monitor;
+
+			freeze_1_timeout::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_start::init();
+			freezed5::on_change += freeze_5_start::monitor;
+
+			freeze_5_start::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_stop::init();
+			freezed5::on_change += freeze_5_stop::monitor;
+
+			freeze_5_stop::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_timeout::init();
+			freezetimer5::on_value_change += freeze_5_timeout::monitor;
+
+			freeze_5_timeout::remote_add(net::ipv4_address(10,1,0,40));
+
+		game_timer_expired::init();
+			gametimer::on_value_change += game_timer_expired::monitor;
+
+			game_timer_expired::remote_add(net::ipv4_address(10,1,0,40));
+
+		gameevent_game_state_changed::init();
+			gamestate::on_change += gameevent_game_state_changed::monitor;
+
+			gameevent_game_state_changed::remote_add(net::ipv4_address(10,1,0,40));
+
+
+			freezed1::init(bool());
 			freezed1::remote_add(net::ipv4_address(10,1,0,40));
 
-			freezed5::init();
+			freezed5::init(bool());
 			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
-			gm_help_status::init();
+			gm_help_status::init(bool());
 			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
 			gm_help_status::remote_add(net::ipv4_address(10,1,1,40));
 
-			gamestate::init();
+			gamestate::init(uint8_t());
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
-			incoming_call::init();
+			incoming_call::init(uint8_t());
 			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
 			incoming_call::remote_add(net::ipv4_address(10,1,1,40));
 
-			incoming_call_status::init();
+			incoming_call_status::init(uint8_t());
 			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
 			incoming_call_status::remote_add(net::ipv4_address(10,1,1,40));
 
-			restart_game::init();
+			restart_game::init(bool());
 			restart_game::remote_add(net::ipv4_address(10,1,0,40));
 			restart_game::remote_add(net::ipv4_address(10,1,1,40));
 
@@ -3205,14 +3742,14 @@ namespace ddf
 
 		static void uninit()
 		{
-			freezed1::on_change -= freeze_1_start;
-			freezed1::on_change -= freeze_1_stop;
-			freezetimer1::on_value_change -= freeze_1_timeout;
-			freezed5::on_change -= freeze_5_start;
-			freezed5::on_change -= freeze_5_stop;
-			freezetimer5::on_value_change -= freeze_5_timeout;
-			gamestate::on_change -= game_state_changed;
-			gametimer::on_value_change -= game_timer_expired;
+			freezed1::on_change -= freeze_1_start::monitor;
+			freezed1::on_change -= freeze_1_stop::monitor;
+			freezetimer1::on_value_change -= freeze_1_timeout::monitor;
+			freezed5::on_change -= freeze_5_start::monitor;
+			freezed5::on_change -= freeze_5_stop::monitor;
+			freezetimer5::on_value_change -= freeze_5_timeout::monitor;
+			gametimer::on_value_change -= game_timer_expired::monitor;
+			gamestate::on_change -= gameevent_game_state_changed::monitor;
 
 			control_room_controller::uninit();
 			desk_controller::uninit();
@@ -3295,13 +3832,13 @@ namespace ddf
 
 				static void init(net::ipv4_address ip)
 				{
-					email_client::started::init(ip);
+					email_client::started::init(ip,bool());
 			email_client::started::remote_add(net::ipv4_address(10,1,0,40));
 
-					email_client::shutdown::init(ip);
+					email_client::shutdown::init(ip,bool());
 			email_client::shutdown::remote_add(net::ipv4_address(10,1,0,40));
 
-					email_client::restart_game::init(ip);
+					email_client::restart_game::init(ip,bool());
 			email_client::restart_game::remote_add(net::ipv4_address(10,1,0,40));
 
 
@@ -4078,100 +4615,204 @@ namespace ddf
 			typedef typename wic::timer<gametimer_config> gametimer;
 
 
-			void freeze_1_start()
+
+			/// Freeze 1 Start ///		
+			struct freeze_1_start_config
 			{
-				typedef typename junkyard::freezed1 fr;
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0xf0;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::freezed1 fr;
 				typedef typename junkyard::freezetimer1 tmr;
 				typedef typename junkyard::gamestate gs;
 
-				if(true && ( fr::value() ))
+					return (true && ( fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,4,15).propagate();
+									typedef typename junkyard::freezed1 fr;
+				typedef typename junkyard::freezetimer1 tmr;
+				typedef typename junkyard::gamestate gs;
+
 					(void)0; { 
         gs::value(2);
 	tmr::start();
        }
 				}
-			}
-			void freeze_1_stop()
+			};
+			typedef wic::event<freeze_1_start_config> freeze_1_start;
+
+			/// Freeze 1 Stop ///		
+			struct freeze_1_stop_config
 			{
-				typedef typename junkyard::freezed1 fr;
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0x100;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::freezed1 fr;
 				typedef typename junkyard::freezetimer1 tmr;
 				typedef typename junkyard::gamestate gs;
 
-				if(true && ( !fr::value() ))
+					return (true && ( !fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,4,16).propagate();
+									typedef typename junkyard::freezed1 fr;
+				typedef typename junkyard::freezetimer1 tmr;
+				typedef typename junkyard::gamestate gs;
+
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
 	gs::value(1);
        }
 				}
-			}
-			void freeze_1_timeout()
+			};
+			typedef wic::event<freeze_1_stop_config> freeze_1_stop;
+
+			/// Freeze 1 Timeout ///		
+			struct freeze_1_timeout_config
 			{
-				typedef typename junkyard::freezetimer1 tmr;
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0x110;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::freezetimer1 tmr;
 				typedef typename junkyard::freezed1 fr;
 
-				if(true && ( tmr::value() ))
+					return (true && ( tmr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,4,17).propagate();
+									typedef typename junkyard::freezetimer1 tmr;
+				typedef typename junkyard::freezed1 fr;
+
 					(void)0; { fr::value(false); }
 				}
-			}
-			void freeze_5_start()
+			};
+			typedef wic::event<freeze_1_timeout_config> freeze_1_timeout;
+
+			/// Freeze 5 Start ///		
+			struct freeze_5_start_config
 			{
-				typedef typename junkyard::freezed5 fr;
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0x120;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::freezed5 fr;
 				typedef typename junkyard::freezetimer5 tmr;
 				typedef typename junkyard::gamestate gs;
 
-				if(true && ( fr::value() ))
+					return (true && ( fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,4,18).propagate();
+									typedef typename junkyard::freezed5 fr;
+				typedef typename junkyard::freezetimer5 tmr;
+				typedef typename junkyard::gamestate gs;
+
 					(void)0; { 
         gs::value(2);
 	tmr::start();
        }
 				}
-			}
-			void freeze_5_stop()
+			};
+			typedef wic::event<freeze_5_start_config> freeze_5_start;
+
+			/// Freeze 5 Stop ///		
+			struct freeze_5_stop_config
 			{
-				typedef typename junkyard::freezed5 fr;
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0x130;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::freezed5 fr;
 				typedef typename junkyard::freezetimer5 tmr;
 				typedef typename junkyard::gamestate gs;
 
-				if(true && ( !fr::value() ))
+					return (true && ( !fr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,4,19).propagate();
+									typedef typename junkyard::freezed5 fr;
+				typedef typename junkyard::freezetimer5 tmr;
+				typedef typename junkyard::gamestate gs;
+
 					(void)0; { 
 	tmr::stop();
 	tmr::reset();
 	gs::value(1);
        }
 				}
-			}
-			void freeze_5_timeout()
+			};
+			typedef wic::event<freeze_5_stop_config> freeze_5_stop;
+
+			/// Freeze 5 Timeout ///		
+			struct freeze_5_timeout_config
 			{
-				typedef typename junkyard::freezetimer5 tmr;
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0x140;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::freezetimer5 tmr;
 				typedef typename junkyard::freezed5 fr;
 
-				if(true && ( tmr::value() ))
+					return (true && ( tmr::value() ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,4,20).propagate();
+									typedef typename junkyard::freezetimer5 tmr;
+				typedef typename junkyard::freezed5 fr;
+
 					(void)0; { fr::value(false); }
 				}
-			}
-			void game_state_changed()
+			};
+			typedef wic::event<freeze_5_timeout_config> freeze_5_timeout;
+
+			/// Game Timer Expired ///		
+			struct game_timer_expired_config
 			{
-				typedef typename junkyard::gametimer tmr;
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0xd0;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::gametimer tmr;
+				typedef typename junkyard::gamestate gs;
+
+					return (true && ( tmr::value() >= 3600 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename junkyard::gametimer tmr;
+				typedef typename junkyard::gamestate gs;
+
+					(void)0; { gs::value(3); }
+				}
+			};
+			typedef wic::event<game_timer_expired_config> game_timer_expired;
+
+			/// gameevent_Game State Changed ///		
+			struct gameevent_game_state_changed_config
+			{
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0xe0;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::gametimer tmr;
 				typedef typename junkyard::gamestate gs;
 				typedef typename junkyard::freezed1 fr1;
 				typedef typename junkyard::freezed5 fr5;
 
-				if(true)
+					return (true);
+				}
+				static void cfg_action()
 				{
-					game_event(1,4,14).propagate();
+									typedef typename junkyard::gametimer tmr;
+				typedef typename junkyard::gamestate gs;
+				typedef typename junkyard::freezed1 fr1;
+				typedef typename junkyard::freezed5 fr5;
+
 					(void)0; { 
       switch(gs::value())
       {
@@ -4201,51 +4842,74 @@ namespace ddf
       }
      }
 				}
-			}
-			void game_timer_expired()
-			{
-				typedef typename junkyard::gametimer tmr;
-				typedef typename junkyard::gamestate gs;
+			};
+			typedef wic::event<gameevent_game_state_changed_config> gameevent_game_state_changed;
 
-				if(true && ( tmr::value() >= 3600 ))
-				{
-					game_event(1,4,13).propagate();
-					(void)0; { gs::value(3); }
-				}
-			}
-			void labirynth_1()
+			/// labirynth_1 ///		
+			struct labirynth_1_config
 			{
-				typedef typename junkyard::secret_box_controller_1::debouncer_5 button;
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0x190;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::secret_box_controller_1::debouncer_5 button;
 				typedef typename junkyard::secret_box_controller_1::magnetic_lock_4 lock;
 
-				if(true && (  button::value()  ))
+					return (true && (  button::value()  ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,4,25).propagate();
+									typedef typename junkyard::secret_box_controller_1::debouncer_5 button;
+				typedef typename junkyard::secret_box_controller_1::magnetic_lock_4 lock;
+
 					(void)0; {  lock::value(0);  }
 				}
-			}
-			void labirynth_2()
+			};
+			typedef wic::event<labirynth_1_config> labirynth_1;
+
+			/// labirynth_2 ///		
+			struct labirynth_2_config
 			{
-				typedef typename junkyard::secret_box_controller_1::debouncer_6 button;
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0x1a0;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::secret_box_controller_1::debouncer_6 button;
 				typedef typename junkyard::secret_box_controller_2::magnetic_lock_1 lock;
 
-				if(true && (  button::value()  ))
+					return (true && (  button::value()  ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,4,26).propagate();
+									typedef typename junkyard::secret_box_controller_1::debouncer_6 button;
+				typedef typename junkyard::secret_box_controller_2::magnetic_lock_1 lock;
+
 					(void)0; {  lock::value(0);  }
 				}
-			}
-			void labirynth_3()
+			};
+			typedef wic::event<labirynth_2_config> labirynth_2;
+
+			/// labirynth_3 ///		
+			struct labirynth_3_config
 			{
-				typedef typename junkyard::secret_box_controller_1::debouncer_7 button;
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0x1b0;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::secret_box_controller_1::debouncer_7 button;
 				typedef typename junkyard::secret_box_controller_2::magnetic_lock_2 lock;
 
-				if(true && (  button::value()  ))
+					return (true && (  button::value()  ));
+				}
+				static void cfg_action()
 				{
-					game_event(1,4,27).propagate();
+									typedef typename junkyard::secret_box_controller_1::debouncer_7 button;
+				typedef typename junkyard::secret_box_controller_2::magnetic_lock_2 lock;
+
 					(void)0; {  lock::value(0);  }
 				}
-			}
+			};
+			typedef wic::event<labirynth_3_config> labirynth_3;
 
 
 		static void init()
@@ -4255,40 +4919,84 @@ namespace ddf
 			secret_box_controller_1::init(net::ipv4_address(10,1,0,69));
 			secret_box_controller_2::init(net::ipv4_address(10,1,0,70));
 
-			freezed1::on_change += freeze_1_start;
-			freezed1::on_change += freeze_1_stop;
-			freezetimer1::on_value_change += freeze_1_timeout;
-			freezed5::on_change += freeze_5_start;
-			freezed5::on_change += freeze_5_stop;
-			freezetimer5::on_value_change += freeze_5_timeout;
-			gamestate::on_change += game_state_changed;
-			gametimer::on_value_change += game_timer_expired;
-			secret_box_controller_1::debouncer_5::value::on_change += labirynth_1;
-			secret_box_controller_1::debouncer_6::value::on_change += labirynth_2;
-			secret_box_controller_1::debouncer_7::value::on_change += labirynth_3;
+		freeze_1_start::init();
+			freezed1::on_change += freeze_1_start::monitor;
 
-			freezed1::init();
+			freeze_1_start::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_1_stop::init();
+			freezed1::on_change += freeze_1_stop::monitor;
+
+			freeze_1_stop::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_1_timeout::init();
+			freezetimer1::on_value_change += freeze_1_timeout::monitor;
+
+			freeze_1_timeout::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_start::init();
+			freezed5::on_change += freeze_5_start::monitor;
+
+			freeze_5_start::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_stop::init();
+			freezed5::on_change += freeze_5_stop::monitor;
+
+			freeze_5_stop::remote_add(net::ipv4_address(10,1,0,40));
+
+		freeze_5_timeout::init();
+			freezetimer5::on_value_change += freeze_5_timeout::monitor;
+
+			freeze_5_timeout::remote_add(net::ipv4_address(10,1,0,40));
+
+		game_timer_expired::init();
+			gametimer::on_value_change += game_timer_expired::monitor;
+
+			game_timer_expired::remote_add(net::ipv4_address(10,1,0,40));
+
+		gameevent_game_state_changed::init();
+			gamestate::on_change += gameevent_game_state_changed::monitor;
+
+			gameevent_game_state_changed::remote_add(net::ipv4_address(10,1,0,40));
+
+		labirynth_1::init();
+			secret_box_controller_1::debouncer_5::value::on_change += labirynth_1::monitor;
+
+			labirynth_1::remote_add(net::ipv4_address(10,1,0,40));
+
+		labirynth_2::init();
+			secret_box_controller_1::debouncer_6::value::on_change += labirynth_2::monitor;
+
+			labirynth_2::remote_add(net::ipv4_address(10,1,0,40));
+
+		labirynth_3::init();
+			secret_box_controller_1::debouncer_7::value::on_change += labirynth_3::monitor;
+
+			labirynth_3::remote_add(net::ipv4_address(10,1,0,40));
+
+
+			freezed1::init(bool());
 			freezed1::remote_add(net::ipv4_address(10,1,0,40));
 
-			freezed5::init();
+			freezed5::init(bool());
 			freezed5::remote_add(net::ipv4_address(10,1,0,40));
 
-			gm_help_status::init();
+			gm_help_status::init(bool());
 			gm_help_status::remote_add(net::ipv4_address(10,1,0,40));
 			gm_help_status::remote_add(net::ipv4_address(10,1,1,40));
 
-			gamestate::init();
+			gamestate::init(uint8_t());
 			gamestate::remote_add(net::ipv4_address(10,1,0,40));
 
-			incoming_call::init();
+			incoming_call::init(uint8_t());
 			incoming_call::remote_add(net::ipv4_address(10,1,0,40));
 			incoming_call::remote_add(net::ipv4_address(10,1,1,40));
 
-			incoming_call_status::init();
+			incoming_call_status::init(uint8_t());
 			incoming_call_status::remote_add(net::ipv4_address(10,1,0,40));
 			incoming_call_status::remote_add(net::ipv4_address(10,1,1,40));
 
-			restart_game::init();
+			restart_game::init(bool());
 			restart_game::remote_add(net::ipv4_address(10,1,0,40));
 			restart_game::remote_add(net::ipv4_address(10,1,1,40));
 
@@ -4318,17 +5026,17 @@ namespace ddf
 
 		static void uninit()
 		{
-			freezed1::on_change -= freeze_1_start;
-			freezed1::on_change -= freeze_1_stop;
-			freezetimer1::on_value_change -= freeze_1_timeout;
-			freezed5::on_change -= freeze_5_start;
-			freezed5::on_change -= freeze_5_stop;
-			freezetimer5::on_value_change -= freeze_5_timeout;
-			gamestate::on_change -= game_state_changed;
-			gametimer::on_value_change -= game_timer_expired;
-			secret_box_controller_1::debouncer_5::value::on_change -= labirynth_1;
-			secret_box_controller_1::debouncer_6::value::on_change -= labirynth_2;
-			secret_box_controller_1::debouncer_7::value::on_change -= labirynth_3;
+			freezed1::on_change -= freeze_1_start::monitor;
+			freezed1::on_change -= freeze_1_stop::monitor;
+			freezetimer1::on_value_change -= freeze_1_timeout::monitor;
+			freezed5::on_change -= freeze_5_start::monitor;
+			freezed5::on_change -= freeze_5_stop::monitor;
+			freezetimer5::on_value_change -= freeze_5_timeout::monitor;
+			gametimer::on_value_change -= game_timer_expired::monitor;
+			gamestate::on_change -= gameevent_game_state_changed::monitor;
+			secret_box_controller_1::debouncer_5::value::on_change -= labirynth_1::monitor;
+			secret_box_controller_1::debouncer_6::value::on_change -= labirynth_2::monitor;
+			secret_box_controller_1::debouncer_7::value::on_change -= labirynth_3::monitor;
 
 			email_client::uninit();
 			entrance_controller::uninit();
@@ -4461,17 +5169,30 @@ namespace ddf
 			typedef typename wic::timer<statustimer_config> statustimer;
 
 
-			void statustimertick()
+
+			/// StatusTimerTick ///		
+			struct statustimertick_config
 			{
-				typedef typename service::statustimer tmr;
+				static const uint32_t cfg_class_id = 0x5ffff0;
+				static const uint32_t cfg_member_id = 0x60;
+				static bool cfg_condition()
+				{
+									typedef typename service::statustimer tmr;
 				typedef typename service::servercpustatus cpu;
 				typedef typename service::servermemorystatus mem;
 				typedef typename service::serverstoragestatus dsk;
 				typedef typename service::servernetworkstatus net;
 
-				if(true)
+					return (true);
+				}
+				static void cfg_action()
 				{
-					game_event(1,5,6).propagate();
+									typedef typename service::statustimer tmr;
+				typedef typename service::servercpustatus cpu;
+				typedef typename service::servermemorystatus mem;
+				typedef typename service::serverstoragestatus dsk;
+				typedef typename service::servernetworkstatus net;
+
 					(void)0; { 
       cpu::value((uint8_t)(status::cpu::usage()*255));
       mem::value((uint8_t)((double)status::memory::used()/status::memory::total()*255));
@@ -4479,7 +5200,8 @@ namespace ddf
       net::value(0);
      }
 				}
-			}
+			};
+			typedef wic::event<statustimertick_config> statustimertick;
 
 
 		static void init()
@@ -4487,18 +5209,21 @@ namespace ddf
 			comdev::init(net::ipv4_address(10,1,1,40));
 			gmclient::init(net::ipv4_address(10,1,0,40));
 
-			statustimer::on_value_change += statustimertick;
+		statustimertick::init();
+			statustimer::on_value_change += statustimertick::monitor;
 
-			servercpustatus::init();
+
+
+			servercpustatus::init(uint8_t());
 			servercpustatus::remote_add(net::ipv4_address(10,1,0,40));
 
-			servermemorystatus::init();
+			servermemorystatus::init(uint8_t());
 			servermemorystatus::remote_add(net::ipv4_address(10,1,0,40));
 
-			servernetworkstatus::init();
+			servernetworkstatus::init(uint8_t());
 			servernetworkstatus::remote_add(net::ipv4_address(10,1,0,40));
 
-			serverstoragestatus::init();
+			serverstoragestatus::init(uint8_t());
 			serverstoragestatus::remote_add(net::ipv4_address(10,1,0,40));
 
 
@@ -4510,7 +5235,7 @@ namespace ddf
 
 		static void uninit()
 		{
-			statustimer::on_value_change -= statustimertick;
+			statustimer::on_value_change -= statustimertick::monitor;
 
 			comdev::uninit();
 			gmclient::uninit();
@@ -4734,6 +5459,19 @@ std::cout << "initializing services" << std::endl;
 			if(get_property<ddf::villa::desktop_pc::restart_game>(x)) continue;
 			if(get_property<ddf::villa::desktop_pc::audioplay_startevent>(x)) continue;
 			if(get_property<ddf::villa::desktop_pc::audiopause_pauseevent>(x)) continue;
+			if(get_property<ddf::villa::video_device::started>(x)) continue;
+			if(get_property<ddf::villa::video_device::shutdown>(x)) continue;
+			if(get_property<ddf::villa::video_device::livecam_started>(x)) continue;
+			if(get_property<ddf::villa::video_device::livecamslides_started>(x)) continue;
+			if(get_property<ddf::villa::video_device::restart_game>(x)) continue;
+			if(get_property<ddf::villa::video_device::start_livecams>(x)) continue;
+			if(get_property<ddf::villa::video_device::stop_livecams>(x)) continue;
+			if(get_property<ddf::villa::video_device::start_tape>(x)) continue;
+			if(get_property<ddf::villa::video_device::stop_tape>(x)) continue;
+			if(get_property<ddf::villa::video_device::enabled>(x)) continue;
+			if(get_property<ddf::villa::video_device::casette_id>(x)) continue;
+			if(get_property<ddf::villa::video_device::play_ongoing>(x)) continue;
+			if(get_property<ddf::villa::video_device::livecam_ongoing>(x)) continue;
 			if(get_property<ddf::villa::restart_game>(x)) continue;
 			if(get_property<ddf::villa::gm_help_status>(x)) continue;
 			if(get_property<ddf::villa::incoming_call>(x)) continue;
@@ -4827,6 +5565,19 @@ std::cout << "initializing services" << std::endl;
 			if(set_property<ddf::villa::gm_help_status>(x)) continue;
 			if(set_property<ddf::villa::incoming_call>(x)) continue;
 			if(set_property<ddf::villa::incoming_call_status>(x)) continue;
+			if(set_property<ddf::villa::video_device::started>(x)) continue;
+			if(set_property<ddf::villa::video_device::shutdown>(x)) continue;
+			if(set_property<ddf::villa::video_device::livecam_started>(x)) continue;
+			if(set_property<ddf::villa::video_device::livecamslides_started>(x)) continue;
+			if(set_property<ddf::villa::video_device::restart_game>(x)) continue;
+			if(set_property<ddf::villa::video_device::start_livecams>(x)) continue;
+			if(set_property<ddf::villa::video_device::stop_livecams>(x)) continue;
+			if(set_property<ddf::villa::video_device::start_tape>(x)) continue;
+			if(set_property<ddf::villa::video_device::stop_tape>(x)) continue;
+			if(set_property<ddf::villa::video_device::enabled>(x)) continue;
+			if(set_property<ddf::villa::video_device::casette_id>(x)) continue;
+			if(set_property<ddf::villa::video_device::play_ongoing>(x)) continue;
+			if(set_property<ddf::villa::video_device::livecam_ongoing>(x)) continue;
 			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_1>(x)) continue;
 			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_2>(x)) continue;
 			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_3>(x)) continue;
