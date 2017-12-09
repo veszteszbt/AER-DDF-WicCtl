@@ -1,5 +1,6 @@
 #ifndef REMOTE_TIMER_H
 # define REMOTE_TIMER_H
+# include <property_config_base.h>
 namespace wic {
 
 template<typename TConfig>
