@@ -4,6 +4,7 @@
 # include <list>
 # include <chrono>
 # include <mutex>
+# include <earpc/buffer/outgoing_call_record.h>
 namespace wic {
 namespace earpc {
 namespace buffer
@@ -15,85 +16,10 @@ namespace buffer
 
 		typedef typename TEnv::call_id_type     call_id_type;
 
-		typedef typename TEnv::time_point       time_point;
-
-		typedef typename TEnv::clock            clock;
-
-		static const uint32_t call_timeout =    TEnv::call_timeout;
-
 	public:
-		typedef void (*callback_type)(
-			net::ipv4_address,
-			command_id_type,
-			void*
-		);
+		typedef outgoing_call_record<TEnv>        record_type;
 
-		struct record_type
-		{
-			net::ipv4_address ip;
-
-			call_id_type      call_id;
-
-			command_id_type   command_id;
-
-			callback_type     callback;
-
-			const void       *arg; 
-
-			uint16_t          arg_size;
-				
-			uint16_t          return_size;
-
-			time_point        expiry;
-			
-
-			record_type() {}
-
-			template<typename Treturn>
-			record_type(
-				net::ipv4_address i,
-				command_id_type cmd,
-				call_id_type cid,
-				const void *a,
-				uint16_t as,
-				void (*cb)(
-					net::ipv4_address,
-					command_id_type,
-					Treturn*
-				)
-			)       
-				: ip(i)
-				, call_id(cid)
-				, command_id(cmd)
-				, callback(reinterpret_cast<callback_type>(cb))
-				, arg(a)
-				, arg_size(as)
-				, return_size(sizeof(Treturn))
-				, expiry(clock::now()+std::chrono::milliseconds(static_cast<uint32_t>(call_timeout)))
-			{}
-
-			record_type(
-				net::ipv4_address i,
-				command_id_type cmd,
-				call_id_type cid,
-				const void *a,
-				uint16_t as,
-				void (*cb)(
-					net::ipv4_address,
-					command_id_type,
-					const std::string &
-				)
-			)       
-				: ip(i)
-				, call_id(cid)
-				, command_id(cmd)
-				, callback(reinterpret_cast<callback_type>(cb))
-				, arg(a)
-				, arg_size(as)
-				, return_size(-1) 
-				, expiry(clock::now()+std::chrono::milliseconds(static_cast<uint32_t>(call_timeout)))
-			{}
-		};
+		typedef typename record_type::callback_type        callback_type;
 
 		typedef std::list<record_type>            container_type;
 
@@ -126,37 +52,27 @@ namespace buffer
 		static void push(const record_type &v)
 		{ container.push_back(v); }
 
-		template<typename Treturn>
 		static void push(
 			net::ipv4_address i,
 			command_id_type   cmd,
 			call_id_type      cid,
 			const void       *a,
 			uint16_t          as,
-			void (*cb)(
-				net::ipv4_address,
-				command_id_type,
-				Treturn*
-			)
+			uint16_t          rs,
+			callback_type     cb
 		)
-		{ container.push_back(record_type(i,cmd,cid,a,as,cb)); }
-
-		static void push(
-			net::ipv4_address i,
-			command_id_type   cmd,
-			call_id_type      cid,
-			const void       *a,
-			uint16_t          as,
-			void (*cb)(
-				net::ipv4_address,
-				command_id_type,
-				const std::string&
-			)
-		)
-		{ container.push_back(record_type(i,cmd,cid,a,as,cb)); }
+		{ container.push_back(record_type(i,cmd,cid,a,as,rs,cb)); }
 
 		static void erase(iterator i)
 		{ container.erase(i); }
+
+		static bool has_call_to(net::ipv4_address ip)
+		{
+			for(auto i = begin(); i != end(); ++i)
+				if(i->ip == ip)
+					return true;
+			return false;
+		}
 	};
 
 	template<typename e>

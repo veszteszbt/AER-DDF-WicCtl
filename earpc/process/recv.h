@@ -70,6 +70,7 @@ namespace process
 							size-sizeof(earpc_header_type)
 						);
 					
+						TEnv::call_finished(ip);
 						f(ip,cmd,reinterpret_cast<void*>(&r));
 						return;
 					}
@@ -85,6 +86,7 @@ namespace process
 						buf_outgoing_call::erase(i);
 						buf_outgoing_call::unlock();
 
+						TEnv::call_finished(ip);
 						f(
 							ip,cmd,
 							reinterpret_cast<void*>(buffer+sizeof(earpc_header_type))
@@ -102,6 +104,7 @@ namespace process
 							h.call_id,
 							command_id_nak
 						);
+						TEnv::call_finished(ip);
 						f(ip,cmd,0);
 						return;
 

@@ -73,6 +73,7 @@ namespace process
 						proc_send::remove(ip,cid);
 						buf_outgoing_call::erase(i);
 						buf_outgoing_call::unlock();
+						TEnv::call_finished(ip);
 						f(ip,cmd,0);
 						buf_outgoing_call::lock();
 						i = buf_outgoing_call::begin();
