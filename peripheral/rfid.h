@@ -32,17 +32,17 @@ namespace peripheral
 
 
 	public:
-		static void init(net::ipv4_address ip)
-		{ property::init(ip); }
+		static void init(wicp::role_type &role)
+		{ property::init(role); }
 
 		static void uninit()
 		{ property::uninit(); }
 
-		static void remote_add(net::ipv4_address ip)
-		{ property::remote_add(ip); }
+		static void remote_add(wicp::role_type &role)
+		{ property::remote_add(role); }
 
-		static void remote_del(net::ipv4_address ip)
-		{ property::remote_del(ip); }
+		static void remote_del(wicp::role_type &role)
+		{ property::remote_del(role); }
 
 		typedef expose_property<property,false> value;
 

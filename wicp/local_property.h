@@ -140,6 +140,7 @@ namespace wicp
 			}
 			value_type rv = history.front().value;
 			history_lock.unlock();
+			jrn(journal::trace) << "get from API" << journal::end;
 			return rv;
 		}
 
@@ -161,18 +162,18 @@ namespace wicp
 		static value_type default_value()
 		{ return env::default_value; }
 
-		static bool remote_add(net::ipv4_address ip)
+		static bool remote_add(role_type &role)
 		{
 			remotes_lock.lock();
-			remotes.push_back(remote_record(ip));
+			remotes.push_back(remote_record(role));
 			remotes_lock.unlock();
-			jrn(journal::trace) << "added remote " << (std::string)ip << journal::end;
+			jrn(journal::trace) << "added remote `" << (std::string)role.name << "'" << journal::end;
 
 			proc_sync::notify();
 			return true;
 		}
 
-		static bool remote_del(net::ipv4_address ip)
+		static bool remote_del(role_type &role)
 		{
 			remotes_lock.lock();
 			for(
@@ -180,13 +181,12 @@ namespace wicp
 				i != remotes.end();
 				++i
 			)
-				if(i->ip == ip)
+				if(*i == role)
 				{
-				
 					remotes.erase(i);
 					remotes_lock.unlock();
 					proc_sync::notify();
-					jrn(journal::trace) << "deleted remote " << (std::string)ip << journal::end;
+					jrn(journal::trace) << "deleted remote `" << (std::string)role.name << "'" << journal::end;
 					return true;
 				}
 			remotes_lock.unlock();

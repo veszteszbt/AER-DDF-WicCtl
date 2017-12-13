@@ -26,7 +26,7 @@ namespace process
 
 		static void call_finish(net::ipv4_address ip, command_id_type cmd, const bool *v)
 		{
-			if(remote.ip == ip)
+			if(remote.role.get_ip() == ip)
 			{
 				if(!v)
 				{
@@ -50,7 +50,7 @@ namespace process
 			}
 
 			journal(journal::warning,"wicp.sync.remote") << "ip address mismatch" << std::endl <<
-				"expected: " << (std::string)remote.ip << std::endl <<
+				"expected: " << (std::string)remote.role.get_ip() << std::endl <<
 				"received: " << (std::string)ip << std::endl <<
 				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
 				::journal::end;
@@ -61,7 +61,7 @@ namespace process
 		static void init()
 		{
 			journal(journal::debug,"wicp.sync.remote") << "initialized" << std::endl <<
-				"  remote: " << (std::string)remote.ip << std::endl <<
+				"  remote: " << (std::string)remote.role.get_ip() << std::endl <<
 				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
 				::journal::end;
 		}
@@ -69,7 +69,7 @@ namespace process
 		static void uninit()
 		{
 			journal(journal::debug,"wicp.sync.remote") << "uninitialized" << std::endl <<
-				"  remote: " << (std::string)remote.ip << std::endl <<
+				"  remote: " << (std::string)remote.role.get_ip() << std::endl <<
 				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<		
 				::journal::end;
 		}

@@ -37,8 +37,8 @@ public:
 			TConfig::cfg_action();
 		}
 	}
-	static void remote_add(net::ipv4_address ip)
-	{ property::remote_add(ip); }
+	static void remote_add(wicp::role_type &role)
+	{ property::remote_add(role); }
 
 	constexpr static sched::listener &on_raised = property::on_change;
 };

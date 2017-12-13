@@ -25,7 +25,7 @@ namespace process
 				i != remotes.end();
 				++i
 			)
-				if(i->ip == ip)
+				if(i->role.get_ip() == ip)
 				{
 					TEnv::finish_sync_remote(*i,v);
 					TEnv::remotes_lock.unlock();

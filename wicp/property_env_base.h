@@ -4,6 +4,7 @@
 # include <list>
 # include <net/ipv4_address.h>
 # include <sched/listener.h>
+# include <wicp/role.h>
 namespace wicp
 {
 	template<typename TConfig>
@@ -49,7 +50,7 @@ namespace wicp
 	/// Remote endpoint ///
 		struct remote_record
 		{
-			net::ipv4_address   ip;
+			role_type &role;
 
 			typename clock::time_point sync_timestamp;
 
@@ -62,12 +63,24 @@ namespace wicp
 			uint32_t failures;
 
 
-			remote_record() {}
+			remote_record() 
+				: role(role_type::none)
+			{}
 
-			remote_record(net::ipv4_address i)
-				: ip(i)
+			remote_record(const remote_record &t)
+				: role(t.role)
+				, sync_timestamp(t.sync_timestamp)
+				, pending_timestamp(t.pending_timestamp)
+				, sync_start(t.sync_start)
+				, latency(t.latency)
+				, failures(t.failures)
+			{}
+
+			remote_record(role_type &prole)
+				: role(prole)
 				, sync_timestamp(clock::time_point::min())
 				, pending_timestamp(clock::time_point::min())
+				, failures(0)
 			{}
 		};
 
@@ -156,7 +169,7 @@ namespace wicp
 					}
 					const value_type v = i->value;
 					history_lock.unlock();
-					rpc::call(r.ip,command_id|function,v,callback);
+					rpc::call(r.role.get_ip(),command_id|function,v,callback);
 				}
 				else
 					history_lock.unlock();

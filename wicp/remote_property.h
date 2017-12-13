@@ -102,10 +102,10 @@ namespace wicp
 		}
 
 	public:
-		static void init(net::ipv4_address ip, value_type v = value_type())
+		static void init(role_type &role, value_type v = value_type())
 		{
 			history.clear();
-			env::remote.ip = ip;
+			new(&env::remote) remote_record(role);
 			env::value = env::default_value = v;
 			history.push_back(history_record(v));
 			env::local_timestamp = env::remote.sync_timestamp = history.back().time;

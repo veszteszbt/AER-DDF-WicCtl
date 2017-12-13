@@ -35,9 +35,9 @@ namespace wicp {
 
 		typedef typename property::value_type value_type;
 
-		static void init(net::ipv4_address ip, value_type v = value_type())
+		static void init(wicp::role_type &role, value_type v = value_type())
 		{
-			property::init(ip,v);
+			property::init(role,v);
 			replica::init(v);
 			replica::on_change += replica_change;
 			property::on_change += property_change;
@@ -62,11 +62,11 @@ namespace wicp {
 			property::value(v);
 		}
 
-		static bool remote_add(net::ipv4_address ip)
-		{ replica::remote_add(ip); }
+		static bool remote_add(wicp::role_type &role)
+		{ replica::remote_add(role); }
 
-		static bool remote_del(net::ipv4_address ip)
-		{ replica::remote_del(ip); }
+		static bool remote_del(wicp::role_type &role)
+		{ replica::remote_del(role); }
 
 		static uint32_t failures()
 		{ return property::failures(); }

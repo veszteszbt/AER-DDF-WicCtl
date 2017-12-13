@@ -2,21 +2,93 @@
 # define WICP_ROLE_H
 namespace wicp {
 
-	template<typename >
-	class role
+	struct device_type
 	{
+		virtual std::string get_name() = 0;
+
+		virtual net::ipv4_address get_ip() = 0;
+	};
+
+	class role_type
+	{
+		device_type *volatile device;
+
+		std::mutex lock;
+
 	public:
 		const std::string name;
 
-		role(const std::string &pname);
+		sched::listener on_bound;
 
-		device
+		sched::listener on_unbound;
 
-		net::ipv4_address get_ip();
+		role_type(const std::string &pname)
+			: name(pname)
+			, device(0)
+		{}
 
-		bool bind()
-		
+		~role_type()
+		{
+			lock.lock();
+			lock.unlock();
+		}
 
+		bool operator==(const role_type &t)
+		{ return t.name == name; }
+
+		net::ipv4_address get_ip()
+		{
+			lock.lock();
+			net::ipv4_address r;
+			if(device)
+				r = device->get_ip();
+			else
+				r = net::ipv4_address(0,0,0,0);
+			lock.unlock();
+
+			return r;
+		}
+
+		bool is_bound()
+		{
+			lock.lock();
+			const bool r = device;
+			lock.unlock();
+			return r;
+		}
+
+		bool unbind()
+		{
+			lock.lock();
+			if(!device)
+			{
+				lock.unlock();
+				return false;
+			}
+			device = 0;
+			lock.unlock();
+			on_unbound();
+			return true;
+		}
+
+
+		bool bind(device_type &dev)
+		{
+			lock.lock();
+			if(device)
+			{
+				lock.unlock();
+				return false;
+			}
+			device = &dev;
+			lock.unlock();
+			on_bound();
+			return true;
+		}
+
+		static role_type none;
 	};
+
+	role_type role_type::none("(none)");
 }
 #endif

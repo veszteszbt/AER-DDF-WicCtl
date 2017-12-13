@@ -165,10 +165,10 @@ namespace wic
 		{ running(false); }
 
 
-		static void remote_add(net::ipv4_address ip)
+		static void remote_add(wicp::role_type &role)
 		{
-			prop_value::remote_add(ip);
-			prop_running::remote_add(ip);
+			prop_value::remote_add(role);
+			prop_running::remote_add(role);
 		}
 
 
