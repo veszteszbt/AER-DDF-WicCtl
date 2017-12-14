@@ -2,6 +2,26 @@
 #include <cctype>
 #include <iomanip>
 #include <sstream>
+journal::journal(uint8_t plevel, const std::string &pdomain)
+	: domain(pdomain)
+	, level(plevel)
+{
+	if(level > min_level)
+	{
+		output = false;
+		return;
+	}
+
+	auto i = domains.find(domain);
+	if(i == domains.end())
+	{
+		domains[domain] = 0;
+		output = false;
+		return;
+	}
+
+	output = (level <= i->second);
+}
 std::ostream &journal::get_stream(const std::string&)
 {
 	if(!out_stream || !*out_stream)
@@ -23,6 +43,29 @@ std::string journal::get_timestamp()
     s << std::put_time(&tm, "%Y.%m%d. %H-%M-%S");
     return s.str();
 }
+
+std::vector<std::string> journal::get_domains()
+{
+	std::vector<std::string> r;
+	r.reserve(domains.size());
+	for(auto i : domains)
+		r.emplace_back(i.first);
+	return r;
+}
+
+uint8_t journal::domain_level(const std::string &domain)
+{
+	auto i = domains.find(domain);
+	if(i == domains.end())
+	{
+		domains[domain] = 0;
+		return 0;
+	}
+	return i->second;
+}
+
+void journal::domain_level(const std::string &domain,uint8_t level)
+{ domains[domain] = level; }
 
 std::string journal::level_to_string(const char *p, uint8_t limit)
 {
@@ -53,31 +96,16 @@ std::string journal::get_level()
 		return level_to_string("FATAL",fatal);
 }
 
-bool journal::needs_output()
-{
-	if(level > min_level)
-		return false;
-
-	auto i = domains.find(domain);
-	if(i == domains.end())
-		return false;
-
-	if(level > i->second)
-		return false;
-
-	return true;
-}
-
 journal &journal::operator<<(std::ostream&(*f)(std::ostream&))
 {
-	if(needs_output())
+	if(output)
 		buffer << f;
 	return *this;
 }
 
 journal &journal::operator<<(end_type)
 {
-	if(needs_output())
+	if(output)
 	{
 		const std::string prefix = get_timestamp() + " ["+get_level()+"] ("+domain+") ";
 		std::string payload = buffer.str();

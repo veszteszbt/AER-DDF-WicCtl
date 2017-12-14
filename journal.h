@@ -44,7 +44,7 @@ class journal
 
 	std::string get_level();
 
-	bool needs_output();
+	bool output;
 
 	static volatile bool is_running;
 
@@ -74,21 +74,25 @@ public:
 
 	static void uninit();
 
-	journal(uint8_t plevel, const std::string &pdomain)
-		: domain(pdomain)
-		, level(plevel)
-	{}
+	static uint8_t domain_level(const std::string &domain);
+
+	static void domain_level(const std::string &domain,uint8_t level);
+
+	static std::vector<std::string> get_domains();
+
+	journal(uint8_t plevel, const std::string &pdomain);
 
 	journal(const journal &t)
 		: domain(t.domain)
 		, level(t.level)
-	{ buffer << t.buffer.str(); }
+		, output(t.output)
+	{ if(output) buffer << t.buffer.str(); }
 
 
 	template<typename T>
 	journal &operator<<(T v)
 	{
-		if(needs_output())
+		if(output)
 			buffer << v;
 		return *this;
 	}
