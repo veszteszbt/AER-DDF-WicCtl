@@ -39,7 +39,43 @@ struct outgoing_call_record
 	
 	outgoing_call_record()
 		: arg(0)
+		, arg_size(0)
 	{}
+
+	outgoing_call_record(const outgoing_call_record &t)
+		: ip(t.ip)
+		, call_id(t.call_id)
+		, command_id(t.command_id)
+		, callback(t.callback)
+		, arg_size(t.arg_size)
+		, return_size(t.return_size)
+		, expiry(t.expiry)
+	{
+		if (this == &t)
+			return;
+		arg = malloc(arg_size);
+		memcpy(arg, t.arg, arg_size);
+	}
+
+	outgoing_call_record &operator=(const outgoing_call_record &t)
+	{
+		if (this == &t)
+			return *this;
+		ip = t.ip;
+		call_id = t.call_id;
+		command_id = t.command_id;
+		callback = t.callback;
+		arg_size = t.arg_size;
+		return_size = t.return_size;
+		expiry = t.expiry;
+		if (arg)
+			free(arg);
+
+		arg = malloc(arg_size);
+		memcpy(arg, t.arg, arg_size);
+		return *this;
+	}
+
 	
 	outgoing_call_record(
 		net::ipv4_address i,

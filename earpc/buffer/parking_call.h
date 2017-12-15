@@ -43,7 +43,7 @@ public:
 		uint16_t          rs,
 		callback_type     cb
 	)
-	{ container[i].push_back(record_type(i,cmd,cid,a,as,rs,cb)); }
+	{ container[i].emplace_back(i,cmd,cid,a,as,rs,cb); }
 
 	static bool pop(net::ipv4_address ip, record_type &out)
 	{

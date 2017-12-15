@@ -50,7 +50,7 @@ namespace buffer
 		}
 
 		static void push(const record_type &v)
-		{ container.push_back(v); }
+		{ container.emplace_back(v); }
 
 		static void push(
 			net::ipv4_address i,
