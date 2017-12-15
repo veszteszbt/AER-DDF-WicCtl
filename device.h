@@ -192,9 +192,6 @@ class device : public wicp::device_type
 
 				while(t_app_name.size() && !t_app_name.back())
 					t_app_name.resize(t_app_name.size()-1);
-				for(char &i : t_app_name)
-					std::cout << std::endl << std::hex << (uint16_t)i << ' ';
-				std::cout << std::endl;
 
 				bool t_app_running;
 				if(!ctl->app_is_running(t_app_running))
@@ -217,11 +214,6 @@ class device : public wicp::device_type
 
 				journal(journal::info,"wic.device.client") << (std::string)ip << ": app " << app_name << " " <<
 					(app_running?"(running)":"(not running)") << journal::end;
-
-				for(auto &i : role_by_name)
-					std::cout << i.first << std::endl;
-
-					
 
 				wicp::role_type *role = _get_role(app_name);
 				if(role)

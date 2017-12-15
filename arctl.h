@@ -160,6 +160,9 @@ public:
 	bool system_cpu_usage(uint16_t &out)
 	{ return get(0xffffffff00001006,out); }
 
+	bool network_server_ip(net::ipv4_address &out)
+	{ return get(0xffffffff00003008,out); }
+
 	bool app_status(uint8_t &out)
 	{ return get(0xffffffff00004000,out); }
 

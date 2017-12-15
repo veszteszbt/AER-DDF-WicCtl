@@ -9,10 +9,15 @@ class arctl_host
 	typedef typename TConfig::cfg_earpc rpc;
 
 	static net::ipv4_address server;
+
+	static std::mutex lock;
+
+	static std::string app_name;
 public:
-	class server_device_type : public wicp::device_type
+
+	struct server_device_type : public wicp::device_type
 	{
-		virtual ~device_type() {}
+		virtual ~server_device_type() {}
 		
 		virtual std::string get_name()
 		{
@@ -21,7 +26,12 @@ public:
 		}
 
 		virtual net::ipv4_address get_ip()
-		{ return server; }
+		{
+			lock.lock();
+			const net::ipv4_address r = server;
+			lock.unlock();
+			return r;
+		}
 
 	};
 	
@@ -82,24 +92,27 @@ private:
 		if(!v)
 			heartbeat_process->notify();
 		else
+		{
+			lock.lock();
 			server = ip;
+			lock.unlock();
+		}
 	}
 
 	static void get_app_running(typename rpc::template call_handle<bool> h, const bool*)
 	{ h.respond(true); }
 
 	static void get_app_name(typename rpc::template call_handle<std::string> h, const bool*)
-	{
-		static std::string n = "(unimplemented)";
-		h.respond(n);
-	}
+	{ h.respond(app_name); }
 
 	static void get_app_version(typename rpc::template call_handle<uint32_t> h, const bool*)
 	{ h.respond(0x10000000); }
 
 public:
-	static void init(uint64_t pserial, net::ipv4_address pserver)
+	static void init(uint64_t pserial, net::ipv4_address pserver, const std::string &papp_name)
 	{
+
+		app_name = papp_name;
 
 		rpc::set_command(
 			0xffffffff00004001,
@@ -144,6 +157,12 @@ typename arctl_host<c>::heartbeat_payload_type arctl_host<c>::heartbeat_payload;
 
 template<typename c>
 net::ipv4_address arctl_host<c>::server;
+
+template<typename c>
+std::mutex arctl_host<c>::lock;
+
+template<typename c>
+std::string arctl_host<c>::app_name;
 
 template<typename c>
 volatile bool arctl_host<c>::heartbeat_pending;

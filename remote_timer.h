@@ -1,6 +1,7 @@
 #ifndef REMOTE_TIMER_H
 # define REMOTE_TIMER_H
 # include <property_config_base.h>
+# include <wicp/role.h>
 namespace wic {
 
 template<typename TConfig>
@@ -39,10 +40,10 @@ class remote_timer
 public:
 	static const uint32_t interval = TConfig::cfg_interval;
 
-	static void init(net::ipv4_address ip)
+	static void init(wicp::role_type &role)
 	{
-		prop_value::init(ip);
-		prop_running::init(ip);
+		prop_value::init(role);
+		prop_running::init(role);
 	}
 
 	static void uninit()
