@@ -9,6 +9,8 @@ namespace wicp {
 		virtual std::string get_name() = 0;
 
 		virtual net::ipv4_address get_ip() = 0;
+
+		
 	};
 
 	class role_type
@@ -51,10 +53,21 @@ namespace wicp {
 			return r;
 		}
 
+
 		bool is_bound()
 		{
 			lock.lock();
 			const bool r = device;
+			lock.unlock();
+			return r;
+		}
+
+		bool is_bound_to(device_type &dev)
+		{
+			if(!&dev)
+				return false;
+			lock.lock();
+			const bool r = (device == &dev);
 			lock.unlock();
 			return r;
 		}
@@ -76,6 +89,8 @@ namespace wicp {
 
 		bool bind(device_type &dev)
 		{
+			if(!&dev)
+				return false;
 			lock.lock();
 			if(device)
 			{

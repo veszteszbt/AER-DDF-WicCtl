@@ -41,18 +41,18 @@ namespace process
 				}
 				else
 				{
-					jrn(journal::trace) << "; remote: " << (std::string)ip << "sync succeeded" << journal::end;
+					jrn(journal::trace) << "; remote: " << (std::string)ip << " sync succeeded" << journal::end;
 				}
-
-				TEnv::finish_sync_remote(remote,v);
-				notify();
-				return;
 			}
 
-			jrn(journal::warning) << "ip address mismatch; " <<
-				"expected: " << (std::string)remote.role.get_ip() << "; " <<
-				"received: " << (std::string)ip << "; " <<
-				journal::end;
+			else
+			{
+				jrn(journal::warning) << "ip address mismatch; " <<
+					"expected: " << (std::string)remote.role.get_ip() << "; " <<
+					"received: " << (std::string)ip << "; " <<
+					journal::end;
+			}
+			TEnv::finish_sync_remote(remote,v);
 			notify();
 		}
 

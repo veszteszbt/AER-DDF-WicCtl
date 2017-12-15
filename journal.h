@@ -60,6 +60,8 @@ public:
 	
 	static uint8_t min_level;
 
+	static uint8_t default_level;
+
 	constexpr static const end_type end = end_type();
 
 	static const uint8_t fatal = 0;

@@ -14,11 +14,7 @@ journal::journal(uint8_t plevel, const std::string &pdomain)
 
 	auto i = domains.find(domain);
 	if(i == domains.end())
-	{
-		domains[domain] = 0;
-		output = false;
-		return;
-	}
+		i = domains.insert(std::make_pair(domain,default_level)).first;
 
 	output = (level <= i->second);
 }
@@ -58,7 +54,7 @@ uint8_t journal::domain_level(const std::string &domain)
 	auto i = domains.find(domain);
 	if(i == domains.end())
 	{
-		domains[domain] = 0;
+		domains[domain] = default_level;
 		return 0;
 	}
 	return i->second;
@@ -222,28 +218,11 @@ std::queue<std::string*> journal::item_list;
 
 uint8_t       journal::min_level = 255;
 
+uint8_t       journal::default_level = 255;
+
 volatile bool          journal::is_running = true;
 
 std::thread   *journal::process = 0;
 
 
-std::map<std::string,uint8_t> journal::domains = {
-{"earpc.api.call",255},
-{"earpc.api.respond",255},
-{"earpc.process.expiry",255},
-{"earpc.process.feedback",255},
-{"earpc.process.master",255},
-{"earpc.process.recv",255},
-{"earpc.process.recv.ack",255},
-{"earpc.process.recv.call",255},
-{"earpc.process.recv.nak",255},
-{"earpc.process.send",255},
-{"wic.device.client",255},
-{"wic.device.host",255},
-{"wicp.commit",255},
-{"wicp.property.local",255},
-{"wicp.property.remote",255},
-{"wicp.property.forward",255},
-{"wicp.sync.local",255},
-{"wicp.sync.remote",255}
-};
+std::map<std::string,uint8_t> journal::domains;

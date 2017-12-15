@@ -5,6 +5,7 @@
 # include <net/ipv4_address.h>
 # include <sched/listener.h>
 # include <wicp/role.h>
+# include <journal.h>
 namespace wicp
 {
 	template<typename TConfig>
@@ -46,6 +47,12 @@ namespace wicp
 
 		static int64_t tp2nsec(typename clock::time_point p)
 		{ return std::chrono::time_point_cast<std::chrono::nanoseconds>(p).time_since_epoch().count(); }
+
+		static journal jrn(uint8_t level)
+		{
+			return journal(level,"wicp.base") << "property: " << std::hex <<
+				class_id << "::" << member_id << ' ';
+		}
 
 	/// Remote endpoint ///
 		struct remote_record
@@ -139,43 +146,57 @@ namespace wicp
 			if(history.empty())
 			{
 				history_lock.unlock();
+				jrn(journal::trace) << "history is empty; omitting sync" << journal::end;
 				return;
 			}
-			if(
-				r.pending_timestamp == clock::time_point::min() &&
-				r.sync_timestamp < history.front().time
+			if(r.sync_timestamp > history.front().time)
+			{
+				jrn(journal::critical) << "remote: " << (std::string)r.role.get_ip() <<
+					"; sync timestamp is newer than tip of history; recovering by synchronizing last item" << journal::end;
+				r.sync_timestamp = history.front().time - std::chrono::nanoseconds(1);
+			}
+			else if(r.pending_timestamp != clock::time_point::min())
+			{
+				jrn(journal::trace) << "remote: " << (std::string)r.role.get_ip() << "; sync has been pending for " <<
+					std::chrono::duration_cast<std::chrono::milliseconds>(clock::now()-r.sync_start).count() << "msec" <<
+					journal::end;
+				history_lock.unlock();
+				return;
+			}
+			else if(r.sync_timestamp == history.front().time)
+			{
+				jrn(journal::trace) << "remote: " << (std::string)r.role.get_ip() << "; up-to-date" << journal::end;
+				history_lock.unlock();
+				return;
+			}
+
+
+			
+			jrn(journal::trace) << "remote: " << (std::string)r.role.get_ip() << "; sync needed" << journal::end;
+			typename history_type::iterator i = history.begin();
+			for(
+				typename history_type::iterator j = history.begin();
+				j != history.end();
+				++j
 			)
 			{
-				typename history_type::iterator i = history.end();
-				for(
-					typename history_type::iterator j = history.begin();
-					j != history.end();
-					++j
-				)
-				{
 
-					if(r.sync_timestamp >= j->time)
-						break;
-					i = j;
-				}
-
-				if(i != history.end())
-				{
-					r.pending_timestamp = i->time;
-					if(r.sync_start == clock::time_point::min())
-					{
-						r.sync_start = clock::now();
-						r.failures = 0;
-					}
-					const value_type v = i->value;
-					history_lock.unlock();
-					rpc::call(r.role.get_ip(),command_id|function,v,callback);
-				}
-				else
-					history_lock.unlock();
+				if(r.sync_timestamp >= j->time)
+					break;
+				i = j;
 			}
-			else
-				history_lock.unlock();
+
+			r.pending_timestamp = i->time;
+			if(r.sync_start == clock::time_point::min())
+			{
+				r.sync_start = clock::now();
+				r.failures = 0;
+			}
+
+			const value_type v = i->value;
+			jrn(journal::trace) << "remote: " << (std::string)r.role.get_ip() << "; sync initiated" << journal::end;
+			history_lock.unlock();
+			rpc::call(r.role.get_ip(),command_id|function,v,callback);
 		}
 
 		static void finish_sync_remote(remote_record &r, bool v)

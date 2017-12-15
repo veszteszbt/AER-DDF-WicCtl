@@ -50,8 +50,16 @@ namespace process
 				i != buf_outgoing_call::end();
 				++i
 			)
-				if(i->call_id == h.call_id && i->ip == ip)
+				if(i->call_id == h.call_id)
 				{
+					if(i->ip != ip)
+						journal(journal::warning,"earpc.process.recv.return") << "ip address mismatch" << std::endl <<
+							"expected: " << (std::string)i->ip << std::endl <<
+							"  actual: " << (std::string)ip << std::endl <<
+							" command: " << std::hex << h.command_id << std::endl <<
+							" call id: " << std::hex << h.call_id << std::endl <<
+							journal::end;
+
 					const command_id_type cmd = i->command_id;
 					const typename buf_outgoing_call::callback_type f = i->callback;
 					if(i->return_size == 0xffff)

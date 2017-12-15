@@ -38,18 +38,19 @@ class device : public wicp::device_type
 
 	typedef std::map<std::string, device<TConfig>*>       dev_by_app_name_type;
 
+	typedef std::map<std::string, wicp::role_type*>            role_by_name_type;
+
 	static dev_by_ip_type       dev_by_ip;
 
 	static dev_by_serial_type   dev_by_serial;
 
 	static dev_by_app_name_type dev_by_app_name;
 
-	static std::mutex           cont_lock;
+	static std::mutex           lock;
 
+	static role_by_name_type role_by_name;
 
 	volatile uint32_t          heartbeat_count;
-
-	std::mutex                 inst_lock;
 
 	std::mutex                 suspend_lock;
 
@@ -72,45 +73,37 @@ class device : public wicp::device_type
 	static device<TConfig> *get(net::ipv4_address ip)
 	{
 		device<TConfig> *r = 0;
-		cont_lock.lock();
 		typename dev_by_ip_type::iterator i = dev_by_ip.find(ip);
 		if(i != dev_by_ip.end())
 			r = i->second;
 
-		cont_lock.unlock();
 		return r;
 	}
 
 	static device<TConfig> *get(uint64_t serial)
 	{
 		device<TConfig> *r = 0;
-		cont_lock.lock();
 		typename dev_by_serial_type::iterator i = dev_by_serial.find(serial);
 		if(i != dev_by_serial.end())
 			r = i->second;
 
-		cont_lock.unlock();
 		return r;
 	}
 
 	static device<TConfig> *get(const std::string &name)
 	{
 		device<TConfig> *r = 0;
-		cont_lock.lock();
 		typename dev_by_app_name_type::iterator i = dev_by_app_name.find(name);
 		if(i != dev_by_app_name.end())
 			r = i->second;
 
-		cont_lock.unlock();
 		return r;
 	}
 
 	static device<TConfig> *set(device<TConfig> *r)
 	{
-		cont_lock.lock();
 		dev_by_serial[r->serial] = r;
 		dev_by_ip[r->ip] = r;
-		cont_lock.unlock();
 		return r;
 	}
 
@@ -123,29 +116,44 @@ class device : public wicp::device_type
 		if(!v)
 		{
 			h.respond(false);
+			journal(journal::error,"wic.device") << (std::string)h.ip << ": empty heartbeat payload" <<
+				journal::end;
 			return;
 		}
-
 		h.respond(true);
+		journal(journal::trace,"wic.device.heartbeat") << (std::string)h.ip <<
+			" -> {"<<std::hex<<v->serial<<","<<std::dec<<v->counter<<"}" <<
+			journal::end;
 
+		lock.lock();
 		device<TConfig>
 			*r = get(v->serial),
 			*o = get(h.ip)
 		;
 
 		if(r)
+		{
+			journal(journal::trace,"wic.device.heartbeat") << (std::string)h.ip <<
+				" -> {"<<std::hex<<v->serial<<","<<std::dec<<v->counter<<"}; notifying instance" <<
+				journal::end;
+			lock.unlock();
 			r->heartbeat(h.ip,v->counter);
+		}
 
 		else if(o)
 		{
 			journal(journal::critical,"wic.device.client") << "ip collision on device arrival: " << (std::string)h.ip <<
 				" bound to two devices: " << std::hex << v->serial << " amd " << o->serial <<
 				journal::end;
+			lock.unlock();
 		}
 		else
 		{
+			journal(journal::trace,"wic.device.heartbeat") << (std::string)h.ip <<
+				" -> {"<<std::hex<<v->serial<<","<<std::dec<<v->counter<<"}; creating instance" <<
+				journal::end;
 			set(new device(v->serial, h.ip, v->counter));
-			// TODO: check roles
+			lock.unlock();
 		}
 	}
 
@@ -162,7 +170,7 @@ class device : public wicp::device_type
 
 		while(process_running)
 		{
-			inst_lock.lock();
+			lock.lock();
 			if(ctl->ip != ip)
 			{
 				delete ctl;
@@ -170,7 +178,7 @@ class device : public wicp::device_type
 				journal(journal::debug,"wic.device.client")  << "recreated control for new ip " << (std::string)ip <<
 					journal::end;
 			}
-			inst_lock.unlock();
+			lock.unlock();
 
 			if(!initialized)
 			{
@@ -182,6 +190,12 @@ class device : public wicp::device_type
 					continue;
 				}
 
+				while(t_app_name.size() && !t_app_name.back())
+					t_app_name.resize(t_app_name.size()-1);
+				for(char &i : t_app_name)
+					std::cout << std::endl << std::hex << (uint16_t)i << ' ';
+				std::cout << std::endl;
+
 				bool t_app_running;
 				if(!ctl->app_is_running(t_app_running))
 				{
@@ -190,7 +204,7 @@ class device : public wicp::device_type
 					continue;
 				}
 
-				inst_lock.lock();
+				lock.lock();
 
 				app_name    = t_app_name;
 				app_running = t_app_running;
@@ -200,15 +214,41 @@ class device : public wicp::device_type
 				std::cout << (std::string)ip << " --> " << app_name << " "  <<
 					(app_running?"\e[32;01m(running)":"\e[31;01m(not running)") << "\e[0m" <<
 					std::endl;
+
 				journal(journal::info,"wic.device.client") << (std::string)ip << ": app " << app_name << " " <<
 					(app_running?"(running)":"(not running)") << journal::end;
 
-				inst_lock.unlock();
+				for(auto &i : role_by_name)
+					std::cout << i.first << std::endl;
+
+					
+
+				wicp::role_type *role = _get_role(app_name);
+				if(role)
+				{
+					lock.unlock();
+					if(role->bind(*this))
+						journal(journal::info,"wic.device.client") << (std::string)get_ip() << ": bound to role `" <<
+							role->name << "'" << journal::end;
+					else
+					{
+						journal(journal::warning,"wic.device.client") << (std::string)get_ip() << ": corresponding role `" <<
+							role->name << "' already bound to " << (std::string)role->get_ip() << journal::end;
+					
+					}
+				}
+				else
+				{
+					lock.unlock();
+					journal(journal::warning,"wic.device.client") << (std::string)get_ip() << ": role `" <<
+						app_name << "' not found" << journal::end;
+				}
+
 			}
 
-			inst_lock.lock();
+			lock.lock();
 			const clock::time_point hb_expect = clock::now()+std::chrono::milliseconds(1200);
-			inst_lock.unlock();
+			lock.unlock();
 
 			{
 				std::unique_lock<std::mutex> ul(suspend_lock);
@@ -217,13 +257,19 @@ class device : public wicp::device_type
 
 			const clock::time_point finish = clock::now();
 
-			inst_lock.lock();
+			lock.lock();
 			if(heartbeat_count == hb_value)
 			{
 				++hb_outages;
 				if(hb_outages > 5)
 				{
 					initialized = false;
+					wicp::role_type *role = _get_role(app_name);
+					if(role)
+					{
+						if(role->is_bound_to(*this))
+							role->unbind();
+					}
 					std::cout << (std::string)ip << " -x-> " << app_name << " \e[31;01m(gone)\e[0m" << std::endl;
 					journal(journal::error,"wic.device.client") << (std::string)ip << ": too many heartbeat outages; " <<
 						"resetting to uninitialized state" << journal::end;
@@ -245,14 +291,14 @@ class device : public wicp::device_type
 				hb_value = heartbeat_count;
 				last_seen = clock::now();
 			}
-			inst_lock.unlock();
+			lock.unlock();
 		}
 
 		delete ctl;
-		inst_lock.lock();
+		lock.lock();
 		journal(journal::debug,"wic.device.client") << "process uninitialized for " << std::hex << serial << " (" <<
 			(std::string)ip << ")" << journal::end;
-		inst_lock.unlock();
+		lock.unlock();
 
 	}
 
@@ -281,10 +327,9 @@ class device : public wicp::device_type
 
 	void heartbeat(net::ipv4_address pip, uint32_t counter)
 	{
-		inst_lock.lock();
+		lock.lock();
 		if(pip != ip)
 		{
-			cont_lock.lock();
 			typename dev_by_ip_type::iterator j = dev_by_ip.find(ip);
 			if(j->second != this)
 			{
@@ -302,34 +347,90 @@ class device : public wicp::device_type
 					(std::string)pip << journal::end;
 
 			}
-			cont_lock.unlock();
 		}
 		heartbeat_count = counter;
-		inst_lock.unlock();
+		lock.unlock();
 
 		std::lock_guard<std::mutex> lg(suspend_lock);
 		suspend_cv.notify_one();
 	}
 
+	static void _set_role(wicp::role_type &role)
+	{
+		auto i = role_by_name.find(role.name);
+		if(i != role_by_name.end())
+		{
+			i->second->unbind();
+			role_by_name.erase(i);
+		}
+
+		role_by_name[role.name] = &role;
+		role.bind(*get(role.name));
+	}
+
+	static bool _unset_role(const std::string &role)
+	{
+		auto i = role_by_name.find(role);
+		if(i == role_by_name.end())
+			return false;
+		i->second->unbind();
+		role_by_name.erase(i);
+		return true;
+	
+	}
+	static wicp::role_type *_get_role(const std::string &role)
+	{
+		auto i = role_by_name.find(role);
+		if(i == role_by_name.end())
+			return 0;
+		return i->second;
+	}
+
 public:
 	const uint64_t serial;
+
+	static const role_by_name_type &roles()
+	{ return role_by_name; }
+
+	static void set_role(wicp::role_type &role)
+	{
+		lock.lock();
+		_set_role(role);
+		lock.unlock();
+	}
+
+	static bool unset_role(const std::string &role)
+	{
+		lock.lock();
+		const bool r = _unset_role();
+		lock.unlock();
+		return r;
+	}
+
+	static wicp::role_type *get_role(const std::string &role)
+	{
+		lock.lock();
+		wicp::role_type *const r = _get_role(role);
+		lock.unlock();
+		return r;
+	}
 
 	static const dev_by_serial_type &devices()
 	{ return dev_by_serial; }
 
 	bool get_app_state()
 	{
-		inst_lock.lock();
+		lock.lock();
 		const bool r = app_running;
-		inst_lock.unlock();
+		lock.unlock();
 		return r;
 	}
 
 	std::string get_app_name()
 	{
-		inst_lock.lock();
+		lock.lock();
 		const std::string r = app_name;
-		inst_lock.unlock();
+		lock.unlock();
 		return r;
 	}
 
@@ -338,23 +439,23 @@ public:
 
 	virtual net::ipv4_address get_ip()
 	{
-		inst_lock.lock();
+		lock.lock();
 		const net::ipv4_address r = ip;
-		inst_lock.unlock();
+		lock.unlock();
 		return r;
 	}
 
 	uint8_t get_state()
 	{
-		inst_lock.lock();
+		lock.lock();
 		if(!initialized)
 		{
-			inst_lock.unlock();
+			lock.unlock();
 			return 0;
 		}
 
 		const double v = (254.0*(types::time::nsec(clock::now()-last_seen)/1000000000-1)/5);
-		inst_lock.unlock();
+		lock.unlock();
 
 		if(v < 0)
 			return 255;
@@ -387,7 +488,10 @@ template<typename c>
 typename device<c>::dev_by_app_name_type device<c>::dev_by_app_name;
 
 template<typename c>
-std::mutex device<c>::cont_lock;
+std::mutex device<c>::lock;
+
+template<typename c>
+typename device<c>::role_by_name_type device<c>::role_by_name;
 
 }
 #endif
