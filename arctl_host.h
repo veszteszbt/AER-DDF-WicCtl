@@ -74,12 +74,14 @@ private:
 		{
 			using namespace std::literals::chrono_literals;
 
+			lock.lock();
 			++heartbeat_payload.counter;
 			if(!heartbeat_pending)
 			{
 				heartbeat_pending = true;
 				rpc::call(server,0xffffffff0ffff000,heartbeat_payload,heartbeat_callback);
 			}
+			lock.unlock();
 			suspend(1s);
 		}
 
