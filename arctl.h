@@ -3,6 +3,7 @@
 # include <map>
 # include <forward_list>
 # include <sched/lockable.h>
+# include <wicp/role.h>
 
 template<typename TConfig>
 class arctl

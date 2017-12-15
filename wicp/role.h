@@ -4,6 +4,8 @@ namespace wicp {
 
 	struct device_type
 	{
+		virtual ~device_type() {}
+
 		virtual std::string get_name() = 0;
 
 		virtual net::ipv4_address get_ip() = 0;

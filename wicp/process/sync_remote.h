@@ -24,6 +24,12 @@ namespace process
 
 		constexpr static std::mutex           &history_lock = TEnv::history_lock;
 
+		static journal jrn(uint8_t level)
+		{
+			return journal(level,"wicp.sync.remote") << "role: " << remote.role.name << "; property: " << std::hex <<
+				TEnv::class_id << "::" << TEnv::member_id << ' ';
+		}
+
 		static void call_finish(net::ipv4_address ip, command_id_type cmd, const bool *v)
 		{
 			if(remote.role.get_ip() == ip)
@@ -31,17 +37,11 @@ namespace process
 				if(!v)
 				{
 					++remote.failures;
-					journal(journal::error,"wicp.sync.remote") << "sync failed" << std::endl <<
-						"  remote: " << (std::string)ip << std::endl <<
-						"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-						::journal::end;
+					jrn(journal::error) << "; remote: " << (std::string)ip << " sync failed" << journal::end;
 				}
 				else
 				{
-					journal(journal::trace,"wicp.sync.remote") << "sync succeeded" << std::endl <<
-						"  remote: " << (std::string)ip << std::endl <<
-						"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-						::journal::end;
+					jrn(journal::trace) << "; remote: " << (std::string)ip << "sync succeeded" << journal::end;
 				}
 
 				TEnv::finish_sync_remote(remote,v);
@@ -49,29 +49,22 @@ namespace process
 				return;
 			}
 
-			journal(journal::warning,"wicp.sync.remote") << "ip address mismatch" << std::endl <<
-				"expected: " << (std::string)remote.role.get_ip() << std::endl <<
-				"received: " << (std::string)ip << std::endl <<
-				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-				::journal::end;
+			jrn(journal::warning) << "ip address mismatch; " <<
+				"expected: " << (std::string)remote.role.get_ip() << "; " <<
+				"received: " << (std::string)ip << "; " <<
+				journal::end;
 			notify();
 		}
 
 	public:
 		static void init()
 		{
-			journal(journal::debug,"wicp.sync.remote") << "initialized" << std::endl <<
-				"  remote: " << (std::string)remote.role.get_ip() << std::endl <<
-				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-				::journal::end;
+			jrn(journal::debug) << "initialized" << journal::end;
 		}
 
 		static void uninit()
 		{
-			journal(journal::debug,"wicp.sync.remote") << "uninitialized" << std::endl <<
-				"  remote: " << (std::string)remote.role.get_ip() << std::endl <<
-				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<		
-				::journal::end;
+			jrn(journal::debug) << "uninitialized" << journal::end;
 		}
 
 		static void notify()
@@ -79,13 +72,21 @@ namespace process
 			history_lock.lock();
 			if(history.empty())
 			{
-				journal(journal::trace,"wicp.sync.remote") << "nothing to do; suspending until next notify" << ::journal::end;
+				jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
 				history_lock.unlock();
 				return;
 			}
 
 			history_lock.unlock();
-			TEnv::sync_remote(remote,types::function::set,call_finish);
+			if(remote.role.is_bound())
+			{
+				jrn(journal::trace) << "; remote: " << (std::string)remote.role.get_ip() <<" doing sync" << journal::end;
+				TEnv::sync_remote(remote,types::function::set,call_finish);
+			}
+			else
+			{
+				jrn(journal::debug) << "omitting sync via unbound role" << journal::end;
+			}
 		}
 	};
 }}

@@ -11,7 +11,7 @@
 namespace wic {
 
 template<typename TConfig>
-class device 
+class device : public wicp::device_type
 {	
 	typedef typename TConfig::cfg_earpc   rpc;
 
@@ -143,7 +143,10 @@ class device
 				journal::end;
 		}
 		else
+		{
 			set(new device(v->serial, h.ip, v->counter));
+			// TODO: check roles
+		}
 	}
 
 	void process_start()
@@ -330,7 +333,10 @@ public:
 		return r;
 	}
 
-	net::ipv4_address get_ip()
+	virtual std::string get_name()
+	{ return get_app_name(); }
+
+	virtual net::ipv4_address get_ip()
 	{
 		inst_lock.lock();
 		const net::ipv4_address r = ip;

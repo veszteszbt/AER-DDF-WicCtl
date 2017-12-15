@@ -8,6 +8,26 @@ class arctl_host
 {
 	typedef typename TConfig::cfg_earpc rpc;
 
+	static net::ipv4_address server;
+public:
+	class server_device_type : public wicp::device_type
+	{
+		virtual ~device_type() {}
+		
+		virtual std::string get_name()
+		{
+			static const std::string n("server");
+			return n;
+		}
+
+		virtual net::ipv4_address get_ip()
+		{ return server; }
+
+	};
+	
+	static server_device_type server_device;
+private:
+
 #pragma pack(push,1)
 	struct
 	heartbeat_payload_type
@@ -18,8 +38,6 @@ class arctl_host
 #pragma pack(pop)
 
 	static heartbeat_payload_type heartbeat_payload;
-
-	static net::ipv4_address server;
 
 	static volatile bool heartbeat_pending;
 
@@ -63,6 +81,8 @@ class arctl_host
 		heartbeat_pending = false;
 		if(!v)
 			heartbeat_process->notify();
+		else
+			server = ip;
 	}
 
 	static void get_app_running(typename rpc::template call_handle<bool> h, const bool*)
@@ -112,6 +132,9 @@ public:
 		rpc::clear_command(0xffffffff00004004);
 	}
 };
+
+template<typename c>
+typename arctl_host<c>::server_device_type arctl_host<c>::server_device;
 
 template<typename c>
 typename arctl_host<c>::heartbeat_process_type *arctl_host<c>::heartbeat_process;

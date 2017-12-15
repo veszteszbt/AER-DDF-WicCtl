@@ -168,6 +168,7 @@ namespace wicp
 			remotes.push_back(remote_record(role));
 			remotes_lock.unlock();
 			jrn(journal::trace) << "added remote `" << (std::string)role.name << "'" << journal::end;
+			role.on_bound += proc_sync::notify;
 
 			proc_sync::notify();
 			return true;
@@ -185,6 +186,7 @@ namespace wicp
 				{
 					remotes.erase(i);
 					remotes_lock.unlock();
+					role.on_bound -= proc_sync::notify;
 					proc_sync::notify();
 					jrn(journal::trace) << "deleted remote `" << (std::string)role.name << "'" << journal::end;
 					return true;

@@ -17,6 +17,12 @@ namespace process
 
 		constexpr static std::mutex            &remotes_lock = TEnv::remotes_lock;
 
+		static journal jrn(uint8_t level)
+		{
+			return journal(level,"wicp.sync.local") << "property: " << std::hex <<
+				TEnv::class_id << "::" << TEnv::member_id << ' ';
+		}
+
 		static void call_finish(net::ipv4_address ip, command_id_type cmd, const bool *v)
 		{
 			TEnv::remotes_lock.lock();
@@ -34,26 +40,19 @@ namespace process
 				}
 
 			TEnv::remotes_lock.unlock();
-			journal(journal::warning,"wicp.sync.local") << "could not find remote for finished change" << std::endl << 
-				"remote: " << (std::string)ip << std::endl <<
-				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-				journal::end;
+			jrn(journal::warning) << "; remote: " << (std::string)ip <<
+				"could not find remote for finished change" << journal::end;
 			notify();
 		}
-
 	public:
 		static void init()
 		{
-			journal(journal::debug,"wicp.sync.local") << "initialized" << std::endl <<
-				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-				journal::end;
+			jrn(journal::debug) << "initialized" << journal::end;
 		}
 
 		static void uninit()
 		{
-			journal(journal::debug,"wicp.sync.local") << "uninitialized" << std::endl <<
-				"property: " << std::hex << TEnv::class_id << "::" << TEnv::member_id <<
-				journal::end;
+			jrn(journal::debug) << "uninitialized" << journal::end;
 		}
 
 		static void notify()
@@ -62,7 +61,7 @@ namespace process
 			if(TEnv::history.empty())
 			{
 				TEnv::history_lock.unlock();
-				journal(journal::trace,"wicp.sync.local") << "nothing to do; suspending until next notify" << journal::end;
+				jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
 				return;
 			}
 			TEnv::history_lock.unlock();
@@ -72,7 +71,16 @@ namespace process
 				i != remotes.end();
 				++i
 			)
-				TEnv::sync_remote(*i,types::function::notify,call_finish);
+				if(i->role.is_bound())
+				{
+					jrn(journal::trace) << "; remote: " << (std::string)i->role.get_ip() <<" doing sync via role `" <<
+						i->role.name<< "'" << journal::end;
+					TEnv::sync_remote(*i,types::function::notify,call_finish);
+				}
+				else
+				{
+					jrn(journal::debug) << "omitting sync via unbound role `" << i->role.name << "'" << journal::end;
+				}
 
 			TEnv::remotes_lock.unlock();
 		}

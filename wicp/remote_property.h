@@ -114,6 +114,7 @@ namespace wicp
 			proc_log::init();
 			proc_commit::init();
 			proc_sync::init();
+			role.on_bound += proc_sync::notify;
 			rpc::set_command(
 				command_id | types::function::notify,
 				notify_handler
@@ -123,6 +124,7 @@ namespace wicp
 
 		static void uninit()
 		{
+			remote.role.on_bound -= proc_sync::notify;
 			proc_commit::uninit();
 			proc_sync::uninit();
 			proc_log::uninit();
