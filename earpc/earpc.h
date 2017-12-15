@@ -206,7 +206,6 @@ namespace earpc
 		)
 		{
 			buf_outgoing_call::lock();
-
 			if(buf_outgoing_call::has_call_to(ip))
 			{
 				buf_outgoing_call::unlock();
@@ -217,7 +216,6 @@ namespace earpc
 				buf_parking_call::unlock();
 				return;
 			}
-
 			buf_incoming_call::lock();
 			call_id_type cid = generate_call_id(ip);
 			buf_outgoing_call::push(

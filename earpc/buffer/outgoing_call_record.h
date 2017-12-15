@@ -40,26 +40,7 @@ struct outgoing_call_record
 	outgoing_call_record()
 		: arg(0)
 	{}
-
-	outgoing_call_record(const outgoing_call_record &that)
-		: arg(0)
-	{ *this = that;	}
-
-	outgoing_call_record &operator=(const outgoing_call_record &t)
-	{
-		ip = t.ip;
-		call_id = t.call_id;
-		command_id = t.command_id;
-		callback = t.callback;
-		if(arg != 0)
-			free(arg);
-		arg = malloc(t.arg_size);
-		arg_size = t.arg_size;
-		return_size = t.return_size;
-		expiry = t.expiry;
-		memcpy(arg,t.arg,arg_size);
-	}
-
+	
 	outgoing_call_record(
 		net::ipv4_address i,
 		command_id_type cmd,

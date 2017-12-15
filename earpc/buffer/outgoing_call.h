@@ -61,7 +61,7 @@ namespace buffer
 			uint16_t          rs,
 			callback_type     cb
 		)
-		{ container.push_back(record_type(i,cmd,cid,a,as,rs,cb)); }
+		{ container.emplace_back(i, cmd, cid, a, as, rs, cb); }
 
 		static void erase(iterator i)
 		{ container.erase(i); }
