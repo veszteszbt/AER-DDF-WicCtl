@@ -9,7 +9,6 @@ namespace wicp {
 		virtual std::string get_name() = 0;
 
 		virtual net::ipv4_address get_ip() = 0;
-
 		
 	};
 
@@ -25,6 +24,8 @@ namespace wicp {
 		sched::listener on_bound;
 
 		sched::listener on_unbound;
+
+		sched::listener on_ip_changed;
 
 		role_type(const std::string &pname)
 			: name(pname)

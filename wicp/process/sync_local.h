@@ -39,10 +39,8 @@ namespace process
 					return;
 				}
 
-			TEnv::remotes_lock.unlock();
 			jrn(journal::warning) << "; remote: " << (std::string)ip <<
 				"could not find remote for finished change" << journal::end;
-			notify();
 		}
 	public:
 		static void init()

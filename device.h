@@ -215,27 +215,28 @@ class device : public wicp::device_type
 				journal(journal::info,"wic.device.client") << (std::string)ip << ": app " << app_name << " " <<
 					(app_running?"(running)":"(not running)") << journal::end;
 
-				wicp::role_type *role = _get_role(app_name);
-				if(role)
-				{
-					lock.unlock();
-					if(role->bind(*this))
-						journal(journal::info,"wic.device.client") << (std::string)get_ip() << ": bound to role `" <<
-							role->name << "'" << journal::end;
-					else
-					{
-						journal(journal::warning,"wic.device.client") << (std::string)get_ip() << ": corresponding role `" <<
-							role->name << "' already bound to " << (std::string)role->get_ip() << journal::end;
-					
-					}
-				}
+
+			}
+
+			wicp::role_type *role = _get_role(app_name);
+			if(role)
+			{
+				lock.unlock();
+				if(role->is_bound_to(*this) || role->bind(*this))
+					journal(journal::trace,"wic.device.client") << (std::string)get_ip() << ": bound to role `" <<
+						role->name << "'" << journal::end;
 				else
 				{
-					lock.unlock();
-					journal(journal::warning,"wic.device.client") << (std::string)get_ip() << ": role `" <<
-						app_name << "' not found" << journal::end;
+					journal(journal::warning,"wic.device.client") << (std::string)get_ip() << ": corresponding role `" <<
+						role->name << "' already bound to " << (std::string)role->get_ip() << journal::end;
+				
 				}
-
+			}
+			else
+			{
+				lock.unlock();
+				journal(journal::warning,"wic.device.client") << (std::string)get_ip() << ": role `" <<
+					app_name << "' not found" << journal::end;
 			}
 
 			lock.lock();
@@ -337,6 +338,15 @@ class device : public wicp::device_type
 				journal(journal::info,"wic.device.client") << "ip change on device " << std::hex << j->second->serial <<
 					"; old ip: " << (std::string)ip << "; new ip: " << 
 					(std::string)pip << journal::end;
+
+				auto i = role_by_name.find(app_name);
+				if(i != role_by_name.end() && i->second->is_bound_to(*this))
+				{
+					sched::listener &l = i->second->on_ip_changed;
+					lock.unlock();
+					l();
+					lock.lock();
+				}
 
 			}
 		}

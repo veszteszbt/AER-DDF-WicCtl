@@ -157,11 +157,20 @@ namespace wicp
 			}
 			else if(r.pending_timestamp != clock::time_point::min())
 			{
-				jrn(journal::trace) << "remote: " << (std::string)r.role.get_ip() << "; sync has been pending for " <<
-					std::chrono::duration_cast<std::chrono::milliseconds>(clock::now()-r.sync_start).count() << "msec" <<
-					journal::end;
-				history_lock.unlock();
-				return;
+				if(r.sync_start != clock::time_point::min())
+				{
+					uint32_t msecs = std::chrono::duration_cast<std::chrono::milliseconds>(clock::now()-r.sync_start).count();
+					if(msecs/(r.failures+1) < 3600)
+					{
+						jrn(journal::trace) << "remote: " << (std::string)r.role.get_ip() << "; sync has been pending for " <<
+							msecs << "msec" <<
+							journal::end;
+						history_lock.unlock();
+						return;
+					}
+				}
+				r.pending_timestamp = clock::time_point::min();
+				r.sync_start = clock::time_point::min();
 			}
 			else if(r.sync_timestamp == history.front().time)
 			{

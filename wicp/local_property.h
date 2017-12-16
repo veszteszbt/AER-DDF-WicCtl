@@ -187,6 +187,7 @@ namespace wicp
 					remotes.erase(i);
 					remotes_lock.unlock();
 					role.on_bound -= proc_sync::notify;
+					role.on_ip_changed -= proc_sync::reset;
 					proc_sync::notify();
 					jrn(journal::trace) << "deleted remote `" << (std::string)role.name << "'" << journal::end;
 					return true;
