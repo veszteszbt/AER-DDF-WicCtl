@@ -41,6 +41,15 @@ namespace process
 
 			jrn(journal::warning) << "; remote: " << (std::string)ip <<
 				"could not find remote for finished change" << journal::end;
+			for(
+				typename remotes_type::iterator i = remotes.begin();
+				i != remotes.end();
+				++i
+			)
+				TEnv::finish_sync_remote(*i,0);
+
+			TEnv::remotes_lock.unlock();
+			notify();
 		}
 	public:
 		static void init()
