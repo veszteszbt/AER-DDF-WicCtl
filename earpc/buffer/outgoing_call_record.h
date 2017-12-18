@@ -47,6 +47,8 @@ struct outgoing_call_record
 
 	outgoing_call_record &operator=(const outgoing_call_record &t)
 	{
+		if(this == &t)
+			return *this;
 		ip = t.ip;
 		call_id = t.call_id;
 		command_id = t.command_id;
