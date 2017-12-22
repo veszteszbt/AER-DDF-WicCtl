@@ -10,20 +10,21 @@
 # include <types/integer.h>
 # include <net/ipv4_address.h>
 # include <net/algorithm.h>
+# include <earpc/types/header.h>
+# include <earpc/types/call_handle.h>
 # include <earpc/buffer/command.h>
 # include <earpc/buffer/incoming_call.h>
 # include <earpc/buffer/outgoing_call.h>
-# include <earpc/buffer/parking_call.h>
 # include <earpc/process/feedback.h>
 # include <earpc/process/send.h>
 # include <earpc/process/recv.h>
 # include <earpc/process/expiry.h>
+# include <earpc/config.h>
 namespace earpc
 {
 	template<typename TConfig>
 	class earpc
 	{
-
 		struct env_base
 		{
 			typedef std::chrono::high_resolution_clock    clock;
@@ -33,65 +34,42 @@ namespace earpc
 			typedef typename TConfig::command_id_type     command_id_type;
 
 			typedef typename TConfig::call_id_type        call_id_type;
-#pragma pack(push,1)
-			class
-			earpc_header_type
-			{
-			public:
-				command_id_type command_id;
 
-				call_id_type    call_id;
+			static const uint16_t earpc_port            = 1234;
 
-				uint16_t        checksum;
+			static const uint32_t call_timeout          = 3200;
 
-				bool checksum_create()
-				{
-					*const_cast<volatile uint16_t*>(&checksum) = 0;
-					checksum = ::types::integer::htons(net::algorithm::checksum_finish(
-						net::algorithm::checksum_add(this,sizeof(earpc_header_type))
-					));
-					return true;
-				}
-
-				bool checksum_verify() const
-				{ return net::algorithm::checksum_verify(this,sizeof(earpc_header_type)); }
-			};
-#pragma pack(pop)
-			struct call_handle_base
-			{
-				const call_id_type call_id;
-
-				const net::ipv4_address ip;
-
-				const uint16_t          port;
-
-				call_handle_base(
-					net::ipv4_address i,
-					uint16_t p,
-					call_id_type cid
-				)
-					: ip(i)
-					, port(p)
-					, call_id(cid)
-				{}
-			};
-
-			constexpr static udp &conn = TConfig::connection;
-
-			static const uint32_t call_timeout = 3200;
+			constexpr static udp &conn                  = TConfig::connection;
 		};
 
-		struct env_buffers : public env_base
+		struct env_types : public env_base
 		{
-			typedef typename wic::earpc::buffer::template command<env_base>        buf_command;
+			typedef types::header<env_base>               header_type;
 
-			typedef typename wic::earpc::buffer::template incoming_call<env_base>  buf_incoming_call;
+			typedef types::call_record<env_base>          call_record;
 
-			typedef typename wic::earpc::buffer::template outgoing_call<env_base>  buf_outgoing_call;
+			typedef types::incoming_call_record<env_base> incoming_call_record;
 
-			typedef typename wic::earpc::buffer::template parking_call<env_base>   buf_parking_call;
+			typedef types::outgoing_call_record<env_base> outgoing_call_record;
+
+
+			typedef types::call_handle<env_base>          call_handle_base;
+
+			typedef types::incoming_call_handle<env_base> incoming_call_handle_base;
+
+			typedef types::outgoing_call_handle<env_base> outgoing_call_handle_base;
 
 		};
+
+		struct env_buffers : public env_types
+		{
+			typedef typename wic::earpc::buffer::template command<env_types>        buf_command;
+
+			typedef typename wic::earpc::buffer::template incoming_call<env_types>  buf_incoming_call;
+
+			typedef typename wic::earpc::buffer::template outgoing_call<env_types>  buf_outgoing_call;
+		};
+
 
 		typedef env_buffers env_feedback;
 
@@ -99,26 +77,30 @@ namespace earpc
 
 		static void outgoing_call_finished(net::ipv4_address);
 
+		static void outgoing_call_rerouted(net::ipv4_address,net::ipv4_address);
+
 		struct env_expiry : public env_buffers
 		{
 			typedef typename process::feedback<env_feedback> proc_feedback;
 
 			typedef typename process::send<env_send>         proc_send;
 
-			constexpr static void(*call_finished)(net::ipv4_address) = &outgoing_call_finished;
+			constexpr static void(*on_outgoing_call_finished)(net::ipv4_address) = &outgoing_call_finished;
+
+			constexpr static void(*on_outgoing_call_rerouted)(net::ipv4_address,net::ipv4_address) = &outgoing_call_rerouted;
 		};
 
 		struct env_recv : public env_expiry
 		{
-			typedef typename process::expiry<env_expiry>     proc_expiry;
+			typedef typename process::expiry<env_expiry>       proc_expiry;
 
-			static const typename env_buffers::command_id_type       command_id_ack = TConfig::command_id_ack;
+			static const typename env_base::command_id_type command_id_ack = TConfig::command_id_ack;
 
-			static const typename env_buffers::command_id_type       command_id_nak = TConfig::command_id_nak;
+			static const typename env_base::command_id_type command_id_nak = TConfig::command_id_nak;
 
-			static const typename env_buffers::command_id_type       command_id_return = TConfig::command_id_return;
+			static const typename env_base::command_id_type command_id_return = TConfig::command_id_return;
 
-			static const typename env_buffers::command_id_type       command_id_exception = TConfig::command_id_exception;
+			static const typename env_base::command_id_type command_id_exception = TConfig::command_id_exception;
 
 		};
 		typedef typename process::recv<env_recv>     proc_recv;
@@ -136,8 +118,6 @@ namespace earpc
 		typedef typename env_buffers::buf_incoming_call buf_incoming_call;
 
 		typedef typename env_buffers::buf_outgoing_call buf_outgoing_call;
-
-		typedef typename env_buffers::buf_parking_call  buf_parking_call;
 
 		typedef void(*generic_callback_type)(net::ipv4_address,typename env_buffers::command_id_type,const void*);
 
@@ -182,15 +162,15 @@ namespace earpc
 			return distribution(generator);
 		}
 
-		static call_id_type generate_call_id(net::ipv4_address ip)
+		static call_id_type generate_call_id()
 		{
 			while(true)
 			{
 				call_id_type r = get_random<call_id_type>();
 
-				if(buf_incoming_call::find(ip,r) != buf_incoming_call::end())
+				if(buf_incoming_call::find(r) != buf_incoming_call::end())
 					continue;
-				if(buf_outgoing_call::find(ip,r) != buf_outgoing_call::end())
+				if(buf_outgoing_call::find(r) != buf_outgoing_call::end())
 					continue;
 				return r;
 			}
@@ -202,96 +182,59 @@ namespace earpc
 			const void *argp,
 			uint16_t argl,
 			uint16_t retl,
-			void(*c)(net::ipv4_address,command_id_type,const void*)
+			typename buf_outgoing_call::callback_type c
 		)
 		{
 			buf_outgoing_call::lock();
-			if(buf_outgoing_call::has_call_to(ip))
-			{
-				buf_outgoing_call::unlock();
-				journal(journal::debug,"earpc.api.call") <<  "call to remote is ongoing; parking call; command: " << std::hex << cmd <<
-					"; target: " << (std::string)ip << journal::end;
-				buf_parking_call::lock();
-				buf_parking_call::push(ip,cmd,0,argp,argl,retl,c);
-				buf_parking_call::unlock();
-				return;
-			}
 			buf_incoming_call::lock();
-			call_id_type cid = generate_call_id(ip);
-			buf_outgoing_call::push(
-				ip,cmd,cid,argp,argl,retl,c
-			);
+			call_id_type cid = generate_call_id();
 			buf_incoming_call::unlock();
+
+			bool parked = (buf_outgoing_call::find_first_active_to(ip) != buf_outgoing_call::end());
+			buf_outgoing_call::push(c,parked, ip,cmd,cid,argp,argl,retl);
 			buf_outgoing_call::unlock();
 
-			journal(journal::debug,"earpc.api.call") <<  "initiating send; command: " << std::hex << cmd <<
-				"; target: " << (std::string)ip << "; call id: " << std::hex << cid << journal::end;
+			if(parked)
+				journal(journal::debug,"earpc.api.call") <<
+					"call id: " << std::hex << cid <<
+					"; command: " << std::hex << cmd <<
+					"; target: " << (std::string)ip << 
+					"; call to target is ongoing; parking call" <<
+					journal::end;
 
-			proc_send::notify(ip,1234,cid,cmd,argp,argl);
-			proc_expiry::notify();
+			else
+			{
+				journal(journal::debug,"earpc.api.call") <<
+					"call id: " << std::hex << cid <<
+					"; command: " << std::hex << cmd <<
+					"; target: " << (std::string)ip << 
+					"; initiating send" <<
+					journal::end;
+
+				proc_send::notify(ip,cid,cmd,argp,argl);
+				proc_expiry::notify();
+			}
 		}
 
 	public:
-		template<typename Treturn>
-		using call_handle = typename proc_recv::template call_handle<Treturn>;
+		template<typename Treturn, typename Targ>
+		using incoming_call_handle = typename proc_recv::template incoming_call_handle<Treturn,Targ>;
 
 		template<typename Treturn, typename Targ>
-		static 
-		std::enable_if_t<!std::is_same<Treturn,std::string>::value && !std::is_same<Targ,std::string>::value>
+		using outgoing_call_handle = typename proc_recv::template outgoing_call_handle<Treturn,Targ>;
+
+		template<typename Treturn, typename Targ>
+		static void
 		set_command(
 			command_id_type id,
-			void(*callback)(call_handle<Treturn>,const Targ*)
+			void(*callback)(incoming_call_handle<Treturn,Targ>)
 		)
 		{
 			env_recv::buf_command::lock();
 			env_recv::buf_command::push(
-				id,sizeof(Targ),sizeof(Treturn),
-				reinterpret_cast<typename env_recv::buf_command::callback_type>(callback)
-			);
-			env_recv::buf_command::unlock();
-		}
-
-		template<typename Treturn>//
-		static
-		std::enable_if_t<!std::is_same<Treturn,std::string>::value>
-		set_command(
-			command_id_type id,
-			void(*callback)(call_handle<Treturn>,const std::string&)
-		)
-		{
-			env_recv::buf_command::lock();
-			env_recv::buf_command::push(
-				id,0xffff,sizeof(Treturn),
-				reinterpret_cast<typename env_recv::buf_command::callback_type>(callback)
-			);
-			env_recv::buf_command::unlock();
-		}
-
-		template<typename Targ>//
-		static
-		std::enable_if_t<!std::is_same<Targ,std::string>::value>
-		set_command(
-			command_id_type id,
-			void(*callback)(call_handle<std::string>,const Targ*)
-		)
-		{
-			env_recv::buf_command::lock();
-			env_recv::buf_command::push(
-				id,sizeof(Targ),0xffff,
-				reinterpret_cast<typename env_recv::buf_command::callback_type>(callback)
-			);
-			env_recv::buf_command::unlock();
-		}
-
-		//
-		static void set_command(
-			command_id_type id,
-			void(*callback)(call_handle<std::string>,const std::string&)
-		)
-		{
-			env_recv::buf_command::lock();
-			env_recv::buf_command::push(
-				id,0xffff,0xffff,
+				id,
+				std::is_same<std::decay_t<Targ>,std::string>::value ? 0xffff : sizeof(Targ),
+				std::is_same<std::decay_t<Treturn>,std::string>::value ? 0xffff : sizeof(Treturn),
 				reinterpret_cast<typename env_recv::buf_command::callback_type>(callback)
 			);
 			env_recv::buf_command::unlock();
@@ -304,41 +247,41 @@ namespace earpc
 				env_recv::buf_command::erase(i);
 		}
 
-
-		template<typename Treturn, typename Targ>
 		static void call(
 			net::ipv4_address ip,
 			command_id_type cmd,
-			const Targ &arg,
-			void(*c)(net::ipv4_address,command_id_type,const Treturn*)
+			const std::string &arg,
+			void(*c)(outgoing_call_handle<std::string,std::string>)
 		)
-		{ do_call(ip,cmd,&arg,sizeof(Targ),sizeof(Treturn),reinterpret_cast<generic_callback_type>(c)); }
+		{ do_call(ip,cmd,arg.c_str(),arg.size(),(uint16_t)-1,reinterpret_cast<typename buf_outgoing_call::callback_type>(c)); }
 
 		template<typename Targ>
 		static void call(
 			net::ipv4_address ip,
 			command_id_type cmd,
 			const Targ &arg,
-			void(*c)(net::ipv4_address,command_id_type,const std::string&)
+			void(*c)(outgoing_call_handle<std::string,Targ>)
 		)
-		{ do_call(ip,cmd,&arg,sizeof(Targ),(uint16_t)-1,reinterpret_cast<generic_callback_type>(c)); }
+		{ do_call(ip,cmd,&arg,sizeof(Targ),(uint16_t)-1,reinterpret_cast<typename buf_outgoing_call::callback_type>(c)); }
 
 		template<typename Treturn>
 		static void call(
 			net::ipv4_address ip,
 			command_id_type cmd,
 			const std::string &arg,
-			void(*c)(net::ipv4_address,command_id_type,const Treturn*)
+			void(*c)(outgoing_call_handle<Treturn,std::string>)
 		)
-		{ do_call(ip,cmd,arg.c_str(),arg.size(),sizeof(Treturn),reinterpret_cast<generic_callback_type>(c)); }
+		{ do_call(ip,cmd,arg.c_str(),arg.size(),sizeof(Treturn),reinterpret_cast<typename buf_outgoing_call::callback_type>(c)); }
 
+		template<typename Treturn, typename Targ>
 		static void call(
 			net::ipv4_address ip,
 			command_id_type cmd,
-			const std::string &arg,
-			void(*c)(net::ipv4_address,command_id_type,const std::string&)
+			const Targ &arg,
+			void(*c)(outgoing_call_handle<Treturn,Targ>)
 		)
-		{ do_call(ip,cmd,arg.c_str(),arg.size(),(uint16_t)-1,reinterpret_cast<generic_callback_type>(c)); }
+		{ do_call(ip,cmd,&arg,sizeof(Targ),sizeof(Treturn),reinterpret_cast<typename buf_outgoing_call::callback_type>(c));	}
+
 
 		static void init()
 		{
@@ -361,45 +304,52 @@ namespace earpc
 	std::thread *earpc<c>::master_process;
 
 	template<typename c>
-	void earpc<c>::outgoing_call_finished(net::ipv4_address ip)
+	void earpc<c>::outgoing_call_rerouted(net::ipv4_address old_ip, net::ipv4_address new_ip)
 	{
-		buf_outgoing_call::lock();
-
-		if(buf_outgoing_call::has_call_to(ip))
-		{
-			buf_outgoing_call::unlock();
+		if(buf_outgoing_call::find_first_active_to(old_ip) != buf_outgoing_call::end())
 			return;
-		}
 
-		typename buf_outgoing_call::record_type r;
-
-		buf_parking_call::lock();
-		if(buf_parking_call::pop(ip,r))
+		auto call = buf_outgoing_call::find_first_parked_to(old_ip);
+		if(call != buf_outgoing_call::end())
 		{
-			buf_parking_call::unlock();
+			journal(journal::trace,"earpc.call.outgoing") <<
+				"; call id: " << std::hex << call->call_id <<
+				"; command: " << std::hex << call->command_id <<
+				"; target: " << (std::string)call->ip <<
+				"resuming parked call" <<
+				journal::end;
 
-			buf_incoming_call::lock();
-			r.call_id = generate_call_id(ip);
-			buf_incoming_call::unlock();
-
-			buf_outgoing_call::push(r);
-			buf_outgoing_call::unlock();
-
-			journal(journal::debug,"earpc.api.call") <<  "resuming parked call; command: " << std::hex << r.command_id << 
-				"; target: " << (std::string)ip <<
-				"; call id: " << std::hex << r.call_id << journal::end;
-
-			proc_send::notify(ip,1234,r.call_id,r.command_id,r.arg,r.arg_size);
+			call->parked = false;
+			call->reset_expiry();
+			proc_send::notify(*call);
 			proc_expiry::notify();
-
-		}
-
-		else
-		{
-			buf_parking_call::unlock();
-			buf_outgoing_call::unlock();
 		}
 	}
+
+	template<typename c>
+	void earpc<c>::outgoing_call_finished(net::ipv4_address ip)
+	{
+		if(buf_outgoing_call::find_first_active_to(ip) != buf_outgoing_call::end())
+			return;
+
+		auto call = buf_outgoing_call::find_first_parked_to(ip);
+		if(call != buf_outgoing_call::end())
+		{
+			journal(journal::trace,"earpc.call.outgoing") <<
+				"; call id: " << std::hex << call->call_id <<
+				"; command: " << std::hex << call->command_id <<
+				"; target: " << (std::string)ip <<
+				"resuming parked call" <<
+				journal::end;
+
+			call->parked = false;
+			call->reset_expiry();
+			proc_send::notify(*call);
+			proc_expiry::notify();
+		}
+	}
+
+	typedef earpc<default_config> default_earpc;
 
 }
 #endif

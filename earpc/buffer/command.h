@@ -18,10 +18,10 @@ namespace buffer
 
 		typedef typename TEnv::clock            clock;
 
-		typedef typename TEnv::call_handle_base call_handle_base;
+		typedef typename TEnv::incoming_call_handle_base incoming_call_handle_base;
 
 	public:
-		typedef void (*callback_type)(call_handle_base,const void*);
+		typedef void (*callback_type)(incoming_call_handle_base);
 
 		struct record_type
 		{

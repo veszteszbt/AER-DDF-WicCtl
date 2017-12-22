@@ -6,6 +6,7 @@
 # include <mutex>
 # include <condition_variable>
 # include <net/ipv4_address.h>
+# include <types/time.h>
 #ifdef _MSC_VER
 	#undef max
 	#undef min
@@ -16,22 +17,46 @@ namespace process
 	template<typename TEnv>
 	class send
 	{
+		typedef typename TEnv::call_id_type      call_id_type;
 
-		typedef typename TEnv::call_id_type        call_id_type;
+		typedef typename TEnv::command_id_type   command_id_type;
 
-		typedef typename TEnv::command_id_type     command_id_type;
+		typedef typename TEnv::header_type header_type;
 
-		typedef typename TEnv::earpc_header_type   earpc_header_type;
+		typedef typename TEnv::outgoing_call_record outgoing_call_record;
 
-		typedef typename TEnv::clock clock;
+		typedef typename TEnv::clock             clock;
 
-		typedef typename clock::time_point time_point;
+		typedef typename clock::time_point       time_point;
+
+
+		static std::mutex               queue_lock;
+
+		static std::mutex               suspend_lock;
+
+		static std::condition_variable  suspend_cv;
+
+		constexpr static ::earpc::udp  &conn = TEnv::conn;
+
+		struct packet
+		{
+			const net::ipv4_address ip;
+			uint8_t *buf;
+			const uint16_t size;
+			packet(
+				net::ipv4_address pip,
+				uint8_t *pbuf,
+				uint16_t psize
+			)
+				: buf(pbuf)
+				, ip(pip)
+				, size(psize)
+			{}
+		};
 
 		struct queue_record
 		{
 			net::ipv4_address ip;
-
-			uint16_t port;
 
 			call_id_type call_id;
 
@@ -43,17 +68,13 @@ namespace process
 
 			time_point resend_time;
 
-			uint8_t retries;
-
 			queue_record(const queue_record &that)
 				: ip(that.ip)
-				, port(that.port)
 				, call_id(that.call_id)
 				, command_id(that.command_id)
 				, buffer(new uint8_t[that.size])
 				, size(that.size)
 				, resend_time(that.resend_time)
-				, retries(that.retries)
 			{ memcpy(buffer,that.buffer,size); }
 
 			queue_record()
@@ -62,60 +83,41 @@ namespace process
 
 			queue_record(
 				net::ipv4_address i,
-				uint16_t p,
 				call_id_type cid,
 				command_id_type cmd,
 				const void *b,
 				uint16_t s
 			)
 				: ip(i)
-				, port(p)
 				, call_id(cid)
 				, command_id(cmd)
 				, buffer(new uint8_t[s])
 				, size(s)
-				, retries(8)
 				, resend_time(time_point::min())
 			{ memcpy(buffer,b,s); }
 
 			~queue_record()
 			{ delete buffer; }
+
+			void send()
+			{
+				const uint16_t buf_size = sizeof(header_type) + size;
+				uint8_t *buf = new uint8_t[buf_size];
+
+				header_type &h = *reinterpret_cast<header_type*>(buf);
+				h.call_id = call_id;
+				h.command_id = command_id;
+				h.checksum_create();
+				memcpy(buf+sizeof(header_type),buffer,size);
+				conn.send(ip,TEnv::earpc_port,buf,buf_size);
+				delete[] buf;
+			}
 			
 		};
 
 		typedef std::list<queue_record> queue_type;
 
-		static std::mutex               queue_lock;
-
-		static std::mutex               suspend_lock;
-
-		static std::condition_variable  suspend_cv;
-
 		static queue_type               queue;
-
-		constexpr static ::earpc::udp    &conn = TEnv::conn;
-
-		static int64_t tp2msec(time_point p)
-		{ return std::chrono::time_point_cast<std::chrono::milliseconds>(p).time_since_epoch().count(); }
-
-		struct packet
-		{
-			uint8_t *buf;
-			const net::ipv4_address ip;
-			const uint16_t port;
-			const uint16_t size;
-			packet(
-				net::ipv4_address pip,
-				uint16_t pport,
-				uint8_t *pbuf,
-				uint16_t psize
-			)
-				:buf(pbuf)
-				,ip(pip)
-				,port(pport)
-				,size(psize)
-			{}
-		};
 
 	public:
 		static void start()
@@ -126,58 +128,30 @@ namespace process
 			{
 				time_point ns = time_point::max();
 				
-				std::forward_list<packet> packets_to_send;
-
 				queue_lock.lock();
-				for(
-					typename queue_type::iterator i = queue.begin();
-					i != queue.end();
-					++i
-				) {
-					if(i->resend_time > clock::now())
+				for(auto &i : queue)
+				{
+					if(i.resend_time > clock::now())
 					{
-						if(ns > i->resend_time)
-							ns = i->resend_time;
+						if(ns > i.resend_time)
+							ns = i.resend_time;
 						continue;
 					}
 
-					i->resend_time = clock::now() + std::chrono::milliseconds(400);
-					if(ns > i->resend_time)
-						ns = i->resend_time;
+					i.resend_time = clock::now() + std::chrono::milliseconds(400);
+					if(ns > i.resend_time)
+						ns = i.resend_time;
 
-					const uint16_t size = sizeof(earpc_header_type) + i->size;
-					uint8_t *buf = new uint8_t[size];
-
-					earpc_header_type &h = *reinterpret_cast<earpc_header_type*>(buf);
-					h.call_id = i->call_id;
-					h.command_id = i->command_id;
-					h.checksum_create();
-					memcpy(buf+sizeof(earpc_header_type),i->buffer,i->size);
-
-					journal(journal::debug,"earpc.process.send") << "doing send operation" << std::endl <<
-						"command: " << std::hex << i->command_id  << std::endl <<
-						" target: " << (std::string)i->ip << std::endl <<
-						"call id: " << std::hex << i->call_id << std::endl <<
+					journal(journal::trace,"earpc.call") <<
+						"call id: " << std::hex << i.call_id <<
+						"; command: " << std::hex << i.command_id <<
+						"; target: " << (std::string)i.ip <<
+						"; doing data send operation" <<
 						journal::end;
 
-					const net::ipv4_address ip = i->ip;
-					const uint16_t port = i->port;
-
-					packets_to_send.push_front(packet(ip,port,buf,size));
+					i.send();
 				}
-
 				queue_lock.unlock();
-
-				for(
-					auto i = packets_to_send.begin();
-					i != packets_to_send.end();
-					++i
-				)
-				{
-					
-					conn.send(i->ip,i->port,i->buf,i->size);
-					delete i->buf;
-				}
 
 				if(ns == time_point::max())
 				{
@@ -187,26 +161,26 @@ namespace process
 
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait(ul);
-					journal(journal::trace,"earpc.process.send") << "resuming on notify" << journal::end;
 				}
 
 				else
 				{
 					journal(journal::trace,"earpc.process.send") <<
 						"nothing to do; suspending for " <<
-						std::dec << tp2msec(time_point(ns-clock::now())) << " msec" <<
+						std::dec << ::types::time::msec(ns-clock::now()) << " msec" <<
 						journal::end;
 
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait_until(ul,ns);
-					journal(journal::trace,"earpc.process.send") << "resuming on timeout" << journal::end;
 				}
+				journal(journal::trace,"earpc.process.send") << "resuming" << journal::end;
 			}
+
+			journal(journal::debug,"earpc.process.send") << "uninitializing" << journal::end;
 		}
 
 		static void notify(
 			net::ipv4_address ip,
-			uint16_t port,
 			call_id_type call_id,
 			command_id_type command_id,
 			const void *buffer,
@@ -214,32 +188,71 @@ namespace process
 		)
 		{
 			queue_lock.lock();
-			queue.push_back(queue_record(ip,port,call_id,command_id,buffer,size));
+			queue.emplace_back(ip,call_id,command_id,buffer,size);
 			queue_lock.unlock();
+
+			journal(journal::trace,"earpc.call") <<
+				"call id: " << std::hex << call_id <<
+				"; command: " << std::hex << command_id <<
+				"; target: " << (std::string)ip <<
+				"; data queued for send" <<
+				journal::end;
 
 			std::lock_guard<std::mutex> lg(suspend_lock);
 			suspend_cv.notify_one();
 		}
 
-		static void remove(net::ipv4_address ip, call_id_type cid)
+		static void notify(const outgoing_call_record &rec)
+		{ notify(rec.ip,rec.call_id,rec.command_id,rec.arg.data(),rec.arg.size()); }
+
+		static void reroute(call_id_type call_id, net::ipv4_address ip)
 		{
 			queue_lock.lock();
-			for(
-				typename queue_type::iterator i = queue.begin();
-				i != queue.end();
-				++i
-			)
-				if(i->call_id == cid && i->ip == ip)
+			for(auto &i : queue)
+				if(i.call_id == call_id)
 				{
-					journal(journal::debug,"earpc.process.send") <<	"removing call" <<  std::endl <<
-						"command: " << std::hex << i->command_id << std::endl <<
-						" target: " << (std::string)i->ip << std::endl <<
-						"call id: " << std::hex << i->call_id << std::endl <<
+					journal(journal::trace,"earpc.call") <<
+						"call id: " << std::hex << i.call_id <<
+						"; command: " << std::hex << i.command_id <<
+						"; target: " << (std::string)i.ip <<
+						"; rerouting queued data to " << (std::string)ip <<
 						journal::end;
-					queue.erase(i);
-					break;
+					i.ip = ip;
+					queue_lock.unlock();
+					return;
 				}
 			queue_lock.unlock();
+
+			journal(journal::trace,"earpc.call") <<
+				"call id: " << std::hex << call_id <<
+				"; target: " << (std::string)ip <<
+				"; no queued data found for rerouting" <<
+				journal::end;
+		}
+
+		static void remove(call_id_type call_id)
+		{
+			queue_lock.lock();
+			for(auto i = queue.begin(); i != queue.end(); ++i)
+				if(i->call_id == call_id)
+				{
+					journal(journal::trace,"earpc.call") <<
+						"call id: " << std::hex << call_id <<
+						"; command: " << std::hex << i->command_id <<
+						"; target: " << (std::string)i->ip <<
+						"; removing queued data" <<
+						journal::end;
+
+					queue.erase(i);
+					queue_lock.unlock();
+					return;
+				}
+			queue_lock.unlock();
+			
+			journal(journal::trace,"earpc.call") <<
+				"call id: " << std::hex << call_id <<
+				"; no queued data found for removal" <<
+				journal::end;
 		}
 	};
 
