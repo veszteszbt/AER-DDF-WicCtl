@@ -33,11 +33,11 @@ std::ostream &journal::get_stream(const std::string&)
 
 std::string journal::get_timestamp()
 {
-    auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
-    std::stringstream s;
-    s << std::put_time(&tm, "%Y.%m%d. %H-%M-%S");
-    return s.str();
+	time_t now;
+	time(&now);
+	char buf[64];
+	strftime(buf, sizeof buf, "%Y.%m.%d %H:%M:%S", gmtime(&now));
+	return buf;
 }
 
 std::vector<std::string> journal::get_domains()
