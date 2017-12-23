@@ -92,15 +92,16 @@ namespace process
 						h.call_id,
 						command_id_ack
 					);
+					outgoing_call_handle_base handle(*call,&(&h)[1],ret_size,0);
 
 					journal(journal::trace,"earpc.call.outgoing") <<
 						"call id: " << std::hex << h.call_id <<
 						"; target: " << (std::string)ip <<
 						"; command: " << std::hex << call->command_id <<
-						"; successfully finished" <<
+						"; successfully finished in " << std::dec <<
+						::types::time::fmsec(handle.finished-handle.started) << " msec" <<
 						journal::end;
 
-					outgoing_call_handle_base handle(*call,&(&h)[1],ret_size,0);
 					buf_outgoing_call::erase(call);
 					TEnv::on_outgoing_call_finished(ip);
 					buf_outgoing_call::unlock();
@@ -205,6 +206,7 @@ namespace process
 						"; duplicate call id" <<
 						journal::end;
 				}
+				buf_incoming_call::unlock();
 				return;
 			}
 			buf_incoming_call::unlock();
