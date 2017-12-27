@@ -186,7 +186,7 @@ void journal::init()
 	is_running = true;
 	process = new std::thread(process_start);
 #ifdef __linux__
-	pthread_setname_np(process->native_handle(),"journal file writer");
+	pthread_setname_np(process->native_handle(),"journal writer");
 #endif
 }
 
