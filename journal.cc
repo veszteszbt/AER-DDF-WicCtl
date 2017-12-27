@@ -1,4 +1,5 @@
 #include <journal.h>
+#include <types/time.h>
 #include <cctype>
 #include <iomanip>
 #include <sstream>
@@ -32,13 +33,7 @@ std::ostream &journal::get_stream(const std::string&)
 }
 
 std::string journal::get_timestamp()
-{
-	time_t now;
-	time(&now);
-	char buf[64];
-	strftime(buf, sizeof buf, "%Y.%m.%d %H:%M:%S", gmtime(&now));
-	return buf;
-}
+{ return ::types::time::timestamp(std::chrono::high_resolution_clock::now()); }
 
 std::vector<std::string> journal::get_domains()
 {
