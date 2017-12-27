@@ -17,7 +17,9 @@ const std::string &process::name()
 void process::suspend()
 {
 	std::unique_lock<std::mutex> ul(suspend_lock);
+	_is_suspended = true;
 	suspend_cv.wait(ul);
+	_is_suspended = false;
 }
 
 process::process()
