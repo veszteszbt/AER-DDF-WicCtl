@@ -92,7 +92,7 @@ namespace process
 						h.call_id,
 						command_id_ack
 					);
-					outgoing_call_handle_base handle(*call,&(&h)[1],ret_size,0);
+					outgoing_call_handle_base handle(*call,&(&h)[1],ret_size,reason::success);
 
 					journal(journal::trace,"earpc.call.outgoing") <<
 						"call id: " << std::hex << h.call_id <<
@@ -127,7 +127,7 @@ namespace process
 						"; received " << ret_size <<
 						journal::end;
 
-					outgoing_call_handle_base handle(*call,0,0,1);
+					outgoing_call_handle_base handle(*call,0,0,reason::size_mismatch);
 					buf_outgoing_call::erase(call);
 					TEnv::on_outgoing_call_finished(ip);
 					buf_outgoing_call::unlock();
@@ -299,7 +299,7 @@ namespace process
 				arg_size,
 				ret_size
 			);
-			incoming_call_handle_base handle(*call,0);
+			incoming_call_handle_base handle(*call,reason::process);
 			buf_incoming_call::unlock();
 
 			proc_expiry::notify();
@@ -443,10 +443,10 @@ namespace process
 						"call id: " << std::hex << ocall->call_id << 
 						"; command: " << std::hex << ocall->command_id <<
 						"; target: " << (std::string)ip <<
-						"; outgoing call rejected; returning failure to API" <<
+						"; outgoing call rejected; returning failure" <<
 						journal::end;
 
-				outgoing_call_handle_base handle(*ocall,0,0,2);
+				outgoing_call_handle_base handle(*ocall,0,0,reason::rejected);
 				auto f = ocall->callback;
 				buf_outgoing_call::erase(ocall);
 				TEnv::on_outgoing_call_finished(ip);

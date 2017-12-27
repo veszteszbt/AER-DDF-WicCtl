@@ -11,20 +11,41 @@ struct heartbeat
 
 void name_callback(earpc::default_earpc::outgoing_call_handle<std::string,bool> h)
 {
-	std::cout << h.value() << std::endl;
-	earpc::default_earpc::call(
+	switch(h.reason)
+	{
+		case earpc::reason::success:
+			std::cout << "\e[32mname:" << h.value() << "\e[0m" << std::endl;
+			break;
+
+		case earpc::reason::expired:
+			std::cout << "\e[31mname: (call expired)\e[0m" << std::endl;
+			break;
+
+		case earpc::reason::cancelled:
+			std::cout << "\e[33mname: (call cancelled)\e[0m" << std::endl;
+			break;
+	}
+
+	uint32_t cid = earpc::default_earpc::call(
 		net::ipv4_address(192,168,10,1),
 		0xffffffff00004003,
 		true,
 		name_callback
 	);
+	std::this_thread::sleep_for(std::chrono::milliseconds(300));
+	earpc::default_earpc::reroute(cid,net::ipv4_address(10,1,0,56));
+	std::this_thread::sleep_for(std::chrono::milliseconds(600));
+	earpc::default_earpc::cancel(cid);
 }
 
 void heartbeat_handler(earpc::default_earpc::incoming_call_handle<bool,heartbeat> h)
 {
-	const heartbeat x(h.value());
-	journal(journal::info,"test.earpc") << "\e[32marg: {"<<std::hex<<x.serial<<","<<std::dec<<x.counter<<"}\e[0m" << journal::end;
-	h.respond(true);
+	if(h.reason == earpc::reason::process)
+	{
+		const heartbeat x(h.value());
+		journal(journal::info,"test.earpc") << "\e[32marg: {"<<std::hex<<x.serial<<","<<std::dec<<x.counter<<"}\e[0m" << journal::end;
+		h.respond(true);
+	}
 }
 
 int main()

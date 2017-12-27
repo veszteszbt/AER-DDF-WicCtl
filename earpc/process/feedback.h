@@ -93,7 +93,7 @@ namespace process
 					packet.call_id = i->call_id;
 					packet.command_id = i->feedback;
 					packet.checksum_create();
-					conn.send(i->ip,TEnv::earpc_port,&packet,sizeof(header_type));
+					conn.send(i->ip,TEnv::earpc_remote_port,&packet,sizeof(header_type));
 					queue.erase(i++);
 				}
 				queue_lock.unlock();

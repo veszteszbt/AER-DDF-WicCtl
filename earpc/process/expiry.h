@@ -61,7 +61,7 @@ namespace process
 						"; call expired" <<
 						journal::end;
 					auto f = call->callback;
-					outgoing_call_handle_base handle(*call,0,0,1);
+					outgoing_call_handle_base handle(*call,0,0,reason::expired);
 					buf_outgoing_call::erase(call);
 					TEnv::on_outgoing_call_finished(handle.ip);
 					buf_outgoing_call::unlock();

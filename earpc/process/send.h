@@ -109,7 +109,7 @@ namespace process
 				h.command_id = command_id;
 				h.checksum_create();
 				memcpy(buf+sizeof(header_type),buffer,size);
-				conn.send(ip,TEnv::earpc_port,buf,buf_size);
+				conn.send(ip,TEnv::earpc_remote_port,buf,buf_size);
 				delete[] buf;
 			}
 			

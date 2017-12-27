@@ -10,6 +10,7 @@
 # include <types/integer.h>
 # include <net/ipv4_address.h>
 # include <net/algorithm.h>
+# include <earpc/reason.h>
 # include <earpc/types/header.h>
 # include <earpc/types/call_handle.h>
 # include <earpc/buffer/command.h>
@@ -32,15 +33,17 @@ namespace earpc
 
 			typedef typename clock::time_point            time_point;
 
-			typedef typename TConfig::command_id_type     command_id_type;
+			typedef typename TConfig::cfg_command_id_type     command_id_type;
 
-			typedef typename TConfig::call_id_type        call_id_type;
+			typedef typename TConfig::cfg_call_id_type        call_id_type;
 
-			static const uint16_t earpc_port            = 1234;
+			static const uint16_t earpc_local_port      = TConfig::cfg_local_port;
 
-			static const uint32_t call_timeout          = 3200;
+			static const uint16_t earpc_remote_port     = TConfig::cfg_remote_port;
 
-			constexpr static udp &conn                  = TConfig::connection;
+			static const uint32_t call_timeout          = TConfig::cfg_call_timeout;
+
+			constexpr static udp &conn                  = TConfig::cfg_connection;
 		};
 
 		struct env_types : public env_base
@@ -95,13 +98,13 @@ namespace earpc
 		{
 			typedef typename process::expiry<env_expiry>       proc_expiry;
 
-			static const typename env_base::command_id_type command_id_ack = TConfig::command_id_ack;
+			static const typename env_base::command_id_type command_id_ack = TConfig::cfg_command_id_ack;
 
-			static const typename env_base::command_id_type command_id_nak = TConfig::command_id_nak;
+			static const typename env_base::command_id_type command_id_nak = TConfig::cfg_command_id_nak;
 
-			static const typename env_base::command_id_type command_id_return = TConfig::command_id_return;
+			static const typename env_base::command_id_type command_id_return = TConfig::cfg_command_id_return;
 
-			static const typename env_base::command_id_type command_id_exception = TConfig::command_id_exception;
+			static const typename env_base::command_id_type command_id_exception = TConfig::cfg_command_id_exception;
 
 		};
 		typedef typename process::recv<env_recv>     proc_recv;
@@ -297,9 +300,9 @@ namespace earpc
 				"; cancelled" <<
 				journal::end;
 
-			outgoing_call_handle_base handle(*call,0,0,3);
+			outgoing_call_handle_base handle(*call,0,0,reason::cancelled);
 			auto f = call->callback;
-			buf_outgoing_call::erase();
+			buf_outgoing_call::erase(call);
 			outgoing_call_finished(handle.ip);
 			buf_outgoing_call::unlock();
 			f(handle);
@@ -317,6 +320,18 @@ namespace earpc
 					"call id: " << std::hex << cid <<
 					"; could not find call to reroute" <<
 					journal::end;
+				return false;
+			}
+
+			if(call->ip == new_ip)
+			{
+				journal(journal::warning,"earpc.call.outgoing") <<
+					"call id: " << std::hex << call->call_id <<
+					"; command: " << std::hex << call->command_id <<
+					"; target: " << (std::string)call->ip <<
+					"; reroute requested to current address" <<
+					journal::end;
+				buf_outgoing_call::unlock();
 				return false;
 			}
 
