@@ -15,6 +15,7 @@
 # include <earpc/buffer/command.h>
 # include <earpc/buffer/incoming_call.h>
 # include <earpc/buffer/outgoing_call.h>
+# include <earpc/serializer.h>
 # include <earpc/process/feedback.h>
 # include <earpc/process/send.h>
 # include <earpc/process/recv.h>
@@ -119,6 +120,8 @@ namespace earpc
 
 		typedef typename env_buffers::buf_outgoing_call buf_outgoing_call;
 
+		typedef typename env_types::outgoing_call_handle_base outgoing_call_handle_base;
+
 		typedef void(*generic_callback_type)(net::ipv4_address,typename env_buffers::command_id_type,const void*);
 
 	public:
@@ -154,9 +157,8 @@ namespace earpc
 		template<typename T>
 		static T get_random()
 		{
-			static std::default_random_engine generator(
-				std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::time_point_cast<std::chrono::nanoseconds>(clock::now()).time_since_epoch()).count()
-			);
+			static std::default_random_engine generator(::types::time::nsec(clock::now()));
+
 			static std::uniform_int_distribution<T> distribution(1,-1);
 	
 			return distribution(generator);
@@ -176,11 +178,10 @@ namespace earpc
 			}
 		}
 
-		static void do_call(
+		static call_id_type do_call(
 			net::ipv4_address ip,
 			command_id_type cmd,
-			const void *argp,
-			uint16_t argl,
+			const std::vector<uint8_t> &arg,
 			uint16_t retl,
 			typename buf_outgoing_call::callback_type c
 		)
@@ -191,11 +192,11 @@ namespace earpc
 			buf_incoming_call::unlock();
 
 			bool parked = (buf_outgoing_call::find_first_active_to(ip) != buf_outgoing_call::end());
-			buf_outgoing_call::push(c,parked, ip,cmd,cid,argp,argl,retl);
+			buf_outgoing_call::push(c,parked,ip,cmd,cid,arg.data(),arg.size(),retl);
 			buf_outgoing_call::unlock();
 
 			if(parked)
-				journal(journal::debug,"earpc.api.call") <<
+				journal(journal::debug,"earpc.call.outgoing") <<
 					"call id: " << std::hex << cid <<
 					"; command: " << std::hex << cmd <<
 					"; target: " << (std::string)ip << 
@@ -204,16 +205,17 @@ namespace earpc
 
 			else
 			{
-				journal(journal::debug,"earpc.api.call") <<
+				journal(journal::trace,"earpc.call.outgoing") <<
 					"call id: " << std::hex << cid <<
 					"; command: " << std::hex << cmd <<
 					"; target: " << (std::string)ip << 
 					"; initiating send" <<
 					journal::end;
 
-				proc_send::notify(ip,cid,cmd,argp,argl);
+				proc_send::notify(ip,cid,cmd,arg.data(),arg.size());
 				proc_expiry::notify();
 			}
+			return cid;
 		}
 
 	public:
@@ -247,41 +249,91 @@ namespace earpc
 				env_recv::buf_command::erase(i);
 		}
 
-		static void call(
-			net::ipv4_address ip,
-			command_id_type cmd,
-			const std::string &arg,
-			void(*c)(outgoing_call_handle<std::string,std::string>)
-		)
-		{ do_call(ip,cmd,arg.c_str(),arg.size(),(uint16_t)-1,reinterpret_cast<typename buf_outgoing_call::callback_type>(c)); }
-
-		template<typename Targ>
-		static void call(
-			net::ipv4_address ip,
-			command_id_type cmd,
-			const Targ &arg,
-			void(*c)(outgoing_call_handle<std::string,Targ>)
-		)
-		{ do_call(ip,cmd,&arg,sizeof(Targ),(uint16_t)-1,reinterpret_cast<typename buf_outgoing_call::callback_type>(c)); }
-
-		template<typename Treturn>
-		static void call(
-			net::ipv4_address ip,
-			command_id_type cmd,
-			const std::string &arg,
-			void(*c)(outgoing_call_handle<Treturn,std::string>)
-		)
-		{ do_call(ip,cmd,arg.c_str(),arg.size(),sizeof(Treturn),reinterpret_cast<typename buf_outgoing_call::callback_type>(c)); }
-
 		template<typename Treturn, typename Targ>
-		static void call(
+		static call_id_type call(
 			net::ipv4_address ip,
 			command_id_type cmd,
 			const Targ &arg,
 			void(*c)(outgoing_call_handle<Treturn,Targ>)
 		)
-		{ do_call(ip,cmd,&arg,sizeof(Targ),sizeof(Treturn),reinterpret_cast<typename buf_outgoing_call::callback_type>(c));	}
+		{
+			std::vector<uint8_t> argv;
+			if(!serializer<Targ>::serialize(arg,argv))
+			{
+				journal(journal::critical,"earpc.call.outgoing") <<
+					"; command: " << std::hex << cmd <<
+					"; target: " << (std::string)ip << 
+					"; unable to serialize argument; returning failure" <<
+					journal::end;
+				return 0;
+			}
 
+			return do_call(
+				ip,cmd,argv,
+				serializer<Treturn>::size(),
+				reinterpret_cast<typename buf_outgoing_call::callback_type>(c)
+			);
+		}
+
+		static bool cancel(call_id_type cid)
+		{
+			buf_outgoing_call::lock();
+			auto call = buf_outgoing_call::find(cid);
+			if(call == buf_outgoing_call::end())
+			{
+				buf_outgoing_call::unlock();
+				journal(journal::warning,"earpc.call.outgoing") <<
+					"call id: " << std::hex << cid <<
+					"; could not find call to cancel" <<
+					journal::end;
+				return false;
+			}
+			proc_send::remove(cid);
+
+			journal(journal::debug,"earpc.call.outgoing") <<
+				"call id: " << std::hex << call->call_id <<
+				"; command: " << std::hex << call->command_id <<
+				"; target: " << (std::string)call->ip <<
+				"; cancelled" <<
+				journal::end;
+
+			outgoing_call_handle_base handle(*call,0,0,3);
+			auto f = call->callback;
+			buf_outgoing_call::erase();
+			outgoing_call_finished(handle.ip);
+			buf_outgoing_call::unlock();
+			f(handle);
+			return true;
+		}
+
+		static bool reroute(call_id_type cid, net::ipv4_address new_ip)
+		{
+			buf_outgoing_call::lock();
+			auto call = buf_outgoing_call::find(cid);
+			if(call == buf_outgoing_call::end())
+			{
+				buf_outgoing_call::unlock();
+				journal(journal::warning,"earpc.call.outgoing") <<
+					"call id: " << std::hex << cid <<
+					"; could not find call to reroute" <<
+					journal::end;
+				return false;
+			}
+
+			proc_send::reroute(cid,new_ip);
+			proc_feedback::reroute(cid,new_ip);
+			call->ip = new_ip;
+			journal(journal::debug,"earpc.call.outgoing") <<
+				"call id: " << std::hex << call->call_id <<
+				"; command: " << std::hex << call->command_id <<
+				"; target: " << (std::string)call->ip <<
+				"; orig target: " << (std::string)call->orig_ip <<
+				"; rerouted" <<
+				journal::end;
+
+			buf_outgoing_call::unlock();
+			return true;
+		}
 
 		static void init()
 		{

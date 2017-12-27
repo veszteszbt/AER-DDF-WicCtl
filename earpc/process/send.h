@@ -166,9 +166,9 @@ namespace process
 				else
 				{
 					journal(journal::trace,"earpc.process.send") <<
-						"nothing to do; suspending for " <<
-						std::dec << ::types::time::msec(ns-clock::now()) << " msec" <<
-						journal::end;
+						"nothing to do; suspending for " << std::dec <<
+						::types::time::msec(ns-clock::now()) <<
+						" msec" << journal::end;
 
 					std::unique_lock<std::mutex> ul(suspend_lock);
 					suspend_cv.wait_until(ul,ns);

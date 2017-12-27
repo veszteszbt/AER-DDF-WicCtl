@@ -8,3 +8,6 @@ heartbeat_test: heartbeat_test.cc
 
 name_test: name_test.cc
 	g++ -O3 -std=c++17  -fdiagnostics-color -I../../ ../../journal.cc -pthread name_test.cc -o name_test
+
+ts: ts.cc
+	g++ -O3 -std=c++17  -fdiagnostics-color -I../../ ../../journal.cc -pthread ts.cc -o ts

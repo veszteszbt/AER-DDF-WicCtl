@@ -1,7 +1,7 @@
 #ifndef EARPC_PROCESS_RECV_H
 # define EARPC_PROCESS_RECV_H
-#include <thread>
-#include <functional>
+# include <thread>
+# include <functional>
 namespace earpc {
 namespace process
 {
@@ -56,8 +56,8 @@ namespace process
 				{
 					journal(journal::critical,"earpc.call.outgoing") <<
 						"call id: " << std::hex << h.call_id <<
-						"; target: " << (std::string)ip <<
 						"; command: " << std::hex << h.command_id <<
+						"; target: " << (std::string)ip <<
 						"; return value on parked call; setting state to active" <<
 						journal::end;
 
@@ -68,8 +68,8 @@ namespace process
 				{
 					journal(journal::warning,"earpc.call.outgoing") <<
 						"call id: " << std::hex << h.call_id <<
-						"; target: " << (std::string)ip <<
 						"; command: " << std::hex << h.command_id <<
+						"; target: " << (std::string)ip <<
 						"; return value from different address; orig ip: " <<
 						(std::string)call->orig_ip <<
 						journal::end;
@@ -96,8 +96,8 @@ namespace process
 
 					journal(journal::trace,"earpc.call.outgoing") <<
 						"call id: " << std::hex << h.call_id <<
-						"; target: " << (std::string)ip <<
 						"; command: " << std::hex << call->command_id <<
+						"; target: " << (std::string)ip <<
 						"; successfully finished in " << std::dec <<
 						::types::time::fmsec(handle.finished-handle.started) << " msec" <<
 						journal::end;
@@ -120,8 +120,8 @@ namespace process
 
 					journal(journal::critical,"earpc.call.outgoing") <<
 						"call id: " << std::hex << h.call_id <<
-						"; target: " << (std::string)ip <<
 						"; command: " << std::hex << call->command_id <<
+						"; target: " << (std::string)ip <<
 						"; return value size mismatch" <<
 						"; expected" << std::dec << call->return_size <<
 						"; received " << ret_size <<
@@ -174,8 +174,8 @@ namespace process
 					{
 						journal(journal::warning,"earpc.call.incoming") <<
 							"call id: " << std::hex << h.call_id <<
-							"; caller: " << (std::string)ip <<
 							"; command: " << std::hex << h.command_id <<
+							"; source: " << (std::string)ip <<
 							"; retransmitted call from different address; orig ip: " <<
 							(std::string)icall->orig_ip <<
 							journal::end;
@@ -186,8 +186,8 @@ namespace process
 					else
 						journal(journal::warning,"earpc.call.incoming") <<
 							"call id: " << std::hex << h.call_id <<
-							"; caller: " << (std::string)ip <<
 							"; command: " << std::hex << h.command_id <<
+							"; source: " << (std::string)ip <<
 							"; retransmitted call" <<
 							journal::end;
 				}
@@ -202,7 +202,7 @@ namespace process
 					journal(journal::error,"earpc.call.incoming") <<
 						"call id: " << std::hex << h.call_id <<
 						"; command: " << std::hex << h.command_id <<
-						"; caller: " << (std::string)ip <<
+						"; source: " << (std::string)ip <<
 						"; duplicate call id" <<
 						journal::end;
 				}
@@ -225,7 +225,7 @@ namespace process
 				journal(journal::error,"earpc.call.incoming") <<
 					"call id: " << std::hex << h.call_id <<
 					"; command: " << std::hex << h.command_id <<
-					"; caller: " << (std::string)ip <<
+					"; source: " << (std::string)ip <<
 					"; duplicate call id" <<
 					journal::end;
 				return;
@@ -249,7 +249,7 @@ namespace process
 */
 				journal(journal::critical,"earpc.call.incoming") <<
 					"call id: " << std::hex << h.call_id <<
-					"; caller: " << (std::string)ip <<
+					"; source: " << (std::string)ip <<
 					"; unknown command " << std::hex << h.command_id <<
 					journal::end;
 				return;
@@ -269,8 +269,8 @@ namespace process
 				);
 				journal(journal::critical,"earpc.call.incoming") <<
 					"call id: " << std::hex << h.call_id <<
-					"; caller: " << (std::string)ip <<
 					"; command: "<< std::hex << h.command_id <<
+					"; source: " << (std::string)ip <<
 					"; argument size mismatch" <<
 					"; expected " << std::dec << command->arg_size <<
 					"; received " << arg_size <<
@@ -306,7 +306,7 @@ namespace process
 			journal(journal::trace,"earpc.call.incoming") << 
 				"call id: " << std::hex << h.call_id <<
 				"; command: " << std::hex << h.command_id <<
-				"; caller: " << (std::string)ip <<
+				"; source: " << (std::string)ip <<
 				"; serving call" <<
 				journal::end;
 
@@ -327,8 +327,8 @@ namespace process
 				if(icall->ip != ip)
 					journal(journal::warning,"earpc.call.incoming") <<
 						"call id: " << std::hex << h.call_id <<
-						"; caller: " << (std::string)ip <<
 						"; command: " << std::hex << h.command_id <<
+						"; source: " << (std::string)ip <<
 						"; return value accepted from different address; orig ip: " <<
 						(std::string)icall->orig_ip <<
 						"; call finished" <<
@@ -337,7 +337,7 @@ namespace process
 					journal(journal::trace,"earpc.call.incoming") <<
 						"call id: " << std::hex << icall->call_id <<
 						"; command: " << std::hex << icall->command_id <<
-						"; target: " << (std::string)icall->ip <<
+						"; source: " << (std::string)icall->ip <<
 						"; return value accepted; call finished" <<
 						journal::end;
 				
@@ -400,7 +400,7 @@ namespace process
 					journal(journal::critical,"earpc.call.incoming") <<
 						"call id: " << std::hex << icall->call_id << 
 						"; command: " << std::hex << icall->command_id <<
-						"; target: " << (std::string)ip <<
+						"; source: " << (std::string)ip <<
 						"; return value rejected from different address; orig ip: " <<
 						(std::string)icall->orig_ip <<
 						journal::end;
@@ -410,7 +410,7 @@ namespace process
 					journal(journal::critical,"earpc.call.incoming") <<
 						"call id: " << std::hex << icall->call_id << 
 						"; command: " << std::hex << icall->command_id <<
-						"; target: " << (std::string)ip <<
+						"; source: " << (std::string)ip <<
 						"; return value rejected" <<
 						journal::end;
 
@@ -524,76 +524,55 @@ namespace process
 		template<typename Treturn, typename Targ>
 		struct incoming_call_handle : public incoming_call_handle_base
 		{
-			template<typename T = Treturn>
-			std::enable_if_t<!std::is_same<std::decay_t<T>,std::string>::value>
-			respond(const T&ret)
+			void respond(const Treturn &ret)
 			{
-				journal(journal::trace,"earpc.call.incoming") <<
-					"call id: " << std::hex << incoming_call_handle_base::call_id <<
-					"; command: " << std::hex << incoming_call_handle_base::command_id <<
-					"; source: " << (std::string) incoming_call_handle_base::ip <<
-					"; sending return value" << journal::end;
+				std::vector<uint8_t> r;
+				if(serializer<Treturn>::serialize(ret,r))
+				{
+					journal(journal::trace,"earpc.call.incoming") <<
+						"call id: " << std::hex << incoming_call_handle_base::call_id <<
+						"; command: " << std::hex << incoming_call_handle_base::command_id <<
+						"; source: " << (std::string) incoming_call_handle_base::ip <<
+						"; sending return value" << journal::end;
+					proc_send::notify(
+						incoming_call_handle_base::ip,
+						incoming_call_handle_base::call_id,
+						command_id_return,
+						r.data(),r.size()
+					);
+				}
 
-				proc_send::notify(
-					incoming_call_handle_base::ip,
-					incoming_call_handle_base::call_id,
-					command_id_return,
-					&ret,sizeof(Treturn)
-				);
+				else
+				{
+					journal(journal::critical,"earpc.call.incoming") <<
+						"call id: " << std::hex << incoming_call_handle_base::call_id <<
+						"; command: " << std::hex << incoming_call_handle_base::command_id <<
+						"; source: " << (std::string) incoming_call_handle_base::ip <<
+						"; unable to serialize return value; removing call" << journal::end;
+					buf_incoming_call::lock();
+					buf_incoming_call::remove(incoming_call_handle_base::call_id);
+					buf_incoming_call::unlock();
+				}
 			}
 
-			template<typename T = Treturn>
-			std::enable_if_t<std::is_same<std::decay_t<T>,std::string>::value>
-			respond(const std::string &ret)
+			Targ value()
 			{
-				journal(journal::trace,"earpc.call.incoming") <<
-					"call id: " << std::hex << incoming_call_handle_base::call_id <<
-					"; command: " << std::hex << incoming_call_handle_base::command_id <<
-					"; source: " << (std::string) incoming_call_handle_base::ip <<
-					"; sending return value" << journal::end;
-
-				proc_send::notify(
-					incoming_call_handle_base::ip,
-					incoming_call_handle_base::call_id,
-					command_id_return,
-					ret.c_str(),ret.size()
-				);
-			}
-
-			template<typename T = Targ>
-			std::enable_if_t<!std::is_same<std::decay_t<T>,std::string>::value,Targ>
-			value()
-			{
-				journal(journal::trace,"earpc.call.incoming") <<
-					"call id: " << std::hex << incoming_call_handle_base::call_id <<
-					"; command: " << std::hex << incoming_call_handle_base::command_id <<
-					"; source: " << (std::string) incoming_call_handle_base::ip <<
-					"; taking argument" << journal::end;
-
 				Targ r;
-				std::copy(
-					incoming_call_handle_base::arg_bytes.begin(),
-					incoming_call_handle_base::arg_bytes.end(),
-					reinterpret_cast<uint8_t*>(&r)
-				);
-				return r; 
+				if(serializer<Targ>::deserialize(r,incoming_call_handle_base::arg_bytes))
+					journal(journal::trace,"earpc.call.incoming") <<
+						"call id: " << std::hex << incoming_call_handle_base::call_id <<
+						"; command: " << std::hex << incoming_call_handle_base::command_id <<
+						"; source: " << (std::string) incoming_call_handle_base::ip <<
+						"; taking argument" << journal::end;
+				else
+					journal(journal::critical,"earpc.call.incoming") <<
+						"call id: " << std::hex << incoming_call_handle_base::call_id <<
+						"; command: " << std::hex << incoming_call_handle_base::command_id <<
+						"; source: " << (std::string) incoming_call_handle_base::ip <<
+						"; unable to deserialize argument" << journal::end;
 
-			}
+				return r;
 
-			template<typename T = Targ>
-			std::enable_if_t<std::is_same<std::decay_t<T>,std::string>::value,std::string>
-			value()
-			{
-				journal(journal::trace,"earpc.call.incoming") <<
-					"call id: " << std::hex << incoming_call_handle_base::call_id <<
-					"; command: " << std::hex << incoming_call_handle_base::command_id <<
-					"; source: " << (std::string) incoming_call_handle_base::ip <<
-					"; taking argument" << journal::end;
-
-				return std::string(
-					incoming_call_handle_base::arg_bytes.begin(),
-					incoming_call_handle_base::arg_bytes.end()
-				);
 			}
 
 			template<typename T>
@@ -605,46 +584,38 @@ namespace process
 		template<typename Treturn, typename Targ>
 		struct outgoing_call_handle : public outgoing_call_handle_base
 		{
-			template<typename T = Treturn>
-			std::enable_if_t<!std::is_same<std::decay_t<T>,std::string>::value,Treturn>
-			value()
+			Treturn value()
 			{
-				journal(journal::trace,"earpc.call.outgoing") <<
-					"call id: " << std::hex << outgoing_call_handle_base::call_id <<
-					"; command: " << std::hex << outgoing_call_handle_base::command_id <<
-					"; source: " << (std::string) outgoing_call_handle_base::ip <<
-					"; taking return value" << journal::end;
+				if(outgoing_call_handle_base::reason)
+				{
+					journal(journal::critical,"earpc.call.outgoing") <<
+						"call id: " << std::hex << outgoing_call_handle_base::call_id <<
+						"; command: " << std::hex << outgoing_call_handle_base::command_id <<
+						"; target: " << (std::string) outgoing_call_handle_base::ip <<
+						"; taking return value of unsuccessful call" << journal::end;
 
-				Treturn r;
-				std::copy(
-					outgoing_call_handle_base::ret_bytes.begin(),
-					outgoing_call_handle_base::ret_bytes.end(),
-					reinterpret_cast<uint8_t*>(&r)
-				);
-				return r; 
+					return Treturn();
+				}
 
+				else
+				{
+					Treturn r;
+					if(serializer<Treturn>::deserialize(r,outgoing_call_handle_base::ret_bytes))
+						journal(journal::trace,"earpc.call.outgoing") <<
+							"call id: " << std::hex << outgoing_call_handle_base::call_id <<
+							"; command: " << std::hex << outgoing_call_handle_base::command_id <<
+							"; target: " << (std::string) outgoing_call_handle_base::ip <<
+							"; taking return value" << journal::end;
+					else
+						journal(journal::critical,"earpc.call.outgoing") <<
+							"call id: " << std::hex << outgoing_call_handle_base::call_id <<
+							"; command: " << std::hex << outgoing_call_handle_base::command_id <<
+							"; target: " << (std::string) outgoing_call_handle_base::ip <<
+							"; unable to deserialize return value" << journal::end;
+
+					return r;
+				}
 			}
-
-			template<typename T = Treturn>
-			std::enable_if_t<std::is_same<std::decay_t<T>,std::string>::value,std::string>
-			value()
-			{
-				journal(journal::trace,"earpc.call.outgoing") <<
-					"call id: " << std::hex << outgoing_call_handle_base::call_id <<
-					"; command: " << std::hex << outgoing_call_handle_base::command_id <<
-					"; source: " << (std::string) outgoing_call_handle_base::ip <<
-					"; taking return value" << journal::end;
-
-				return std::string(
-					outgoing_call_handle_base::ret_bytes.begin(),
-					outgoing_call_handle_base::ret_bytes.end()
-				);
-			}
-
-			template<typename T>
-			outgoing_call_handle(const T &call)
-				: outgoing_call_handle_base(call)
-			{}
 		};
 
 		static void start()

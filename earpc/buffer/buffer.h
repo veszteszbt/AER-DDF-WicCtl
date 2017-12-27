@@ -59,7 +59,7 @@ namespace buffer
 
 		static bool remove(call_id_type cid)
 		{
-			auto i = container.find(cid);
+			auto i = find(cid);
 			if(i == end())
 				return false;
 			erase(i);
