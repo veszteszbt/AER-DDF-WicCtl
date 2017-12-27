@@ -119,10 +119,13 @@ namespace process
 
 		static queue_type               queue;
 
+		static volatile bool            notified;
+
 	public:
 		static void start()
 		{
 			journal(journal::debug,"earpc.process.send") << "initializing" << journal::end;
+			notified = false;
 
 			while(1)
 			{
@@ -160,7 +163,10 @@ namespace process
 						journal::end;
 
 					std::unique_lock<std::mutex> ul(suspend_lock);
-					suspend_cv.wait(ul);
+					if(!notified)
+						suspend_cv.wait(ul);
+					else
+						notified = false;
 				}
 
 				else
@@ -171,7 +177,10 @@ namespace process
 						" msec" << journal::end;
 
 					std::unique_lock<std::mutex> ul(suspend_lock);
-					suspend_cv.wait_until(ul,ns);
+					if(!notified)
+						suspend_cv.wait_until(ul,ns);
+					else
+						notified = false;
 				}
 				journal(journal::trace,"earpc.process.send") << "resuming" << journal::end;
 			}
@@ -199,6 +208,7 @@ namespace process
 				journal::end;
 
 			std::lock_guard<std::mutex> lg(suspend_lock);
+			notified = true;
 			suspend_cv.notify_one();
 		}
 
@@ -267,5 +277,8 @@ namespace process
 
 	template<typename e>
 	typename send<e>::queue_type send<e>::queue;
+
+	template<typename e>
+	volatile bool send<e>::notified;
 }}
 #endif

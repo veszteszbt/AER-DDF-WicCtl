@@ -32,8 +32,6 @@ void name_callback(earpc::default_earpc::outgoing_call_handle<std::string,bool> 
 		true,
 		name_callback
 	);
-	std::this_thread::sleep_for(std::chrono::milliseconds(300));
-	earpc::default_earpc::reroute(cid,net::ipv4_address(10,1,0,56));
 	std::this_thread::sleep_for(std::chrono::milliseconds(600));
 	earpc::default_earpc::cancel(cid);
 }
