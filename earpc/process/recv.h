@@ -28,6 +28,8 @@ namespace process
 
 		typedef typename TEnv::proc_expiry               proc_expiry;
 
+		typedef typename TEnv::proc_callback             proc_callback;
+
 
 		static const command_id_type command_id_ack          = TEnv::command_id_ack;
 
@@ -106,7 +108,7 @@ namespace process
 					TEnv::on_outgoing_call_finished(ip);
 					buf_outgoing_call::unlock();
 
-					f(handle);
+					proc_callback::notify(f,handle);
 					return;
 				}
 
@@ -132,7 +134,7 @@ namespace process
 					TEnv::on_outgoing_call_finished(ip);
 					buf_outgoing_call::unlock();
 
-					f(handle);
+					proc_callback::notify(f,handle);
 					return;
 				}
 			}
@@ -310,7 +312,7 @@ namespace process
 				"; serving call" <<
 				journal::end;
 
-			f(handle);
+			proc_callback::notify(f,handle);
 		}
 
 		static void process_ack(net::ipv4_address ip, uint16_t size)
@@ -451,7 +453,7 @@ namespace process
 				buf_outgoing_call::erase(ocall);
 				TEnv::on_outgoing_call_finished(ip);
 				buf_outgoing_call::unlock();
-				f(handle);
+				proc_callback::notify(f,handle);
 				return;
 			}
 			buf_outgoing_call::unlock();

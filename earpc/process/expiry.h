@@ -31,6 +31,8 @@ namespace process
 
 		typedef typename TEnv::proc_send         proc_send;
 
+		typedef typename TEnv::proc_callback     proc_callback;
+
 
 		static std::mutex                        suspend_lock;
 
@@ -66,7 +68,7 @@ namespace process
 					TEnv::on_outgoing_call_finished(handle.ip);
 					buf_outgoing_call::unlock();
 
-					f(handle);
+					proc_callback::notify(f,handle);
 					buf_outgoing_call::lock();
 				}
 				{

@@ -19,6 +19,7 @@
 # include <earpc/serializer.h>
 # include <earpc/process/feedback.h>
 # include <earpc/process/send.h>
+# include <earpc/process/callback.h>
 # include <earpc/process/recv.h>
 # include <earpc/process/expiry.h>
 # include <earpc/config.h>
@@ -79,6 +80,8 @@ namespace earpc
 
 		typedef env_buffers env_send;
 
+		typedef env_buffers env_callback;
+
 		static void outgoing_call_finished(net::ipv4_address);
 
 		static void outgoing_call_rerouted(net::ipv4_address,net::ipv4_address);
@@ -88,6 +91,8 @@ namespace earpc
 			typedef typename process::feedback<env_feedback> proc_feedback;
 
 			typedef typename process::send<env_send>         proc_send;
+
+			typedef typename process::callback<env_callback> proc_callback;
 
 			constexpr static void(*on_outgoing_call_finished)(net::ipv4_address) = &outgoing_call_finished;
 
@@ -108,6 +113,8 @@ namespace earpc
 
 		};
 		typedef typename process::recv<env_recv>     proc_recv;
+
+		typedef typename env_recv::proc_callback     proc_callback;
 
 		typedef typename env_recv::proc_feedback     proc_feedback;
 
@@ -138,6 +145,7 @@ namespace earpc
 			journal(journal::debug,"earpc.process.master") << "initializing" << journal::end;
 			std::thread feedback(proc_feedback::start);
 			std::thread send(proc_send::start);
+			proc_callback::init();
 			std::thread recv(proc_recv::start);
 			std::thread expiry(proc_expiry::start);
 			
@@ -150,11 +158,14 @@ namespace earpc
 
 			recv.join();
 
+			expiry.join();
+
+			proc_callback::uninit();
+
 			send.join();
 
 			feedback.join();
 
-			expiry.join();
 		}
 
 		template<typename T>
