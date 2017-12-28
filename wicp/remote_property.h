@@ -45,8 +45,6 @@ namespace wicp
 
 		typedef typename env::history_type            history_type;
 
-		typedef typename env::rpc::template call_handle<bool>  notify_call_handle_type;
-
 	public:
 		typedef TConfig config;
 
@@ -55,6 +53,7 @@ namespace wicp
 		constexpr static sched::listener &on_change = env::on_change;
 
 	private:
+		typedef typename env::rpc::template incoming_call_handle<bool,value_type>  notify_call_handle_type;
 
 		static const typename env::command_id_type   command_id = env::command_id;
 
@@ -70,35 +69,44 @@ namespace wicp
 				env::class_id << "::" << env::member_id << ' ';
 		}
 
-		static void notify_handler(notify_call_handle_type  h, const value_type *v)
+		static void notify_handler(notify_call_handle_type h)
 		{
-			if(v)
+			if(h.reason != earpc::reason::process)
 			{
-				if(env::value != *v)
-				{
-					jrn(journal::trace) << "new value on remote " << (std::string)h.ip << journal::end;
-					history_lock.lock();
-					env::value = *v;
-					history.push_front(history_record(*v));
-					if(history.size() > 16)
-						history.pop_back();
-					remote.sync_timestamp = history.front().time;
-					history_lock.unlock();
-					h.respond(true);
-					proc_log::notify();
-					env::sync_local();
-				}
-				else
-				{
-					jrn(journal::warning) << "notify from remote " << (std::string)h.ip << " with no change" << journal::end;
-					h.respond(false);
-				}
-			}
-			else
-			{
-				jrn(journal::error) << "notify from remote " << (std::string)h.ip << " with no value" << journal::end;
+				jrn(journal::error) << "notify from remote " << (std::string)h.ip << " with reason " << std::dec << (int)h.reason << journal::end;
 				h.respond(false);
+				return;
 			}
+
+			if(h.ip != remote.ip)
+			{
+				jrn(journal::debug) << "notify from remote with new address: " << (std::string)remote.ip << " -> " << (std::string) << h.ip << journal::end;
+				history_lock.lock();
+				remote.ip = h.ip;
+				history_lock.unlock();
+				role.notify_ip_change(h.ip);
+			}
+
+			const value_type v = h.value();
+			if(env::value == v)
+			{
+				jrn(journal::warning) << "notify from remote " << (std::string)h.ip << " with no change" << journal::end;
+				h.respond(true);
+				return;
+			}
+
+			jrn(journal::trace) << "new value on remote " << (std::string)h.ip << journal::end;
+
+			history_lock.lock();
+			env::value = v;
+			history.push_front(history_record(v));
+			if(history.size() > 16)
+				history.pop_back();
+			remote.sync_timestamp = history.front().time;
+			history_lock.unlock();
+			h.respond(true);
+			proc_log::notify();
+			env::sync_local();
 		}
 
 	public:
@@ -114,7 +122,10 @@ namespace wicp
 			proc_log::init();
 			proc_commit::init();
 			proc_sync::init();
-			role.on_bound += proc_sync::notify;
+
+			role.on_bound += proc_sync::bind;
+			role.on_unbound += proc_sync::unbind;
+
 			rpc::set_command(
 				command_id | types::function::notify,
 				notify_handler
@@ -124,7 +135,9 @@ namespace wicp
 
 		static void uninit()
 		{
-			remote.role.on_bound -= proc_sync::notify;
+			remote.role.on_bound -= proc_sync::bind;
+			remote.role.on_unbound -= proc_sync::unbind;
+
 			proc_commit::uninit();
 			proc_sync::uninit();
 			proc_log::uninit();

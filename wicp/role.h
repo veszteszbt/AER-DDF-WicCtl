@@ -9,7 +9,6 @@ namespace wicp {
 		virtual std::string get_name() = 0;
 
 		virtual net::ipv4_address get_ip() = 0;
-		
 	};
 
 	class role_type
@@ -21,11 +20,9 @@ namespace wicp {
 	public:
 		const std::string name;
 
-		sched::listener on_bound;
+		sched::event<role_type&> on_bound;
 
-		sched::listener on_unbound;
-
-		sched::listener on_ip_changed;
+		sched::event<role_type&> on_unbound;
 
 		role_type(const std::string &pname)
 			: name(pname)
@@ -54,6 +51,10 @@ namespace wicp {
 			return r;
 		}
 
+		void notify_ip_change(net::ipv4_address ip)
+		{
+		
+		}
 
 		bool is_bound()
 		{
@@ -83,7 +84,7 @@ namespace wicp {
 			}
 			device = 0;
 			lock.unlock();
-			on_unbound();
+			on_unbound(*this);
 			return true;
 		}
 
@@ -100,7 +101,7 @@ namespace wicp {
 			}
 			device = &dev;
 			lock.unlock();
-			on_bound();
+			on_bound(*this);
 			return true;
 		}
 

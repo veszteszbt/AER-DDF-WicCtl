@@ -59,9 +59,9 @@ namespace wicp
 
 		typedef typename env::history_type            history_type;
 
-		typedef typename rpc::template call_handle<value_type> get_handle_type;
+		typedef typename rpc::template incoming_call_handle<value_type,bool> get_handle_type;
 
-		typedef typename rpc::template call_handle<bool>       set_handle_type;
+		typedef typename rpc::template incoming_call_handle<bool,value_type> set_handle_type;
 
 		static const command_id_type                  command_id = env::command_id;
 
@@ -74,23 +74,29 @@ namespace wicp
 		constexpr static std::mutex                  &history_lock = env::history_lock;
 
 
-		static void get_handler(get_handle_type h,const uint8_t*)
+		static void get_handler(get_handle_type h)
 		{
-			jrn(journal::trace) << "get from remote " << (std::string)h.ip << journal::end;
-			history_lock.lock();
-			value_type rv(history.empty() ? env::value : history.front().value);
-			history_lock.unlock();
-			h.respond(rv);
+			if(h.reason == earpc::reason::process)
+			{
+				jrn(journal::trace) << "get from remote " << (std::string)h.ip << journal::end;
+				history_lock.lock();
+				value_type rv(history.empty() ? env::value : history.front().value);
+				history_lock.unlock();
+				h.respond(rv);
+			}
 		}
 
-		static void set_handler(set_handle_type h,const value_type *v)
+		static void set_handler(set_handle_type h)
 		{
-			history_lock.lock();
-			env::value = *v;
-			history_lock.unlock();
-			jrn(journal::trace) << "set from remote " << (std::string)h.ip << journal::end;
-			h.respond(true);
-			proc_commit::notify();
+			if(h.reason == earpc::reason::process)
+			{
+				history_lock.lock();
+				env::value = h.value();
+				history_lock.unlock();
+				jrn(journal::trace) << "set from remote " << (std::string)h.ip << journal::end;
+				h.respond(true);
+				proc_commit::notify();
+			}
 		}
 
 
@@ -169,8 +175,7 @@ namespace wicp
 			remotes_lock.unlock();
 			jrn(journal::trace) << "added remote `" << (std::string)role.name << "'" << journal::end;
 			role.on_bound += proc_sync::notify;
-//			role.on_ip_changed += proc_sync::reset;
-
+			role.on_ip_changed += proc_sync::reroute;
 			proc_sync::notify();
 			return true;
 		}
@@ -188,7 +193,7 @@ namespace wicp
 					remotes.erase(i);
 					remotes_lock.unlock();
 					role.on_bound -= proc_sync::notify;
-//					role.on_ip_changed -= proc_sync::reset;
+					role.on_ip_changed -= proc_sync::reroute;
 					proc_sync::notify();
 					jrn(journal::trace) << "deleted remote `" << (std::string)role.name << "'" << journal::end;
 					return true;

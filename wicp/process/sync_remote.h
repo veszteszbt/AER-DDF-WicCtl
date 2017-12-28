@@ -30,29 +30,35 @@ namespace process
 				TEnv::class_id << "::" << TEnv::member_id << ' ';
 		}
 
-		static void call_finish(net::ipv4_address ip, command_id_type cmd, const bool *v)
+		static void call_finish(set_handle h)
 		{
-			if(remote.role.get_ip() == ip)
+
+			std::string rsnstr;
+			if(h.reason != earpc::reason::success)
 			{
-				if(!v)
-				{
-					++remote.failures;
-					jrn(journal::error) << "; remote: " << (std::string)ip << " sync failed" << journal::end;
-				}
-				else
-				{
-					jrn(journal::trace) << "; remote: " << (std::string)ip << " sync succeeded" << journal::end;
-				}
+				++remote.failures;
+				rsnstr = "failed";
 			}
+			else
+				rsnstr = "succeeded";
+
+			if(remote.role.get_ip() == h.ip)
+				jrn(journal::error) << "; remote: " << (std::string)ip << " sync " << rsnstr << journal::end;
 
 			else
 			{
-				jrn(journal::warning) << "ip address mismatch; " <<
-					"expected: " << (std::string)remote.role.get_ip() << "; " <<
-					"received: " << (std::string)ip << "; " <<
+				jrn(journal::warning) <<
+					"; orig ip: " << (std::string)remote.role.get_ip() <<
+					"; final ip: " << (std::string)ip <<
+					"; sync " << rsnstr << " with new address" <<
 					journal::end;
+
+				history_lock.lock();
+				remote.ip = h.ip;
+				history_lock.unlock();
+				remote.role.notify_ip_change(h.ip);
 			}
-			TEnv::finish_sync_remote(remote,v);
+			TEnv::finish_sync_remote(remote,h);
 			notify();
 		}
 

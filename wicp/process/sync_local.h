@@ -91,6 +91,10 @@ namespace process
 
 			TEnv::remotes_lock.unlock();
 		}
+
+		static void reroute()
+		{
+		}
 	};
 }}
 #endif
