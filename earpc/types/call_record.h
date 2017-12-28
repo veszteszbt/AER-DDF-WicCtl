@@ -119,6 +119,8 @@ struct outgoing_call_record : public call_record<TEnv>
 
 	time_point        started;
 
+	time_point        activated;
+
 	volatile bool     parked;
 
 	template<typename... Targs>
@@ -130,6 +132,7 @@ struct outgoing_call_record : public call_record<TEnv>
 		: call_record<TEnv>(args...)
 		, callback(pcallback)
 		, started(clock::now())
+		, activated(pparked?time_point::min():clock::now())
 		, parked(pparked)
 	{}
 };

@@ -394,10 +394,11 @@ namespace earpc
 				"; call id: " << std::hex << call->call_id <<
 				"; command: " << std::hex << call->command_id <<
 				"; target: " << (std::string)call->ip <<
-				"resuming parked call" <<
+				"; resuming parked call" <<
 				journal::end;
 
 			call->parked = false;
+			call->activated = clock::now();
 			call->reset_expiry();
 			proc_send::notify(*call);
 			proc_expiry::notify();
@@ -417,10 +418,11 @@ namespace earpc
 				"; call id: " << std::hex << call->call_id <<
 				"; command: " << std::hex << call->command_id <<
 				"; target: " << (std::string)ip <<
-				"resuming parked call" <<
+				"; resuming parked call" <<
 				journal::end;
 
 			call->parked = false;
+			call->activated = clock::now();
 			call->reset_expiry();
 			proc_send::notify(*call);
 			proc_expiry::notify();

@@ -53,6 +53,8 @@ struct outgoing_call_handle : public call_handle<TEnv>
 	const std::vector<uint8_t>         ret_bytes;
                                           
 	time_point                         started;
+
+	time_point                         activated;
                                           
 	time_point                         finished;
 
@@ -64,6 +66,7 @@ struct outgoing_call_handle : public call_handle<TEnv>
 	)
 		: call_handle<TEnv>(record,preason)
 		, started(record.started)
+		, activated(record.activated)
 		, finished(TEnv::clock::now())
 		, ret_bytes(
 			reinterpret_cast<uint8_t*>(ret),

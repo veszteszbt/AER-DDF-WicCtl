@@ -39,7 +39,7 @@ namespace buffer
 		static iterator find_first_parked_to(net::ipv4_address ip)
 		{
 			for(auto i = base::begin(); i != base::end(); ++i)
-				if(!i->parked && i->ip == ip)
+				if(i->parked && i->ip == ip)
 					return i;
 			return base::end();
 		}
@@ -47,7 +47,7 @@ namespace buffer
 		static iterator find_first_active_to(net::ipv4_address ip)
 		{
 			for(auto i = base::begin(); i != base::end(); ++i)
-				if(i->parked && i->ip == ip)
+				if(!i->parked && i->ip == ip)
 					return i;
 			return base::end();
 		}
