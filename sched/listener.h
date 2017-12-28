@@ -4,9 +4,10 @@
 # include <sched/lockable.h>
 namespace sched {
 
-struct listener
+template<typename... Targs>
+struct event
 {
-	typedef void(*handler_type)();
+	typedef void(*handler_type)(Targs...);
 
 private:
 	typedef std::list<handler_type> handlers_type;
@@ -14,7 +15,7 @@ private:
 	lockable<handlers_type> handlers;
 
 public:
-	listener &operator+=(handler_type h)
+	event<Targs...> &operator+=(handler_type h)
 	{
 		handlers.lock();
 		handlers.push_back(h);
@@ -22,7 +23,7 @@ public:
 		return *this;
 	}
 
-	listener &operator-=(handler_type h)
+	event<Targs...> &operator-=(handler_type h)
 	{
 		handlers.lock();
 		for(
@@ -39,7 +40,7 @@ public:
 		return *this;
 	}
 
-	listener &operator()()
+	event<Targs...> &operator()(Targs... args)
 	{
 		handlers.lock();
 		handlers_type h(handlers);
@@ -47,11 +48,13 @@ public:
 		for(
 			typename handlers_type::iterator i = h.begin();
 			i != h.end();
-			(*i++)()
+			(*i++)(args...)
 		);
 		return *this;
 	}
 };
+
+typedef event<> listener;
 
 }
 #endif
