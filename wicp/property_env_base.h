@@ -17,11 +17,19 @@ namespace wicp
 
 		typedef typename rpc::command_id_type        command_id_type;
 
+		typedef typename rpc::call_id_type           call_id_type;
+
 		typedef typename TConfig::cfg_class_id_type  class_id_type;
 
 		typedef typename TConfig::cfg_member_id_type member_id_type;
 
 		typedef typename TConfig::cfg_value_type     value_type;
+
+		typedef typename rpc::template outgoing_call_handle<bool,value_type> set_handle_type;
+
+		typedef typename rpc::template outgoing_call_handle<value_type,bool> get_handle_type;
+
+		typedef typename rpc::template incoming_call_handle<bool,value_type> notify_handle_type;
 
 		static typename clock::time_point            local_timestamp;
 
@@ -45,9 +53,6 @@ namespace wicp
 			((member_id & (static_cast<member_id_type>(-1) >> 3)) << 3)
 		;
 
-		static int64_t tp2nsec(typename clock::time_point p)
-		{ return std::chrono::time_point_cast<std::chrono::nanoseconds>(p).time_since_epoch().count(); }
-
 		static journal jrn(uint8_t level)
 		{
 			return journal(level,"wicp.base") << "property: " << std::hex <<
@@ -63,12 +68,13 @@ namespace wicp
 
 			typename clock::time_point pending_timestamp;
 
+			call_id_type call_id;
+
 			typename clock::time_point sync_start;
 
 			typename clock::duration latency;
 
 			uint32_t failures;
-
 
 			remote_record() 
 				: role(role_type::none)
@@ -81,6 +87,7 @@ namespace wicp
 				, sync_start(t.sync_start)
 				, latency(t.latency)
 				, failures(t.failures)
+				, call_id(t.call_id)
 			{}
 
 			remote_record(role_type &prole)
@@ -88,6 +95,7 @@ namespace wicp
 				, sync_timestamp(clock::time_point::min())
 				, pending_timestamp(clock::time_point::min())
 				, failures(0)
+				, call_id(0)
 			{}
 		};
 
@@ -139,7 +147,7 @@ namespace wicp
 		static void sync_remote(
 			remote_record &r,
 			uint8_t function,
-			void(*callback)(net::ipv4_address,command_id_type,const bool*)
+			void(*callback)(set_handle_type)
 		)
 		{
 			history_lock.lock();
@@ -204,22 +212,26 @@ namespace wicp
 
 			const value_type v = i->value;
 			jrn(journal::trace) << "remote: " << (std::string)r.role.get_ip() << "; sync initiated" << journal::end;
+			r.call_id = rpc::call(r.role.get_ip(),command_id|function,v,callback);
 			history_lock.unlock();
-			rpc::call(r.role.get_ip(),command_id|function,v,callback);
 		}
 
-		static void finish_sync_remote(remote_record &r, bool v)
+		static void finish_sync_remote(remote_record &r, set_handle_type h)
 		{
-		
 			history_lock.lock();
+			r.call_id = 0;
 			if(r.sync_start != clock::time_point::min())
 				r.latency = clock::now() - r.sync_start;
 
-			if(v && (r.sync_timestamp < r.pending_timestamp))
+			if(
+				h.reason == earpc::reason::success &&
+				(r.sync_timestamp < r.pending_timestamp)
+			)
 			{
 				r.sync_timestamp = r.pending_timestamp;
 				r.sync_start = clock::time_point::min();
 			}
+
 			else
 			{
 				++r.failures;

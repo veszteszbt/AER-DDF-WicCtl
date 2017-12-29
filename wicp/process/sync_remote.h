@@ -18,6 +18,8 @@ namespace process
 
 		typedef typename TEnv::history_type    history_type;
 
+		typedef typename TEnv::set_handle_type set_handle_type;
+
 		constexpr static remote_record        &remote = TEnv::remote;
 
 		constexpr static history_type         &history = TEnv::history;
@@ -30,34 +32,20 @@ namespace process
 				TEnv::class_id << "::" << TEnv::member_id << ' ';
 		}
 
-		static void call_finish(set_handle h)
+		static void call_finish(set_handle_type h)
 		{
-
-			std::string rsnstr;
+			remote.role.report_call(h);
 			if(h.reason != earpc::reason::success)
 			{
 				++remote.failures;
-				rsnstr = "failed";
+				jrn(journal::error) << "; remote: " << (std::string)h.ip << " sync failed" << journal::end;
 			}
-			else
-				rsnstr = "succeeded";
-
-			if(remote.role.get_ip() == h.ip)
-				jrn(journal::error) << "; remote: " << (std::string)ip << " sync " << rsnstr << journal::end;
-
 			else
 			{
-				jrn(journal::warning) <<
-					"; orig ip: " << (std::string)remote.role.get_ip() <<
-					"; final ip: " << (std::string)ip <<
-					"; sync " << rsnstr << " with new address" <<
-					journal::end;
-
-				history_lock.lock();
-				remote.ip = h.ip;
-				history_lock.unlock();
-				remote.role.notify_ip_change(h.ip);
+				jrn(journal::trace) << "; remote: " << (std::string)h.ip << " sync succeeded" << journal::end;
 			}
+
+
 			TEnv::finish_sync_remote(remote,h);
 			notify();
 		}
@@ -93,6 +81,19 @@ namespace process
 			{
 				jrn(journal::debug) << "omitting sync via unbound role" << journal::end;
 			}
+		}
+
+		static void cancel()
+		{
+			history_lock.lock();
+			if(remote.call_id)
+			{
+				jrn(journal::debug) << "cancelling sync" << journal::end;
+				TEnv::rpc::cancel(remote.call_id);
+				remote.call_id = 0;
+			}
+			history_lock.unlock();
+		
 		}
 	};
 }}

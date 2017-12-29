@@ -51,9 +51,10 @@ namespace wicp {
 			return r;
 		}
 
-		void notify_ip_change(net::ipv4_address ip)
+		template<typename T>
+		void report_call(const T &handle)
 		{
-		
+			std::cout << "report call" << std::endl;
 		}
 
 		bool is_bound()

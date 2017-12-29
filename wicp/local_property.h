@@ -76,6 +76,7 @@ namespace wicp
 
 		static void get_handler(get_handle_type h)
 		{
+			// TODO: find corresponding role and report the call
 			if(h.reason == earpc::reason::process)
 			{
 				jrn(journal::trace) << "get from remote " << (std::string)h.ip << journal::end;
@@ -88,6 +89,7 @@ namespace wicp
 
 		static void set_handler(set_handle_type h)
 		{
+			// TODO: find corresponding role and report the call
 			if(h.reason == earpc::reason::process)
 			{
 				history_lock.lock();
@@ -98,8 +100,6 @@ namespace wicp
 				proc_commit::notify();
 			}
 		}
-
-
 
 	public:
 		constexpr static sched::listener &on_change = env::on_change;
@@ -175,8 +175,8 @@ namespace wicp
 			remotes_lock.unlock();
 			jrn(journal::trace) << "added remote `" << (std::string)role.name << "'" << journal::end;
 			role.on_bound += proc_sync::notify;
-			role.on_ip_changed += proc_sync::reroute;
-			proc_sync::notify();
+			role.on_unbound += proc_sync::cancel;
+			proc_sync::notify(role);
 			return true;
 		}
 
@@ -190,11 +190,11 @@ namespace wicp
 			)
 				if(*i == role)
 				{
+					proc_sync::cancel(i);
 					remotes.erase(i);
 					remotes_lock.unlock();
 					role.on_bound -= proc_sync::notify;
-					role.on_ip_changed -= proc_sync::reroute;
-					proc_sync::notify();
+					role.on_unbound -= proc_sync::cancel;
 					jrn(journal::trace) << "deleted remote `" << (std::string)role.name << "'" << journal::end;
 					return true;
 				}

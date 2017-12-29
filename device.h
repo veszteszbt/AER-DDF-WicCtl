@@ -26,10 +26,17 @@ class device : public wicp::device_type
 	{
 		uint64_t serial;
 		uint32_t counter;
+
+		explicit operator std::string() const
+		{
+			std::stringstream s;
+			s << '{' << std::hex << serial << ',' << std::dec << counter << '}';
+			return s.str();
+		}
 	};
 #pragma pack(pop)
 
-	typedef typename rpc::template call_handle<bool> heartbeat_call_handle_type;
+	typedef typename rpc::template incoming_call_handle<bool,heartbeat_payload_type> heartbeat_call_handle_type;
 
 
 	typedef std::map<net::ipv4_address, device<TConfig>*> dev_by_ip_type;
@@ -108,51 +115,44 @@ class device : public wicp::device_type
 	}
 
 
-	static void heartbeat_handler(
-		typename rpc::template call_handle<bool> h,
-		const heartbeat_payload_type *v
-	)
+	static void heartbeat_handler(heartbeat_call_handle_type h)
 	{
-		if(!v)
-		{
-			h.respond(false);
-			journal(journal::error,"wic.device") << (std::string)h.ip << ": empty heartbeat payload" <<
-				journal::end;
+		if(h.reason != ::earpc::reason::process)
 			return;
-		}
+
 		h.respond(true);
-		journal(journal::trace,"wic.device.heartbeat") << (std::string)h.ip <<
-			" -> {"<<std::hex<<v->serial<<","<<std::dec<<v->counter<<"}" <<
-			journal::end;
+
+		const heartbeat_payload_type v = h.value();
 
 		lock.lock();
 		device<TConfig>
-			*r = get(v->serial),
+			*r = get(v.serial),
 			*o = get(h.ip)
 		;
 
 		if(r)
 		{
 			journal(journal::trace,"wic.device.heartbeat") << (std::string)h.ip <<
-				" -> {"<<std::hex<<v->serial<<","<<std::dec<<v->counter<<"}; notifying instance" <<
+			" -> " << (std::string)v << "; notifying instance" <<
 				journal::end;
 			lock.unlock();
-			r->heartbeat(h.ip,v->counter);
+			r->heartbeat(h.ip,v.counter);
 		}
 
 		else if(o)
 		{
 			journal(journal::critical,"wic.device.client") << "ip collision on device arrival: " << (std::string)h.ip <<
-				" bound to two devices: " << std::hex << v->serial << " amd " << o->serial <<
+				" bound to two devices: " << std::hex << v.serial << " and " << o->serial <<
 				journal::end;
 			lock.unlock();
 		}
+
 		else
 		{
 			journal(journal::trace,"wic.device.heartbeat") << (std::string)h.ip <<
-				" -> {"<<std::hex<<v->serial<<","<<std::dec<<v->counter<<"}; creating instance" <<
+				" -> " << (std::string)v << "; creating instance" <<
 				journal::end;
-			set(new device(v->serial, h.ip, v->counter));
+			set(new device(v.serial, h.ip, v.counter));
 			lock.unlock();
 		}
 	}
@@ -162,7 +162,6 @@ class device : public wicp::device_type
 		wifictl *ctl = new wifictl(ip);
 
 		uint32_t hb_value = 0, hb_outages = 0;
-
 
 		journal(journal::debug,"wic.device.client") << "process initialized for " << std::hex << serial << " (" <<
 			(std::string)ip << ")" << journal::end;
@@ -216,8 +215,10 @@ class device : public wicp::device_type
 					(app_running?"(running)":"(not running)") << journal::end;
 
 
+				lock.unlock();
 			}
 
+			lock.lock();
 			wicp::role_type *role = _get_role(app_name);
 			if(role)
 			{
@@ -260,8 +261,10 @@ class device : public wicp::device_type
 					wicp::role_type *role = _get_role(app_name);
 					if(role)
 					{
+						lock.unlock();
 						if(role->is_bound_to(*this))
 							role->unbind();
+						lock.lock();
 					}
 					std::cout << (std::string)ip << " -x-> " << app_name << " \e[31;01m(gone)\e[0m" << std::endl;
 					journal(journal::error,"wic.device.client") << (std::string)ip << ": too many heartbeat outages; " <<
@@ -324,7 +327,7 @@ class device : public wicp::device_type
 		if(pip != ip)
 		{
 			typename dev_by_ip_type::iterator j = dev_by_ip.find(ip);
-			if(j->second != this)
+			if(j != dev_by_ip.end() && j->second != this)
 			{
 				journal(journal::critical,"wic.device.client") << "ip collision on ip change from " << (std::string)ip <<
 					" to " << (std::string)pip << ": " << std::hex << j->second->serial <<
@@ -339,19 +342,22 @@ class device : public wicp::device_type
 					"; old ip: " << (std::string)ip << "; new ip: " << 
 					(std::string)pip << journal::end;
 
-				auto i = role_by_name.find(app_name);
-				if(i != role_by_name.end() && i->second->is_bound_to(*this))
+/*				auto role = role_by_name.find(app_name);
+				if(role != role_by_name.end() && role->second->is_bound_to(*this))
 				{
-					sched::listener &l = i->second->on_ip_changed;
+					sched::listener &l = role->second->on_;
 					lock.unlock();
 					l();
 					lock.lock();
 				}
+*/
 
 			}
 		}
 		heartbeat_count = counter;
 		lock.unlock();
+		journal(journal::trace,"wic.device.client") <<" remote: " << (std::string)pip << "; waking up client process" << 
+			journal::end;
 
 		std::lock_guard<std::mutex> lg(suspend_lock);
 		suspend_cv.notify_one();
