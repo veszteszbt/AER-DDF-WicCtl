@@ -124,18 +124,16 @@ namespace earpc
 
 		typedef typename env_recv::clock             clock;
 
-		typedef typename env_recv::call_id_type      call_id_type;
-
 		typedef typename env_buffers::buf_incoming_call buf_incoming_call;
 
 		typedef typename env_buffers::buf_outgoing_call buf_outgoing_call;
 
 		typedef typename env_types::outgoing_call_handle_base outgoing_call_handle_base;
 
-		typedef void(*generic_callback_type)(net::ipv4_address,typename env_buffers::command_id_type,const void*);
-
 	public:
-		typedef typename env_recv::command_id_type command_id_type;
+		typedef typename env_recv::command_id_type   command_id_type;
+
+		typedef typename env_recv::call_id_type      call_id_type;
 	private:
 
 		static std::thread *master_process;
@@ -316,7 +314,7 @@ namespace earpc
 			buf_outgoing_call::erase(call);
 			outgoing_call_finished(handle.ip);
 			buf_outgoing_call::unlock();
-			f(handle);
+			proc_callback::notify(f,handle);
 			return true;
 		}
 
