@@ -35,21 +35,24 @@ class arctl
 
 
 	template<typename Treturn>
-	static void get_response(net::ipv4_address ip, typename rpc::command_id_type cmd, const Treturn *r)
+	static void get_response(typename rpc::template outgoing_call_handle<Treturn,bool> h)
 	{
 		call_map.lock();
-		typename call_map_type::iterator i = call_map.find(std::make_pair(ip,cmd));
+		typename call_map_type::iterator i = call_map.find(std::make_pair(h.orig_ip,h.command_id));
 		if(i == call_map.end())
 		{
 			call_map.unlock();
-			std::cout << "ERROR: unexpected response from " << (std::string)ip << std::endl;
+			std::cout << "ERROR: unexpected response from " << (std::string)h.ip << std::endl;
 			return;
 		}
 
 		while(!i->second.empty())
 		{
 			auto j = i->second.begin();
-			*j->rv = r?new Treturn(*r):0;
+			*j->rv = (h.reason == earpc::reason::success)
+				? new Treturn(h.value())
+				: 0
+			;
 			std::lock_guard<std::mutex> lg(*j->lk);
 			j->cv->notify_one();
 			i->second.erase_after(i->second.before_begin());
@@ -58,9 +61,6 @@ class arctl
 		call_map.unlock();
 	}
 		
-
-	static void get_response_s(net::ipv4_address ip, typename rpc::command_id_type cmd, const std::string &r)
-	{ get_response(ip,cmd,&r); }
 
 	template<typename Treturn>
 	bool get(typename rpc::command_id_type cmd,Treturn &r)
@@ -98,38 +98,6 @@ class arctl
 		delete rv;
 		return true;
 	}
-
-	bool get(typename rpc::command_id_type cmd,std::string &r)
-	{
-		std::string *rv;
-		std::condition_variable cv;
-		std::mutex lk;
-
-		const call_map_key_type key = std::make_pair(ip,cmd);
-
-		call_map.lock();
-
-		bool call_ongoing = call_map.find(std::make_pair(ip,cmd)) != call_map.end();
-		call_map[key].emplace_front(
-			&cv,
-			reinterpret_cast<void**>(&rv),
-			&lk
-		);
-
-		call_map.unlock();
-		if(!call_ongoing)
-			rpc::call(ip,cmd,true,get_response_s);
-		std::unique_lock<std::mutex> ul(lk);
-		cv.wait(ul);
-
-		if(!rv)
-			return false;
-
-		r = *rv;
-		delete rv;
-		return true;
-	}
-
 public:
 	typedef TConfig config;
 
