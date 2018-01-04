@@ -101,6 +101,20 @@ class arctl
 public:
 	typedef TConfig config;
 
+	typedef typename rpc::call_id_type call_id_type;
+
+	template<typename T>
+	using get_handle = typename rpc::template outgoing_call_handle<T,bool>;
+
+	template<typename T>
+	using set_handle = typename rpc::template outgoing_call_handle<bool,T>;
+
+	template<typename T>
+	using get_handler = void(*)(get_handle<T>);
+
+	template<typename T>
+	using set_handler = void(*)(set_handle<T>);
+
 	const net::ipv4_address ip;
 
 	arctl(net::ipv4_address pip)
@@ -110,35 +124,79 @@ public:
 	bool system_version(uint32_t &out)
 	{ return get(0xffffffff00001000,out); }
 
+	call_id_type system_version(get_handler<uint32_t> handler)
+	{ return rpc::call(ip,0xffffffff00001000,true,handler); }
+
+
 	bool system_serial(uint64_t &out)
 	{ return get(0xffffffff00001001,out); }
+
+	call_id_type system_serial(get_handler<uint64_t> handler)
+	{ return rpc::call(ip,0xffffffff00001001,true,handler); }
+
 
 	bool system_monothonic_clock(uint64_t &out)
 	{ return get(0xffffffff00001002,out); }
 
+	call_id_type system_monothonic_clock(get_handler<uint64_t> handler)
+	{ return rpc::call(ip,0xffffffff00001002,true,handler); }
+
+
 	bool system_wall_clock(uint64_t &out)
 	{ return get(0xffffffff00001003,out); }
+
+	call_id_type system_wall_clock(get_handler<uint64_t> handler)
+	{ return rpc::call(ip,0xffffffff00001003,true,handler); }
+
 
 	bool system_commit_id(std::string &out)
 	{ return get(0xffffffff00001004,out); }
 
+	call_id_type system_commit_id(get_handler<std::string> handler)
+	{ return rpc::call(ip,0xffffffff00001004,true,handler); }
+
+
 	bool system_build_number(uint32_t &out)
 	{ return get(0xffffffff00001005,out); }
+	
+	call_id_type system_build_number(get_handler<uint32_t> handler)
+	{ return rpc::call(ip,0xffffffff00001005,true,handler); }
+
 
 	bool system_cpu_usage(uint16_t &out)
 	{ return get(0xffffffff00001006,out); }
 
+	call_id_type system_cpu_usage(get_handler<uint16_t> handler)
+	{ return rpc::call(ip,0xffffffff00001006,true,handler); }
+
+
 	bool network_server_ip(net::ipv4_address &out)
 	{ return get(0xffffffff00003008,out); }
+
+	call_id_type network_server_ip(get_handler<net::ipv4_address> handler)
+	{ return rpc::call(ip,0xffffffff00003008,true,handler); }
+
 
 	bool app_status(uint8_t &out)
 	{ return get(0xffffffff00004000,out); }
 
+	call_id_type app_status(get_handler<uint8_t> handler)
+	{ return rpc::call(ip,0xffffffff00004000,true,handler); }
+
+
 	bool app_is_running(bool &out)
 	{ return get(0xffffffff00004001,out); }
 
+	call_id_type app_is_running(get_handler<bool> handler)
+	{ return rpc::call(ip,0xffffffff00004001,true,handler); }
+
+
 	bool app_name(std::string &out)
 	{ return get(0xffffffff00004003,out); }
+
+	call_id_type app_name(get_handler<std::string> handler)
+	{ return rpc::call(ip,0xffffffff00004003,true,handler); }
+
 };
 template<typename c>
 sched::lockable<typename arctl<c>::call_map_type> arctl<c>::call_map;
