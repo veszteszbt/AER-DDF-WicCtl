@@ -4,6 +4,7 @@
 # include <devman/device.h>
 # include <devman/process/binder.h>
 # include <devman/process/expiry.h>
+# include <devman/process/report.h>
 namespace devman {
 
 template<typename TConfig>
@@ -23,6 +24,8 @@ class devman
 		static std::mutex roles_lock;
 
 		static const uint32_t expiry_timeout = TConfig::cfg_expiry_timeout;
+
+		static void report_call(uint64_t,wicp::call_report_type);
 	};
 
 	struct env_base : public env_device
@@ -47,6 +50,8 @@ class devman
 	};
 
 	typedef typename process::expiry<env_expiry> proc_expiry;
+
+	typedef typename process::report<env_expiry> proc_report;
 
 	typedef typename env_expiry::proc_binder     proc_binder;
 
@@ -207,11 +212,13 @@ class devman
 
 			else
 			{
+				const auto d = clock::now()-r->last_heartbeat-std::chrono::seconds(1);
+				r->heartbeat_deviance = ::types::time::msec(d);
 				journal(journal::trace,"devman.heartbeat") << (std::string)h.ip <<
 					" -> " << (std::string)v <<
-					"; dt is " << ::types::time::fmsec(clock::now()-r->expiry) << " msec" <<
+					"; deviance is " << ::types::time::fmsec(d) << " msec" <<
 					journal::end;
-
+				r->calculate_health();
 				heartbeat_process_state(r);
 			}
 		}	
@@ -221,7 +228,7 @@ class devman
 			journal(journal::trace,"devman.heartbeat") << "ip change on device " << r->serial <<
 				"; old address: " << (std::string)r->ip <<
 				"; new address: " << (std::string)h.ip <<
-				"; resetting to unseen state" << 
+				"; rebinding" << 
 				journal::end;
 			r->lock.lock();
 			r->ip = h.ip;
@@ -241,11 +248,13 @@ class devman
 				journal::end;
 
 			devices.push_back(new device_type(v.serial,h.ip));
-
+			
 			r = devices.back();
 			heartbeat_process_state(r);
+			proc_expiry::notify();
 		}
 
+		r->last_heartbeat = clock::now();
 		r->expiry = clock::now()+std::chrono::milliseconds(static_cast<uint32_t>(expiry_timeout));
 
 		devices_lock.unlock();
@@ -258,6 +267,7 @@ public:
 	{
 		proc_binder::init();
 		proc_expiry::init();
+		proc_report::init();
 		rpc::set_command(
 			0xffffffff0ffff000,
 			heartbeat_handler
@@ -268,6 +278,7 @@ public:
 	static void uninit()
 	{
 		rpc::clear_command(0xffffffff0ffff000);
+		proc_report::uninit();
 		proc_expiry::uninit();
 		proc_binder::uninit();
 	}
@@ -287,26 +298,12 @@ public:
 		proc_binder::notify();
 		return true;
 	}
-
-	static bool del_role(wicp::role_type &r)
-	{
-		roles_lock.lock();
-		for(
-			auto i = roles.begin();
-			i != roles.end();
-			++i
-		)
-			if(&*i == &r)
-			{
-				roles.erase(i);
-				roles_lock.unlock();
-				return true;
-			}
-
-		roles_lock.unlock();
-		return false;
-	}
 };
+
+
+template<typename e>
+void devman<e>::env_device::report_call(uint64_t serial, wicp::call_report_type r)
+{ proc_report::notify(serial,r); }
 
 template<typename e>
 std::mutex devman<e>::env_device::devices_lock;

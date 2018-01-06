@@ -34,7 +34,7 @@ class binder
 
 	static void start()
 	{
-		jrn(journal::trace) << "initializing" << journal::end;
+		jrn(journal::debug) << "initializing" << journal::end;
 		while(_running)
 		{
 			roles_lock.lock();
@@ -58,7 +58,7 @@ class binder
 							}
 				}
 
-				else
+				else if(dev->is_bound())
 				{
 					jrn(journal::trace) << "unbinding inactive device " << std::hex << dev->serial << journal::end;
 					dev->unbind();
@@ -78,7 +78,7 @@ class binder
 				}
 			}
 		}
-		jrn(journal::trace) << "uninitializing" << journal::end;
+		jrn(journal::debug) << "uninitializing" << journal::end;
 	}
 
 public:
@@ -87,6 +87,9 @@ public:
 		_running = true;
 		_suspended = false;
 		_proc = new std::thread(start);
+#ifdef __linux__
+		pthread_setname_np(_proc->native_handle(),"devman binder");
+#endif
 	}
 
 	static void uninit()
