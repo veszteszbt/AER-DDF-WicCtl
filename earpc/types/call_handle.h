@@ -38,8 +38,13 @@ struct incoming_call_handle : public call_handle<TEnv>
 {
 	typedef incoming_call_record<TEnv> record_type;
 
+	typedef typename TEnv::time_point  time_point;
+
+	time_point                         received;
+
 	incoming_call_handle(const record_type &record, uint8_t preason)
 		: call_handle<TEnv>(record,preason)
+		, received(TEnv::clock::now())
 	{}
 };
 
