@@ -13,6 +13,8 @@ class arctl_host
 	static std::mutex lock;
 
 	static std::string app_name;
+
+	static wicp::role_type *server_role;
 public:
 
 	struct server_device_type : public wicp::device_type
@@ -32,6 +34,13 @@ public:
 			lock.unlock();
 			return r;
 		}
+
+
+		virtual uint8_t get_health()
+		{ return 255; }
+
+		virtual void report_call(wicp::call_report_type)
+		{}
 
 	};
 	
@@ -88,32 +97,55 @@ private:
 	};
 	static heartbeat_process_type *heartbeat_process;
 
-	static void heartbeat_callback(net::ipv4_address ip, typename rpc::command_id_type cmd, const bool *v)
+	static void heartbeat_callback(typename rpc::template outgoing_call_handle<bool,heartbeat_payload_type> h)
 	{
 		heartbeat_pending = false;
-		if(!v)
+		if(h.reason != ::earpc::reason::success)
+		{
+			server_role->unbind();
 			heartbeat_process->notify();
+		}
 		else
 		{
 			lock.lock();
-			server = ip;
-			lock.unlock();
+			if(server != h.ip)
+			{
+				server = h.ip;
+				lock.unlock();
+				server_role->unbind();
+			}
+
+			else
+				lock.unlock();
+
+			if(!server_role->is_bound())
+				server_role->bind(server_device);
 		}
 	}
 
-	static void get_app_running(typename rpc::template call_handle<bool> h, const bool*)
-	{ h.respond(true); }
+	static void get_app_running(typename rpc::template incoming_call_handle<bool,bool> h)
+	{
+		if(h.reason == ::earpc::reason::process)
+			h.respond(true);
+	}
 
-	static void get_app_name(typename rpc::template call_handle<std::string> h, const bool*)
-	{ h.respond(app_name); }
+	static void get_app_name(typename rpc::template incoming_call_handle<std::string,bool> h)
+	{
+		if(h.reason == ::earpc::reason::process)
+			h.respond(app_name);
+	}
 
-	static void get_app_version(typename rpc::template call_handle<uint32_t> h, const bool*)
-	{ h.respond(0x10000000); }
+	static void get_app_version(typename rpc::template incoming_call_handle<uint32_t,bool> h)
+	{
+		if(h.reason == ::earpc::reason::process)
+			h.respond(0x10000000);
+	}
 
 public:
-	static void init(uint64_t pserial, net::ipv4_address pserver, const std::string &papp_name)
+	static void init(uint64_t pserial, net::ipv4_address pserver, const std::string &papp_name, wicp::role_type &pserver_role)
 	{
 
+		server_role = &pserver_role;
 		app_name = papp_name;
 
 		rpc::set_command(
@@ -168,6 +200,9 @@ std::string arctl_host<c>::app_name;
 
 template<typename c>
 volatile bool arctl_host<c>::heartbeat_pending;
+
+template<typename c>
+wicp::role_type *arctl_host<c>::server_role;
 
 }
 #endif

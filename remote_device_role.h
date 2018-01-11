@@ -11,10 +11,6 @@ class remote_device_role
 		static const uint32_t cfg_member_id = 0xeffffff;
 	};
 	typedef wicp::remote_property<prop_health_config> prop_health;
-
-	static void health_change_handler(wicp::role_type&)
-	{ prop_health::value(role->get_health()); }
-
 public:
 	static void init(wicp::role_type &prole)
 	{ prop_health::init(prole,0); }
@@ -25,7 +21,7 @@ public:
 	static uint8_t health()
 	{ return prop_health::value(); }
 
-	constexpr static sched::listener &on_health_changed = prop_health::on_health_changed;
+	constexpr static sched::listener &on_health_changed = prop_health::on_change;
 };
 
 }
