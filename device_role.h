@@ -20,10 +20,16 @@ class device_role
 public:
 
 	static wicp::role_type &instance()
-	{ return *role; }
+	{
+		if(!role)
+			init();
+		return *role;
+	}
 
 	static void init()
 	{
+		if(role)
+			return;
 		role = new wicp::role_type(TConfig::cfg_name);
 		prop_health::init(role->get_health());
 		role->on_health_change += health_change_handler;
@@ -31,6 +37,8 @@ public:
 
 	static void uninit()
 	{
+		if(!role)
+			return;
 		role->on_health_change -= health_change_handler;
 		prop_health::uninit();
 		delete role;
@@ -38,7 +46,11 @@ public:
 	}
 
 	static uint8_t health()
-	{ return prop_health::value(); }
+	{
+		if(!role)
+			init();
+		return prop_health::value();
+	}
 
 	constexpr static sched::listener &on_health_change = prop_health::on_change;
 };
