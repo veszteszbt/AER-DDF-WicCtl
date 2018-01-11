@@ -26,12 +26,12 @@ public:
 	{
 		role = new wicp::role_type(TConfig::cfg_name);
 		prop_health::init(role->get_health());
-		role->on_health_changed += health_change_handler;
+		role->on_health_change += health_change_handler;
 	}
 
 	static void uninit()
 	{
-		role->on_health_changed -= health_change_handler;
+		role->on_health_change -= health_change_handler;
 		prop_health::uninit();
 		delete role;
 		role = 0;

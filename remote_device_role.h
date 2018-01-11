@@ -21,7 +21,7 @@ public:
 	static uint8_t health()
 	{ return prop_health::value(); }
 
-	constexpr static sched::listener &on_health_changed = prop_health::on_change;
+	constexpr static sched::listener &on_health_change = prop_health::on_change;
 };
 
 }

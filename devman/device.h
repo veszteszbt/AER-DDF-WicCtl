@@ -136,7 +136,7 @@ struct device : public wicp::device_type
 				if(is_bound())
 				{
 					lock.unlock();
-					role->on_health_changed(*role);
+					role->on_health_change(*role);
 					return;
 				}
 			}
@@ -170,7 +170,7 @@ struct device : public wicp::device_type
 			if(is_bound())
 			{
 				lock.unlock();
-				role->on_health_changed(*role);
+				role->on_health_change(*role);
 				return;
 			}
 		}

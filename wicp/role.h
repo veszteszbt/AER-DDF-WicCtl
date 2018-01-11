@@ -43,7 +43,7 @@ namespace wicp {
 
 		sched::event<role_type&> on_unbound;
 
-		sched::event<role_type&> on_health_changed;
+		sched::event<role_type&> on_health_change;
 
 		role_type(const std::string &pname)
 			: name(pname)
