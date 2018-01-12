@@ -18,7 +18,7 @@ namespace wic
 			{
 				std::cout << "\e[31;01m - \e[0mFATAL: cannot initialize audio on channel " << std::dec << 
 					(int)device << '.' << (int)channel << std::endl;
-				throw std::exception();
+//				throw std::exception();
 
 			}
 		}
