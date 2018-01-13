@@ -134,7 +134,7 @@ public:
 
 		journal(journal::warning,"earpc.process.callback") <<
 			"every worker is busy, but not starting new worker as thread number limit " <<
-			max_callback_thread << " reached" <<
+			max_callback_threads << " reached" <<
 			journal::end;
 
 		processes.unlock();

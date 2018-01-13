@@ -60,6 +60,8 @@ private:
 
 	static volatile bool heartbeat_pending;
 
+	static volatile uint8_t heartbeat_failures;
+
 	struct heartbeat_process_type : public sched::process
 	{
 		virtual ~heartbeat_process_type() {}
@@ -96,8 +98,6 @@ private:
 
 	};
 	static heartbeat_process_type *heartbeat_process;
-
-	static volatile uint8_t heartbeat_failures;
 
 	static void heartbeat_callback(typename rpc::template outgoing_call_handle<bool,heartbeat_payload_type> h)
 	{
@@ -153,7 +153,7 @@ private:
 public:
 	static void init(uint64_t pserial, net::ipv4_address pserver, const std::string &papp_name, wicp::role_type &pserver_role)
 	{
-
+		heartbeat_failures = 0;
 		server_role = &pserver_role;
 		app_name = papp_name;
 
@@ -209,6 +209,9 @@ std::string arctl_host<c>::app_name;
 
 template<typename c>
 volatile bool arctl_host<c>::heartbeat_pending;
+
+template<typename c>
+volatile bool arctl_host<c>::heartbeat_failures;
 
 template<typename c>
 wicp::role_type *arctl_host<c>::server_role;
