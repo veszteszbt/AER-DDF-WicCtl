@@ -105,7 +105,7 @@ private:
 		if(h.reason != ::earpc::reason::success)
 		{
 			lock.lock();
-			if(++heartbeat_failures > 4)
+			if(++heartbeat_failures > 0)
 			{
 				heartbeat_failures = 0;
 				lock.unlock();
@@ -211,7 +211,7 @@ template<typename c>
 volatile bool arctl_host<c>::heartbeat_pending;
 
 template<typename c>
-volatile bool arctl_host<c>::heartbeat_failures;
+volatile uint8_t arctl_host<c>::heartbeat_failures;
 
 template<typename c>
 wicp::role_type *arctl_host<c>::server_role;
