@@ -11,6 +11,7 @@ class device_role
 	{
 		typedef uint8_t cfg_value_type;
 		static const uint32_t cfg_member_id = 0xeffffff;
+		static const uint32_t cfg_cooldown_time = 1000;
 	};
 	typedef wicp::local_property<prop_health_config> prop_health;
 
@@ -51,6 +52,12 @@ public:
 			init();
 		return prop_health::value();
 	}
+
+	static void remote_add(wicp::role_type &role)
+	{ prop_health::remote_add(role); }
+
+	static void remote_del(wicp::role_type &role)
+	{ prop_health::remote_del(role); }
 
 	constexpr static sched::listener &on_health_change = prop_health::on_change;
 };

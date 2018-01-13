@@ -82,10 +82,14 @@ namespace process
 						jrn(journal::trace) << "remote: " << (std::string)i->role.get_ip() <<" doing sync via role `" <<
 							i->role.name<< "'" << journal::end;
 						TEnv::sync_remote(*i,types::function::notify,call_finish);
+						TEnv::remotes_lock.unlock();
+						return;
 					}
 					else
 					{
 						jrn(journal::debug) << "omitting sync via unbound role `" << i->role.name << "'" << journal::end;
+						TEnv::remotes_lock.unlock();
+						return;
 					}
 				}
 			TEnv::remotes_lock.unlock();

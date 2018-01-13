@@ -63,6 +63,8 @@ class callback
 
 	static sched::lockable<std::list<callback_process> > processes;
 
+	static const uint16_t max_callback_threads = 512;
+
 public:
 	static void init()
 	{
@@ -118,11 +120,23 @@ public:
 				processes.unlock();
 				return;
 			}
-		journal(journal::trace,"earpc.process.callback") <<
-			"every worker is busy; starting worker #" << processes.size() <<
+
+		if(processes.size() < max_callback_threads)
+		{
+			journal(journal::trace,"earpc.process.callback") <<
+				"every worker is busy; starting worker #" << processes.size() <<
+				journal::end;
+			processes.emplace_back();
+			processes.back().start();
+			processes.unlock();
+			return;
+		}
+
+		journal(journal::warning,"earpc.process.callback") <<
+			"every worker is busy, but not starting new worker as thread number limit " <<
+			max_callback_thread << " reached" <<
 			journal::end;
-		processes.emplace_back();
-		processes.back().start();
+
 		processes.unlock();
 	}
 };

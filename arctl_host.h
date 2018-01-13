@@ -97,17 +97,26 @@ private:
 	};
 	static heartbeat_process_type *heartbeat_process;
 
+	static volatile uint8_t heartbeat_failures;
+
 	static void heartbeat_callback(typename rpc::template outgoing_call_handle<bool,heartbeat_payload_type> h)
 	{
 		heartbeat_pending = false;
 		if(h.reason != ::earpc::reason::success)
 		{
-			server_role->unbind();
-			heartbeat_process->notify();
+			lock.lock();
+			if(++heartbeat_failures > 4)
+			{
+				heartbeat_failures = 0;
+				lock.unlock();
+				server_role->unbind();
+				heartbeat_process->notify();
+			}
 		}
 		else
 		{
 			lock.lock();
+			heartbeat_failures = 0;
 			if(server != h.ip)
 			{
 				server = h.ip;

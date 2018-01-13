@@ -75,6 +75,7 @@ struct device : public wicp::device_type
 	{
 		role = prole;
 		role->bind(*this);
+		std::cout << "\e[32;01m * \e[0m" << std::hex << serial << " (" << (std::string)ip << ") --> " << prole->name << std::endl;
 	}
 
 	void unbind()
@@ -84,6 +85,7 @@ struct device : public wicp::device_type
 			auto *const r = role;
 			role = 0;
 			r->unbind();
+			std::cout << "\e[31;01m * \e[0m (" << serial << ")" << (net::ipv4_address)ip << " -x-> " << r->name << std::endl;
 		}
 	}
 
