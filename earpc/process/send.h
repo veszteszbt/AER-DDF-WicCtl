@@ -204,7 +204,8 @@ namespace process
 				"call id: " << std::hex << call_id <<
 				"; command: " << std::hex << command_id <<
 				"; target: " << (std::string)ip <<
-				"; data queued for send" <<
+				"; " << std::dec << size <<
+				" bytes of data queued for send" <<
 				journal::end;
 
 			std::lock_guard<std::mutex> lg(suspend_lock);
