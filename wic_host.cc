@@ -492,6 +492,7 @@ namespace ddf
 					static const uint32_t cfg_class_id = 0x100040;
 					static const uint32_t cfg_member_id = 0x110;
 					static const uint32_t cfg_cooldown_time = 50;
+					static const uint32_t cfg_led_count = 3;
 				};
 				typedef peripheral::addressable_led_strip<led_config> led;
 
@@ -4030,12 +4031,24 @@ namespace ddf
 				typedef typename service::servermemorystatus mem;
 				typedef typename service::serverstoragestatus dsk;
 				typedef typename service::servernetworkstatus net;
+				typedef typename pirate::rex_flipper_controller::led led;
 
 					(void)0; { 
       cpu::value((uint8_t)(status::cpu::usage()*255));
       mem::value((uint8_t)((double)status::memory::used()/status::memory::total()*255));
       dsk::value((uint8_t)((double)status::storage::used()/status::storage::total()*255));
       net::value(0);
+
+/*      const uint64_t tv = tmr::value();
+      led::value_type v;
+      v.led[0].red = (tv%2)*255;
+      v.led[0].green = ((tv+1)%2)*255;
+      v.led[1].green = (tv%2)*255;
+      v.led[1].blue = ((tv+1)%2)*255;
+      v.led[2].red = ((tv+1)%2)*255;
+      v.led[2].blue = (tv%2)*255;
+      led::value((led::value_type)v);
+*/	
      }
 				}
 			};
@@ -4047,6 +4060,8 @@ namespace ddf
 static void init()
 {
 	ddf::pirate::cashier_laser_controller::device_role::init();
+	ddf::pirate::cashier_laser_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::pirate::cashier_laser_controller::laser::init(ddf::pirate::cashier_laser_controller::device_role::instance());
 	ddf::pirate::cashier_laser_controller::laser::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4067,6 +4082,8 @@ static void init()
 
 	dm::add_role(ddf::pirate::cashier_laser_controller::device_role::instance());
 	ddf::pirate::entrance_hanger_controller::device_role::init();
+	ddf::pirate::entrance_hanger_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::pirate::entrance_hanger_controller::debouncer_1::init(ddf::pirate::entrance_hanger_controller::device_role::instance());
 	ddf::pirate::entrance_hanger_controller::debouncer_1::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4081,6 +4098,8 @@ static void init()
 
 	dm::add_role(ddf::pirate::entrance_hanger_controller::device_role::instance());
 	ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::device_role::init();
+	ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1::init(ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::device_role::instance());
 	ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4110,6 +4129,8 @@ static void init()
 
 	dm::add_role(ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::device_role::instance());
 	ddf::pirate::map_controller::device_role::init();
+	ddf::pirate::map_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::pirate::map_controller::magnetic_sensor_1::init(ddf::pirate::map_controller::device_role::instance());
 	ddf::pirate::map_controller::magnetic_sensor_1::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4121,6 +4142,8 @@ static void init()
 
 	dm::add_role(ddf::pirate::map_controller::device_role::instance());
 	ddf::pirate::rex_flipper_controller::device_role::init();
+	ddf::pirate::rex_flipper_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::pirate::rex_flipper_controller::light_controller_1::init(ddf::pirate::rex_flipper_controller::device_role::instance());
 	ddf::pirate::rex_flipper_controller::light_controller_1::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4174,6 +4197,8 @@ static void init()
 
 	dm::add_role(ddf::pirate::rex_flipper_controller::device_role::instance());
 	ddf::pirate::stone_chest_controller::device_role::init();
+	ddf::pirate::stone_chest_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::pirate::stone_chest_controller::magnetic_sensor_1::init(ddf::pirate::stone_chest_controller::device_role::instance());
 	ddf::pirate::stone_chest_controller::magnetic_sensor_1::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4287,6 +4312,8 @@ static void init()
 
 
 	ddf::magician::cupboard_controller::device_role::init();
+	ddf::magician::cupboard_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::magician::cupboard_controller::debouncer::init(ddf::magician::cupboard_controller::device_role::instance());
 	ddf::magician::cupboard_controller::debouncer::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4301,6 +4328,8 @@ static void init()
 
 	dm::add_role(ddf::magician::cupboard_controller::device_role::instance());
 	ddf::magician::design_board_controller::device_role::init();
+	ddf::magician::design_board_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::magician::design_board_controller::linear_magnetic_sensor_1::init(ddf::magician::design_board_controller::device_role::instance());
 	ddf::magician::design_board_controller::linear_magnetic_sensor_1::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4315,6 +4344,8 @@ static void init()
 
 	dm::add_role(ddf::magician::design_board_controller::device_role::instance());
 	ddf::magician::entrance_controller::device_role::init();
+	ddf::magician::entrance_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::magician::entrance_controller::debouncer::init(ddf::magician::entrance_controller::device_role::instance());
 	ddf::magician::entrance_controller::debouncer::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4326,6 +4357,8 @@ static void init()
 
 	dm::add_role(ddf::magician::entrance_controller::device_role::instance());
 	ddf::magician::futuristic_safe_controller::device_role::init();
+	ddf::magician::futuristic_safe_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::magician::futuristic_safe_controller::debouncer::init(ddf::magician::futuristic_safe_controller::device_role::instance());
 	ddf::magician::futuristic_safe_controller::debouncer::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4418,6 +4451,8 @@ static void init()
 
 
 	ddf::villa::control_room_controller::device_role::init();
+	ddf::villa::control_room_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::villa::control_room_controller::switch_1::init(ddf::villa::control_room_controller::device_role::instance());
 	ddf::villa::control_room_controller::switch_1::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4435,6 +4470,8 @@ static void init()
 
 	dm::add_role(ddf::villa::control_room_controller::device_role::instance());
 	ddf::villa::desk_controller::device_role::init();
+	ddf::villa::desk_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::villa::desk_controller::debouncer_3::init(ddf::villa::desk_controller::device_role::instance());
 	ddf::villa::desk_controller::debouncer_3::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4443,6 +4480,8 @@ static void init()
 
 	dm::add_role(ddf::villa::desk_controller::device_role::instance());
 	ddf::villa::desktop_pc::device_role::init();
+	ddf::villa::desktop_pc::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::villa::desktop_pc::started::init(ddf::villa::desktop_pc::device_role::instance(),bool());
 	ddf::villa::desktop_pc::started::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4475,6 +4514,8 @@ static void init()
 
 	dm::add_role(ddf::villa::desktop_pc::device_role::instance());
 	ddf::villa::entrance_controller::device_role::init();
+	ddf::villa::entrance_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::villa::entrance_controller::debouncer::init(ddf::villa::entrance_controller::device_role::instance());
 	ddf::villa::entrance_controller::debouncer::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4486,6 +4527,8 @@ static void init()
 
 	dm::add_role(ddf::villa::entrance_controller::device_role::instance());
 	ddf::villa::safe_controller::device_role::init();
+	ddf::villa::safe_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::villa::safe_controller::pin_pad::init(ddf::villa::safe_controller::device_role::instance());
 	ddf::villa::safe_controller::pin_pad::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4500,6 +4543,8 @@ static void init()
 
 	dm::add_role(ddf::villa::safe_controller::device_role::instance());
 	ddf::villa::video_device::device_role::init();
+	ddf::villa::video_device::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::villa::video_device::started::init(ddf::villa::video_device::device_role::instance(),bool());
 	ddf::villa::video_device::started::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4634,6 +4679,8 @@ static void init()
 
 
 	ddf::junkyard::email_client::device_role::init();
+	ddf::junkyard::email_client::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::junkyard::email_client::started::init(ddf::junkyard::email_client::device_role::instance(),bool());
 	ddf::junkyard::email_client::started::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4645,6 +4692,8 @@ static void init()
 
 	dm::add_role(ddf::junkyard::email_client::device_role::instance());
 	ddf::junkyard::entrance_controller::device_role::init();
+	ddf::junkyard::entrance_controller::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::junkyard::entrance_controller::debouncer::init(ddf::junkyard::entrance_controller::device_role::instance());
 	ddf::junkyard::entrance_controller::debouncer::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4656,6 +4705,8 @@ static void init()
 
 	dm::add_role(ddf::junkyard::entrance_controller::device_role::instance());
 	ddf::junkyard::secret_box_controller_1::device_role::init();
+	ddf::junkyard::secret_box_controller_1::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::junkyard::secret_box_controller_1::button_grid::init(ddf::junkyard::secret_box_controller_1::device_role::instance());
 	ddf::junkyard::secret_box_controller_1::button_grid::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4694,6 +4745,8 @@ static void init()
 
 	dm::add_role(ddf::junkyard::secret_box_controller_1::device_role::instance());
 	ddf::junkyard::secret_box_controller_2::device_role::init();
+	ddf::junkyard::secret_box_controller_2::device_role::remote_add(ddf::service::gmclient::device_role::instance());
+
 	ddf::junkyard::secret_box_controller_2::debouncer_1::init(ddf::junkyard::secret_box_controller_2::device_role::instance());
 	ddf::junkyard::secret_box_controller_2::debouncer_1::remote_add(ddf::service::gmclient::device_role::instance());
 
@@ -4880,8 +4933,10 @@ static void init()
 
 
 	ddf::service::comdev::device_role::init();
+
 	dm::add_role(ddf::service::comdev::device_role::instance());
 	ddf::service::gmclient::device_role::init();
+
 	dm::add_role(ddf::service::gmclient::device_role::instance());
 
 	ddf::service::statustimertick::init();
