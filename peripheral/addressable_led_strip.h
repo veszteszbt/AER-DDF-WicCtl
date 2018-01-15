@@ -27,6 +27,10 @@ namespace peripheral
 
 		struct value_type
 		{
+			typedef addressable_led_strip<TConfig> parent;
+
+			static const uint8_t size = led_count;
+
 			color_type led[led_count];
 
 			constexpr bool operator==(const value_type &t) const
@@ -116,5 +120,56 @@ namespace peripheral
 
 		typedef expose_property<prop_enabled> enabled;
 	};
+}
+
+template<typename Tv, typename Tctrt1 = decltype(Tv::parent::led_count)>
+std::istream &operator>>(std::istream &is, Tv &out)
+{
+	Tv v;
+	for(int i = 0; i < Tv::size; ++i)
+	{
+		char hash;
+		is >> hash;
+		if(hash != '#')
+		{
+			is.setstate(std::ios::failbit);
+			return is;
+		}
+		uint32_t value;
+		is >> std::hex >> value;
+		if(is.fail())
+			return is;
+
+		if(value > 16777215)
+		{
+			is.setstate(std::ios::failbit);
+			return is;
+		}
+		const int x = is.peek();
+		if(x >= 0 && (isalnum(x) || (i != Tv::size -1 && (x==10 || x==13))))
+		{
+			is.setstate(std::ios::failbit);
+			return is;
+		}
+
+		v.led[i].red = (value>>16)&0xff;
+		v.led[i].green = (value>>8)&0xff;
+		v.led[i].blue = value&0xff;
+	}
+	out = v;
+	return is;
+}
+
+template<typename Tv, typename Tctrt1 = decltype(Tv::parent::led_count)>
+std::ostream &operator<<(std::ostream &os, const Tv &v)
+{
+	for(int i = 0; i < Tv::size; ++i)
+	{
+		os << std::hex << '#' <<
+		(int)v.led[i].red <<
+		(int)v.led[i].green <<
+		(int)v.led[i].blue << ' ';
+	}
+	return os;
 }
 #endif
