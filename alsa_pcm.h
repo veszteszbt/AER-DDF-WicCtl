@@ -152,6 +152,15 @@ namespace pcm {
 		std::string state_name()
 		{ return std::string(snd_pcm_state_name(state())); }
 
+		snd_pcm_sframes_t delay()
+		{ 
+			snd_pcm_sframes_t r;
+			const int x = snd_pcm_delay(_pcm,&r);
+			if(!x)
+				return r;
+
+			return static_cast<snd_pcm_sframes_t>(x);
+		}
 
 		int prepare()
 		{ return snd_pcm_prepare(_pcm); }
@@ -164,6 +173,7 @@ namespace pcm {
 
 		snd_pcm_sframes_t writen(void **buffer, snd_pcm_uframes_t frames)
 		{ return snd_pcm_writen(_pcm,buffer,frames); }
+
 
 		friend class hw_params_t;
 	};

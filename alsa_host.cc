@@ -94,6 +94,8 @@ void alsa_host::player_t::start()
 
 		int16_t *p = buffer;
 
+		if(pcm.delay() > period*2)
+			std::this_thread::sleep_for(std::chrono::microseconds(1000000l*period/rate));
 		for(int size = period; size > 0;)
 		{
 			int result = pcm.writei(reinterpret_cast<void*>(p),size);
@@ -154,14 +156,21 @@ alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
 	int dir = 0;
 	pcm.params.set_rate_near(&rate,&dir);
 	pcm.params.get_period_size_min(&period,&dir);
+
+	double period_msec = static_cast<double>(period)*1000/rate;
+	if(period_msec < 0.5)
+		period = static_cast<snd_pcm_uframes_t>(1*rate/1000);
+
+
 	dir = 0;
 	pcm.params.set_period_size(period,dir);
 
 	pcm.params.apply();
 
 	pcm.params.get_period_size(&period,&dir);
-	double period_msec = static_cast<double>(period)*1000/rate;
+	period_msec = static_cast<double>(period)*1000/rate;
 
+	std::cout << "\e[37;01m - \e[0malsa host: rate for card " << std::dec << (int)device << ": " << rate << " Hz" << std::endl;
 	std::cout << "\e[37;01m - \e[0malsa host: period for card " << std::dec << (int)device << ": " << period_msec << " msec" << std::endl;
 
 	const unsigned l = period*channels;
