@@ -50,6 +50,7 @@ public:
 			prop_health::init(role[0]->get_health());
 			role[0]->on_health_change += health_change_handler;
 		}
+		initialized = true;
 	}
 
 	static void uninit()

@@ -198,9 +198,10 @@ class devman
 					" bound to two devices: " << std::hex << v.serial << " and " << o->serial <<
 					"; resetting both to unseen state" <<
 					journal::end;
-				r->set_unseen();
+				if(r)
+					r->set_unseen();
 				o->set_unseen();
-				if(r->call_id)
+				if(r && r->call_id)
 					rpc::cancel(r->call_id);
 				if(o->call_id)
 					rpc::cancel(r->call_id);

@@ -68,6 +68,9 @@ struct device : public wicp::device_type
 	bool is_active()
 	{ return state >= types::state::active; }
 
+	bool is_unseen()
+	{ return state == types::state::unseen; }
+
 	bool is_bound()
 	{ return role; }
 
