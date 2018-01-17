@@ -58,7 +58,7 @@ namespace wic
 		static void init()
 		{
 			is_playing = false;
-			property::init();
+			property::init(false);
 			property::on_change += change_handler;
 		}
 
@@ -70,6 +70,9 @@ namespace wic
 
 		static void remote_add(net::ipv4_address ip)
 		{ property::remote_add(ip); }
+
+		static void play()
+		{ property::value(true); }
 
 		typedef expose_property<property> playing;
 	};
