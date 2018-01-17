@@ -298,6 +298,14 @@ public:
 		proc_binder::notify();
 		return true;
 	}
+
+	template<typename TRole>
+	static void add_role()
+	{
+		for(uint16_t i = 0; i < TRole::multiplicity; ++i)
+			add_role(TRole::instance(i));
+
+	}
 };
 
 

@@ -55,6 +55,7 @@ class binder
 									journal::end;
 
 								dev->bind(role);
+								break;
 							}
 				}
 

@@ -5,7 +5,13 @@ namespace wic {
 template<typename TConfig>
 class device_role
 {
-	static wicp::role_type *role;
+	static_assert(TConfig::cfg_multiplicity > 0, "device multiplicity must be at least 1");
+
+	static wicp::role_type *role[];
+
+	static std::mutex lock;
+
+	static volatile bool initialized;
 
 	struct prop_health_config : public TConfig
 	{
@@ -15,55 +21,99 @@ class device_role
 	};
 	typedef wicp::local_property<prop_health_config> prop_health;
 
-	static void health_change_handler(wicp::role_type&)
-	{ prop_health::value(role->get_health()); }
+	static void health_change_handler(wicp::role_type &r)
+	{ prop_health::value(r.get_health()); }
 
 public:
 
-	static wicp::role_type &instance()
+	static const uint16_t multiplicity = TConfig::cfg_multiplicity;
+
+	static wicp::role_type &instance(uint16_t i = 0)
 	{
-		if(!role)
+		lock.lock();
+		if(!initialized)
 			init();
-		return *role;
+		lock.unlock();
+		return *role[i];
 	}
 
 	static void init()
 	{
-		if(role)
+		if(initialized)
 			return;
-		role = new wicp::role_type(TConfig::cfg_name);
-		prop_health::init(role->get_health());
-		role->on_health_change += health_change_handler;
+
+		for(uint16_t i = 0; i < multiplicity; ++i)
+			role[i] = new wicp::role_type(TConfig::cfg_name);
+
+		if(multiplicity == 1)
+		{
+			prop_health::init(role[0]->get_health());
+			role[0]->on_health_change += health_change_handler;
+		}
 	}
 
 	static void uninit()
 	{
-		if(!role)
+		lock.lock();
+		if(!initialized)
+		{
+			lock.unlock();
 			return;
-		role->on_health_change -= health_change_handler;
+		}
+		lock.unlock();
+		if(multiplicity == 1)
+			role[0]->on_health_change -= health_change_handler;
 		prop_health::uninit();
-		delete role;
-		role = 0;
+		for(int i = 0; i < multiplicity; ++i)
+			delete role[i];
 	}
 
 	static uint8_t health()
 	{
-		if(!role)
+		lock.lock();
+		if(!initialized)
 			init();
+		lock.unlock();
 		return prop_health::value();
 	}
 
 	static void remote_add(wicp::role_type &role)
-	{ prop_health::remote_add(role); }
+	{
+		if(multiplicity != 1)
+			return;
+
+		lock.lock();
+		if(!initialized)
+			init();
+
+		lock.unlock();
+		prop_health::remote_add(role);
+	}
 
 	static void remote_del(wicp::role_type &role)
-	{ prop_health::remote_del(role); }
+	{
+		if(multiplicity != 1)
+			return;
+
+		lock.lock();
+		if(!initialized)
+			init();
+
+		lock.unlock();
+		prop_health::remote_del(role);
+	}
 
 	constexpr static sched::listener &on_health_change = prop_health::on_change;
 };
 
 template<typename c>
-wicp::role_type *device_role<c>::role = 0;
+wicp::role_type *device_role<c>::role[c::cfg_multiplicity];
+
+template<typename c>
+std::mutex device_role<c>::lock;
+
+template<typename c>
+volatile bool device_role<c>::initialized = false;
 
 }
 #endif
