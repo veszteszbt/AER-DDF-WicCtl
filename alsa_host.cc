@@ -94,7 +94,7 @@ void alsa_host::player_t::start()
 
 		int16_t *p = buffer;
 
-		if(pcm.delay() > period*2)
+		if(pcm.delay() > period*4)
 			std::this_thread::sleep_for(std::chrono::microseconds(1000000l*period/rate));
 		for(int size = period; size > 0;)
 		{
