@@ -90,12 +90,28 @@ namespace peripheral
 			wicp::remote_property<prop_enabled_config>
 		> prop_enabled;
 
+		static void prop_value_change_handler()
+		{
+			journal(journal::trace,"wic.peripheral.input") <<
+				TConfig::name << ": value changed to " <<
+				prop_value::value() << journal::end;
+		}
+
+		static void prop_enabled_change_handler()
+		{
+			journal(journal::trace,"wic.peripheral.input") <<
+				TConfig::name << ": enabled changed to " <<
+				prop_enabled::value() << journal::end;
+		}
+
 
 	public:
 		static void init(wicp::role_type &role)
 		{
 			prop_value::init(role);
+			prop_value::on_change += prop_value_change_handler;
 			prop_enabled::init(role);
+			prop_enabled::on_change += prop_enabled_change_handler;
 		}
 
 		static void uninit()

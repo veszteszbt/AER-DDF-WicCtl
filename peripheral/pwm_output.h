@@ -30,10 +30,20 @@ namespace peripheral
 			wicp::remote_property<property_config>
 		> property;
 
+		static void property_change_handler()
+		{
+			journal(journal::trace,"wic.peripheral.output") <<
+				TConfig::name << ": value changed to " <<
+				std::dec << property::value() << journal::end;
+		}
+
 	public:
 
 		static void init(wicp::role_type &role)
-		{ property::init(role); }
+		{
+			property::init(role);
+			property::on_change += property_change_handler;
+		}
 
 		static void uninit()
 		{ property::uninit(); }
@@ -47,5 +57,8 @@ namespace peripheral
 
 		typedef expose_property<property> value;
 	};
+
+	template<typename TConfig>
+	using dimmable_led_strip = pwm_output<TConfig>;
 }
 #endif

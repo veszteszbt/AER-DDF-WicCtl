@@ -28,6 +28,13 @@ namespace peripheral
 			wicp::remote_property<property_config>
 		> property;
 
+		static void property_change_handler()
+		{
+			journal(journal::trace,"wic.peripheral.input") <<
+				TConfig::name << ": value changed to " <<
+				std::dec << property::value() << journal::end;
+		}
+
 	public:
 		typedef TConfig config;
 

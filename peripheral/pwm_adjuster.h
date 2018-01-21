@@ -30,9 +30,19 @@ namespace peripheral
 			wicp::remote_property<property_config>
 		> property;
 
+		static void property_change_handler()
+		{
+			journal(journal::trace,"wic.peripheral.composite") <<
+				TConfig::name << ": value changed to " <<
+				std::dec << (int)property::value() << journal::end;
+		}
+
 	public:
 		static void init(wicp::role_type &role)
-		{ property::init(role); }
+		{
+			property::init(role);
+			property::on_change += property_change_handler;
+		}
 
 		static void uninit()
 		{ property::uninit(); }

@@ -4,6 +4,7 @@
 # include <wicp/forward_property.h>
 # include <type_traits>
 # include <entity.h>
+# include <journal.h>
 namespace peripheral {
 
 template<typename TConfig>
@@ -31,10 +32,19 @@ private:
 		wicp::remote_property<property_config>
 	> property;
 
+	static void property_change_handler()
+	{
+		journal(journal::trace,"wic.peripheral.input") <<
+			TConfig::name << ": value changed to " <<
+			property::value() << journal::end;
+	}
 
 public:
 	static void init(wicp::role_type &role)
-	{ property::init(role); }
+	{
+		property::init(role);
+		property::on_change += property_change_handler;
+	}
 
 	static void uninit()
 	{ property::uninit(); }
@@ -47,6 +57,5 @@ public:
 
 	typedef expose_property<property,false> value;
 };
-
 }
 #endif

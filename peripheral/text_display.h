@@ -57,6 +57,9 @@ namespace peripheral
 
 				return false;
 			}
+
+			operator std::string()
+			{ return std::string(data,32); }
 		};
 	private:
 		struct property_config : public TConfig
@@ -75,9 +78,20 @@ namespace peripheral
 			wicp::remote_property<property_config>
 		> property;
 
+
+		static void property_change_handler()
+		{
+			journal(journal::trace,"wic.peripheral.output") <<
+				TConfig::name << ": value changed to " <<
+				(std::string)property::value() << journal::end;
+		}
+
 	public:
 		static void init(wicp::role_type &role)
-		{ property::init(role); }
+		{
+			property::init(role);
+			property::on_change += property_change_handler;
+		}
 
 		static void uninit()
 		{ property::uninit(); }

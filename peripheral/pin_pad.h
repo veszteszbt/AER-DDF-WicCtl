@@ -63,7 +63,9 @@ namespace peripheral
 		static void change_handler()
 		{
 			const value_type v = property::value();
-			std::cout << TConfig::name << ": key " << std::dec << (int)v.key << ' ' << (v.state?"down":"up") << std::endl;
+			journal(journal::trace,"wic.peripheral.input") <<
+				TConfig::name << ": key " << std::dec << (int)v.key <<
+				' ' << (v.state?"down":"up") << journal::end;
 		}
 
 	public:
