@@ -87,6 +87,14 @@ std::string journal::get_level()
 		return level_to_string("FATAL",fatal);
 }
 
+template<>
+journal &journal::operator<<(uint8_t v)
+{
+	if(output)
+		buffer << (int)v;
+	return *this;
+}
+
 journal &journal::operator<<(std::ostream&(*f)(std::ostream&))
 {
 	if(output)

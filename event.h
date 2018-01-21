@@ -22,7 +22,6 @@ class event
 		};
 		typedef wicp::local_property<property_config> property;
 public:
-
 	static void init()
 	{ property::init(); }
 
@@ -33,6 +32,7 @@ public:
 	{
 		if(TConfig::cfg_condition())
 		{
+			journal(journal::trace,"wic.event") << TConfig::name << " triggered" << journal::end;
 			property::value(std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count());
 			TConfig::cfg_action();
 		}

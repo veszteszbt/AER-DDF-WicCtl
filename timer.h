@@ -97,11 +97,16 @@ namespace wic
 			}
 		}
 
+		
 		static void notify()
 		{
 			std::lock_guard<std::mutex> lg(suspend_lock);
 			suspend_cv.notify_one();
 		}
+
+		static void value_change_handler()
+		{ journal(journal::trace,"wic.timer") << TConfig::name << ": value changed to " << std::dec << prop_value::value() << journal::end; }
+
 
 		static void running_change_handler()
 		{
@@ -117,6 +122,7 @@ namespace wic
 				start_time = clock::now();
 			lock.unlock();
 			notify();
+			journal(journal::trace,"wic.timer") << TConfig::name << ": " << (v?"started":"stopped") << journal::end;
 		}
 	public:
 		static void init()
@@ -126,6 +132,7 @@ namespace wic
 			_running = false;
 			silent = false;
 			prop_running::on_change += running_change_handler;
+			prop_value::on_change += value_change_handler;
 			proc = new std::thread(thread_start);
 		}
 

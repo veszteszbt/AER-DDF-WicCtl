@@ -88,7 +88,7 @@ struct device : public wicp::device_type
 			auto *const r = role;
 			role = 0;
 			r->unbind();
-			std::cout << "\e[31;01m * \e[0m (" << std::hex << serial << ")" << (std::string)ip << " -x-> " << r->name << std::endl;
+			std::cout << "\e[31;01m * \e[0m " << std::hex << serial << " (" << (std::string)ip << ") -x-> " << r->name << std::endl;
 		}
 	}
 
