@@ -1,3 +1,8 @@
 ** 1.0.1 **
- - Added role-based property handling to wicp
 
+- EARPC:
+ - Added handling of address change during ongoing call
+ - Extended call state reporting features
+- WICP:
+ - Added role-based property handling
+ - Added initial sync to remote property
