@@ -48,6 +48,19 @@ namespace peripheral
 						return true;
 				return false;
 			}
+
+			explicit operator std::string()
+			{
+				std::stringstream os;
+				for (int i = 0; i < size; ++i)
+				{
+					os << std::hex << '#' <<
+						(int)led[i].red <<
+						(int)led[i].green <<
+						(int)led[i].blue << ' ';
+				}
+				return os.str();
+			}
 		};
 
 	private:
@@ -92,14 +105,14 @@ namespace peripheral
 
 		static void prop_value_change_handler()
 		{
-			journal(journal::trace,"wic.peripheral.input") <<
+			journal(journal::trace,"wic.peripheral.output") <<
 				TConfig::name << ": value changed to " <<
-				prop_value::value() << journal::end;
+				(std::string)prop_value::value() << journal::end;
 		}
 
 		static void prop_enabled_change_handler()
 		{
-			journal(journal::trace,"wic.peripheral.input") <<
+			journal(journal::trace,"wic.peripheral.output") <<
 				TConfig::name << ": enabled changed to " <<
 				prop_enabled::value() << journal::end;
 		}
