@@ -283,17 +283,14 @@ namespace wicp
 				return v;
 			jrn(journal::trace) << "value set via API" << journal::end;
 
-			history_lock.lock();
 			env::value = v;
-			if(initial_sync_cid)
+			if(initial_sync_pending)
 			{
+				initial_sync_pending = false;
 				const auto cid = initial_sync_cid;
-				history_lock.unlock();
+				initial_sync_cid = 0;
 				rpc::cancel(cid);
 			}
-			else
-				history_lock.unlock();
-				
 			proc_commit::notify();
 			return env::value;
 		}
