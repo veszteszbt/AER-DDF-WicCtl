@@ -37,11 +37,17 @@ namespace wic
 					is_playing = true;
 					lock.unlock();
 					audio::play(TConfig::cfg_source,finish_handler);
+					journal(journal::trace,"wic.audio.speech") << TConfig::name << ": " << "started" << journal::end;
 					return;
 				}
 			}
 			else if(is_playing)
+			{
 				property::value(true);
+				journal(journal::warning,"wic.audio.speech") << TConfig::name << ": " << " stop signal before finish; resetting" << journal::end;
+
+			} else
+				journal(journal::trace,"wic.audio.speech") << TConfig::name << ": " << "finished" << journal::end;
 
 			lock.unlock();
 		}

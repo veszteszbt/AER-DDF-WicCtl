@@ -1,0 +1,364 @@
+#include <iostream>
+#include <string>
+#include <thread>
+#include <mutex>
+#include <list>
+#include <condition_variable>
+#include <cstdint>
+#include <earpc/udp.h>
+#include <earpc/earpc.h>
+#include <net/algorithm.h>
+#include <wicp/local_property.h>
+#include <wicp/remote_property.h>
+#include <property_config_base.h>
+#include <device_role.h>
+#include <process/sql_executor.h>
+#include <devman/devman.h>
+
+#include <status.h>
+#include <event.h>
+
+#include <audio.h>
+#include <audio_effect.h>
+#include <audio_speech.h>
+#include <timer.h>
+
+#include <peripheral/gpio_output.h>
+
+
+struct dm_config
+{
+	typedef wicc_earpc cfg_earpc;
+
+	static const uint32_t cfg_expiry_timeout = 3200;
+};
+typedef devman::devman<dm_config> dm;
+
+/// Site Role Test
+namespace role_test
+{
+
+	/// Room Test Room
+	namespace test_room
+	{
+
+			/// Test Device
+			namespace test_device
+			{
+				struct device_role_config : public property_config_base
+				{
+					constexpr static const char *cfg_name = "Role Test - Test Room - Test Device";
+					static const uint32_t cfg_class_id = 0x100010;
+				};
+				typedef wic::device_role<device_role_config> device_role;
+
+				/// Led Strip ///
+				struct led_strip_config : public property_config_base
+				{
+					constexpr static const char *name = "role_test::test_room::test_device::led_strip";
+					static const uint32_t cfg_class_id = 0x100010;
+					static const uint32_t cfg_member_id = 0x10;
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<led_strip_config> led_strip;
+
+			}
+
+
+
+			/// Test Timer
+			struct test_timer_config
+			{
+				static const uint32_t cfg_class_id  = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x20;
+				static const uint32_t cfg_interval  = 50;
+			};
+			typedef typename wic::timer<test_timer_config> test_timer;
+
+
+
+			/// Led Blink ///		
+			struct led_blink_config
+			{
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x30;
+				static bool cfg_condition()
+				{
+									typedef typename test_room::test_device::led_strip l;
+				typedef typename test_room::test_timer t;
+
+					return (true);
+				}
+				static void cfg_action()
+				{
+									typedef typename test_room::test_device::led_strip l;
+				typedef typename test_room::test_timer t;
+
+					(void)0; { 
+      	l::value(t::value()%2);
+       }
+				}
+			};
+			typedef wic::event<led_blink_config> led_blink;
+}
+
+}
+
+static void init()
+{
+	role_test::test_room::test_device::device_role::init();
+	role_test::test_room::test_device::led_strip::init(role_test::test_room::test_device::device_role::instance());
+
+	dm::add_role(role_test::test_room::test_device::device_role::instance());
+
+	role_test::test_room::led_blink::init();
+	role_test::test_room::test_timer::on_value_change += role_test::test_room::led_blink::monitor;
+
+
+
+
+	role_test::test_room::test_timer::init();
+
+
+}
+
+static void uninit()
+{
+	role_test::test_room::led_blink::uninit();
+
+	role_test::test_room::test_device::led_strip::uninit();
+
+
+
+	role_test::test_room::test_timer::uninit();
+
+}
+template<typename T>
+bool set_property(const std::string &x)
+{
+	if(T::config::name == x)
+	{
+		typedef typename T::value_type Tv;
+		typedef typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type Td;
+		Td v;
+		std::cin >> v;
+		if(!std::cin.good())
+		{
+			std::string y;
+			std::cin >> y;
+			std::cout << "\e[31;01m[NOK]\e[0m Invalid value `"<<y<<"'" << std::endl;
+		}
+		else
+		{
+			T::value((Tv)v);
+			std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
+		}
+
+		return true;
+	}
+
+	else
+		return false;
+}
+
+template<typename T>
+bool get_property(const std::string &x)
+{
+	if(T::config::name == x)
+	{
+		typedef typename T::value_type Tv;
+		typedef typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type Td;
+		Td v = T::value();
+		std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
+		return true;
+	}
+
+	else
+		return false;
+}
+
+template<typename T>
+bool set_peripheral(const std::string &x)
+{
+	if(T::config::name == x)
+	{
+		typedef typename T::value_type Tv;
+		typedef typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type Td;
+		Td v;
+		std::cin >> v;
+		if(!std::cin.good())
+		{
+			std::string y;
+			std::cin >> y;
+			std::cout << "\e[31;01m[NOK]\e[0m Invalid value `"<<y<<"'" << std::endl;
+		}
+		else
+			std::cout << "\e[32;01m[OK]\e[0m " << (Td)(Tv)(typename T::value((Tv)v)) << std::endl;
+
+		return true;
+	}
+
+	else
+		return false;
+}
+
+template<typename T>
+bool get_peripheral(const std::string &x)
+{
+	if(T::config::name == x)
+	{
+		typedef typename T::value_type Tv;
+		typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type v = (typename T::value_type)typename T::value();
+		std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
+		return true;
+	}
+
+	else
+		return false;
+}
+
+int main()
+{
+	journal::init();
+
+	alsa_host::init();
+
+	process::sql_executor::init();
+
+	wicc_earpc::init();
+
+	dm::init();
+
+	init();
+
+	role_test::test_room::test_timer::start();
+
+	std::string x;
+	while(true)
+	{
+
+		std::cin >> x;
+		if(x == "exit")
+			break;
+
+		else if(x == "delay")
+		{
+			int delay;
+			std::cin >> delay;
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+		}
+
+		else if(x == "get")
+		{
+			std::cin >> x;
+
+			if(get_peripheral<role_test::test_room::test_device::led_strip>(x)) continue;
+			std::cout << "\e[31;01m[NOK]\e[0m No such peripheral" << std::endl;
+		}
+
+		else if(x == "set")
+		{
+			std::cin >> x;
+
+			if(set_peripheral<role_test::test_room::test_device::led_strip>(x)) continue;
+
+			std::cout << "\e[31;01m[NOK]\e[0m No such peripheral" << std::endl;
+		}
+		else if(x == "show")
+		{
+			std::cin >> x;
+/*
+			if(x == "devices")
+			{
+				for(auto i : devstat::devices())
+				{
+					std::string sstate;
+					const uint8_t state = i.second->get_state();
+
+					if(state == 0)
+						sstate = "\e[30;01m(gone)\e[0m";
+					else if(state < 96)
+						sstate  = "\e[31;01m(poor)\e[0m";
+					else if(state < 192)
+						sstate = "\e[33;01m(moderate)\e[0m";
+					else
+						sstate = "\e[32;01m(good)\e[0m";
+
+					
+					std::cout << std::hex << i.second->serial << " " << (std::string)i.second->get_ip() << " " << sstate;
+					if(state !=  0)
+					{
+						std::cout << " " << i.second->get_app_name() << " " <<
+							(i.second->get_app_state()?"(\e[32mrunning\e[0m)":"(\e[31mnot running\e[0m)");
+
+					}
+
+					std::cout << std::endl;
+				}
+				std::cout << "\e[32;01m[OK]\e[0m" << std::endl;
+			}
+			else*/
+				std::cout << "\e[31;01m[NOK]\e[0m No such thing to show" << std::endl;
+		}
+		else if(x == "journal")
+		{
+			std::cin >> x;
+			if(x == "domains")
+			{
+				for(const auto &i : journal::get_domains())
+					std::cout << i << std::endl;
+				std::cout << "\e[32;01m[OK]\e[0m" << std::endl;
+				
+			}
+			else if(x == "get")
+			{
+				std::cin >> x;
+				std::cout << "\e[32;01m[OK]\e[0m " << (uint16_t)journal::domain_level(x)<< std::endl;
+			}
+			else if(x == "set")
+			{
+				uint16_t i;
+				std::cin >> x;
+				std::cin >> i;
+				if(!std::cin.good())
+				{
+					std::string y;
+					std::cin >> y;
+					std::cout << "\e[31;01m[NOK]\e[0m Invalid value `"<<y<<"'" << std::endl;
+				}
+				else
+				{
+					journal::domain_level(x,i);
+					std::cout << "\e[32;01m[OK]\e[0m"<< std::endl;
+				}
+			}
+			else if(x == "setall")
+			{
+				uint16_t i;
+				std::cin >> i;
+				if(!std::cin.good())
+				{
+					std::string y;
+					std::cin >> y;
+					std::cout << "\e[31;01m[NOK]\e[0m Invalid value `"<<y<<"'" << std::endl;
+				}
+				else
+				{
+					for(const auto &d : journal::get_domains())
+						journal::domain_level(d,i);
+					std::cout << "\e[32;01m[OK]\e[0m"<< std::endl;
+				}
+			}
+			else
+				std::cout << "\e[31;01m[NOK]\e[0m No such thing for journal" << std::endl;
+		
+		}
+	}
+
+	uninit();
+
+	journal::uninit();
+	return 0;
+}
+

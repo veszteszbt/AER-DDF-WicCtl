@@ -1,0 +1,2757 @@
+#include <iostream>
+#include <string>
+#include <thread>
+#include <mutex>
+#include <list>
+#include <condition_variable>
+#include <cstdint>
+#include <earpc/udp.h>
+#include <earpc/earpc.h>
+#include <net/algorithm.h>
+#include <wicp/local_property.h>
+#include <wicp/remote_property.h>
+#include <property_config_base.h>
+#include <process/sql_executor.h>
+
+#include <device.h>
+#include <game_event.h>
+
+#include <audio.h>
+#include <audio_effect.h>
+#include <audio_speech.h>
+#include <timer.h>
+
+#include <peripheral/addressable_led_strip.h>
+#include <peripheral/gpio_input.h>
+#include <peripheral/gpio_output.h>
+#include <peripheral/pin_pad.h>
+#include <peripheral/pwm_output.h>
+#include <peripheral/rfid.h>
+#include <peripheral/text_display.h>
+#include <peripheral/voltage_level.h>
+
+
+earpc::udp wicc_earpc_config::connection(1234, 1234);
+
+struct devstat_config
+{
+	typedef wicc_earpc cfg_earpc;
+};
+typedef wic::device<devstat_config> devstat;
+
+/// Site DDF
+namespace ddf
+{
+
+	/// Room pirate
+	namespace pirate
+	{
+
+			/// cashier_laser_controller
+			namespace cashier_laser_controller
+			{
+
+				/// laser ///
+				struct laser_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::cashier_laser_controller::laser";
+
+					static const uint32_t cfg_class_id = 0x100030;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<laser_config> laser;
+
+				/// lcd ///
+				struct lcd_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::cashier_laser_controller::lcd";
+
+					static const uint32_t cfg_class_id = 0x100030;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::text_display<lcd_config> lcd;
+
+				/// pin_pad ///
+				struct pin_pad_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::cashier_laser_controller::pin_pad";
+
+					static const uint32_t cfg_class_id = 0x100030;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 40;
+				};
+				typedef peripheral::pin_pad<pin_pad_config> pin_pad;
+
+				/// cash_box ///
+				struct cash_box_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::cashier_laser_controller::cash_box";
+
+					static const uint32_t cfg_class_id = 0x100030;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<cash_box_config> cash_box;
+
+				/// switch_1 ///
+				struct switch_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::cashier_laser_controller::switch_1";
+
+					static const uint32_t cfg_class_id = 0x100030;
+
+					static const uint32_t cfg_member_id = 0x50;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<switch_1_config> switch_1;
+
+				/// led_strip ///
+				struct led_strip_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::cashier_laser_controller::led_strip";
+
+					static const uint32_t cfg_class_id = 0x100030;
+
+					static const uint32_t cfg_member_id = 0x60;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<led_strip_config> led_strip;
+
+				static void init(net::ipv4_address ip)
+				{
+					laser::init(ip);
+
+					lcd::init(ip);
+
+					pin_pad::init(ip);
+
+					cash_box::init(ip);
+
+					switch_1::init(ip);
+
+					led_strip::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					laser::uninit();
+					lcd::uninit();
+					pin_pad::uninit();
+					cash_box::uninit();
+					switch_1::uninit();
+					led_strip::uninit();
+
+				}
+			}
+
+			/// entrance_hanger_controller
+			namespace entrance_hanger_controller
+			{
+
+				/// debouncer_1 ///
+				struct debouncer_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::entrance_hanger_controller::debouncer_1";
+
+					static const uint32_t cfg_class_id = 0x100060;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_1_config> debouncer_1;
+
+				/// led ///
+				struct led_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::entrance_hanger_controller::led";
+
+					static const uint32_t cfg_class_id = 0x100060;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<led_config> led;
+
+				/// magnetic_sensor ///
+				struct magnetic_sensor_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::entrance_hanger_controller::magnetic_sensor";
+
+					static const uint32_t cfg_class_id = 0x100060;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<magnetic_sensor_config> magnetic_sensor;
+
+				/// debouncer_2 ///
+				struct debouncer_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::entrance_hanger_controller::debouncer_2";
+
+					static const uint32_t cfg_class_id = 0x100060;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_2_config> debouncer_2;
+
+				static void init(net::ipv4_address ip)
+				{
+					debouncer_1::init(ip);
+
+					led::init(ip);
+
+					magnetic_sensor::init(ip);
+
+					debouncer_2::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					debouncer_1::uninit();
+					led::uninit();
+					magnetic_sensor::uninit();
+					debouncer_2::uninit();
+
+				}
+			}
+
+			/// ghostbox_picture_laser_boat_wheel_controller
+			namespace ghostbox_picture_laser_boat_wheel_controller
+			{
+
+				/// magnetic_lock_1 ///
+				struct magnetic_lock_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1";
+
+					static const uint32_t cfg_class_id = 0x100050;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_1_config> magnetic_lock_1;
+
+				/// magnetic_lock_2 ///
+				struct magnetic_lock_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_2";
+
+					static const uint32_t cfg_class_id = 0x100050;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_2_config> magnetic_lock_2;
+
+				/// magnetic_lock_3 ///
+				struct magnetic_lock_3_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_3";
+
+					static const uint32_t cfg_class_id = 0x100050;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_3_config> magnetic_lock_3;
+
+				/// debouncer ///
+				struct debouncer_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::debouncer";
+
+					static const uint32_t cfg_class_id = 0x100050;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_config> debouncer;
+
+				/// photosensor ///
+				struct photosensor_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::photosensor";
+
+					static const uint32_t cfg_class_id = 0x100050;
+
+					static const uint32_t cfg_member_id = 0x50;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<photosensor_config> photosensor;
+
+				/// knock_sensor ///
+				struct knock_sensor_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::knock_sensor";
+
+					static const uint32_t cfg_class_id = 0x100050;
+
+					static const uint32_t cfg_member_id = 0x60;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<knock_sensor_config> knock_sensor;
+
+				/// led_strip_1 ///
+				struct led_strip_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_1";
+
+					static const uint32_t cfg_class_id = 0x100050;
+
+					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<led_strip_1_config> led_strip_1;
+
+				/// led_strip_2 ///
+				struct led_strip_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_2";
+
+					static const uint32_t cfg_class_id = 0x100050;
+
+					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<led_strip_2_config> led_strip_2;
+
+				/// potentiometer ///
+				struct potentiometer_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::potentiometer";
+
+					static const uint32_t cfg_class_id = 0x100050;
+
+					static const uint32_t cfg_member_id = 0x90;
+
+					static const uint32_t cfg_cooldown_time = 40;
+				};
+				typedef peripheral::voltage_level<potentiometer_config> potentiometer;
+
+				static void init(net::ipv4_address ip)
+				{
+					magnetic_lock_1::init(ip);
+
+					magnetic_lock_2::init(ip);
+
+					magnetic_lock_3::init(ip);
+
+					debouncer::init(ip);
+
+					photosensor::init(ip);
+
+					knock_sensor::init(ip);
+
+					led_strip_1::init(ip);
+
+					led_strip_2::init(ip);
+
+					potentiometer::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					magnetic_lock_1::uninit();
+					magnetic_lock_2::uninit();
+					magnetic_lock_3::uninit();
+					debouncer::uninit();
+					photosensor::uninit();
+					knock_sensor::uninit();
+					led_strip_1::uninit();
+					led_strip_2::uninit();
+					potentiometer::uninit();
+
+				}
+			}
+
+			/// map_controller
+			namespace map_controller
+			{
+
+				/// magnetic_sensor_1 ///
+				struct magnetic_sensor_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::map_controller::magnetic_sensor_1";
+
+					static const uint32_t cfg_class_id = 0x100010;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::voltage_level<magnetic_sensor_1_config> magnetic_sensor_1;
+
+				/// magnetic_sensor_2 ///
+				struct magnetic_sensor_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::map_controller::magnetic_sensor_2";
+
+					static const uint32_t cfg_class_id = 0x100010;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::voltage_level<magnetic_sensor_2_config> magnetic_sensor_2;
+
+				/// led_strip ///
+				struct led_strip_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::map_controller::led_strip";
+
+					static const uint32_t cfg_class_id = 0x100010;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 40;
+				};
+				typedef peripheral::pwm_output<led_strip_config> led_strip;
+
+				static void init(net::ipv4_address ip)
+				{
+					magnetic_sensor_1::init(ip);
+
+					magnetic_sensor_2::init(ip);
+
+					led_strip::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					magnetic_sensor_1::uninit();
+					magnetic_sensor_2::uninit();
+					led_strip::uninit();
+
+				}
+			}
+
+			/// rex_flipper_controller
+			namespace rex_flipper_controller
+			{
+
+				/// light_controller_1 ///
+				struct light_controller_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::light_controller_1";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<light_controller_1_config> light_controller_1;
+
+				/// light_controller_2 ///
+				struct light_controller_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::light_controller_2";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<light_controller_2_config> light_controller_2;
+
+				/// light_controller_3 ///
+				struct light_controller_3_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::light_controller_3";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<light_controller_3_config> light_controller_3;
+
+				/// light_controller_4 ///
+				struct light_controller_4_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::light_controller_4";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<light_controller_4_config> light_controller_4;
+
+				/// light_controller_5 ///
+				struct light_controller_5_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::light_controller_5";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0x50;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<light_controller_5_config> light_controller_5;
+
+				/// light_controller_6 ///
+				struct light_controller_6_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::light_controller_6";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0x60;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<light_controller_6_config> light_controller_6;
+
+				/// light_controller_7 ///
+				struct light_controller_7_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::light_controller_7";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<light_controller_7_config> light_controller_7;
+
+				/// photosensor_1 ///
+				struct photosensor_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::photosensor_1";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<photosensor_1_config> photosensor_1;
+
+				/// photosensor_2 ///
+				struct photosensor_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::photosensor_2";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0x90;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<photosensor_2_config> photosensor_2;
+
+				/// photosensor_3 ///
+				struct photosensor_3_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::photosensor_3";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0xa0;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<photosensor_3_config> photosensor_3;
+
+				/// photosensor_4 ///
+				struct photosensor_4_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::photosensor_4";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0xb0;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<photosensor_4_config> photosensor_4;
+
+				/// photosensor_5 ///
+				struct photosensor_5_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::photosensor_5";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0xc0;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<photosensor_5_config> photosensor_5;
+
+				/// photosensor_6 ///
+				struct photosensor_6_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::photosensor_6";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0xd0;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<photosensor_6_config> photosensor_6;
+
+				/// photosensor_7 ///
+				struct photosensor_7_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::photosensor_7";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0xe0;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<photosensor_7_config> photosensor_7;
+
+				/// rfid_reader ///
+				struct rfid_reader_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::rfid_reader";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0xf0;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::rfid<rfid_reader_config> rfid_reader;
+
+				/// magnetic_lock ///
+				struct magnetic_lock_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::rex_flipper_controller::magnetic_lock";
+
+					static const uint32_t cfg_class_id = 0x100040;
+
+					static const uint32_t cfg_member_id = 0x100;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_config> magnetic_lock;
+	struct led
+	{
+		constexpr static const char *name = "ddf::pirate::rex_flipper_controller::led";
+		static void init(net::ipv4_address) {}
+		static void uninit() {}
+	};
+
+				static void init(net::ipv4_address ip)
+				{
+					light_controller_1::init(ip);
+
+					light_controller_2::init(ip);
+
+					light_controller_3::init(ip);
+
+					light_controller_4::init(ip);
+
+					light_controller_5::init(ip);
+
+					light_controller_6::init(ip);
+
+					light_controller_7::init(ip);
+
+					photosensor_1::init(ip);
+
+					photosensor_2::init(ip);
+
+					photosensor_3::init(ip);
+
+					photosensor_4::init(ip);
+
+					photosensor_5::init(ip);
+
+					photosensor_6::init(ip);
+
+					photosensor_7::init(ip);
+
+					rfid_reader::init(ip);
+
+					magnetic_lock::init(ip);
+
+					led::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					light_controller_1::uninit();
+					light_controller_2::uninit();
+					light_controller_3::uninit();
+					light_controller_4::uninit();
+					light_controller_5::uninit();
+					light_controller_6::uninit();
+					light_controller_7::uninit();
+					photosensor_1::uninit();
+					photosensor_2::uninit();
+					photosensor_3::uninit();
+					photosensor_4::uninit();
+					photosensor_5::uninit();
+					photosensor_6::uninit();
+					photosensor_7::uninit();
+					rfid_reader::uninit();
+					magnetic_lock::uninit();
+					led::uninit();
+
+				}
+			}
+
+			/// stone_chest_controller
+			namespace stone_chest_controller
+			{
+
+				/// magnetic_sensor_1 ///
+				struct magnetic_sensor_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::stone_chest_controller::magnetic_sensor_1";
+
+					static const uint32_t cfg_class_id = 0x100020;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<magnetic_sensor_1_config> magnetic_sensor_1;
+
+				/// magnetic_sensor_2 ///
+				struct magnetic_sensor_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::stone_chest_controller::magnetic_sensor_2";
+
+					static const uint32_t cfg_class_id = 0x100020;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<magnetic_sensor_2_config> magnetic_sensor_2;
+
+				/// magnetic_sensor_3 ///
+				struct magnetic_sensor_3_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::stone_chest_controller::magnetic_sensor_3";
+
+					static const uint32_t cfg_class_id = 0x100020;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<magnetic_sensor_3_config> magnetic_sensor_3;
+
+				/// magnetic_sensor_4 ///
+				struct magnetic_sensor_4_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::stone_chest_controller::magnetic_sensor_4";
+
+					static const uint32_t cfg_class_id = 0x100020;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<magnetic_sensor_4_config> magnetic_sensor_4;
+
+				/// magnetic_sensor_5 ///
+				struct magnetic_sensor_5_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::stone_chest_controller::magnetic_sensor_5";
+
+					static const uint32_t cfg_class_id = 0x100020;
+
+					static const uint32_t cfg_member_id = 0x50;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<magnetic_sensor_5_config> magnetic_sensor_5;
+
+				/// magnetic_lock_1 ///
+				struct magnetic_lock_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::stone_chest_controller::magnetic_lock_1";
+
+					static const uint32_t cfg_class_id = 0x100020;
+
+					static const uint32_t cfg_member_id = 0x60;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_1_config> magnetic_lock_1;
+
+				/// magnetic_lock_2 ///
+				struct magnetic_lock_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::stone_chest_controller::magnetic_lock_2";
+
+					static const uint32_t cfg_class_id = 0x100020;
+
+					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_2_config> magnetic_lock_2;
+
+				/// led_strip ///
+				struct led_strip_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::pirate::stone_chest_controller::led_strip";
+
+					static const uint32_t cfg_class_id = 0x100020;
+
+					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<led_strip_config> led_strip;
+
+				static void init(net::ipv4_address ip)
+				{
+					magnetic_sensor_1::init(ip);
+
+					magnetic_sensor_2::init(ip);
+
+					magnetic_sensor_3::init(ip);
+
+					magnetic_sensor_4::init(ip);
+
+					magnetic_sensor_5::init(ip);
+
+					magnetic_lock_1::init(ip);
+
+					magnetic_lock_2::init(ip);
+
+					led_strip::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					magnetic_sensor_1::uninit();
+					magnetic_sensor_2::uninit();
+					magnetic_sensor_3::uninit();
+					magnetic_sensor_4::uninit();
+					magnetic_sensor_5::uninit();
+					magnetic_lock_1::uninit();
+					magnetic_lock_2::uninit();
+					led_strip::uninit();
+
+				}
+			}
+
+
+
+			/// room_1
+			struct room_1_config
+			{
+                		static const uint8_t cfg_device = 2;
+				static const uint8_t cfg_channel = 7;
+			};
+			typedef wic::audio<room_1_config> room_1;
+
+			namespace room_1_content
+			{
+				struct chord_config
+				{
+					typedef room_1 cfg_audio;
+
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// room_2
+			struct room_2_config
+			{
+                		static const uint8_t cfg_device = 2;
+				static const uint8_t cfg_channel = 6;
+			};
+			typedef wic::audio<room_2_config> room_2;
+
+			namespace room_2_content
+			{
+				struct chord_config
+				{
+					typedef room_2 cfg_audio;
+
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+
+
+
+		static void init()
+		{
+			cashier_laser_controller::init(net::ipv4_address(10,1,0,53));
+			entrance_hanger_controller::init(net::ipv4_address(10,1,0,57));
+			ghostbox_picture_laser_boat_wheel_controller::init(net::ipv4_address(10,1,0,55));
+			map_controller::init(net::ipv4_address(10,1,0,51));
+			rex_flipper_controller::init(net::ipv4_address(10,1,0,54));
+			stone_chest_controller::init(net::ipv4_address(10,1,0,52));
+
+
+
+			ddf::pirate::room_1::init();
+			room_1_content::chord::init();
+
+			ddf::pirate::room_2::init();
+			room_2_content::chord::init();
+
+
+
+		}
+
+		static void uninit()
+		{
+
+			cashier_laser_controller::uninit();
+			entrance_hanger_controller::uninit();
+			ghostbox_picture_laser_boat_wheel_controller::uninit();
+			map_controller::uninit();
+			rex_flipper_controller::uninit();
+			stone_chest_controller::uninit();
+
+
+			room_1_content::chord::uninit();
+
+			ddf::pirate::room_1::uninit();
+			room_2_content::chord::uninit();
+
+			ddf::pirate::room_2::uninit();
+
+
+		}
+	}
+
+	/// Room magician
+	namespace magician
+	{
+
+			/// cupboard_controller
+			namespace cupboard_controller
+			{
+
+				/// debouncer ///
+				struct debouncer_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::cupboard_controller::debouncer";
+
+					static const uint32_t cfg_class_id = 0x200010;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_config> debouncer;
+
+				/// magnetic_sensor ///
+				struct magnetic_sensor_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::cupboard_controller::magnetic_sensor";
+
+					static const uint32_t cfg_class_id = 0x200010;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<magnetic_sensor_config> magnetic_sensor;
+
+				/// magnetic_lock ///
+				struct magnetic_lock_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::cupboard_controller::magnetic_lock";
+
+					static const uint32_t cfg_class_id = 0x200010;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_config> magnetic_lock;
+
+				/// led_strip ///
+				struct led_strip_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::cupboard_controller::led_strip";
+
+					static const uint32_t cfg_class_id = 0x200010;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<led_strip_config> led_strip;
+
+				static void init(net::ipv4_address ip)
+				{
+					debouncer::init(ip);
+
+					magnetic_sensor::init(ip);
+
+					magnetic_lock::init(ip);
+
+					led_strip::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					debouncer::uninit();
+					magnetic_sensor::uninit();
+					magnetic_lock::uninit();
+					led_strip::uninit();
+
+				}
+			}
+
+			/// design_board_controller
+			namespace design_board_controller
+			{
+
+				/// linear_magnetic_sensor_1 ///
+				struct linear_magnetic_sensor_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::design_board_controller::linear_magnetic_sensor_1";
+
+					static const uint32_t cfg_class_id = 0x200020;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<linear_magnetic_sensor_1_config> linear_magnetic_sensor_1;
+
+				/// linear_magnetic_sensor_2 ///
+				struct linear_magnetic_sensor_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::design_board_controller::linear_magnetic_sensor_2";
+
+					static const uint32_t cfg_class_id = 0x200020;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<linear_magnetic_sensor_2_config> linear_magnetic_sensor_2;
+
+				/// linear_magnetic_sensor_3 ///
+				struct linear_magnetic_sensor_3_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::design_board_controller::linear_magnetic_sensor_3";
+
+					static const uint32_t cfg_class_id = 0x200020;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<linear_magnetic_sensor_3_config> linear_magnetic_sensor_3;
+
+				/// magnetic_lock ///
+				struct magnetic_lock_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::design_board_controller::magnetic_lock";
+
+					static const uint32_t cfg_class_id = 0x200020;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_config> magnetic_lock;
+
+				static void init(net::ipv4_address ip)
+				{
+					linear_magnetic_sensor_1::init(ip);
+
+					linear_magnetic_sensor_2::init(ip);
+
+					linear_magnetic_sensor_3::init(ip);
+
+					magnetic_lock::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					linear_magnetic_sensor_1::uninit();
+					linear_magnetic_sensor_2::uninit();
+					linear_magnetic_sensor_3::uninit();
+					magnetic_lock::uninit();
+
+				}
+			}
+
+			/// entrance_controller
+			namespace entrance_controller
+			{
+
+				/// debouncer ///
+				struct debouncer_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::entrance_controller::debouncer";
+
+					static const uint32_t cfg_class_id = 0x200040;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_config> debouncer;
+
+				/// led ///
+				struct led_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::entrance_controller::led";
+
+					static const uint32_t cfg_class_id = 0x200040;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<led_config> led;
+
+				/// magnetic_sensor ///
+				struct magnetic_sensor_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::entrance_controller::magnetic_sensor";
+
+					static const uint32_t cfg_class_id = 0x200040;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<magnetic_sensor_config> magnetic_sensor;
+
+				static void init(net::ipv4_address ip)
+				{
+					debouncer::init(ip);
+
+					led::init(ip);
+
+					magnetic_sensor::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					debouncer::uninit();
+					led::uninit();
+					magnetic_sensor::uninit();
+
+				}
+			}
+
+			/// futuristic_safe_controller
+			namespace futuristic_safe_controller
+			{
+
+				/// debouncer ///
+				struct debouncer_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::futuristic_safe_controller::debouncer";
+
+					static const uint32_t cfg_class_id = 0x200030;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_config> debouncer;
+
+				/// rfid_reader ///
+				struct rfid_reader_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::futuristic_safe_controller::rfid_reader";
+
+					static const uint32_t cfg_class_id = 0x200030;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::rfid<rfid_reader_config> rfid_reader;
+
+				/// pin_pad ///
+				struct pin_pad_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::futuristic_safe_controller::pin_pad";
+
+					static const uint32_t cfg_class_id = 0x200030;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 40;
+				};
+				typedef peripheral::pin_pad<pin_pad_config> pin_pad;
+	struct addressable_led_strip
+	{
+		constexpr static const char *name = "ddf::magician::futuristic_safe_controller::addressable_led_strip";
+		static void init(net::ipv4_address) {}
+		static void uninit() {}
+	};
+
+				/// magnetic_lock ///
+				struct magnetic_lock_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::magician::futuristic_safe_controller::magnetic_lock";
+
+					static const uint32_t cfg_class_id = 0x200030;
+
+					static const uint32_t cfg_member_id = 0x50;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_config> magnetic_lock;
+
+				static void init(net::ipv4_address ip)
+				{
+					debouncer::init(ip);
+
+					rfid_reader::init(ip);
+
+					pin_pad::init(ip);
+
+					addressable_led_strip::init(ip);
+
+					magnetic_lock::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					debouncer::uninit();
+					rfid_reader::uninit();
+					pin_pad::uninit();
+					addressable_led_strip::uninit();
+					magnetic_lock::uninit();
+
+				}
+			}
+
+
+
+			/// room_1
+			struct room_1_config
+			{
+                		static const uint8_t cfg_device = 2;
+				static const uint8_t cfg_channel = 1;
+			};
+			typedef wic::audio<room_1_config> room_1;
+
+			namespace room_1_content
+			{
+				struct chord_config
+				{
+					typedef room_1 cfg_audio;
+
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// room_2
+			struct room_2_config
+			{
+                		static const uint8_t cfg_device = 2;
+				static const uint8_t cfg_channel = 0;
+			};
+			typedef wic::audio<room_2_config> room_2;
+
+			namespace room_2_content
+			{
+				struct chord_config
+				{
+					typedef room_2 cfg_audio;
+
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+
+
+
+		static void init()
+		{
+			cupboard_controller::init(net::ipv4_address(10,1,0,58));
+			design_board_controller::init(net::ipv4_address(10,1,0,59));
+			entrance_controller::init(net::ipv4_address(10,1,0,61));
+			futuristic_safe_controller::init(net::ipv4_address(10,1,0,60));
+
+
+
+			ddf::magician::room_1::init();
+			room_1_content::chord::init();
+
+			ddf::magician::room_2::init();
+			room_2_content::chord::init();
+
+
+
+		}
+
+		static void uninit()
+		{
+
+			cupboard_controller::uninit();
+			design_board_controller::uninit();
+			entrance_controller::uninit();
+			futuristic_safe_controller::uninit();
+
+
+			room_1_content::chord::uninit();
+
+			ddf::magician::room_1::uninit();
+			room_2_content::chord::uninit();
+
+			ddf::magician::room_2::uninit();
+
+
+		}
+	}
+
+	/// Room villa
+	namespace villa
+	{
+
+			/// control_room_controller
+			namespace control_room_controller
+			{
+
+				/// switch_1 ///
+				struct switch_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::control_room_controller::switch_1";
+
+					static const uint32_t cfg_class_id = 0x300030;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<switch_1_config> switch_1;
+
+				/// rfid ///
+				struct rfid_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::control_room_controller::rfid";
+
+					static const uint32_t cfg_class_id = 0x300030;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::rfid<rfid_config> rfid;
+
+				/// magnetic_lock ///
+				struct magnetic_lock_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::control_room_controller::magnetic_lock";
+
+					static const uint32_t cfg_class_id = 0x300030;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_config> magnetic_lock;
+
+				/// debouncer_1 ///
+				struct debouncer_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::control_room_controller::debouncer_1";
+
+					static const uint32_t cfg_class_id = 0x300030;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_1_config> debouncer_1;
+
+				/// video_eject ///
+				struct video_eject_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::control_room_controller::video_eject";
+
+					static const uint32_t cfg_class_id = 0x300030;
+
+					static const uint32_t cfg_member_id = 0x50;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<video_eject_config> video_eject;
+
+				static void init(net::ipv4_address ip)
+				{
+					switch_1::init(ip);
+
+					rfid::init(ip);
+
+					magnetic_lock::init(ip);
+
+					debouncer_1::init(ip);
+
+					video_eject::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					switch_1::uninit();
+					rfid::uninit();
+					magnetic_lock::uninit();
+					debouncer_1::uninit();
+					video_eject::uninit();
+
+				}
+			}
+
+			/// desk_controller
+			namespace desk_controller
+			{
+
+				/// debouncer_3 ///
+				struct debouncer_3_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::desk_controller::debouncer_3";
+
+					static const uint32_t cfg_class_id = 0x300020;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_3_config> debouncer_3;
+
+				/// debouncer_4 ///
+				struct debouncer_4_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::desk_controller::debouncer_4";
+
+					static const uint32_t cfg_class_id = 0x300020;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_4_config> debouncer_4;
+
+				static void init(net::ipv4_address ip)
+				{
+					debouncer_3::init(ip);
+
+					debouncer_4::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					debouncer_3::uninit();
+					debouncer_4::uninit();
+
+				}
+			}
+
+			/// entrance_controller
+			namespace entrance_controller
+			{
+
+				/// debouncer ///
+				struct debouncer_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::entrance_controller::debouncer";
+
+					static const uint32_t cfg_class_id = 0x300040;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_config> debouncer;
+
+				/// led ///
+				struct led_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::entrance_controller::led";
+
+					static const uint32_t cfg_class_id = 0x300040;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<led_config> led;
+
+				/// magnetic_sensor ///
+				struct magnetic_sensor_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::entrance_controller::magnetic_sensor";
+
+					static const uint32_t cfg_class_id = 0x300040;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<magnetic_sensor_config> magnetic_sensor;
+
+				static void init(net::ipv4_address ip)
+				{
+					debouncer::init(ip);
+
+					led::init(ip);
+
+					magnetic_sensor::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					debouncer::uninit();
+					led::uninit();
+					magnetic_sensor::uninit();
+
+				}
+			}
+
+			/// safe_controller
+			namespace safe_controller
+			{
+
+				/// pin_pad ///
+				struct pin_pad_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::safe_controller::pin_pad";
+
+					static const uint32_t cfg_class_id = 0x300010;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 40;
+				};
+				typedef peripheral::pin_pad<pin_pad_config> pin_pad;
+
+				/// magnetic_lock ///
+				struct magnetic_lock_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::safe_controller::magnetic_lock";
+
+					static const uint32_t cfg_class_id = 0x300010;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_config> magnetic_lock;
+
+				/// debouncer_1 ///
+				struct debouncer_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::safe_controller::debouncer_1";
+
+					static const uint32_t cfg_class_id = 0x300010;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_1_config> debouncer_1;
+
+				/// debouncer_2 ///
+				struct debouncer_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::villa::safe_controller::debouncer_2";
+
+					static const uint32_t cfg_class_id = 0x300010;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_2_config> debouncer_2;
+
+				static void init(net::ipv4_address ip)
+				{
+					pin_pad::init(ip);
+
+					magnetic_lock::init(ip);
+
+					debouncer_1::init(ip);
+
+					debouncer_2::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					pin_pad::uninit();
+					magnetic_lock::uninit();
+					debouncer_1::uninit();
+					debouncer_2::uninit();
+
+				}
+			}
+
+			/// video_device
+			namespace video_device
+			{
+
+				/// enabled ///
+				struct enabled_config : public property_config_base
+				{
+					typedef bool cfg_value_type;
+
+					static const uint32_t cfg_class_id           = 0x300050;
+					static const uint32_t cfg_member_id          = 0x10;
+					static const uint32_t cfg_cooldown_time      = 0;
+				};
+				typedef wicp::remote_property<enabled_config> enabled;
+
+				/// casette_id ///
+				struct casette_id_config : public property_config_base
+				{
+					typedef uint64_t cfg_value_type;
+
+					static const uint32_t cfg_class_id           = 0x300050;
+					static const uint32_t cfg_member_id          = 0x20;
+					static const uint32_t cfg_cooldown_time      = 0;
+				};
+				typedef wicp::remote_property<casette_id_config> casette_id;
+
+				/// play_ongoing ///
+				struct play_ongoing_config : public property_config_base
+				{
+					typedef bool cfg_value_type;
+
+					static const uint32_t cfg_class_id           = 0x300050;
+					static const uint32_t cfg_member_id          = 0x30;
+					static const uint32_t cfg_cooldown_time      = 0;
+				};
+				typedef wicp::remote_property<play_ongoing_config> play_ongoing;
+
+				static void init(net::ipv4_address ip)
+				{
+					video_device::enabled::init(ip);
+					video_device::casette_id::init(ip);
+					video_device::play_ongoing::init(ip);
+
+				}
+
+				static void uninit()
+				{
+					video_device::enabled::uninit();
+					video_device::casette_id::uninit();
+					video_device::play_ongoing::uninit();
+
+				}
+			}
+
+
+
+			/// room_1
+			struct room_1_config
+			{
+                		static const uint8_t cfg_device = 2;
+				static const uint8_t cfg_channel = 3;
+			};
+			typedef wic::audio<room_1_config> room_1;
+
+			namespace room_1_content
+			{
+				struct chord_config
+				{
+					typedef room_1 cfg_audio;
+
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// room_2
+			struct room_2_config
+			{
+                		static const uint8_t cfg_device = 2;
+				static const uint8_t cfg_channel = 2;
+			};
+			typedef wic::audio<room_2_config> room_2;
+
+			namespace room_2_content
+			{
+				struct chord_config
+				{
+					typedef room_2 cfg_audio;
+
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+
+
+
+		static void init()
+		{
+			control_room_controller::init(net::ipv4_address(10,1,0,65));
+			desk_controller::init(net::ipv4_address(10,1,0,64));
+			entrance_controller::init(net::ipv4_address(10,1,0,67));
+			safe_controller::init(net::ipv4_address(10,1,0,62));
+			video_device::init(net::ipv4_address(10,1,0,20));
+
+
+
+			ddf::villa::room_1::init();
+			room_1_content::chord::init();
+
+			ddf::villa::room_2::init();
+			room_2_content::chord::init();
+
+
+
+		}
+
+		static void uninit()
+		{
+
+			control_room_controller::uninit();
+			desk_controller::uninit();
+			entrance_controller::uninit();
+			safe_controller::uninit();
+			video_device::uninit();
+
+
+			room_1_content::chord::uninit();
+
+			ddf::villa::room_1::uninit();
+			room_2_content::chord::uninit();
+
+			ddf::villa::room_2::uninit();
+
+
+		}
+	}
+
+	/// Room junkyard
+	namespace junkyard
+	{
+
+			/// entrance_controller
+			namespace entrance_controller
+			{
+
+				/// debouncer ///
+				struct debouncer_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::entrance_controller::debouncer";
+
+					static const uint32_t cfg_class_id = 0x400030;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_config> debouncer;
+
+				/// led ///
+				struct led_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::entrance_controller::led";
+
+					static const uint32_t cfg_class_id = 0x400030;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<led_config> led;
+
+				/// magnetic_sensor ///
+				struct magnetic_sensor_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::entrance_controller::magnetic_sensor";
+
+					static const uint32_t cfg_class_id = 0x400030;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<magnetic_sensor_config> magnetic_sensor;
+
+				static void init(net::ipv4_address ip)
+				{
+					debouncer::init(ip);
+
+					led::init(ip);
+
+					magnetic_sensor::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					debouncer::uninit();
+					led::uninit();
+					magnetic_sensor::uninit();
+
+				}
+			}
+
+			/// secret_box_controller_1
+			namespace secret_box_controller_1
+			{
+
+				/// button_grid ///
+				struct button_grid_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::button_grid";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::pin_pad<button_grid_config> button_grid;
+
+				/// debouncer_1 ///
+				struct debouncer_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::debouncer_1";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_1_config> debouncer_1;
+
+				/// debouncer_2 ///
+				struct debouncer_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::debouncer_2";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_2_config> debouncer_2;
+
+				/// debouncer_3 ///
+				struct debouncer_3_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::debouncer_3";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_3_config> debouncer_3;
+
+				/// debouncer_4 ///
+				struct debouncer_4_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::debouncer_4";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0x50;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_4_config> debouncer_4;
+
+				/// debouncer_5 ///
+				struct debouncer_5_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::debouncer_5";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0x60;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_5_config> debouncer_5;
+
+				/// debouncer_6 ///
+				struct debouncer_6_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::debouncer_6";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_6_config> debouncer_6;
+
+				/// debouncer_7 ///
+				struct debouncer_7_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::debouncer_7";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_7_config> debouncer_7;
+
+				/// magnetic_lock_1 ///
+				struct magnetic_lock_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::magnetic_lock_1";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0x90;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_1_config> magnetic_lock_1;
+
+				/// magnetic_lock_2 ///
+				struct magnetic_lock_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::magnetic_lock_2";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0xa0;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_2_config> magnetic_lock_2;
+
+				/// magnetic_lock_3 ///
+				struct magnetic_lock_3_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::magnetic_lock_3";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0xb0;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_3_config> magnetic_lock_3;
+
+				/// magnetic_lock_4 ///
+				struct magnetic_lock_4_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::magnetic_lock_4";
+
+					static const uint32_t cfg_class_id = 0x400010;
+
+					static const uint32_t cfg_member_id = 0xc0;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_4_config> magnetic_lock_4;
+	struct addressable_led
+	{
+		constexpr static const char *name = "ddf::junkyard::secret_box_controller_1::addressable_led";
+		static void init(net::ipv4_address) {}
+		static void uninit() {}
+	};
+
+				static void init(net::ipv4_address ip)
+				{
+					button_grid::init(ip);
+
+					debouncer_1::init(ip);
+
+					debouncer_2::init(ip);
+
+					debouncer_3::init(ip);
+
+					debouncer_4::init(ip);
+
+					debouncer_5::init(ip);
+
+					debouncer_6::init(ip);
+
+					debouncer_7::init(ip);
+
+					magnetic_lock_1::init(ip);
+
+					magnetic_lock_2::init(ip);
+
+					magnetic_lock_3::init(ip);
+
+					magnetic_lock_4::init(ip);
+
+					addressable_led::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					button_grid::uninit();
+					debouncer_1::uninit();
+					debouncer_2::uninit();
+					debouncer_3::uninit();
+					debouncer_4::uninit();
+					debouncer_5::uninit();
+					debouncer_6::uninit();
+					debouncer_7::uninit();
+					magnetic_lock_1::uninit();
+					magnetic_lock_2::uninit();
+					magnetic_lock_3::uninit();
+					magnetic_lock_4::uninit();
+					addressable_led::uninit();
+
+				}
+			}
+
+			/// secret_box_controller_2
+			namespace secret_box_controller_2
+			{
+
+				/// debouncer_1 ///
+				struct debouncer_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_1";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x10;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_1_config> debouncer_1;
+
+				/// debouncer_2 ///
+				struct debouncer_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_2";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x20;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_2_config> debouncer_2;
+
+				/// debouncer_3 ///
+				struct debouncer_3_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_3";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x30;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_3_config> debouncer_3;
+
+				/// debouncer_4 ///
+				struct debouncer_4_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_4";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x40;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_4_config> debouncer_4;
+
+				/// debouncer_5 ///
+				struct debouncer_5_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_5";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x50;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_5_config> debouncer_5;
+
+				/// debouncer_6 ///
+				struct debouncer_6_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_6";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x60;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_6_config> debouncer_6;
+
+				/// debouncer_7 ///
+				struct debouncer_7_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_7";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_7_config> debouncer_7;
+
+				/// debouncer_8 ///
+				struct debouncer_8_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_8";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_8_config> debouncer_8;
+
+				/// debouncer_9 ///
+				struct debouncer_9_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_9";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x90;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_9_config> debouncer_9;
+
+				/// debouncer_10 ///
+				struct debouncer_10_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_10";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0xa0;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_10_config> debouncer_10;
+
+				/// light_controller ///
+				struct light_controller_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::light_controller";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0xb0;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<light_controller_config> light_controller;
+
+				/// debouncer_12 ///
+				struct debouncer_12_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::debouncer_12";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0xc0;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<debouncer_12_config> debouncer_12;
+
+				/// magnetic_lock_1 ///
+				struct magnetic_lock_1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::magnetic_lock_1";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0xd0;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_1_config> magnetic_lock_1;
+
+				/// magnetic_lock_2 ///
+				struct magnetic_lock_2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::magnetic_lock_2";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0xe0;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_2_config> magnetic_lock_2;
+
+				/// magnetic_lock_3 ///
+				struct magnetic_lock_3_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::magnetic_lock_3";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0xf0;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_3_config> magnetic_lock_3;
+
+				/// magnetic_lock_4 ///
+				struct magnetic_lock_4_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::magnetic_lock_4";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x100;
+
+					static const uint32_t cfg_cooldown_time = 200;
+				};
+				typedef peripheral::gpio_output<magnetic_lock_4_config> magnetic_lock_4;
+
+				/// spare_in1 ///
+				struct spare_in1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::spare_in1";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x110;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<spare_in1_config> spare_in1;
+
+				/// spare_out1 ///
+				struct spare_out1_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::spare_out1";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x120;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<spare_out1_config> spare_out1;
+
+				/// spare_in2 ///
+				struct spare_in2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::spare_in2";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x130;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_input<spare_in2_config> spare_in2;
+
+				/// spare_out2 ///
+				struct spare_out2_config : public property_config_base
+				{
+					constexpr static const char *name = "ddf::junkyard::secret_box_controller_2::spare_out2";
+
+					static const uint32_t cfg_class_id = 0x400020;
+
+					static const uint32_t cfg_member_id = 0x140;
+
+					static const uint32_t cfg_cooldown_time = 50;
+				};
+				typedef peripheral::gpio_output<spare_out2_config> spare_out2;
+
+				static void init(net::ipv4_address ip)
+				{
+					debouncer_1::init(ip);
+
+					debouncer_2::init(ip);
+
+					debouncer_3::init(ip);
+
+					debouncer_4::init(ip);
+
+					debouncer_5::init(ip);
+
+					debouncer_6::init(ip);
+
+					debouncer_7::init(ip);
+
+					debouncer_8::init(ip);
+
+					debouncer_9::init(ip);
+
+					debouncer_10::init(ip);
+
+					light_controller::init(ip);
+
+					debouncer_12::init(ip);
+
+					magnetic_lock_1::init(ip);
+
+					magnetic_lock_2::init(ip);
+
+					magnetic_lock_3::init(ip);
+
+					magnetic_lock_4::init(ip);
+
+//					spare_in1::init(ip);
+
+//					spare_out1::init(ip);
+
+//					spare_in2::init(ip);
+
+//					spare_out2::init(ip);
+
+
+				}
+
+				static void uninit()
+				{
+					debouncer_1::uninit();
+					debouncer_2::uninit();
+					debouncer_3::uninit();
+					debouncer_4::uninit();
+					debouncer_5::uninit();
+					debouncer_6::uninit();
+					debouncer_7::uninit();
+					debouncer_8::uninit();
+					debouncer_9::uninit();
+					debouncer_10::uninit();
+					light_controller::uninit();
+					debouncer_12::uninit();
+					magnetic_lock_1::uninit();
+					magnetic_lock_2::uninit();
+					magnetic_lock_3::uninit();
+					magnetic_lock_4::uninit();
+//					spare_in1::uninit();
+//					spare_out1::uninit();
+//					spare_in2::uninit();
+//					spare_out2::uninit();
+
+				}
+			}
+
+
+
+			/// room_1
+			struct room_1_config
+			{
+                		static const uint8_t cfg_device = 2;
+				static const uint8_t cfg_channel = 5;
+			};
+			typedef wic::audio<room_1_config> room_1;
+
+			namespace room_1_content
+			{
+				struct chord_config
+				{
+					typedef room_1 cfg_audio;
+
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+			/// room_2
+			struct room_2_config
+			{
+                		static const uint8_t cfg_device = 2;
+				static const uint8_t cfg_channel = 4;
+			};
+			typedef wic::audio<room_2_config> room_2;
+
+			namespace room_2_content
+			{
+				struct chord_config
+				{
+					typedef room_2 cfg_audio;
+
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
+				};
+				typedef wic::audio_effect<chord_config> chord;
+
+			}
+
+
+
+
+		static void init()
+		{
+			entrance_controller::init(net::ipv4_address(10,1,0,71));
+			secret_box_controller_1::init(net::ipv4_address(10,1,0,69));
+			secret_box_controller_2::init(net::ipv4_address(10,1,0,70));
+
+
+
+			ddf::junkyard::room_1::init();
+			room_1_content::chord::init();
+
+			ddf::junkyard::room_2::init();
+			room_2_content::chord::init();
+
+
+
+		}
+
+		static void uninit()
+		{
+
+			entrance_controller::uninit();
+			secret_box_controller_1::uninit();
+			secret_box_controller_2::uninit();
+
+
+			room_1_content::chord::uninit();
+
+			ddf::junkyard::room_1::uninit();
+			room_2_content::chord::uninit();
+
+			ddf::junkyard::room_2::uninit();
+
+
+		}
+	}
+
+}
+template<typename T>
+bool set_peripheral(const std::string &x)
+{
+	if(T::config::name == x)
+	{
+		typename T::value_type v;
+		std::cin >> v;
+		if(!std::cin)
+			std::cout << "\e[31;01m[NOK]\e[0m Invalid value" << std::endl;
+		else
+		{
+			T::value(v);
+			std::cout << "\e[32;01m[OK]\e[0m" << std::endl;
+		}
+
+		return true;
+	}
+
+	else
+		return false;
+}
+
+template<typename T>
+bool get_peripheral(const std::string &x)
+{
+	if(T::config::name == x)
+	{
+		typename T::value_type v = T::value();
+		std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
+		return true;
+	}
+
+	else
+		return false;
+}
+int main()
+{
+	journal::init();
+
+	alsa_host::init();
+
+	process::sql_executor::init();
+
+	wicc_earpc::init();
+
+	devstat::init();
+
+//	ddf::pirate::init();
+//	ddf::magician::init();
+//	ddf::villa::init();
+	ddf::junkyard::init();
+
+
+	std::string x;
+	while(true)
+	{
+		std::cin >> x;
+		if(x == "exit")
+			break;
+
+		else if(x == "1")
+			ddf::pirate::room_1_content::chord::play();
+		else if(x == "2")
+			ddf::pirate::room_2_content::chord::play();
+		else if(x == "3")
+			ddf::magician::room_1_content::chord::play();
+		else if(x == "4")
+			ddf::magician::room_2_content::chord::play();
+		else if(x == "5")
+			ddf::villa::room_1_content::chord::play();
+		else if(x == "6")
+			ddf::villa::room_2_content::chord::play();
+		else if(x == "7")
+			ddf::junkyard::room_1_content::chord::play();
+		else if(x == "8")
+			ddf::junkyard::room_2_content::chord::play();
+		else if(x == "delay")
+		{
+			int delay;
+			std::cin >> delay;
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+		}
+
+		else if(x == "get")
+		{
+			std::cin >> x;
+
+			if(get_peripheral<ddf::pirate::map_controller::magnetic_sensor_1>(x)) continue;
+			if(get_peripheral<ddf::pirate::map_controller::magnetic_sensor_2>(x)) continue;
+			if(get_peripheral<ddf::pirate::stone_chest_controller::magnetic_sensor_1>(x)) continue;
+			if(get_peripheral<ddf::pirate::stone_chest_controller::magnetic_sensor_2>(x)) continue;
+			if(get_peripheral<ddf::pirate::stone_chest_controller::magnetic_sensor_3>(x)) continue;
+			if(get_peripheral<ddf::pirate::stone_chest_controller::magnetic_sensor_4>(x)) continue;
+			if(get_peripheral<ddf::pirate::stone_chest_controller::magnetic_sensor_5>(x)) continue;
+//			if(get_peripheral<ddf::pirate::cashier_laser_controller::pin_pad>(x)) continue;
+			if(get_peripheral<ddf::pirate::cashier_laser_controller::switch_1>(x)) continue;
+			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_1>(x)) continue;
+			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_2>(x)) continue;
+			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_3>(x)) continue;
+			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_4>(x)) continue;
+			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_5>(x)) continue;
+			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_6>(x)) continue;
+			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_7>(x)) continue;
+			if(get_peripheral<ddf::pirate::rex_flipper_controller::rfid_reader>(x)) continue;
+			if(get_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::debouncer>(x)) continue;
+			if(get_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::photosensor>(x)) continue;
+			if(get_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::knock_sensor>(x)) continue;
+			if(get_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::potentiometer>(x)) continue;
+			if(get_peripheral<ddf::pirate::entrance_hanger_controller::debouncer_1>(x)) continue;
+			if(get_peripheral<ddf::pirate::entrance_hanger_controller::magnetic_sensor>(x)) continue;
+			if(get_peripheral<ddf::pirate::entrance_hanger_controller::debouncer_2>(x)) continue;
+			if(get_peripheral<ddf::magician::cupboard_controller::debouncer>(x)) continue;
+			if(get_peripheral<ddf::magician::cupboard_controller::magnetic_sensor>(x)) continue;
+			if(get_peripheral<ddf::magician::design_board_controller::linear_magnetic_sensor_1>(x)) continue;
+			if(get_peripheral<ddf::magician::design_board_controller::linear_magnetic_sensor_2>(x)) continue;
+			if(get_peripheral<ddf::magician::design_board_controller::linear_magnetic_sensor_3>(x)) continue;
+			if(get_peripheral<ddf::magician::futuristic_safe_controller::debouncer>(x)) continue;
+			if(get_peripheral<ddf::magician::futuristic_safe_controller::rfid_reader>(x)) continue;
+//			if(get_peripheral<ddf::magician::futuristic_safe_controller::pin_pad>(x)) continue;
+			if(get_peripheral<ddf::magician::entrance_controller::debouncer>(x)) continue;
+			if(get_peripheral<ddf::magician::entrance_controller::magnetic_sensor>(x)) continue;
+//			if(get_peripheral<ddf::villa::safe_controller::pin_pad>(x)) continue;
+			if(get_peripheral<ddf::villa::safe_controller::debouncer_1>(x)) continue;
+			if(get_peripheral<ddf::villa::safe_controller::debouncer_2>(x)) continue;
+			if(get_peripheral<ddf::villa::desk_controller::debouncer_3>(x)) continue;
+			if(get_peripheral<ddf::villa::desk_controller::debouncer_4>(x)) continue;
+			if(get_peripheral<ddf::villa::control_room_controller::switch_1>(x)) continue;
+			if(get_peripheral<ddf::villa::control_room_controller::rfid>(x)) continue;
+			if(get_peripheral<ddf::villa::control_room_controller::debouncer_1>(x)) continue;
+			if(get_peripheral<ddf::villa::entrance_controller::debouncer>(x)) continue;
+			if(get_peripheral<ddf::villa::entrance_controller::magnetic_sensor>(x)) continue;
+//			if(get_peripheral<ddf::junkyard::secret_box_controller_1::button_grid>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_1>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_2>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_3>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_4>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_5>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_6>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_7>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_1>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_2>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_3>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_4>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_5>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_6>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_7>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_8>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_9>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_10>(x)) continue;
+			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_12>(x)) continue;
+//			if(get_peripheral<ddf::junkyard::secret_box_controller_2::spare_in1>(x)) continue;
+//			if(get_peripheral<ddf::junkyard::secret_box_controller_2::spare_in2>(x)) continue;
+			if(get_peripheral<ddf::junkyard::entrance_controller::debouncer>(x)) continue;
+			if(get_peripheral<ddf::junkyard::entrance_controller::magnetic_sensor>(x)) continue;
+			std::cout << "\e[31;01m[NOK]\e[0m No such peripheral" << std::endl;
+		}
+
+		else if(x == "set")
+		{
+			std::cin >> x;
+
+			if(set_peripheral<ddf::pirate::map_controller::led_strip>(x)) continue;
+			if(set_peripheral<ddf::pirate::stone_chest_controller::magnetic_lock_1>(x)) continue;
+			if(set_peripheral<ddf::pirate::stone_chest_controller::magnetic_lock_2>(x)) continue;
+			if(set_peripheral<ddf::pirate::stone_chest_controller::led_strip>(x)) continue;
+			if(set_peripheral<ddf::pirate::cashier_laser_controller::laser>(x)) continue;
+//			if(set_peripheral<ddf::pirate::cashier_laser_controller::lcd>(x)) continue;
+			if(set_peripheral<ddf::pirate::cashier_laser_controller::cash_box>(x)) continue;
+			if(set_peripheral<ddf::pirate::cashier_laser_controller::led_strip>(x)) continue;
+			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_1>(x)) continue;
+			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_2>(x)) continue;
+			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_3>(x)) continue;
+			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_4>(x)) continue;
+			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_5>(x)) continue;
+			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_6>(x)) continue;
+			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_7>(x)) continue;
+			if(set_peripheral<ddf::pirate::rex_flipper_controller::magnetic_lock>(x)) continue;
+//			if(set_peripheral<ddf::pirate::rex_flipper_controller::led>(x)) continue;
+			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1>(x)) continue;
+			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_2>(x)) continue;
+			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_3>(x)) continue;
+			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_1>(x)) continue;
+			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_2>(x)) continue;
+			if(set_peripheral<ddf::pirate::entrance_hanger_controller::led>(x)) continue;
+			if(set_peripheral<ddf::magician::cupboard_controller::magnetic_lock>(x)) continue;
+			if(set_peripheral<ddf::magician::cupboard_controller::led_strip>(x)) continue;
+			if(set_peripheral<ddf::magician::design_board_controller::magnetic_lock>(x)) continue;
+			if(set_peripheral<ddf::magician::futuristic_safe_controller::magnetic_lock>(x)) continue;
+//			if(get_peripheral<ddf::magician::futuristic_safe_controller::addressable_led_strip>(x)) continue;
+			if(set_peripheral<ddf::magician::entrance_controller::led>(x)) continue;
+			if(set_peripheral<ddf::villa::safe_controller::magnetic_lock>(x)) continue;
+			if(set_peripheral<ddf::villa::control_room_controller::magnetic_lock>(x)) continue;
+			if(set_peripheral<ddf::villa::control_room_controller::video_eject>(x)) continue;
+			if(set_peripheral<ddf::villa::entrance_controller::led>(x)) continue;
+			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_1>(x)) continue;
+			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_2>(x)) continue;
+			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_3>(x)) continue;
+			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_4>(x)) continue;
+//			if(get_peripheral<ddf::junkyard::secret_box_controller_1::addressable_led>(x)) continue;
+			if(set_peripheral<ddf::junkyard::secret_box_controller_2::light_controller>(x)) continue;
+			if(set_peripheral<ddf::junkyard::secret_box_controller_2::magnetic_lock_1>(x)) continue;
+			if(set_peripheral<ddf::junkyard::secret_box_controller_2::magnetic_lock_2>(x)) continue;
+			if(set_peripheral<ddf::junkyard::secret_box_controller_2::magnetic_lock_3>(x)) continue;
+			if(set_peripheral<ddf::junkyard::secret_box_controller_2::magnetic_lock_4>(x)) continue;
+//			if(set_peripheral<ddf::junkyard::secret_box_controller_2::spare_out1>(x)) continue;
+//			if(set_peripheral<ddf::junkyard::secret_box_controller_2::spare_out2>(x)) continue;
+			if(set_peripheral<ddf::junkyard::entrance_controller::led>(x)) continue;
+
+
+			std::cout << "\e[31;01m[NOK]\e[0m No such peripheral" << std::endl;
+		}
+		else if(x == "show")
+		{
+			std::cin >> x;
+			if(x == "devices")
+			{
+				for(auto i : devstat::devices())
+				{
+					std::string sstate;
+					const uint8_t state = i.second->get_state();
+
+					if(state == 0)
+						sstate = "\e[30;01m(gone)\e[0m";
+					else if(state < 96)
+						sstate  = "\e[31;01m(poor)\e[0m";
+					else if(state < 192)
+						sstate = "\e[33;01m(moderate)\e[0m";
+					else
+						sstate = "\e[32;01m(good)\e[0m";
+
+					
+					std::cout << std::hex << i.second->serial << " " << (std::string)i.second->get_ip() << " " << sstate;
+					if(state !=  0)
+					{
+						std::cout << " " << i.second->get_app_name() << " " <<
+							(i.second->get_app_state()?"(\e[32mrunning\e[0m)":"(\e[31mnot running\e[0m)");
+
+					}
+
+					std::cout << std::endl;
+				}
+				std::cout << "\e[32;01m[OK]\e[0m" << std::endl;
+			}
+			else
+				std::cout << "\e[31;01m[NOK]\e[0m No such thing to show" << std::endl;
+		}
+	}
+
+	ddf::pirate::uninit();
+	ddf::magician::uninit();
+	ddf::villa::uninit();
+	ddf::junkyard::uninit();
+
+
+	journal::uninit();
+	return 0;
+}
+

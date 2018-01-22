@@ -841,90 +841,64 @@ namespace ddf
 			{
 				struct chord_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_1_content::chord";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
 				};
 				typedef wic::audio_effect<chord_config> chord;
-				struct careful_config
-				{
-					constexpr static const char *name = "ddf::pirate::room_1_content::careful";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
-					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x20;
-				};
-				typedef wic::audio_speech<careful_config> careful;
 				struct event_1_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_1_content::event_1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_2.wav";
+
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_1_content::event_2";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_InGame_Joe_Track2.wav";
+
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x90;
+
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_1_content::event_3";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Joe_verzerrt.wav";
+
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0xa0;
+
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct failstate_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_1_content::failstate";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Failstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x60;
+
+					static const uint32_t cfg_member_id = 0x20;
 				};
 				typedef wic::audio_speech<failstate_config> failstate;
-				struct gmhints_config
-				{
-					constexpr static const char *name = "ddf::pirate::room_1_content::gmhints";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
-					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x50;
-				};
-				typedef wic::audio_speech<gmhints_config> gmhints;
-				struct rules_config
-				{
-					constexpr static const char *name = "ddf::pirate::room_1_content::rules";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
-					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x30;
-				};
-				typedef wic::audio_speech<rules_config> rules;
-				struct techdiff_config
-				{
-					constexpr static const char *name = "ddf::pirate::room_1_content::techdiff";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
-					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x40;
-				};
-				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct winstate_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_1_content::winstate";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Winstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<winstate_config> winstate;
 
@@ -942,90 +916,64 @@ namespace ddf
 			{
 				struct chord_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_2_content::chord";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
 				};
 				typedef wic::audio_effect<chord_config> chord;
-				struct careful_config
-				{
-					constexpr static const char *name = "ddf::pirate::room_2_content::careful";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
-					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x20;
-				};
-				typedef wic::audio_speech<careful_config> careful;
 				struct event_1_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_2_content::event_1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_2.wav";
+
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_2_content::event_2";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_InGame_Joe_Track2.wav";
+
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x90;
+
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_2_content::event_3";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Joe_verzerrt.wav";
+
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0xa0;
+
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct failstate_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_2_content::failstate";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Failstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x60;
+
+					static const uint32_t cfg_member_id = 0x20;
 				};
 				typedef wic::audio_speech<failstate_config> failstate;
-				struct gmhints_config
-				{
-					constexpr static const char *name = "ddf::pirate::room_2_content::gmhints";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
-					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x50;
-				};
-				typedef wic::audio_speech<gmhints_config> gmhints;
-				struct rules_config
-				{
-					constexpr static const char *name = "ddf::pirate::room_2_content::rules";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
-					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x30;
-				};
-				typedef wic::audio_speech<rules_config> rules;
-				struct techdiff_config
-				{
-					constexpr static const char *name = "ddf::pirate::room_2_content::techdiff";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
-					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x40;
-				};
-				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct winstate_config
 				{
-					constexpr static const char *name = "ddf::pirate::room_2_content::winstate";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Winstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<winstate_config> winstate;
 
@@ -2715,115 +2663,93 @@ namespace ddf
 			{
 				struct applause_config
 				{
-					constexpr static const char *name = "ddf::magician::room_1_content::applause";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/EscapeRoomAtmos/DreiFFF_Escape_Applaus.wav";
 				};
 				typedef wic::audio_effect<applause_config> applause;
 				struct chord_config
 				{
-					constexpr static const char *name = "ddf::magician::room_1_content::chord";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
 				};
 				typedef wic::audio_effect<chord_config> chord;
-				struct careful_config
-				{
-					constexpr static const char *name = "ddf::magician::room_1_content::careful";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
-					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x20;
-				};
-				typedef wic::audio_speech<careful_config> careful;
-				struct gmhints_config
-				{
-					constexpr static const char *name = "ddf::magician::room_1_content::gmhints";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
-					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x50;
-				};
-				typedef wic::audio_speech<gmhints_config> gmhints;
-				struct rules_config
-				{
-					constexpr static const char *name = "ddf::magician::room_1_content::rules";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
-					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x30;
-				};
-				typedef wic::audio_speech<rules_config> rules;
-				struct techdiff_config
-				{
-					constexpr static const char *name = "ddf::magician::room_1_content::techdiff";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
-					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x40;
-				};
-				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct winstate_config
 				{
-					constexpr static const char *name = "ddf::magician::room_1_content::winstate";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusionen_Failstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0xd0;
+
+					static const uint32_t cfg_member_id = 0x90;
 				};
 				typedef wic::audio_speech<winstate_config> winstate;
 				struct event_1_config
 				{
-					constexpr static const char *name = "ddf::magician::room_1_content::event_1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_0030.wav";
+
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
 				{
-					constexpr static const char *name = "ddf::magician::room_1_content::event_2";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_1000.wav";
+
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
 				{
-					constexpr static const char *name = "ddf::magician::room_1_content::event_3";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_2000.wav";
+
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x90;
+
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
 				{
-					constexpr static const char *name = "ddf::magician::room_1_content::event_4";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_3000.wav";
+
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0xa0;
+
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 				struct event_5_config
 				{
-					constexpr static const char *name = "ddf::magician::room_1_content::event_5";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_4000.wav";
+
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0xb0;
+
+					static const uint32_t cfg_member_id = 0x70;
 				};
 				typedef wic::audio_speech<event_5_config> event_5;
 				struct event_6_config
 				{
-					constexpr static const char *name = "ddf::magician::room_1_content::event_6";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_5500.wav";
+
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0xc0;
+
+					static const uint32_t cfg_member_id = 0x80;
 				};
 				typedef wic::audio_speech<event_6_config> event_6;
 
@@ -2841,115 +2767,93 @@ namespace ddf
 			{
 				struct applause_config
 				{
-					constexpr static const char *name = "ddf::magician::room_2_content::applause";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/EscapeRoomAtmos/DreiFFF_Escape_Applaus.wav";
 				};
 				typedef wic::audio_effect<applause_config> applause;
 				struct chord_config
 				{
-					constexpr static const char *name = "ddf::magician::room_2_content::chord";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
 				};
 				typedef wic::audio_effect<chord_config> chord;
-				struct careful_config
-				{
-					constexpr static const char *name = "ddf::magician::room_2_content::careful";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
-					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x20;
-				};
-				typedef wic::audio_speech<careful_config> careful;
-				struct gmhints_config
-				{
-					constexpr static const char *name = "ddf::magician::room_2_content::gmhints";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
-					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x50;
-				};
-				typedef wic::audio_speech<gmhints_config> gmhints;
-				struct rules_config
-				{
-					constexpr static const char *name = "ddf::magician::room_2_content::rules";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
-					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x30;
-				};
-				typedef wic::audio_speech<rules_config> rules;
-				struct techdiff_config
-				{
-					constexpr static const char *name = "ddf::magician::room_2_content::techdiff";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
-					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x40;
-				};
-				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct winstate_config
 				{
-					constexpr static const char *name = "ddf::magician::room_2_content::winstate";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusionen_Failstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0xd0;
+
+					static const uint32_t cfg_member_id = 0x90;
 				};
 				typedef wic::audio_speech<winstate_config> winstate;
 				struct event_1_config
 				{
-					constexpr static const char *name = "ddf::magician::room_2_content::event_1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_0030.wav";
+
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
 				{
-					constexpr static const char *name = "ddf::magician::room_2_content::event_2";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_1000.wav";
+
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
 				{
-					constexpr static const char *name = "ddf::magician::room_2_content::event_3";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_2000.wav";
+
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x90;
+
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
 				{
-					constexpr static const char *name = "ddf::magician::room_2_content::event_4";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_3000.wav";
+
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0xa0;
+
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 				struct event_5_config
 				{
-					constexpr static const char *name = "ddf::magician::room_2_content::event_5";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_4000.wav";
+
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0xb0;
+
+					static const uint32_t cfg_member_id = 0x70;
 				};
 				typedef wic::audio_speech<event_5_config> event_5;
 				struct event_6_config
 				{
-					constexpr static const char *name = "ddf::magician::room_2_content::event_6";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_5500.wav";
+
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0xc0;
+
+					static const uint32_t cfg_member_id = 0x80;
 				};
 				typedef wic::audio_speech<event_6_config> event_6;
 
@@ -5303,90 +5207,64 @@ namespace ddf
 			{
 				struct chord_config
 				{
-					constexpr static const char *name = "ddf::villa::room_1_content::chord";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
 				};
 				typedef wic::audio_effect<chord_config> chord;
-				struct careful_config
-				{
-					constexpr static const char *name = "ddf::villa::room_1_content::careful";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
-					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x20;
-				};
-				typedef wic::audio_speech<careful_config> careful;
-				struct gmhints_config
-				{
-					constexpr static const char *name = "ddf::villa::room_1_content::gmhints";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
-					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x50;
-				};
-				typedef wic::audio_speech<gmhints_config> gmhints;
-				struct rules_config
-				{
-					constexpr static const char *name = "ddf::villa::room_1_content::rules";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
-					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x30;
-				};
-				typedef wic::audio_speech<rules_config> rules;
-				struct techdiff_config
-				{
-					constexpr static const char *name = "ddf::villa::room_1_content::techdiff";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
-					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x40;
-				};
-				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct event_1_config
 				{
-					constexpr static const char *name = "ddf::villa::room_1_content::event_1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk1.wav";
+
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x60;
+
+					static const uint32_t cfg_member_id = 0x20;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
 				{
-					constexpr static const char *name = "ddf::villa::room_1_content::event_2";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk2.wav";
+
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
 				{
-					constexpr static const char *name = "ddf::villa::room_1_content::event_3";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk3.wav";
+
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
 				{
-					constexpr static const char *name = "ddf::villa::room_1_content::event_4";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Winstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x90;
+
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 				struct event_5_config
 				{
-					constexpr static const char *name = "ddf::villa::room_1_content::event_5";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Failstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0xa0;
+
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<event_5_config> event_5;
 
@@ -5404,90 +5282,64 @@ namespace ddf
 			{
 				struct chord_config
 				{
-					constexpr static const char *name = "ddf::villa::room_2_content::chord";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
 				};
 				typedef wic::audio_effect<chord_config> chord;
-				struct careful_config
-				{
-					constexpr static const char *name = "ddf::villa::room_2_content::careful";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
-					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x20;
-				};
-				typedef wic::audio_speech<careful_config> careful;
-				struct gmhints_config
-				{
-					constexpr static const char *name = "ddf::villa::room_2_content::gmhints";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
-					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x50;
-				};
-				typedef wic::audio_speech<gmhints_config> gmhints;
-				struct rules_config
-				{
-					constexpr static const char *name = "ddf::villa::room_2_content::rules";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
-					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x30;
-				};
-				typedef wic::audio_speech<rules_config> rules;
-				struct techdiff_config
-				{
-					constexpr static const char *name = "ddf::villa::room_2_content::techdiff";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
-					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x40;
-				};
-				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct event_1_config
 				{
-					constexpr static const char *name = "ddf::villa::room_2_content::event_1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk1.wav";
+
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x60;
+
+					static const uint32_t cfg_member_id = 0x20;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
 				{
-					constexpr static const char *name = "ddf::villa::room_2_content::event_2";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk2.wav";
+
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x70;
+
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
 				{
-					constexpr static const char *name = "ddf::villa::room_2_content::event_3";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk3.wav";
+
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x80;
+
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
 				{
-					constexpr static const char *name = "ddf::villa::room_2_content::event_4";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Winstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x90;
+
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 				struct event_5_config
 				{
-					constexpr static const char *name = "ddf::villa::room_2_content::event_5";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Failstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0xa0;
+
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<event_5_config> event_5;
 
@@ -7431,144 +7283,116 @@ namespace ddf
 			{
 				struct chord_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::chord";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
 				};
 				typedef wic::audio_effect<chord_config> chord;
 				struct piano_a1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::piano_a1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/a1.wav";
 				};
 				typedef wic::audio_effect<piano_a1_config> piano_a1;
 				struct piano_b1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::piano_b1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/b1.wav";
 				};
 				typedef wic::audio_effect<piano_b1_config> piano_b1;
 				struct piano_c1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::piano_c1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/c1.wav";
 				};
 				typedef wic::audio_effect<piano_c1_config> piano_c1;
 				struct piano_c2_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::piano_c2";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/c2.wav";
 				};
 				typedef wic::audio_effect<piano_c2_config> piano_c2;
 				struct piano_d1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::piano_d1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/d1.wav";
 				};
 				typedef wic::audio_effect<piano_d1_config> piano_d1;
 				struct piano_d2_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::piano_d2";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/d2.wav";
 				};
 				typedef wic::audio_effect<piano_d2_config> piano_d2;
 				struct piano_e1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::piano_e1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/e1.wav";
 				};
 				typedef wic::audio_effect<piano_e1_config> piano_e1;
 				struct piano_f1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::piano_f1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/f1.wav";
 				};
 				typedef wic::audio_effect<piano_f1_config> piano_f1;
 				struct piano_g1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::piano_g1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/g1.wav";
 				};
 				typedef wic::audio_effect<piano_g1_config> piano_g1;
-				struct careful_config
-				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::careful";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
-					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x20;
-				};
-				typedef wic::audio_speech<careful_config> careful;
-				struct gmhints_config
-				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::gmhints";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
-					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x50;
-				};
-				typedef wic::audio_speech<gmhints_config> gmhints;
-				struct rules_config
-				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::rules";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
-					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x30;
-				};
-				typedef wic::audio_speech<rules_config> rules;
-				struct techdiff_config
-				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::techdiff";
-					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
-					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x40;
-				};
-				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct event_1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::event_1";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "DDF_EscapeRoom_Schrottplatz_Event_1.wav";
+
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0xf0;
+
+					static const uint32_t cfg_member_id = 0xb0;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::event_2";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "DDF_EscapeRoom_Schrottplatz_Event_2.wav";
+
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x100;
+
+					static const uint32_t cfg_member_id = 0xc0;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::event_3";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "DDF_EscapeRoom_Schrottplatz_Intro_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x110;
+
+					static const uint32_t cfg_member_id = 0xd0;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_1_content::event_4";
 					typedef room_1 cfg_audio;
+
 					constexpr static const char *cfg_source = "DDF_EscapeRoom_Schrottplatz_Winstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x120;
+
+					static const uint32_t cfg_member_id = 0xe0;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 
@@ -7586,144 +7410,116 @@ namespace ddf
 			{
 				struct chord_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::chord";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/chord.wav";
 				};
 				typedef wic::audio_effect<chord_config> chord;
 				struct piano_a1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::piano_a1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/a1.wav";
 				};
 				typedef wic::audio_effect<piano_a1_config> piano_a1;
 				struct piano_b1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::piano_b1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/b1.wav";
 				};
 				typedef wic::audio_effect<piano_b1_config> piano_b1;
 				struct piano_c1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::piano_c1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/c1.wav";
 				};
 				typedef wic::audio_effect<piano_c1_config> piano_c1;
 				struct piano_c2_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::piano_c2";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/c2.wav";
 				};
 				typedef wic::audio_effect<piano_c2_config> piano_c2;
 				struct piano_d1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::piano_d1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/d1.wav";
 				};
 				typedef wic::audio_effect<piano_d1_config> piano_d1;
 				struct piano_d2_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::piano_d2";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/d2.wav";
 				};
 				typedef wic::audio_effect<piano_d2_config> piano_d2;
 				struct piano_e1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::piano_e1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/e1.wav";
 				};
 				typedef wic::audio_effect<piano_e1_config> piano_e1;
 				struct piano_f1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::piano_f1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/f1.wav";
 				};
 				typedef wic::audio_effect<piano_f1_config> piano_f1;
 				struct piano_g1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::piano_g1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/piano/g1.wav";
 				};
 				typedef wic::audio_effect<piano_g1_config> piano_g1;
-				struct careful_config
-				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::careful";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
-					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x20;
-				};
-				typedef wic::audio_speech<careful_config> careful;
-				struct gmhints_config
-				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::gmhints";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
-					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x50;
-				};
-				typedef wic::audio_speech<gmhints_config> gmhints;
-				struct rules_config
-				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::rules";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
-					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x30;
-				};
-				typedef wic::audio_speech<rules_config> rules;
-				struct techdiff_config
-				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::techdiff";
-					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
-					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x40;
-				};
-				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct event_1_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::event_1";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "DDF_EscapeRoom_Schrottplatz_Event_1.wav";
+
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0xf0;
+
+					static const uint32_t cfg_member_id = 0xb0;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::event_2";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "DDF_EscapeRoom_Schrottplatz_Event_2.wav";
+
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x100;
+
+					static const uint32_t cfg_member_id = 0xc0;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::event_3";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "DDF_EscapeRoom_Schrottplatz_Intro_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x110;
+
+					static const uint32_t cfg_member_id = 0xd0;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
 				{
-					constexpr static const char *name = "ddf::junkyard::room_2_content::event_4";
 					typedef room_2 cfg_audio;
+
 					constexpr static const char *cfg_source = "DDF_EscapeRoom_Schrottplatz_Winstate_Musik.wav";
+
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x120;
+
+					static const uint32_t cfg_member_id = 0xe0;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 
@@ -9551,8 +9347,6 @@ static void init()
 
 	ddf::pirate::room_1::init();
 	ddf::pirate::room_1_content::chord::init();
-	ddf::pirate::room_1_content::careful::init();
-
 	ddf::pirate::room_1_content::event_1::init();
 
 	ddf::pirate::room_1_content::event_2::init();
@@ -9561,19 +9355,11 @@ static void init()
 
 	ddf::pirate::room_1_content::failstate::init();
 
-	ddf::pirate::room_1_content::gmhints::init();
-
-	ddf::pirate::room_1_content::rules::init();
-
-	ddf::pirate::room_1_content::techdiff::init();
-
 	ddf::pirate::room_1_content::winstate::init();
 
 
 	ddf::pirate::room_2::init();
 	ddf::pirate::room_2_content::chord::init();
-	ddf::pirate::room_2_content::careful::init();
-
 	ddf::pirate::room_2_content::event_1::init();
 
 	ddf::pirate::room_2_content::event_2::init();
@@ -9581,12 +9367,6 @@ static void init()
 	ddf::pirate::room_2_content::event_3::init();
 
 	ddf::pirate::room_2_content::failstate::init();
-
-	ddf::pirate::room_2_content::gmhints::init();
-
-	ddf::pirate::room_2_content::rules::init();
-
-	ddf::pirate::room_2_content::techdiff::init();
 
 	ddf::pirate::room_2_content::winstate::init();
 
@@ -10253,14 +10033,6 @@ static void init()
 	ddf::magician::room_1::init();
 	ddf::magician::room_1_content::applause::init();
 	ddf::magician::room_1_content::chord::init();
-	ddf::magician::room_1_content::careful::init();
-
-	ddf::magician::room_1_content::gmhints::init();
-
-	ddf::magician::room_1_content::rules::init();
-
-	ddf::magician::room_1_content::techdiff::init();
-
 	ddf::magician::room_1_content::winstate::init();
 
 	ddf::magician::room_1_content::event_1::init();
@@ -10279,14 +10051,6 @@ static void init()
 	ddf::magician::room_2::init();
 	ddf::magician::room_2_content::applause::init();
 	ddf::magician::room_2_content::chord::init();
-	ddf::magician::room_2_content::careful::init();
-
-	ddf::magician::room_2_content::gmhints::init();
-
-	ddf::magician::room_2_content::rules::init();
-
-	ddf::magician::room_2_content::techdiff::init();
-
 	ddf::magician::room_2_content::winstate::init();
 
 	ddf::magician::room_2_content::event_1::init();
@@ -11056,14 +10820,6 @@ static void init()
 
 	ddf::villa::room_1::init();
 	ddf::villa::room_1_content::chord::init();
-	ddf::villa::room_1_content::careful::init();
-
-	ddf::villa::room_1_content::gmhints::init();
-
-	ddf::villa::room_1_content::rules::init();
-
-	ddf::villa::room_1_content::techdiff::init();
-
 	ddf::villa::room_1_content::event_1::init();
 
 	ddf::villa::room_1_content::event_2::init();
@@ -11077,14 +10833,6 @@ static void init()
 
 	ddf::villa::room_2::init();
 	ddf::villa::room_2_content::chord::init();
-	ddf::villa::room_2_content::careful::init();
-
-	ddf::villa::room_2_content::gmhints::init();
-
-	ddf::villa::room_2_content::rules::init();
-
-	ddf::villa::room_2_content::techdiff::init();
-
 	ddf::villa::room_2_content::event_1::init();
 
 	ddf::villa::room_2_content::event_2::init();
@@ -11745,14 +11493,6 @@ static void init()
 	ddf::junkyard::room_1_content::piano_e1::init();
 	ddf::junkyard::room_1_content::piano_f1::init();
 	ddf::junkyard::room_1_content::piano_g1::init();
-	ddf::junkyard::room_1_content::careful::init();
-
-	ddf::junkyard::room_1_content::gmhints::init();
-
-	ddf::junkyard::room_1_content::rules::init();
-
-	ddf::junkyard::room_1_content::techdiff::init();
-
 	ddf::junkyard::room_1_content::event_1::init();
 
 	ddf::junkyard::room_1_content::event_2::init();
@@ -11773,14 +11513,6 @@ static void init()
 	ddf::junkyard::room_2_content::piano_e1::init();
 	ddf::junkyard::room_2_content::piano_f1::init();
 	ddf::junkyard::room_2_content::piano_g1::init();
-	ddf::junkyard::room_2_content::careful::init();
-
-	ddf::junkyard::room_2_content::gmhints::init();
-
-	ddf::junkyard::room_2_content::rules::init();
-
-	ddf::junkyard::room_2_content::techdiff::init();
-
 	ddf::junkyard::room_2_content::event_1::init();
 
 	ddf::junkyard::room_2_content::event_2::init();
@@ -11965,25 +11697,17 @@ static void uninit()
 	ddf::pirate::wheel_last_pos::uninit();
 
 	ddf::pirate::room_1_content::chord::uninit();
-	ddf::pirate::room_1_content::careful::uninit();
 	ddf::pirate::room_1_content::event_1::uninit();
 	ddf::pirate::room_1_content::event_2::uninit();
 	ddf::pirate::room_1_content::event_3::uninit();
 	ddf::pirate::room_1_content::failstate::uninit();
-	ddf::pirate::room_1_content::gmhints::uninit();
-	ddf::pirate::room_1_content::rules::uninit();
-	ddf::pirate::room_1_content::techdiff::uninit();
 	ddf::pirate::room_1_content::winstate::uninit();
 	ddf::pirate::room_1::uninit();
 	ddf::pirate::room_2_content::chord::uninit();
-	ddf::pirate::room_2_content::careful::uninit();
 	ddf::pirate::room_2_content::event_1::uninit();
 	ddf::pirate::room_2_content::event_2::uninit();
 	ddf::pirate::room_2_content::event_3::uninit();
 	ddf::pirate::room_2_content::failstate::uninit();
-	ddf::pirate::room_2_content::gmhints::uninit();
-	ddf::pirate::room_2_content::rules::uninit();
-	ddf::pirate::room_2_content::techdiff::uninit();
 	ddf::pirate::room_2_content::winstate::uninit();
 	ddf::pirate::room_2::uninit();
 
@@ -12088,10 +11812,6 @@ static void uninit()
 
 	ddf::magician::room_1_content::applause::uninit();
 	ddf::magician::room_1_content::chord::uninit();
-	ddf::magician::room_1_content::careful::uninit();
-	ddf::magician::room_1_content::gmhints::uninit();
-	ddf::magician::room_1_content::rules::uninit();
-	ddf::magician::room_1_content::techdiff::uninit();
 	ddf::magician::room_1_content::winstate::uninit();
 	ddf::magician::room_1_content::event_1::uninit();
 	ddf::magician::room_1_content::event_2::uninit();
@@ -12102,10 +11822,6 @@ static void uninit()
 	ddf::magician::room_1::uninit();
 	ddf::magician::room_2_content::applause::uninit();
 	ddf::magician::room_2_content::chord::uninit();
-	ddf::magician::room_2_content::careful::uninit();
-	ddf::magician::room_2_content::gmhints::uninit();
-	ddf::magician::room_2_content::rules::uninit();
-	ddf::magician::room_2_content::techdiff::uninit();
 	ddf::magician::room_2_content::winstate::uninit();
 	ddf::magician::room_2_content::event_1::uninit();
 	ddf::magician::room_2_content::event_2::uninit();
@@ -12229,10 +11945,6 @@ static void uninit()
 	ddf::villa::timedevent_pc_3::uninit();
 
 	ddf::villa::room_1_content::chord::uninit();
-	ddf::villa::room_1_content::careful::uninit();
-	ddf::villa::room_1_content::gmhints::uninit();
-	ddf::villa::room_1_content::rules::uninit();
-	ddf::villa::room_1_content::techdiff::uninit();
 	ddf::villa::room_1_content::event_1::uninit();
 	ddf::villa::room_1_content::event_2::uninit();
 	ddf::villa::room_1_content::event_3::uninit();
@@ -12240,10 +11952,6 @@ static void uninit()
 	ddf::villa::room_1_content::event_5::uninit();
 	ddf::villa::room_1::uninit();
 	ddf::villa::room_2_content::chord::uninit();
-	ddf::villa::room_2_content::careful::uninit();
-	ddf::villa::room_2_content::gmhints::uninit();
-	ddf::villa::room_2_content::rules::uninit();
-	ddf::villa::room_2_content::techdiff::uninit();
 	ddf::villa::room_2_content::event_1::uninit();
 	ddf::villa::room_2_content::event_2::uninit();
 	ddf::villa::room_2_content::event_3::uninit();
@@ -12359,10 +12067,6 @@ static void uninit()
 	ddf::junkyard::room_1_content::piano_e1::uninit();
 	ddf::junkyard::room_1_content::piano_f1::uninit();
 	ddf::junkyard::room_1_content::piano_g1::uninit();
-	ddf::junkyard::room_1_content::careful::uninit();
-	ddf::junkyard::room_1_content::gmhints::uninit();
-	ddf::junkyard::room_1_content::rules::uninit();
-	ddf::junkyard::room_1_content::techdiff::uninit();
 	ddf::junkyard::room_1_content::event_1::uninit();
 	ddf::junkyard::room_1_content::event_2::uninit();
 	ddf::junkyard::room_1_content::event_3::uninit();
@@ -12378,10 +12082,6 @@ static void uninit()
 	ddf::junkyard::room_2_content::piano_e1::uninit();
 	ddf::junkyard::room_2_content::piano_f1::uninit();
 	ddf::junkyard::room_2_content::piano_g1::uninit();
-	ddf::junkyard::room_2_content::careful::uninit();
-	ddf::junkyard::room_2_content::gmhints::uninit();
-	ddf::junkyard::room_2_content::rules::uninit();
-	ddf::junkyard::room_2_content::techdiff::uninit();
 	ddf::junkyard::room_2_content::event_1::uninit();
 	ddf::junkyard::room_2_content::event_2::uninit();
 	ddf::junkyard::room_2_content::event_3::uninit();
