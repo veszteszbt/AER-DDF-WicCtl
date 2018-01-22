@@ -42,8 +42,8 @@ public:
 
 	static void init(wicp::role_type &role)
 	{
-		prop_value::init(role);
-		prop_running::init(role);
+		prop_value::init(role,0);
+		prop_running::init(role,0);
 	}
 
 	static void uninit()

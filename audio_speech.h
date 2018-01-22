@@ -74,8 +74,8 @@ namespace wic
 			property::uninit();
 		}
 
-		static void remote_add(net::ipv4_address ip)
-		{ property::remote_add(ip); }
+		static void remote_add(wicp::role_type &role)
+		{ property::remote_add(role); }
 
 		static void play()
 		{ property::value(true); }
