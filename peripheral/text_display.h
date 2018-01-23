@@ -24,6 +24,15 @@ namespace peripheral
 				
 			}
 
+			value_type(std::string x)
+			{
+				int i = 0;
+				for(; i < 32 && i < x.size(); ++i)
+					data[i] = x[i];
+				for(; i < 32; ++i)
+					data[i] = ' ';
+			}
+
 			value_type &operator=(const char *x)
 			{
 				for(int i = 0; i < 32; ++i)
