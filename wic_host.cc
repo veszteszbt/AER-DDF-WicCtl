@@ -844,7 +844,7 @@ namespace ddf
 			/// room_1
 			struct room_1_config
 			{
-                		static const uint8_t cfg_device = 0;
+                		static const uint8_t cfg_device = 2;
 				static const uint8_t cfg_channel = 7;
 			};
 			typedef wic::audio<room_1_config> room_1;
@@ -945,7 +945,7 @@ namespace ddf
 			/// room_2
 			struct room_2_config
 			{
-                		static const uint8_t cfg_device = 0;
+                		static const uint8_t cfg_device = 2;
 				static const uint8_t cfg_channel = 6;
 			};
 			typedef wic::audio<room_2_config> room_2;
@@ -1049,7 +1049,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::freezetimer1";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
 				static const uint32_t cfg_member_id = 0x150;
-				static const uint32_t cfg_interval  = 3000;
+				static const uint32_t cfg_interval  = 60000;
 			};
 			typedef typename wic::timer<freezetimer1_config> freezetimer1;
 
@@ -1059,7 +1059,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::freezetimer5";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
 				static const uint32_t cfg_member_id = 0x160;
-				static const uint32_t cfg_interval  = 15000;
+				static const uint32_t cfg_interval  = 300000;
 			};
 			typedef typename wic::timer<freezetimer5_config> freezetimer5;
 
@@ -1398,7 +1398,9 @@ namespace ddf
 				typedef typename pirate::entrance_hanger_controller::debouncer_2 game_end_button;
 				typedef typename pirate::game_end game_end;
 
-					return (true && (  chest_opening_sensor::value()  ));
+					return (true && (  
+	    	chest_opening_sensor::value() 
+	     ));
 				}
 				static void cfg_action()
 				{
@@ -1408,9 +1410,9 @@ namespace ddf
 				typedef typename pirate::game_end game_end;
 
 					(void)0; { 
-        chest::value(1);
-        game_end::value(1);
-     }
+	        chest::value(1);
+	        game_end::value(1);
+	     }
 				}
 			};
 			typedef wic::event<chest_opening_config> chest_opening;
@@ -1430,8 +1432,8 @@ namespace ddf
 				typedef typename pirate::gametimer timer;
 
 					return (true && ( 
-        button::value() && game_end::value() >= 1
-     ));
+            button::value() && game_end::value() >= 1
+         ));
 				}
 				static void cfg_action()
 				{
@@ -1442,10 +1444,10 @@ namespace ddf
 				typedef typename pirate::gametimer timer;
 
 					(void)0; { 
-        timer::stop();
-        winstate_room_1::play();
-        winstate_room_2::play();
-     }
+            timer::stop();
+            winstate_room_1::play();
+            winstate_room_2::play();
+         }
 				}
 			};
 			typedef wic::event<game_end_button_push_config> game_end_button_push;
@@ -1461,14 +1463,18 @@ namespace ddf
 									typedef typename pirate::game_end game_end;
 				typedef typename pirate::entrance_hanger_controller::led led;
 
-					return (true && (  game_end::value()  ));
+					return (true && (  
+            game_end::value() 
+         ));
 				}
 				static void cfg_action()
 				{
 									typedef typename pirate::game_end game_end;
 				typedef typename pirate::entrance_hanger_controller::led led;
 
-					(void)0; {  led::value(1); }
+					(void)0; {  
+            led::value(1);
+         }
 				}
 			};
 			typedef wic::event<game_ending_config> game_ending;
@@ -1494,22 +1500,22 @@ namespace ddf
 				typedef typename pirate::entrance_hanger_controller::magnetic_sensor entrance_door;
 
 					(void)0; { 
-        if(entrance_door::value())
-        {
-           if((gs::value() == 0) || (gs::value() == 2))
-           {
-              gs::value(1);
-           }
-           if(!gs::value())
-           {
-              game_end::value(0);
-           }
-        }
-        else if(gs::value() == 1)
-        {
-            gs::value(2);
-        }
-     }
+          if(entrance_door::value())
+          {
+             if((gs::value() == 0) || (gs::value() == 2))
+             {
+                gs::value(1);
+             }
+             if(!gs::value())
+             {
+                game_end::value(0);
+             }
+          }
+          else if(gs::value() == 1)
+          {
+              gs::value(2);
+          }
+       }
 				}
 			};
 			typedef wic::event<game_start_config> game_start;
@@ -1807,7 +1813,9 @@ namespace ddf
 				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::knock_sensor sensor;
 				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_2 door;
 
-					return (true && (  sensor::value()  ));
+					return (true && (  
+      sensor::value() 
+     ));
 				}
 				static void cfg_action()
 				{
@@ -1817,17 +1825,16 @@ namespace ddf
 				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_2 door;
 
 					(void)0; { 
-        timer::start();
-        timer::reset();
-        
-        count::value(count::value() + 1);
-        
-        if(count::value() >= 3)
-        {
-           door::value(0);
-           timer::stop();
-        }
-     }
+      timer::start();
+      timer::reset();
+      count::value(count::value() + 1);
+
+      if(count::value() >= 3)
+      {
+        door::value(0);
+        timer::stop();
+      }
+       }
 				}
 			};
 			typedef wic::event<knock_accumulate_config> knock_accumulate;
@@ -1854,7 +1861,7 @@ namespace ddf
         timer::stop();
         timer::reset();
         count::value(0);
-     }
+       }
 				}
 			};
 			typedef wic::event<knock_timeout_config> knock_timeout;
@@ -1880,16 +1887,16 @@ namespace ddf
 				typedef typename pirate::cashier_laser_controller::cash_box box;
 
 					(void)0; { 
-        const std::string v = code::value();
-        code::value("");
-        if(v == "8271")
-        {
-           box::value(0);
-           timer::stop();
-        }
-        else
-           box::value(1);
-     }
+            const std::string v = code::value();
+            code::value("");
+            if(v == "8271")
+            {
+               box::value(0);
+               timer::stop();
+            }
+            else
+               box::value(1);
+         }
 				}
 			};
 			typedef wic::event<knot_puzzle_config> knot_puzzle;
@@ -1905,7 +1912,9 @@ namespace ddf
 									typedef typename pirate::cashier_laser_controller::switch_1 _switch;
 				typedef typename pirate::cashier_laser_controller::laser laser;
 
-					return (true && (  _switch::value()  ));
+					return (true && (  
+            _switch::value() 
+         ));
 				}
 				static void cfg_action()
 				{
@@ -1913,8 +1922,8 @@ namespace ddf
 				typedef typename pirate::cashier_laser_controller::laser laser;
 
 					(void)0; { 
-        laser::value(0);
-     }
+            laser::value(0);
+         }
 				}
 			};
 			typedef wic::event<laser_turn_off_config> laser_turn_off;
@@ -1940,25 +1949,25 @@ namespace ddf
 				typedef typename pirate::cashier_laser_controller::pin_pad pin_pad;
 
 					(void)0; { 
-    	typename pin_pad::value_type v = pin_pad::value();
-   	if(!v.state)
-		return;
+            typename pin_pad::value_type v = pin_pad::value();
+       	    if(!v.state)
+        		return;
 
-        timer::reset();
-        timer::start();
-        const uint8_t k = v.key;
-        char c;
-        if(k < 9)
-        c = static_cast<char>(k+49);
-        else switch(k)
-        {
-           case 9 : c = '*'; break;
-           case 10: c = '0'; break;
-           case 11: c = '#'; break;
-           default: c = '?'; break;
-        }
-        code::value(code::value() + c);
-     }
+            timer::reset();
+            timer::start();
+            const uint8_t k = v.key;
+            char c;
+            if(k < 9)
+            c = static_cast<char>(k+49);
+            else switch(k)
+            {
+               case 9 : c = '*'; break;
+               case 10: c = '0'; break;
+               case 11: c = '#'; break;
+               default: c = '?'; break;
+            }
+            code::value(code::value() + c);
+         }
 				}
 			};
 			typedef wic::event<pin_code_accumulation_config> pin_code_accumulation;
@@ -1984,11 +1993,11 @@ namespace ddf
 				typedef typename pirate::cashier_laser_controller::cash_box box;
 
 					(void)0; { 
-        timer::stop();
-        timer::reset();
-        box::value(0);
-        code::value("");
-     }
+            timer::stop();
+            timer::reset();
+            box::value(0);
+            code::value("");
+         }
 				}
 			};
 			typedef wic::event<pin_timeout_config> pin_timeout;
@@ -2025,7 +2034,7 @@ namespace ddf
 				typedef typename pirate::rex_flipper_controller::rfid_reader rfid;
 				typedef typename pirate::rex_flipper_controller::led led;
 
-					(void)0; {   }
+					(void)0;
 				}
 			};
 			typedef wic::event<rex_table_config> rex_table;
@@ -2051,45 +2060,43 @@ namespace ddf
 				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::potentiometer wheel;
 
 					(void)0; { 
-    	double x;
-    	if(
-		(wheel_last_pos::value() > wheel::value()) &&
-		((wheel_last_pos::value() - wheel::value()) < 1000)
-	)
-	{
-		x = sqrt((double)star::value()*3);
-		x += (wheel_last_pos::value() - wheel::value())/31;
-		x*=x;
-		x/=3;
-		if(x > 65535)
-			x=65535;
+      	double x;
+      	if(
+  		    (wheel_last_pos::value() > wheel::value()) &&
+  		    ((wheel_last_pos::value() - wheel::value()) < 1000)
+  	       )
+  	       {
+        		x = sqrt((double)star::value()*3);
+        		x += (wheel_last_pos::value() - wheel::value())/31;
+        		x*=x;
+        		x/=3;
+        		if(x > 65535)
+        			x=65535;
 
-	}
-	else if(
-		(wheel_last_pos::value() < wheel::value()) &&
-		((wheel::value() - wheel_last_pos::value()) < 1000)
-	)
-	{
-		x = sqrt((double)star::value()*3);
-		x += (wheel_last_pos::value() - wheel::value())/31;
-		if(x < 0)
-			x = 0;
-		else 
-		{
-			x*=x;
-			x/=3;
-		}
-	}
-
-	else
-	{
-
-		wheel_last_pos::value(wheel::value());
-		return;
-	}
-	wheel_last_pos::value(wheel::value());
-        star::value((uint16_t)x);
-     }
+        	}
+        	else if(
+        		(wheel_last_pos::value() < wheel::value()) &&
+        		((wheel::value() - wheel_last_pos::value()) < 1000)
+        	)
+        	{
+        		x = sqrt((double)star::value()*3);
+        		x += (wheel_last_pos::value() - wheel::value())/31;
+        		if(x < 0)
+        			x = 0;
+        		else 
+        		{
+        			x*=x;
+        			x/=3;
+        		}
+        	}
+        	else
+        	{
+        		wheel_last_pos::value(wheel::value());
+        		return;
+        	}
+        	wheel_last_pos::value(wheel::value());
+          star::value((uint16_t)x);
+       }
 				}
 			};
 			typedef wic::event<rotation_update_config> rotation_update;
@@ -2106,7 +2113,10 @@ namespace ddf
 				typedef typename pirate::map_controller::magnetic_sensor_2 sensor_2;
 				typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
 
-					return (true && (  sensor_1::value() && sensor_2::value()  ));
+					return (true && (  
+        	sensor_1::value() && 
+        	sensor_2::value() 
+         ));
 				}
 				static void cfg_action()
 				{
@@ -2114,7 +2124,9 @@ namespace ddf
 				typedef typename pirate::map_controller::magnetic_sensor_2 sensor_2;
 				typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
 
-					(void)0; {  lock::value(0);  }
+					(void)0; {  
+        	lock::value(0); 
+         }
 				}
 			};
 			typedef wic::event<ship_matching_config> ship_matching;
@@ -2134,11 +2146,11 @@ namespace ddf
 				typedef typename pirate::stone_chest_controller::magnetic_lock_2 latticelock;
 
 					return (true && (  
-
-        stone_2::value() ||
-        stone_3::value() ||
-        stone_4::value()
-     ));
+      
+            stone_2::value() ||
+            stone_3::value() ||
+            stone_4::value()
+         ));
 				}
 				static void cfg_action()
 				{
@@ -2148,7 +2160,9 @@ namespace ddf
 				typedef typename pirate::stone_chest_controller::magnetic_sensor_4 stone_4;
 				typedef typename pirate::stone_chest_controller::magnetic_lock_2 latticelock;
 
-					(void)0; {  latticelock::value();  }
+					(void)0; {  
+            latticelock::value(0); 
+         }
 				}
 			};
 			typedef wic::event<sign_matching_config> sign_matching;
@@ -2167,8 +2181,8 @@ namespace ddf
 			typedef room_2_content::event_1 event_1_room_2;
 
 					return (true && ( 
-            at::value() <= tmr::value()
-         ));
+                at::value() <= tmr::value()
+             ));
 				}
 				static void cfg_action()
 				{
@@ -2178,11 +2192,11 @@ namespace ddf
 			typedef room_2_content::event_1 event_1_room_2;
 
 					(void)0; { 
-            tmr::value(at::value());
-            tmr::stop();
-            event_1_room_1::play();
-            event_1_room_2::play();
-         }
+                tmr::value(at::value());
+                tmr::stop();
+                event_1_room_1::play();
+                event_1_room_2::play();
+             }
 				}
 			};
 			typedef wic::event<timedevent_an_1_event_finished_config> timedevent_an_1_event_finished;
@@ -2206,13 +2220,13 @@ namespace ddf
 				typedef typename pirate::timedevent_an_1_timer tmr;
 
 					(void)0; { 
-            if(gs::value() == 1)
-            tmr::start();
-            else
-            tmr::stop();
-            if(gs::value() == 0)
-            tmr::value(0);
-         }
+                if(gs::value() == 1)
+                    tmr::start();
+                else
+                    tmr::stop();
+                if(gs::value() == 0)
+                    tmr::value(0);
+             }
 				}
 			};
 			typedef wic::event<timedevent_an_1_event_gamestate_config> timedevent_an_1_event_gamestate;
@@ -2231,8 +2245,8 @@ namespace ddf
 			typedef room_2_content::event_2 event_2_room_2;
 
 					return (true && ( 
-            at::value() <= tmr::value()
-         ));
+                at::value() <= tmr::value()
+             ));
 				}
 				static void cfg_action()
 				{
@@ -2242,11 +2256,11 @@ namespace ddf
 			typedef room_2_content::event_2 event_2_room_2;
 
 					(void)0; { 
-            tmr::value(at::value());
-            tmr::stop();
-            event_2_room_1::play();
-            event_2_room_2::play();
-         }
+                tmr::value(at::value());
+                tmr::stop();
+                event_2_room_1::play();
+                event_2_room_2::play();
+             }
 				}
 			};
 			typedef wic::event<timedevent_an_2_event_finished_config> timedevent_an_2_event_finished;
@@ -2270,13 +2284,13 @@ namespace ddf
 				typedef typename pirate::timedevent_an_2_timer tmr;
 
 					(void)0; { 
-            if(gs::value() == 1)
-            tmr::start();
-            else
-            tmr::stop();
-            if(gs::value() == 0)
-            tmr::value(0);
-         }
+                if(gs::value() == 1)
+                    tmr::start();
+                else
+                    tmr::stop();
+                if(gs::value() == 0)
+                    tmr::value(0);
+             }
 				}
 			};
 			typedef wic::event<timedevent_an_2_event_gamestate_config> timedevent_an_2_event_gamestate;
@@ -2359,8 +2373,8 @@ namespace ddf
 				typedef typename pirate::incoming_call call;
 
 					return (true && ( 
-            at::value() <= tmr::value()
-         ));
+                at::value() <= tmr::value()
+             ));
 				}
 				static void cfg_action()
 				{
@@ -2369,11 +2383,10 @@ namespace ddf
 				typedef typename pirate::incoming_call call;
 
 					(void)0; { 
-            tmr::value(at::value());
-            tmr::stop();
-            call::value(4);
-            
-         }
+                tmr::value(at::value());
+                tmr::stop();
+                call::value(4);
+             }
 				}
 			};
 			typedef wic::event<timedevent_pc_1_event_finished_config> timedevent_pc_1_event_finished;
@@ -2397,13 +2410,13 @@ namespace ddf
 				typedef typename pirate::timedevent_pc_1_timer tmr;
 
 					(void)0; { 
-            if(gs::value() == 1)
-            tmr::start();
-            else
-            tmr::stop();
-            if(gs::value() == 0)
-            tmr::value(0);
-         }
+                if(gs::value() == 1)
+                    tmr::start();
+                else
+                    tmr::stop();
+                if(gs::value() == 0)
+                    tmr::value(0);
+             }
 				}
 			};
 			typedef wic::event<timedevent_pc_1_event_gamestate_config> timedevent_pc_1_event_gamestate;
@@ -2421,8 +2434,8 @@ namespace ddf
 				typedef typename pirate::incoming_call call;
 
 					return (true && ( 
-            at::value() <= tmr::value()
-         ));
+                at::value() <= tmr::value()
+             ));
 				}
 				static void cfg_action()
 				{
@@ -2431,10 +2444,10 @@ namespace ddf
 				typedef typename pirate::incoming_call call;
 
 					(void)0; { 
-            tmr::value(at::value());
-            tmr::stop();
-	    call::value(5);
-         }
+                tmr::value(at::value());
+                tmr::stop();
+    	       call::value(5);
+             }
 				}
 			};
 			typedef wic::event<timedevent_pc_2_event_finished_config> timedevent_pc_2_event_finished;
@@ -2458,13 +2471,13 @@ namespace ddf
 				typedef typename pirate::timedevent_pc_2_timer tmr;
 
 					(void)0; { 
-            if(gs::value() == 1)
-            tmr::start();
-            else
-            tmr::stop();
-            if(gs::value() == 0)
-            tmr::value(0);
-         }
+                if(gs::value() == 1)
+                    tmr::start();
+                else
+                    tmr::stop();
+                if(gs::value() == 0)
+                    tmr::value(0);
+             }
 				}
 			};
 			typedef wic::event<timedevent_pc_2_event_gamestate_config> timedevent_pc_2_event_gamestate;
@@ -2978,7 +2991,7 @@ namespace ddf
 			/// room_1
 			struct room_1_config
 			{
-                		static const uint8_t cfg_device = 0;
+                		static const uint8_t cfg_device = 2;
 				static const uint8_t cfg_channel = 1;
 			};
 			typedef wic::audio<room_1_config> room_1;
@@ -3113,7 +3126,7 @@ namespace ddf
 			/// room_2
 			struct room_2_config
 			{
-                		static const uint8_t cfg_device = 0;
+                		static const uint8_t cfg_device = 2;
 				static const uint8_t cfg_channel = 0;
 			};
 			typedef wic::audio<room_2_config> room_2;
@@ -3251,7 +3264,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::magician::freezetimer1";
 				static const uint32_t cfg_class_id  = 0x2ffff0;
 				static const uint32_t cfg_member_id = 0x130;
-				static const uint32_t cfg_interval  = 3000;
+				static const uint32_t cfg_interval  = 60000;
 			};
 			typedef typename wic::timer<freezetimer1_config> freezetimer1;
 
@@ -3261,7 +3274,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::magician::freezetimer5";
 				static const uint32_t cfg_class_id  = 0x2ffff0;
 				static const uint32_t cfg_member_id = 0x140;
-				static const uint32_t cfg_interval  = 15000;
+				static const uint32_t cfg_interval  = 300000;
 			};
 			typedef typename wic::timer<freezetimer5_config> freezetimer5;
 
@@ -5599,19 +5612,6 @@ namespace ddf
 				};
 				typedef property_external<stop_tape_config> stop_tape;
 
-				/// Pause Tape ///
-				struct pause_tape_config : public property_config_base
-				{
-					constexpr static const char *name = "ddf::villa::video_device::pause_tape";
-
-					typedef bool cfg_value_type;
-
-					static const uint32_t cfg_class_id           = 0x300060;
-					static const uint32_t cfg_member_id          = 0xa0;
-					static const uint32_t cfg_cooldown_time      = 0;
-				};
-				typedef property_external<pause_tape_config> pause_tape;
-
 				/// enabled ///
 				struct enabled_config : public property_config_base
 				{
@@ -5620,7 +5620,7 @@ namespace ddf
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
-					static const uint32_t cfg_member_id          = 0xb0;
+					static const uint32_t cfg_member_id          = 0xa0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
 				typedef property_external<enabled_config> enabled;
@@ -5633,7 +5633,7 @@ namespace ddf
 					typedef uint64_t cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
-					static const uint32_t cfg_member_id          = 0xc0;
+					static const uint32_t cfg_member_id          = 0xb0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
 				typedef property_external<casette_id_config> casette_id;
@@ -5646,7 +5646,7 @@ namespace ddf
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
-					static const uint32_t cfg_member_id          = 0xd0;
+					static const uint32_t cfg_member_id          = 0xc0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
 				typedef property_external<play_ongoing_config> play_ongoing;
@@ -5659,7 +5659,7 @@ namespace ddf
 					typedef bool cfg_value_type;
 
 					static const uint32_t cfg_class_id           = 0x300060;
-					static const uint32_t cfg_member_id          = 0xe0;
+					static const uint32_t cfg_member_id          = 0xd0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
 				typedef property_external<livecam_ongoing_config> livecam_ongoing;
@@ -5887,7 +5887,7 @@ namespace ddf
 			/// room_1
 			struct room_1_config
 			{
-                		static const uint8_t cfg_device = 0;
+                		static const uint8_t cfg_device = 2;
 				static const uint8_t cfg_channel = 3;
 			};
 			typedef wic::audio<room_1_config> room_1;
@@ -5988,7 +5988,7 @@ namespace ddf
 			/// room_2
 			struct room_2_config
 			{
-                		static const uint8_t cfg_device = 0;
+                		static const uint8_t cfg_device = 2;
 				static const uint8_t cfg_channel = 2;
 			};
 			typedef wic::audio<room_2_config> room_2;
@@ -6092,7 +6092,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::villa::freezetimer1";
 				static const uint32_t cfg_class_id  = 0x3ffff0;
 				static const uint32_t cfg_member_id = 0x150;
-				static const uint32_t cfg_interval  = 3000;
+				static const uint32_t cfg_interval  = 60000;
 			};
 			typedef typename wic::timer<freezetimer1_config> freezetimer1;
 
@@ -6102,7 +6102,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::villa::freezetimer5";
 				static const uint32_t cfg_class_id  = 0x3ffff0;
 				static const uint32_t cfg_member_id = 0x160;
-				static const uint32_t cfg_interval  = 15000;
+				static const uint32_t cfg_interval  = 300000;
 			};
 			typedef typename wic::timer<freezetimer5_config> freezetimer5;
 
@@ -8230,7 +8230,7 @@ namespace ddf
 			/// room_1
 			struct room_1_config
 			{
-                		static const uint8_t cfg_device = 0;
+                		static const uint8_t cfg_device = 2;
 				static const uint8_t cfg_channel = 5;
 			};
 			typedef wic::audio<room_1_config> room_1;
@@ -8394,7 +8394,7 @@ namespace ddf
 			/// room_2
 			struct room_2_config
 			{
-                		static const uint8_t cfg_device = 0;
+                		static const uint8_t cfg_device = 2;
 				static const uint8_t cfg_channel = 4;
 			};
 			typedef wic::audio<room_2_config> room_2;
@@ -8561,7 +8561,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::freezetimer1";
 				static const uint32_t cfg_class_id  = 0x4ffff0;
 				static const uint32_t cfg_member_id = 0x130;
-				static const uint32_t cfg_interval  = 3000;
+				static const uint32_t cfg_interval  = 60000;
 			};
 			typedef typename wic::timer<freezetimer1_config> freezetimer1;
 
@@ -8571,7 +8571,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::freezetimer5";
 				static const uint32_t cfg_class_id  = 0x4ffff0;
 				static const uint32_t cfg_member_id = 0x140;
-				static const uint32_t cfg_interval  = 15000;
+				static const uint32_t cfg_interval  = 300000;
 			};
 			typedef typename wic::timer<freezetimer5_config> freezetimer5;
 
@@ -8890,7 +8890,7 @@ namespace ddf
 
 			int blacks = 50-greens;
 			int i = 0;
-			for(int i=0; i < blacks; ++i)
+			for(; i < blacks; ++i)
 			{
 				v.led[i].red = 0;
 				v.led[i].green = 0;
@@ -12145,12 +12145,6 @@ static void init()
 	ddf::villa::video_device::stop_tape::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::villa::video_device::stop_tape::remote_add(ddf::service::gmclient::device_role::instance(3));
 
-	ddf::villa::video_device::pause_tape::init(ddf::villa::video_device::device_role::instance(),bool());
-	ddf::villa::video_device::pause_tape::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::villa::video_device::pause_tape::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::villa::video_device::pause_tape::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::villa::video_device::pause_tape::remote_add(ddf::service::gmclient::device_role::instance(3));
-
 	ddf::villa::video_device::enabled::init(ddf::villa::video_device::device_role::instance(),bool());
 	ddf::villa::video_device::enabled::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::villa::video_device::enabled::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -13129,6 +13123,7 @@ static void init()
 	ddf::junkyard::game_ending::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::junkyard::game_ending::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::junkyard::gameevent_ampmeter_turn_on::init();
+	ddf::junkyard::secret_box_controller_2::debouncer_10::value::on_change += ddf::junkyard::gameevent_ampmeter_turn_on::monitor;
 
 	ddf::junkyard::gameevent_ampmeter_turn_on::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::junkyard::gameevent_ampmeter_turn_on::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -14020,7 +14015,6 @@ static void uninit()
 	ddf::villa::video_device::stop_livecams::uninit();
 	ddf::villa::video_device::start_tape::uninit();
 	ddf::villa::video_device::stop_tape::uninit();
-	ddf::villa::video_device::pause_tape::uninit();
 	ddf::villa::video_device::enabled::uninit();
 	ddf::villa::video_device::casette_id::uninit();
 	ddf::villa::video_device::play_ongoing::uninit();
