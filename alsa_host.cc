@@ -46,6 +46,9 @@ void alsa_host::player_t::start()
 
 	while(!disposed)
 	{
+		if(pcm.delay() > period*4)
+			std::this_thread::sleep_for(std::chrono::microseconds(1000000l*period/rate));
+
 		memset(buffer,0,period*channels*2);
 		streams_lock.lock();
 /*				while(streams.empty())
@@ -67,17 +70,17 @@ void alsa_host::player_t::start()
 			const size_t wbytes = stream->stream.gcount();
 			for(size_t i = 0; i < wbytes; ++i)
 			{
-				const int16_t a = buffer[i*channels+stream->channel];
+				const int index = i*channels+stream->channel;
+				const int16_t a = buffer[index];
 				const int16_t b = sbuffer[i];
 
-				buffer[i*channels+stream->channel] = 
-					a < 0 && b < 0
+				buffer[index] =
+					(a < 0 && b < 0)
 						? ((int)a + (int)b) - (((int)a * (int)b)/INT16_MIN)
-						: (
-					a > 0 && b > 0
-						? ((int)a + (int)b) - (((int)a * (int)b)/INT16_MAX)
-						: a + b
-					);
+						: ((a > 0 && b > 0)
+							? ((int)a + (int)b) - (((int)a * (int)b)/INT16_MAX)
+							: (a + b)
+						);
 
 			}
 
@@ -94,8 +97,6 @@ void alsa_host::player_t::start()
 
 		int16_t *p = buffer;
 
-		if(pcm.delay() > period*4)
-			std::this_thread::sleep_for(std::chrono::microseconds(1000000l*period/rate));
 		for(int size = period; size > 0;)
 		{
 			int result = pcm.writei(reinterpret_cast<void*>(p),size);
@@ -158,8 +159,8 @@ alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
 	pcm.params.get_period_size_min(&period,&dir);
 
 	double period_msec = static_cast<double>(period)*1000/rate;
-	if(period_msec < 0.5)
-		period = static_cast<snd_pcm_uframes_t>(1*rate/1000);
+	if(period_msec < 2.0)
+		period = static_cast<snd_pcm_uframes_t>(4*rate/1000);
 
 
 	dir = 0;
@@ -317,6 +318,8 @@ void alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_i
 	if(card == cards_by_id.end())
 	{
 		std::cout << "\e[31;01m - \e[0malsa host: play error: invalid card id `" << (int)card_id << "' specified" << std::endl;
+		//TODO: do on worker thread
+		callback();
 		return;
 	}
 	
