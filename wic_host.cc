@@ -600,6 +600,18 @@ namespace ddf
 			}
 
 
+			/// Audio Message URL ///
+			struct audio_message_url_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::audio_message_url";
+				typedef std::string cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x100;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<audio_message_url_config> audio_message_url;
+
 			/// ComDev Reset ///
 			struct comdev_reset_config : public property_config_base
 			{
@@ -618,7 +630,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::freezed1";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x120;
+				static const uint32_t cfg_member_id          = 0x130;
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -630,7 +642,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::freezed5";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x130;
+				static const uint32_t cfg_member_id          = 0x140;
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -654,7 +666,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::gameend";
 				typedef uint8_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x110;
+				static const uint32_t cfg_member_id          = 0x120;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -666,7 +678,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::gamestate";
 				typedef uint8_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x100;
+				static const uint32_t cfg_member_id          = 0x110;
 				static const uint32_t cfg_cooldown_time      = 1000;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -732,25 +744,13 @@ namespace ddf
 			};
 			typedef property_room<text_message_sender_config> text_message_sender;
 
-			/// game_end ///
-			struct game_end_config : public property_config_base
-			{
-				constexpr static const char *name = "ddf::pirate::game_end";
-				typedef uint8_t cfg_value_type;
-				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x2a0;
-				static const uint32_t cfg_cooldown_time      = 0;
-				static const bool     cfg_commit_change_only = true;
-			};
-			typedef property_room<game_end_config> game_end;
-
 			/// knock_count ///
 			struct knock_count_config : public property_config_base
 			{
 				constexpr static const char *name = "ddf::pirate::knock_count";
 				typedef uint32_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x380;
+				static const uint32_t cfg_member_id          = 0x4b0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -762,11 +762,119 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::pin_code";
 				typedef std::string cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x330;
+				static const uint32_t cfg_member_id          = 0x450;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
 			typedef property_room<pin_code_config> pin_code;
+
+			/// rex_left_column_failure ///
+			struct rex_left_column_failure_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::rex_left_column_failure";
+				typedef bool cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x320;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<rex_left_column_failure_config> rex_left_column_failure;
+
+			/// rex_middle_column_failure ///
+			struct rex_middle_column_failure_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::rex_middle_column_failure";
+				typedef bool cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x330;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<rex_middle_column_failure_config> rex_middle_column_failure;
+
+			/// rex_photosensor_3_value ///
+			struct rex_photosensor_3_value_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::rex_photosensor_3_value";
+				typedef bool cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x2e0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<rex_photosensor_3_value_config> rex_photosensor_3_value;
+
+			/// rex_photosensor_5_value ///
+			struct rex_photosensor_5_value_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::rex_photosensor_5_value";
+				typedef bool cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x2f0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<rex_photosensor_5_value_config> rex_photosensor_5_value;
+
+			/// rex_photosensor_6_value ///
+			struct rex_photosensor_6_value_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::rex_photosensor_6_value";
+				typedef bool cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x300;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<rex_photosensor_6_value_config> rex_photosensor_6_value;
+
+			/// rex_photosensor_7_value ///
+			struct rex_photosensor_7_value_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::rex_photosensor_7_value";
+				typedef bool cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x310;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<rex_photosensor_7_value_config> rex_photosensor_7_value;
+
+			/// rex_right_column_failure ///
+			struct rex_right_column_failure_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::rex_right_column_failure";
+				typedef bool cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x340;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<rex_right_column_failure_config> rex_right_column_failure;
+
+			/// rex_score ///
+			struct rex_score_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::rex_score";
+				typedef uint32_t cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x2c0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<rex_score_config> rex_score;
+
+			/// rex_trials_left ///
+			struct rex_trials_left_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::rex_trials_left";
+				typedef uint8_t cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x2d0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<rex_trials_left_config> rex_trials_left;
 
 			/// timedevent_an_1 ///
 			struct timedevent_an_1_config : public property_config_base
@@ -774,7 +882,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x470;
+				static const uint32_t cfg_member_id          = 0x5b0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -786,11 +894,23 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x4f0;
+				static const uint32_t cfg_member_id          = 0x630;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
 			typedef property_room<timedevent_an_2_config> timedevent_an_2;
+
+			/// timedevent_an_3 ///
+			struct timedevent_an_3_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::timedevent_an_3";
+				typedef uint64_t cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x670;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<timedevent_an_3_config> timedevent_an_3;
 
 			/// timedevent_ghost_voice ///
 			struct timedevent_ghost_voice_config : public property_config_base
@@ -798,7 +918,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_ghost_voice";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x2e0;
+				static const uint32_t cfg_member_id          = 0x400;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -810,7 +930,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x430;
+				static const uint32_t cfg_member_id          = 0x570;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -822,7 +942,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x4b0;
+				static const uint32_t cfg_member_id          = 0x5f0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -834,7 +954,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::wheel_last_pos";
 				typedef uint16_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x3d0;
+				static const uint32_t cfg_member_id          = 0x500;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -1048,7 +1168,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::freezetimer1";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x150;
+				static const uint32_t cfg_member_id = 0x160;
 				static const uint32_t cfg_interval  = 60000;
 			};
 			typedef typename wic::timer<freezetimer1_config> freezetimer1;
@@ -1058,7 +1178,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::freezetimer5";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x160;
+				static const uint32_t cfg_member_id = 0x170;
 				static const uint32_t cfg_interval  = 300000;
 			};
 			typedef typename wic::timer<freezetimer5_config> freezetimer5;
@@ -1068,7 +1188,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::gametimer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x140;
+				static const uint32_t cfg_member_id = 0x150;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<gametimer_config> gametimer;
@@ -1078,7 +1198,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::knock_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x390;
+				static const uint32_t cfg_member_id = 0x4c0;
 				static const uint32_t cfg_interval  = 1500;
 			};
 			typedef typename wic::timer<knock_timer_config> knock_timer;
@@ -1088,7 +1208,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::pin_timeout_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x340;
+				static const uint32_t cfg_member_id = 0x460;
 				static const uint32_t cfg_interval  = 100;
 			};
 			typedef typename wic::timer<pin_timeout_timer_config> pin_timeout_timer;
@@ -1098,7 +1218,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x480;
+				static const uint32_t cfg_member_id = 0x5c0;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_an_1_timer_config> timedevent_an_1_timer;
@@ -1108,17 +1228,27 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x500;
+				static const uint32_t cfg_member_id = 0x640;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_an_2_timer_config> timedevent_an_2_timer;
+
+			/// timedevent_an_3_timer
+			struct timedevent_an_3_timer_config
+			{
+				constexpr static const char *name = "ddf::pirate::timedevent_an_3_timer";
+				static const uint32_t cfg_class_id  = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x680;
+				static const uint32_t cfg_interval  = 1000;
+			};
+			typedef typename wic::timer<timedevent_an_3_timer_config> timedevent_an_3_timer;
 
 			/// timedevent_ghost_voice_timer
 			struct timedevent_ghost_voice_timer_config
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_ghost_voice_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x2f0;
+				static const uint32_t cfg_member_id = 0x410;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_ghost_voice_timer_config> timedevent_ghost_voice_timer;
@@ -1128,7 +1258,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x440;
+				static const uint32_t cfg_member_id = 0x580;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_pc_1_timer_config> timedevent_pc_1_timer;
@@ -1138,7 +1268,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x4c0;
+				static const uint32_t cfg_member_id = 0x600;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_pc_2_timer_config> timedevent_pc_2_timer;
@@ -1354,7 +1484,7 @@ namespace ddf
       	// Finished
       	case 3:
       		tmr::stop();
-      		tmr::reset();
+			tmr::reset();
       		break;
       }
      }
@@ -1362,41 +1492,18 @@ namespace ddf
 			};
 			typedef wic::event<game_state_changed_config> game_state_changed;
 
-			/// Game Timer Expired ///		
-			struct game_timer_expired_config
-			{
-				constexpr static const char *name = "ddf::pirate::game_timer_expired";
-				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x170;
-				static bool cfg_condition()
-				{
-									typedef typename pirate::gametimer tmr;
-				typedef typename pirate::gamestate gs;
-
-					return (true && ( tmr::value() >= 3600 ));
-				}
-				static void cfg_action()
-				{
-									typedef typename pirate::gametimer tmr;
-				typedef typename pirate::gamestate gs;
-
-					(void)0; { gs::value(3); }
-				}
-			};
-			typedef wic::event<game_timer_expired_config> game_timer_expired;
-
 			/// chest_opening ///		
 			struct chest_opening_config
 			{
 				constexpr static const char *name = "ddf::pirate::chest_opening";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x400;
+				static const uint32_t cfg_member_id = 0x530;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::stone_chest_controller::led_strip chest;
 				typedef typename pirate::stone_chest_controller::magnetic_sensor_5 chest_opening_sensor;
 				typedef typename pirate::entrance_hanger_controller::debouncer_2 game_end_button;
-				typedef typename pirate::game_end game_end;
+				typedef typename pirate::gameend ge;
 
 					return (true && (  
 	    	chest_opening_sensor::value() 
@@ -1407,46 +1514,109 @@ namespace ddf
 									typedef typename pirate::stone_chest_controller::led_strip chest;
 				typedef typename pirate::stone_chest_controller::magnetic_sensor_5 chest_opening_sensor;
 				typedef typename pirate::entrance_hanger_controller::debouncer_2 game_end_button;
-				typedef typename pirate::game_end game_end;
+				typedef typename pirate::gameend ge;
 
 					(void)0; { 
 	        chest::value(1);
-	        game_end::value(1);
+	        ge::value(1);
 	     }
 				}
 			};
 			typedef wic::event<chest_opening_config> chest_opening;
+
+			/// display_update ///		
+			struct display_update_config
+			{
+				constexpr static const char *name = "ddf::pirate::display_update";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x4a0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::pin_code code;
+				typedef typename pirate::cashier_laser_controller::lcd lcd;
+
+					return (true);
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::pin_code code;
+				typedef typename pirate::cashier_laser_controller::lcd lcd;
+
+					(void)0; { 
+		lcd::value(code::value());
+	 }
+				}
+			};
+			typedef wic::event<display_update_config> display_update;
+
+			/// door_state_change ///		
+			struct door_state_change_config
+			{
+				constexpr static const char *name = "ddf::pirate::door_state_change";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x2a0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::gamestate gs;
+				typedef typename pirate::entrance_hanger_controller::magnetic_sensor entrance_door;
+
+					return (true);
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::gamestate gs;
+				typedef typename pirate::entrance_hanger_controller::magnetic_sensor entrance_door;
+
+					(void)0; { 
+        if(entrance_door::value())
+        {
+            if(gs::value() == 2)
+            {
+                gs::value(1);
+            }
+        }
+        else if(gs::value() == 1)
+        {
+            gs::value(2);
+        }
+      }
+				}
+			};
+			typedef wic::event<door_state_change_config> door_state_change;
 
 			/// game_end_button_push ///		
 			struct game_end_button_push_config
 			{
 				constexpr static const char *name = "ddf::pirate::game_end_button_push";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x420;
+				static const uint32_t cfg_member_id = 0x550;
 				static bool cfg_condition()
 				{
-									typedef typename pirate::gamestate game_end;
-				typedef typename pirate::entrance_hanger_controller::debouncer button;
+									typedef typename pirate::entrance_hanger_controller::debouncer button;
+				typedef typename pirate::gameend ge;
+				typedef typename pirate::gamestate gs;
 			typedef room_1_content::winstate winstate_room_1;
 			typedef room_2_content::winstate winstate_room_2;
-				typedef typename pirate::gametimer timer;
+				typedef typename pirate::gametimer tmr;
 
 					return (true && ( 
-            button::value() && game_end::value() >= 1
+            button::value() && 1 == ge::value() && 1 == gs::value()
          ));
 				}
 				static void cfg_action()
 				{
-									typedef typename pirate::gamestate game_end;
-				typedef typename pirate::entrance_hanger_controller::debouncer button;
+									typedef typename pirate::entrance_hanger_controller::debouncer button;
+				typedef typename pirate::gameend ge;
+				typedef typename pirate::gamestate gs;
 			typedef room_1_content::winstate winstate_room_1;
 			typedef room_2_content::winstate winstate_room_2;
-				typedef typename pirate::gametimer timer;
+				typedef typename pirate::gametimer tmr;
 
 					(void)0; { 
-            timer::stop();
+            tmr::stop();
             winstate_room_1::play();
             winstate_room_2::play();
+	    	gs::value(3);
          }
 				}
 			};
@@ -1457,68 +1627,25 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::game_ending";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x410;
+				static const uint32_t cfg_member_id = 0x540;
 				static bool cfg_condition()
 				{
-									typedef typename pirate::game_end game_end;
+									typedef typename pirate::gameend ge;
 				typedef typename pirate::entrance_hanger_controller::led led;
-
-					return (true && (  
-            game_end::value() 
-         ));
-				}
-				static void cfg_action()
-				{
-									typedef typename pirate::game_end game_end;
-				typedef typename pirate::entrance_hanger_controller::led led;
-
-					(void)0; {  
-            led::value(1);
-         }
-				}
-			};
-			typedef wic::event<game_ending_config> game_ending;
-
-			/// game_start ///		
-			struct game_start_config
-			{
-				constexpr static const char *name = "ddf::pirate::game_start";
-				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x2b0;
-				static bool cfg_condition()
-				{
-									typedef typename pirate::gamestate gs;
-				typedef typename pirate::game_end game_end;
-				typedef typename pirate::entrance_hanger_controller::magnetic_sensor entrance_door;
 
 					return (true);
 				}
 				static void cfg_action()
 				{
-									typedef typename pirate::gamestate gs;
-				typedef typename pirate::game_end game_end;
-				typedef typename pirate::entrance_hanger_controller::magnetic_sensor entrance_door;
+									typedef typename pirate::gameend ge;
+				typedef typename pirate::entrance_hanger_controller::led led;
 
-					(void)0; { 
-          if(entrance_door::value())
-          {
-             if((gs::value() == 0) || (gs::value() == 2))
-             {
-                gs::value(1);
-             }
-             if(!gs::value())
-             {
-                game_end::value(0);
-             }
-          }
-          else if(gs::value() == 1)
-          {
-              gs::value(2);
-          }
-       }
+					(void)0; {  
+			led::value(1 == ge::value());
+		 }
 				}
 			};
-			typedef wic::event<game_start_config> game_start;
+			typedef wic::event<game_ending_config> game_ending;
 
 			/// gameevent_call_accepted ///		
 			struct gameevent_call_accepted_config
@@ -1777,12 +1904,39 @@ namespace ddf
 			};
 			typedef wic::event<gameevent_game_win_config> gameevent_game_win;
 
+			/// gameevent_rex_game_won ///		
+			struct gameevent_rex_game_won_config
+			{
+				constexpr static const char *name = "ddf::pirate::gameevent_rex_game_won";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x3d0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::rex_score score;
+				typedef typename pirate::rex_flipper_controller::magnetic_lock lock;
+
+					return (true && ( 
+			335 <= score::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::rex_score score;
+				typedef typename pirate::rex_flipper_controller::magnetic_lock lock;
+
+					(void)0; { 
+			lock::value(0);
+		 }
+				}
+			};
+			typedef wic::event<gameevent_rex_game_won_config> gameevent_rex_game_won;
+
 			/// hanger_trigger ///		
 			struct hanger_trigger_config
 			{
 				constexpr static const char *name = "ddf::pirate::hanger_trigger";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x2d0;
+				static const uint32_t cfg_member_id = 0x3f0;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::entrance_hanger_controller::debouncer_2 hanger;
@@ -1805,7 +1959,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::knock_accumulate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x3a0;
+				static const uint32_t cfg_member_id = 0x4d0;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::knock_count count;
@@ -1814,7 +1968,7 @@ namespace ddf
 				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_2 door;
 
 					return (true && (  
-      sensor::value() 
+		sensor::value() 
      ));
 				}
 				static void cfg_action()
@@ -1825,15 +1979,16 @@ namespace ddf
 				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_2 door;
 
 					(void)0; { 
-      timer::start();
-      timer::reset();
-      count::value(count::value() + 1);
+		timer::start();
+		timer::reset();
+		count::value(count::value() + 1);
 
-      if(count::value() >= 3)
-      {
-        door::value(0);
-        timer::stop();
-      }
+		if(count::value() >= 3)
+		{
+			count::value(0);
+			door::value(0);
+			timer::stop();
+		}
        }
 				}
 			};
@@ -1844,7 +1999,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::knock_timeout";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x3b0;
+				static const uint32_t cfg_member_id = 0x4e0;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::knock_timer timer;
@@ -1858,9 +2013,9 @@ namespace ddf
 				typedef typename pirate::knock_count count;
 
 					(void)0; { 
-        timer::stop();
-        timer::reset();
-        count::value(0);
+		timer::stop();
+		timer::reset();
+		count::value(0);
        }
 				}
 			};
@@ -1871,7 +2026,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::knot_puzzle";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x370;
+				static const uint32_t cfg_member_id = 0x490;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::pin_timeout_timer timer;
@@ -1890,12 +2045,7 @@ namespace ddf
             const std::string v = code::value();
             code::value("");
             if(v == "8271")
-            {
-               box::value(0);
-               timer::stop();
-            }
-            else
-               box::value(1);
+	    	box::value(1);
          }
 				}
 			};
@@ -1906,7 +2056,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::laser_turn_off";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x320;
+				static const uint32_t cfg_member_id = 0x440;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::cashier_laser_controller::switch_1 _switch;
@@ -1928,12 +2078,140 @@ namespace ddf
 			};
 			typedef wic::event<laser_turn_off_config> laser_turn_off;
 
+			/// left_column_evaluate ///		
+			struct left_column_evaluate_config
+			{
+				constexpr static const char *name = "ddf::pirate::left_column_evaluate";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x390;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_2 p0;
+				typedef typename pirate::rex_flipper_controller::photosensor_5 p1;
+				typedef typename pirate::rex_photosensor_5_value p1v;
+				typedef typename pirate::rex_left_column_failure fail;
+				typedef typename pirate::rex_score score;
+				typedef typename pirate::rex_trials_left tl;
+
+					return (true && ( 
+			p0::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_2 p0;
+				typedef typename pirate::rex_flipper_controller::photosensor_5 p1;
+				typedef typename pirate::rex_photosensor_5_value p1v;
+				typedef typename pirate::rex_left_column_failure fail;
+				typedef typename pirate::rex_score score;
+				typedef typename pirate::rex_trials_left tl;
+
+					(void)0; { 
+			if(fail::value())
+			{
+				p1v::value(false);
+				score::value(0);
+				tl::value(3);
+				fail::value(false);
+				return;
+			}
+
+			if(p1v::value())
+				score::value(rex_score::value()+45);	// hole 1
+
+			else
+				score::value(rex_score::value()+0);		// hole 2
+
+			p1v::value(false);
+
+			if(tl::value())
+				tl::value(tl::value()-1);
+
+			else
+			{
+				score::value(0);
+				tl::value(3);
+			}
+		 }
+				}
+			};
+			typedef wic::event<left_column_evaluate_config> left_column_evaluate;
+
+			/// middle_column_evaluate ///		
+			struct middle_column_evaluate_config
+			{
+				constexpr static const char *name = "ddf::pirate::middle_column_evaluate";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x3b0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_1 p0;
+				typedef typename pirate::rex_flipper_controller::photosensor_3 p1;
+				typedef typename pirate::rex_photosensor_3_value p1v;
+				typedef typename pirate::rex_flipper_controller::photosensor_6 p2;
+				typedef typename pirate::rex_photosensor_6_value p2v;
+				typedef typename pirate::rex_right_column_failure fail;
+				typedef typename pirate::rex_score score;
+				typedef typename pirate::rex_trials_left tl;
+
+					return (true && ( 
+			p0::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_1 p0;
+				typedef typename pirate::rex_flipper_controller::photosensor_3 p1;
+				typedef typename pirate::rex_photosensor_3_value p1v;
+				typedef typename pirate::rex_flipper_controller::photosensor_6 p2;
+				typedef typename pirate::rex_photosensor_6_value p2v;
+				typedef typename pirate::rex_right_column_failure fail;
+				typedef typename pirate::rex_score score;
+				typedef typename pirate::rex_trials_left tl;
+
+					(void)0; { 
+			if(fail::value())
+			{
+				p1v::value(false);
+				p2v::value(false);
+				score::value(0);
+				tl::value(3);
+				fail::value(false);
+				return;
+			}
+
+			if(p1v::value())
+			{
+				if(p2v::value())
+					score::value(rex_score::value()+200);	// hole 1
+				else
+					score::value(rex_score::value()+75);	// hole 2
+			}
+			else
+				score::value(rex_score::value()+20);		// hole 3
+
+			p1v::value(false);
+			p2v::value(false);
+
+			if(tl::value())
+				tl::value(tl::value()-1);
+
+			else
+			{
+				score::value(0);
+				tl::value(3);
+			}
+		 }
+				}
+			};
+			typedef wic::event<middle_column_evaluate_config> middle_column_evaluate;
+
 			/// pin_code_accumulation ///		
 			struct pin_code_accumulation_config
 			{
 				constexpr static const char *name = "ddf::pirate::pin_code_accumulation";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x350;
+				static const uint32_t cfg_member_id = 0x470;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::pin_timeout_timer timer;
@@ -1957,8 +2235,9 @@ namespace ddf
             timer::start();
             const uint8_t k = v.key;
             char c;
+
             if(k < 9)
-            c = static_cast<char>(k+49);
+            	c = static_cast<char>(k+49);
             else switch(k)
             {
                case 9 : c = '*'; break;
@@ -1977,7 +2256,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::pin_timeout";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x360;
+				static const uint32_t cfg_member_id = 0x480;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::pin_timeout_timer timer;
@@ -1995,56 +2274,402 @@ namespace ddf
 					(void)0; { 
             timer::stop();
             timer::reset();
-            box::value(0);
+	    box::value(0);
             code::value("");
          }
 				}
 			};
 			typedef wic::event<pin_timeout_config> pin_timeout;
 
-			/// rex_table ///		
-			struct rex_table_config
+			/// reset_room ///		
+			struct reset_room_config
 			{
-				constexpr static const char *name = "ddf::pirate::rex_table";
+				constexpr static const char *name = "ddf::pirate::reset_room";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x2c0;
+				static const uint32_t cfg_member_id = 0x2b0;
 				static bool cfg_condition()
 				{
-									typedef typename pirate::rex_flipper_controller::photosensor_1 p1;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p2;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p3;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p4;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p5;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p6;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p7;
-				typedef typename pirate::rex_flipper_controller::rfid_reader rfid;
-				typedef typename pirate::rex_flipper_controller::led led;
+									typedef typename pirate::gamestate gs;
+				typedef typename pirate::comdev_reset cr;
+				typedef typename pirate::map_controller::led_strip starz;
+				typedef typename pirate::stone_chest_controller::magnetic_lock_1 key_lock;
+				typedef typename pirate::stone_chest_controller::magnetic_lock_2 lattice_lock;
+				typedef typename pirate::stone_chest_controller::led_strip chest_light;
+				typedef typename pirate::cashier_laser_controller::laser laser;
+				typedef typename pirate::cashier_laser_controller::lcd lcd;
+				typedef typename pirate::cashier_laser_controller::cash_box cash_box;
+				typedef typename pirate::cashier_laser_controller::led_strip win_light;
+				typedef typename pirate::rex_flipper_controller::light_controller_1 ir1;
+				typedef typename pirate::rex_flipper_controller::light_controller_2 ir2;
+				typedef typename pirate::rex_flipper_controller::light_controller_3 ir3;
+				typedef typename pirate::rex_flipper_controller::light_controller_4 ir4;
+				typedef typename pirate::rex_flipper_controller::light_controller_5 ir5;
+				typedef typename pirate::rex_flipper_controller::light_controller_6 ir6;
+				typedef typename pirate::rex_flipper_controller::light_controller_7 ir7;
+				typedef typename pirate::rex_flipper_controller::magnetic_lock key_holder;
+				typedef typename pirate::rex_flipper_controller::led ledstrip;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1 lock1;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_2 lock2;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_3 lock3;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_1 led1;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_2 led2;
+				typedef typename pirate::entrance_hanger_controller::led led;
+
+					return (true && ( 
+		!gs::value()
+	 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::gamestate gs;
+				typedef typename pirate::comdev_reset cr;
+				typedef typename pirate::map_controller::led_strip starz;
+				typedef typename pirate::stone_chest_controller::magnetic_lock_1 key_lock;
+				typedef typename pirate::stone_chest_controller::magnetic_lock_2 lattice_lock;
+				typedef typename pirate::stone_chest_controller::led_strip chest_light;
+				typedef typename pirate::cashier_laser_controller::laser laser;
+				typedef typename pirate::cashier_laser_controller::lcd lcd;
+				typedef typename pirate::cashier_laser_controller::cash_box cash_box;
+				typedef typename pirate::cashier_laser_controller::led_strip win_light;
+				typedef typename pirate::rex_flipper_controller::light_controller_1 ir1;
+				typedef typename pirate::rex_flipper_controller::light_controller_2 ir2;
+				typedef typename pirate::rex_flipper_controller::light_controller_3 ir3;
+				typedef typename pirate::rex_flipper_controller::light_controller_4 ir4;
+				typedef typename pirate::rex_flipper_controller::light_controller_5 ir5;
+				typedef typename pirate::rex_flipper_controller::light_controller_6 ir6;
+				typedef typename pirate::rex_flipper_controller::light_controller_7 ir7;
+				typedef typename pirate::rex_flipper_controller::magnetic_lock key_holder;
+				typedef typename pirate::rex_flipper_controller::led ledstrip;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1 lock1;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_2 lock2;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_3 lock3;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_1 led1;
+				typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_2 led2;
+				typedef typename pirate::entrance_hanger_controller::led led;
+
+					(void)0; { 
+		starz::value(0);
+		key_lock::value(1);
+		lattice_lock::value(1);
+		chest_light::value(0);
+		laser::value(1);
+		lcd::value("");
+		cash_box::value(0);
+		win_light::value(0);
+		ir1::value(1);
+		ir2::value(1);
+		ir3::value(1);
+		ir4::value(1);
+		ir5::value(1);
+		ir6::value(1);
+		ir7::value(1);
+		key_holder::value(1);
+		ledstrip::enabled(false);
+		ledstrip::enabled(true);
+		ledstrip::value_type v;
+		for(int i = 0; i < 3; ++i)
+		{
+			v.led[i].red = 40;
+			v.led[i].green = 40;
+			v.led[i].blue = 40;
+		}
+		ledstrip::value((ledstrip::value_type)v);
+		lock1::value(1);
+		lock2::value(1);
+		lock3::value(1);
+		led1::value(0);
+		led2::value(0);
+
+		led::value(0);
+		cr::value(1);
+     }
+				}
+			};
+			typedef wic::event<reset_room_config> reset_room;
+
+			/// rex_led_update ///		
+			struct rex_led_update_config
+			{
+				constexpr static const char *name = "ddf::pirate::rex_led_update";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x3c0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::rex_flipper_controller::led led;
+				typedef typename pirate::rex_trials_left tl;
 
 					return (true);
 				}
 				static void cfg_action()
 				{
-									typedef typename pirate::rex_flipper_controller::photosensor_1 p1;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p2;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p3;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p4;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p5;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p6;
-				typedef typename pirate::rex_flipper_controller::photosensor_1 p7;
-				typedef typename pirate::rex_flipper_controller::rfid_reader rfid;
-				typedef typename pirate::rex_flipper_controller::led led;
+									typedef typename pirate::rex_flipper_controller::led led;
+				typedef typename pirate::rex_trials_left tl;
 
-					(void)0;
+					(void)0; { 
+			led::value_type v;
+			int i = 2;
+			for(; i >= tl::value(); --i)
+			{
+				v.led[i].red = 0;
+				v.led[i].green = 0;
+				v.led[i].blue= 0;
+			}
+			for(; i >= 0; --i)
+			{
+				v.led[i].red = 40;
+				v.led[i].green = 40;
+				v.led[i].blue= 40;
+			}
+			led::value((led::value_type)v);
+		 }
 				}
 			};
-			typedef wic::event<rex_table_config> rex_table;
+			typedef wic::event<rex_led_update_config> rex_led_update;
+
+			/// rex_photosensor_3_acc ///		
+			struct rex_photosensor_3_acc_config
+			{
+				constexpr static const char *name = "ddf::pirate::rex_photosensor_3_acc";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x350;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_3 p;
+				typedef typename pirate::rex_photosensor_3_value pv;
+				typedef typename pirate::rex_middle_column_failure f;
+
+					return (true && ( 
+			p::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_3 p;
+				typedef typename pirate::rex_photosensor_3_value pv;
+				typedef typename pirate::rex_middle_column_failure f;
+
+					(void)0; { 
+			if(pv::value())
+				f::value(true);
+			else
+				pv::value(true);
+		 }
+				}
+			};
+			typedef wic::event<rex_photosensor_3_acc_config> rex_photosensor_3_acc;
+
+			/// rex_photosensor_5_acc ///		
+			struct rex_photosensor_5_acc_config
+			{
+				constexpr static const char *name = "ddf::pirate::rex_photosensor_5_acc";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x360;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_5 p;
+				typedef typename pirate::rex_photosensor_5_value pv;
+				typedef typename pirate::rex_left_column_failure f;
+
+					return (true && ( 
+			p::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_5 p;
+				typedef typename pirate::rex_photosensor_5_value pv;
+				typedef typename pirate::rex_left_column_failure f;
+
+					(void)0; { 
+			if(pv::value())
+				f::value(true);
+			else
+				pv::value(true);
+		 }
+				}
+			};
+			typedef wic::event<rex_photosensor_5_acc_config> rex_photosensor_5_acc;
+
+			/// rex_photosensor_6_acc ///		
+			struct rex_photosensor_6_acc_config
+			{
+				constexpr static const char *name = "ddf::pirate::rex_photosensor_6_acc";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x370;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_6 p;
+				typedef typename pirate::rex_photosensor_6_value pv;
+				typedef typename pirate::rex_middle_column_failure f;
+
+					return (true && ( 
+			p::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_6 p;
+				typedef typename pirate::rex_photosensor_6_value pv;
+				typedef typename pirate::rex_middle_column_failure f;
+
+					(void)0; { 
+			if(pv::value())
+				f::value(true);
+			else
+				pv::value(true);
+		 }
+				}
+			};
+			typedef wic::event<rex_photosensor_6_acc_config> rex_photosensor_6_acc;
+
+			/// rex_photosensor_7_acc ///		
+			struct rex_photosensor_7_acc_config
+			{
+				constexpr static const char *name = "ddf::pirate::rex_photosensor_7_acc";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x380;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_7 p;
+				typedef typename pirate::rex_photosensor_7_value pv;
+				typedef typename pirate::rex_right_column_failure f;
+
+					return (true && ( 
+			p::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_7 p;
+				typedef typename pirate::rex_photosensor_7_value pv;
+				typedef typename pirate::rex_right_column_failure f;
+
+					(void)0; { 
+			if(pv::value())
+				f::value(true);
+			else
+				pv::value(true);
+		 }
+				}
+			};
+			typedef wic::event<rex_photosensor_7_acc_config> rex_photosensor_7_acc;
+
+			/// rex_table_reset ///		
+			struct rex_table_reset_config
+			{
+				constexpr static const char *name = "ddf::pirate::rex_table_reset";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x3e0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::gamestate gs;
+				typedef typename pirate::rex_score score;
+				typedef typename pirate::rex_trials_left trials;
+				typedef typename pirate::rex_photosensor_3_value p3v;
+				typedef typename pirate::rex_photosensor_5_value p5v;
+				typedef typename pirate::rex_photosensor_6_value p6v;
+				typedef typename pirate::rex_photosensor_7_value p7v;
+				typedef typename pirate::rex_left_column_failure lf;
+				typedef typename pirate::rex_middle_column_failure mf;
+				typedef typename pirate::rex_right_column_failure rf;
+
+					return (true && ( 
+			!gs::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::gamestate gs;
+				typedef typename pirate::rex_score score;
+				typedef typename pirate::rex_trials_left trials;
+				typedef typename pirate::rex_photosensor_3_value p3v;
+				typedef typename pirate::rex_photosensor_5_value p5v;
+				typedef typename pirate::rex_photosensor_6_value p6v;
+				typedef typename pirate::rex_photosensor_7_value p7v;
+				typedef typename pirate::rex_left_column_failure lf;
+				typedef typename pirate::rex_middle_column_failure mf;
+				typedef typename pirate::rex_right_column_failure rf;
+
+					(void)0; { 
+			score::value(0);
+			trials::value(3);
+			p3v::value(0);
+			p5v::value(0);
+			p6v::value(0);
+			p7v::value(0);
+			lf::value(0);
+			mf::value(0);
+			rf::value(0);
+		 }
+				}
+			};
+			typedef wic::event<rex_table_reset_config> rex_table_reset;
+
+			/// right_column_evaluate ///		
+			struct right_column_evaluate_config
+			{
+				constexpr static const char *name = "ddf::pirate::right_column_evaluate";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x3a0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_4 p0;
+				typedef typename pirate::rex_flipper_controller::photosensor_7 p1;
+				typedef typename pirate::rex_photosensor_7_value p1v;
+				typedef typename pirate::rex_right_column_failure fail;
+				typedef typename pirate::rex_score score;
+				typedef typename pirate::rex_trials_left tl;
+
+					return (true && ( 
+			p0::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::rex_flipper_controller::photosensor_4 p0;
+				typedef typename pirate::rex_flipper_controller::photosensor_7 p1;
+				typedef typename pirate::rex_photosensor_7_value p1v;
+				typedef typename pirate::rex_right_column_failure fail;
+				typedef typename pirate::rex_score score;
+				typedef typename pirate::rex_trials_left tl;
+
+					(void)0; { 
+			if(fail::value())
+			{
+				p1v::value(false);
+				score::value(0);
+				tl::value(3);
+				fail::value(false);
+				return;
+			}
+
+			if(p1v::value())
+				score::value(rex_score::value()+60);	// hole 1
+
+			else
+				score::value(rex_score::value()+0);		// hole 2
+
+			p1v::value(false);
+
+			if(tl::value())
+				tl::value(tl::value()-1);
+
+			else
+			{
+				score::value(0);
+				tl::value(3);
+			}
+		 }
+				}
+			};
+			typedef wic::event<right_column_evaluate_config> right_column_evaluate;
 
 			/// rotation_update ///		
 			struct rotation_update_config
 			{
 				constexpr static const char *name = "ddf::pirate::rotation_update";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x3e0;
+				static const uint32_t cfg_member_id = 0x510;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::wheel_last_pos last;
@@ -2106,7 +2731,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::ship_matching";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x3c0;
+				static const uint32_t cfg_member_id = 0x4f0;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::map_controller::magnetic_sensor_1 sensor_1;
@@ -2114,8 +2739,8 @@ namespace ddf
 				typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
 
 					return (true && (  
-        	sensor_1::value() && 
-        	sensor_2::value() 
+        	sensor_1::value() >= 3072 && 
+        	sensor_2::value() <= 1024 
          ));
 				}
 				static void cfg_action()
@@ -2136,7 +2761,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::sign_matching";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x3f0;
+				static const uint32_t cfg_member_id = 0x520;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::stone_chest_controller::magnetic_sensor_1 stone_1;
@@ -2167,12 +2792,49 @@ namespace ddf
 			};
 			typedef wic::event<sign_matching_config> sign_matching;
 
+			/// time_up ///		
+			struct time_up_config
+			{
+				constexpr static const char *name = "ddf::pirate::time_up";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x560;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::gametimer tmr;
+				typedef typename pirate::gameend ge;
+				typedef typename pirate::gamestate gs;
+			typedef room_1_content::failstate failstate_room_1;
+			typedef room_2_content::failstate failstate_room_2;
+
+					return (true && ( 
+			tmr::value() >= 3600 && tmr::running() && 1 == gs::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::gametimer tmr;
+				typedef typename pirate::gameend ge;
+				typedef typename pirate::gamestate gs;
+			typedef room_1_content::failstate failstate_room_1;
+			typedef room_2_content::failstate failstate_room_2;
+
+					(void)0; { 
+            tmr::stop();
+            failstate_room_1::play();
+            failstate_room_2::play();
+			ge::value(2);
+	    	gs::value(3);
+		 }
+				}
+			};
+			typedef wic::event<time_up_config> time_up;
+
 			/// timedevent_an_1_event_finished ///		
 			struct timedevent_an_1_event_finished_config
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x490;
+				static const uint32_t cfg_member_id = 0x5d0;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::timedevent_an_1 at;
@@ -2181,7 +2843,7 @@ namespace ddf
 			typedef room_2_content::event_1 event_1_room_2;
 
 					return (true && ( 
-                at::value() <= tmr::value()
+				at::value() <= tmr::value() && tmr::running()
              ));
 				}
 				static void cfg_action()
@@ -2192,8 +2854,8 @@ namespace ddf
 			typedef room_2_content::event_1 event_1_room_2;
 
 					(void)0; { 
-                tmr::value(at::value());
                 tmr::stop();
+                tmr::value(at::value());
                 event_1_room_1::play();
                 event_1_room_2::play();
              }
@@ -2206,11 +2868,12 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x4a0;
+				static const uint32_t cfg_member_id = 0x5e0;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::timedevent_an_1_timer tmr;
+				typedef typename pirate::timedevent_an_1 at;
 
 					return (true);
 				}
@@ -2218,14 +2881,19 @@ namespace ddf
 				{
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::timedevent_an_1_timer tmr;
+				typedef typename pirate::timedevent_an_1 at;
 
 					(void)0; { 
-                if(gs::value() == 1)
-                    tmr::start();
-                else
-                    tmr::stop();
-                if(gs::value() == 0)
-                    tmr::value(0);
+			if(gs::value() == 1)
+			{
+			   if(tmr::value() < at::value())
+				   tmr::start();
+			}
+			else
+			   tmr::stop();
+
+			if(gs::value() == 0)
+			   tmr::value(0);
              }
 				}
 			};
@@ -2236,7 +2904,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x510;
+				static const uint32_t cfg_member_id = 0x650;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::timedevent_an_2 at;
@@ -2245,7 +2913,7 @@ namespace ddf
 			typedef room_2_content::event_2 event_2_room_2;
 
 					return (true && ( 
-                at::value() <= tmr::value()
+				at::value() <= tmr::value() && tmr::running()
              ));
 				}
 				static void cfg_action()
@@ -2256,8 +2924,8 @@ namespace ddf
 			typedef room_2_content::event_2 event_2_room_2;
 
 					(void)0; { 
-                tmr::value(at::value());
                 tmr::stop();
+                tmr::value(at::value());
                 event_2_room_1::play();
                 event_2_room_2::play();
              }
@@ -2270,11 +2938,12 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x520;
+				static const uint32_t cfg_member_id = 0x660;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::timedevent_an_2_timer tmr;
+				typedef typename pirate::timedevent_an_2 at;
 
 					return (true);
 				}
@@ -2282,25 +2951,100 @@ namespace ddf
 				{
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::timedevent_an_2_timer tmr;
+				typedef typename pirate::timedevent_an_2 at;
 
 					(void)0; { 
-                if(gs::value() == 1)
-                    tmr::start();
-                else
-                    tmr::stop();
-                if(gs::value() == 0)
-                    tmr::value(0);
+			if(gs::value() == 1)
+			{
+			   if(tmr::value() < at::value())
+				   tmr::start();
+			}
+			else
+			   tmr::stop();
+
+			if(gs::value() == 0)
+			   tmr::value(0);
              }
 				}
 			};
 			typedef wic::event<timedevent_an_2_event_gamestate_config> timedevent_an_2_event_gamestate;
+
+			/// timedevent_an_3_event_finished ///		
+			struct timedevent_an_3_event_finished_config
+			{
+				constexpr static const char *name = "ddf::pirate::timedevent_an_3_event_finished";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x690;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::timedevent_an_3 at;
+				typedef typename pirate::timedevent_an_3_timer tmr;
+			typedef room_1_content::event_3 event_3_room_1;
+			typedef room_2_content::event_3 event_3_room_2;
+
+					return (true && ( 
+				at::value() <= tmr::value() && tmr::running()
+             ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::timedevent_an_3 at;
+				typedef typename pirate::timedevent_an_3_timer tmr;
+			typedef room_1_content::event_3 event_3_room_1;
+			typedef room_2_content::event_3 event_3_room_2;
+
+					(void)0; { 
+                tmr::stop();
+                tmr::value(at::value());
+                event_3_room_1::play();
+                event_3_room_2::play();
+             }
+				}
+			};
+			typedef wic::event<timedevent_an_3_event_finished_config> timedevent_an_3_event_finished;
+
+			/// timedevent_an_3_event_gamestate ///		
+			struct timedevent_an_3_event_gamestate_config
+			{
+				constexpr static const char *name = "ddf::pirate::timedevent_an_3_event_gamestate";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x6a0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::gamestate gs;
+				typedef typename pirate::timedevent_an_3_timer tmr;
+				typedef typename pirate::timedevent_an_3 at;
+
+					return (true);
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::gamestate gs;
+				typedef typename pirate::timedevent_an_3_timer tmr;
+				typedef typename pirate::timedevent_an_3 at;
+
+					(void)0; { 
+			if(gs::value() == 1)
+			{
+			   if(tmr::value() < at::value())
+				   tmr::start();
+			}
+			else
+			   tmr::stop();
+
+			if(gs::value() == 0)
+			   tmr::value(0);
+             }
+				}
+			};
+			typedef wic::event<timedevent_an_3_event_gamestate_config> timedevent_an_3_event_gamestate;
 
 			/// timedevent_ghost_voice_event_finished ///		
 			struct timedevent_ghost_voice_event_finished_config
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_ghost_voice_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x300;
+				static const uint32_t cfg_member_id = 0x420;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::timedevent_ghost_voice at;
@@ -2309,8 +3053,8 @@ namespace ddf
 			typedef room_2_content::event_3 d2;
 
 					return (true && ( 
-                at::value() <= tmr::value()
-             ));
+			at::value() <= tmr::value() && tmr::running()
+		 ));
 				}
 				static void cfg_action()
 				{
@@ -2320,12 +3064,12 @@ namespace ddf
 			typedef room_2_content::event_3 d2;
 
 					(void)0; { 
-                tmr::value(at::value());
-                tmr::stop();
+			tmr::stop();
+			tmr::value(at::value());
 
-    	        d1::play();
-                d2::play();
-             }
+			d1::play();
+			d2::play();
+		 }
 				}
 			};
 			typedef wic::event<timedevent_ghost_voice_event_finished_config> timedevent_ghost_voice_event_finished;
@@ -2335,11 +3079,12 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_ghost_voice_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x310;
+				static const uint32_t cfg_member_id = 0x430;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::timedevent_ghost_voice_timer tmr;
+				typedef typename pirate::timedevent_ghost_voice at;
 
 					return (true);
 				}
@@ -2347,15 +3092,20 @@ namespace ddf
 				{
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::timedevent_ghost_voice_timer tmr;
+				typedef typename pirate::timedevent_ghost_voice at;
 
 					(void)0; { 
-                if(gs::value() == 1)
-                   tmr::start();
-                else
-                   tmr::stop();
-                if(gs::value() == 0)
-                   tmr::value(0);
-             }
+			if(gs::value() == 1)
+			{
+				if(tmr::value() < at::value())
+					tmr::start();
+			}
+			else
+				tmr::stop();
+
+			if(gs::value() == 0)
+				tmr::value(0);
+		 }
 				}
 			};
 			typedef wic::event<timedevent_ghost_voice_event_gamestate_config> timedevent_ghost_voice_event_gamestate;
@@ -2365,7 +3115,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x450;
+				static const uint32_t cfg_member_id = 0x590;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::timedevent_pc_1 at;
@@ -2373,7 +3123,7 @@ namespace ddf
 				typedef typename pirate::incoming_call call;
 
 					return (true && ( 
-                at::value() <= tmr::value()
+				at::value() <= tmr::value() && tmr::running()
              ));
 				}
 				static void cfg_action()
@@ -2383,9 +3133,9 @@ namespace ddf
 				typedef typename pirate::incoming_call call;
 
 					(void)0; { 
-                tmr::value(at::value());
                 tmr::stop();
-                call::value(4);
+                tmr::value(at::value());
+                call::value(2);
              }
 				}
 			};
@@ -2396,11 +3146,12 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x460;
+				static const uint32_t cfg_member_id = 0x5a0;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::timedevent_pc_1_timer tmr;
+				typedef typename pirate::timedevent_pc_1 at;
 
 					return (true);
 				}
@@ -2408,14 +3159,19 @@ namespace ddf
 				{
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::timedevent_pc_1_timer tmr;
+				typedef typename pirate::timedevent_pc_1 at;
 
 					(void)0; { 
-                if(gs::value() == 1)
-                    tmr::start();
-                else
-                    tmr::stop();
-                if(gs::value() == 0)
-                    tmr::value(0);
+			if(gs::value() == 1)
+			{
+			   if(tmr::value() < at::value())
+				   tmr::start();
+			}
+			else
+			   tmr::stop();
+
+			if(gs::value() == 0)
+			   tmr::value(0);
              }
 				}
 			};
@@ -2426,7 +3182,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x4d0;
+				static const uint32_t cfg_member_id = 0x610;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::timedevent_pc_2 at;
@@ -2434,7 +3190,7 @@ namespace ddf
 				typedef typename pirate::incoming_call call;
 
 					return (true && ( 
-                at::value() <= tmr::value()
+				at::value() <= tmr::value() && tmr::running()
              ));
 				}
 				static void cfg_action()
@@ -2444,9 +3200,9 @@ namespace ddf
 				typedef typename pirate::incoming_call call;
 
 					(void)0; { 
-                tmr::value(at::value());
                 tmr::stop();
-    	       call::value(5);
+                tmr::value(at::value());
+    	    	call::value(3);
              }
 				}
 			};
@@ -2457,11 +3213,12 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x4e0;
+				static const uint32_t cfg_member_id = 0x620;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::timedevent_pc_2_timer tmr;
+				typedef typename pirate::timedevent_pc_2 at;
 
 					return (true);
 				}
@@ -2469,14 +3226,19 @@ namespace ddf
 				{
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::timedevent_pc_2_timer tmr;
+				typedef typename pirate::timedevent_pc_2 at;
 
 					(void)0; { 
-                if(gs::value() == 1)
-                    tmr::start();
-                else
-                    tmr::stop();
-                if(gs::value() == 0)
-                    tmr::value(0);
+			if(gs::value() == 1)
+			{
+			   if(tmr::value() < at::value())
+				   tmr::start();
+			}
+			else
+			   tmr::stop();
+
+			if(gs::value() == 0)
+			   tmr::value(0);
              }
 				}
 			};
@@ -2699,6 +3461,18 @@ namespace ddf
 			}
 
 
+			/// Audio Message URL ///
+			struct audio_message_url_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::magician::audio_message_url";
+				typedef std::string cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x2ffff0;
+				static const uint32_t cfg_member_id          = 0xe0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<audio_message_url_config> audio_message_url;
+
 			/// ComDev Reset ///
 			struct comdev_reset_config : public property_config_base
 			{
@@ -2717,7 +3491,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::magician::freezed1";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0x100;
+				static const uint32_t cfg_member_id          = 0x110;
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -2729,7 +3503,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::magician::freezed5";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0x110;
+				static const uint32_t cfg_member_id          = 0x120;
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -2753,7 +3527,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::magician::gameend";
 				typedef uint8_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0xf0;
+				static const uint32_t cfg_member_id          = 0x100;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -2765,7 +3539,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::magician::gamestate";
 				typedef uint8_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0xe0;
+				static const uint32_t cfg_member_id          = 0xf0;
 				static const uint32_t cfg_cooldown_time      = 1000;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -2885,23 +3659,11 @@ namespace ddf
 				constexpr static const char *name = "ddf::magician::timedevent_an_2";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0x460;
+				static const uint32_t cfg_member_id          = 0x420;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
 			typedef property_room<timedevent_an_2_config> timedevent_an_2;
-
-			/// timedevent_an_3 ///
-			struct timedevent_an_3_config : public property_config_base
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_an_3";
-				typedef uint64_t cfg_value_type;
-				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0x4a0;
-				static const uint32_t cfg_cooldown_time      = 0;
-				static const bool     cfg_commit_change_only = true;
-			};
-			typedef property_room<timedevent_an_3_config> timedevent_an_3;
 
 			/// timedevent_an_4 ///
 			struct timedevent_an_4_config : public property_config_base
@@ -2909,23 +3671,11 @@ namespace ddf
 				constexpr static const char *name = "ddf::magician::timedevent_an_4";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0x520;
+				static const uint32_t cfg_member_id          = 0x4a0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
 			typedef property_room<timedevent_an_4_config> timedevent_an_4;
-
-			/// timedevent_an_5 ///
-			struct timedevent_an_5_config : public property_config_base
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_an_5";
-				typedef uint64_t cfg_value_type;
-				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0x560;
-				static const uint32_t cfg_cooldown_time      = 0;
-				static const bool     cfg_commit_change_only = true;
-			};
-			typedef property_room<timedevent_an_5_config> timedevent_an_5;
 
 			/// timedevent_an_6 ///
 			struct timedevent_an_6_config : public property_config_base
@@ -2933,7 +3683,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::magician::timedevent_an_6";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0x5e0;
+				static const uint32_t cfg_member_id          = 0x520;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -2951,25 +3701,13 @@ namespace ddf
 			};
 			typedef property_room<timedevent_ap_1_config> timedevent_ap_1;
 
-			/// timedevent_ap_2 ///
-			struct timedevent_ap_2_config : public property_config_base
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_ap_2";
-				typedef uint64_t cfg_value_type;
-				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0x420;
-				static const uint32_t cfg_cooldown_time      = 0;
-				static const bool     cfg_commit_change_only = true;
-			};
-			typedef property_room<timedevent_ap_2_config> timedevent_ap_2;
-
 			/// timedevent_pc_1 ///
 			struct timedevent_pc_1_config : public property_config_base
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_pc_1";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0x4e0;
+				static const uint32_t cfg_member_id          = 0x460;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -2981,7 +3719,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::magician::timedevent_pc_2";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x2ffff0;
-				static const uint32_t cfg_member_id          = 0x5a0;
+				static const uint32_t cfg_member_id          = 0x4e0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -3263,7 +4001,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::freezetimer1";
 				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x130;
+				static const uint32_t cfg_member_id = 0x140;
 				static const uint32_t cfg_interval  = 60000;
 			};
 			typedef typename wic::timer<freezetimer1_config> freezetimer1;
@@ -3273,7 +4011,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::freezetimer5";
 				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x140;
+				static const uint32_t cfg_member_id = 0x150;
 				static const uint32_t cfg_interval  = 300000;
 			};
 			typedef typename wic::timer<freezetimer5_config> freezetimer5;
@@ -3283,7 +4021,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::gametimer";
 				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x120;
+				static const uint32_t cfg_member_id = 0x130;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<gametimer_config> gametimer;
@@ -3313,47 +4051,27 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_an_2_timer";
 				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x470;
+				static const uint32_t cfg_member_id = 0x430;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_an_2_timer_config> timedevent_an_2_timer;
-
-			/// timedevent_an_3_timer
-			struct timedevent_an_3_timer_config
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_an_3_timer";
-				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x4b0;
-				static const uint32_t cfg_interval  = 1000;
-			};
-			typedef typename wic::timer<timedevent_an_3_timer_config> timedevent_an_3_timer;
 
 			/// timedevent_an_4_timer
 			struct timedevent_an_4_timer_config
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_an_4_timer";
 				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x530;
+				static const uint32_t cfg_member_id = 0x4b0;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_an_4_timer_config> timedevent_an_4_timer;
-
-			/// timedevent_an_5_timer
-			struct timedevent_an_5_timer_config
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_an_5_timer";
-				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x570;
-				static const uint32_t cfg_interval  = 1000;
-			};
-			typedef typename wic::timer<timedevent_an_5_timer_config> timedevent_an_5_timer;
 
 			/// timedevent_an_6_timer
 			struct timedevent_an_6_timer_config
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_an_6_timer";
 				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x5f0;
+				static const uint32_t cfg_member_id = 0x530;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_an_6_timer_config> timedevent_an_6_timer;
@@ -3368,22 +4086,12 @@ namespace ddf
 			};
 			typedef typename wic::timer<timedevent_ap_1_timer_config> timedevent_ap_1_timer;
 
-			/// timedevent_ap_2_timer
-			struct timedevent_ap_2_timer_config
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_ap_2_timer";
-				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x430;
-				static const uint32_t cfg_interval  = 1000;
-			};
-			typedef typename wic::timer<timedevent_ap_2_timer_config> timedevent_ap_2_timer;
-
 			/// timedevent_pc_1_timer
 			struct timedevent_pc_1_timer_config
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_pc_1_timer";
 				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x4f0;
+				static const uint32_t cfg_member_id = 0x470;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_pc_1_timer_config> timedevent_pc_1_timer;
@@ -3393,7 +4101,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_pc_2_timer";
 				static const uint32_t cfg_class_id  = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x5b0;
+				static const uint32_t cfg_member_id = 0x4f0;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_pc_2_timer_config> timedevent_pc_2_timer;
@@ -3609,36 +4317,13 @@ namespace ddf
       	// Finished
       	case 3:
       		tmr::stop();
-      		tmr::reset();
+			tmr::reset();
       		break;
       }
      }
 				}
 			};
 			typedef wic::event<game_state_changed_config> game_state_changed;
-
-			/// Game Timer Expired ///		
-			struct game_timer_expired_config
-			{
-				constexpr static const char *name = "ddf::magician::game_timer_expired";
-				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x150;
-				static bool cfg_condition()
-				{
-									typedef typename magician::gametimer tmr;
-				typedef typename magician::gamestate gs;
-
-					return (true && ( tmr::value() >= 3600 ));
-				}
-				static void cfg_action()
-				{
-									typedef typename magician::gametimer tmr;
-				typedef typename magician::gamestate gs;
-
-					(void)0; { gs::value(3); }
-				}
-			};
-			typedef wic::event<game_timer_expired_config> game_timer_expired;
 
 			/// door_state_change ///		
 			struct door_state_change_config
@@ -4099,7 +4784,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::gameevent_safe_opened";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x620;
+				static const uint32_t cfg_member_id = 0x560;
 				static bool cfg_condition()
 				{
 									typedef typename magician::gameend ge;
@@ -4534,7 +5219,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_an_2_event_finished";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x480;
+				static const uint32_t cfg_member_id = 0x440;
 				static bool cfg_condition()
 				{
 									typedef typename magician::timedevent_an_2 at;
@@ -4568,7 +5253,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_an_2_event_gamestate";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x490;
+				static const uint32_t cfg_member_id = 0x450;
 				static bool cfg_condition()
 				{
 									typedef typename magician::gamestate gs;
@@ -4598,81 +5283,12 @@ namespace ddf
 			};
 			typedef wic::event<timedevent_an_2_event_gamestate_config> timedevent_an_2_event_gamestate;
 
-			/// timedevent_an_3_event_finished ///		
-			struct timedevent_an_3_event_finished_config
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_an_3_event_finished";
-				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x4c0;
-				static bool cfg_condition()
-				{
-									typedef typename magician::timedevent_an_3 at;
-				typedef typename magician::timedevent_an_3_timer tmr;
-			typedef room_1_content::event_3 event_3_room_1;
-			typedef room_2_content::event_3 event_3_room_2;
-
-					return (true && ( 
-				at::value() <= tmr::value() && tmr::running()
-             ));
-				}
-				static void cfg_action()
-				{
-									typedef typename magician::timedevent_an_3 at;
-				typedef typename magician::timedevent_an_3_timer tmr;
-			typedef room_1_content::event_3 event_3_room_1;
-			typedef room_2_content::event_3 event_3_room_2;
-
-					(void)0; { 
-                tmr::stop();
-                tmr::value(at::value());
-                event_3_room_1::play();
-                event_3_room_2::play();
-             }
-				}
-			};
-			typedef wic::event<timedevent_an_3_event_finished_config> timedevent_an_3_event_finished;
-
-			/// timedevent_an_3_event_gamestate ///		
-			struct timedevent_an_3_event_gamestate_config
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_an_3_event_gamestate";
-				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x4d0;
-				static bool cfg_condition()
-				{
-									typedef typename magician::gamestate gs;
-				typedef typename magician::timedevent_an_3_timer tmr;
-				typedef typename magician::timedevent_an_3 at;
-
-					return (true);
-				}
-				static void cfg_action()
-				{
-									typedef typename magician::gamestate gs;
-				typedef typename magician::timedevent_an_3_timer tmr;
-				typedef typename magician::timedevent_an_3 at;
-
-					(void)0; { 
-				if(gs::value() == 1)
-				{
-					if(tmr::value() < at::value())
-						tmr::start();
-				}
-				else
-					tmr::stop();
-				if(gs::value() == 0)
-					tmr::value(0);
-             }
-				}
-			};
-			typedef wic::event<timedevent_an_3_event_gamestate_config> timedevent_an_3_event_gamestate;
-
 			/// timedevent_an_4_event_finished ///		
 			struct timedevent_an_4_event_finished_config
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_an_4_event_finished";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x540;
+				static const uint32_t cfg_member_id = 0x4c0;
 				static bool cfg_condition()
 				{
 									typedef typename magician::timedevent_an_4 at;
@@ -4706,7 +5322,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_an_4_event_gamestate";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x550;
+				static const uint32_t cfg_member_id = 0x4d0;
 				static bool cfg_condition()
 				{
 									typedef typename magician::gamestate gs;
@@ -4736,81 +5352,12 @@ namespace ddf
 			};
 			typedef wic::event<timedevent_an_4_event_gamestate_config> timedevent_an_4_event_gamestate;
 
-			/// timedevent_an_5_event_finished ///		
-			struct timedevent_an_5_event_finished_config
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_an_5_event_finished";
-				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x580;
-				static bool cfg_condition()
-				{
-									typedef typename magician::timedevent_an_5 at;
-				typedef typename magician::timedevent_an_5_timer tmr;
-			typedef room_1_content::event_5 event_5_room_1;
-			typedef room_2_content::event_5 event_5_room_2;
-
-					return (true && ( 
-				at::value() <= tmr::value() && tmr::running()
-             ));
-				}
-				static void cfg_action()
-				{
-									typedef typename magician::timedevent_an_5 at;
-				typedef typename magician::timedevent_an_5_timer tmr;
-			typedef room_1_content::event_5 event_5_room_1;
-			typedef room_2_content::event_5 event_5_room_2;
-
-					(void)0; { 
-                tmr::stop();
-                tmr::value(at::value());
-                event_5_room_1::play();
-                event_5_room_2::play();
-             }
-				}
-			};
-			typedef wic::event<timedevent_an_5_event_finished_config> timedevent_an_5_event_finished;
-
-			/// timedevent_an_5_event_gamestate ///		
-			struct timedevent_an_5_event_gamestate_config
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_an_5_event_gamestate";
-				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x590;
-				static bool cfg_condition()
-				{
-									typedef typename magician::gamestate gs;
-				typedef typename magician::timedevent_an_5_timer tmr;
-				typedef typename magician::timedevent_an_5 at;
-
-					return (true);
-				}
-				static void cfg_action()
-				{
-									typedef typename magician::gamestate gs;
-				typedef typename magician::timedevent_an_5_timer tmr;
-				typedef typename magician::timedevent_an_5 at;
-
-					(void)0; { 
-				if(gs::value() == 1)
-				{
-					if(tmr::value() < at::value())
-						tmr::start();
-				}
-				else
-					tmr::stop();
-				if(gs::value() == 0)
-					tmr::value(0);
-             }
-				}
-			};
-			typedef wic::event<timedevent_an_5_event_gamestate_config> timedevent_an_5_event_gamestate;
-
 			/// timedevent_an_6_event_finished ///		
 			struct timedevent_an_6_event_finished_config
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_an_6_event_finished";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x600;
+				static const uint32_t cfg_member_id = 0x540;
 				static bool cfg_condition()
 				{
 									typedef typename magician::timedevent_an_6 at;
@@ -4844,7 +5391,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_an_6_event_gamestate";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x610;
+				static const uint32_t cfg_member_id = 0x550;
 				static bool cfg_condition()
 				{
 									typedef typename magician::gamestate gs;
@@ -4943,81 +5490,12 @@ namespace ddf
 			};
 			typedef wic::event<timedevent_ap_1_event_gamestate_config> timedevent_ap_1_event_gamestate;
 
-			/// timedevent_ap_2_event_finished ///		
-			struct timedevent_ap_2_event_finished_config
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_ap_2_event_finished";
-				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x440;
-				static bool cfg_condition()
-				{
-									typedef typename magician::timedevent_ap_2 at;
-				typedef typename magician::timedevent_ap_2_timer tmr;
-			typedef room_1_content::applause applause_1_room_1;
-			typedef room_2_content::applause applause_1_room_2;
-
-					return (true && ( 
-				at::value() <= tmr::value() && tmr::running()
-             ));
-				}
-				static void cfg_action()
-				{
-									typedef typename magician::timedevent_ap_2 at;
-				typedef typename magician::timedevent_ap_2_timer tmr;
-			typedef room_1_content::applause applause_1_room_1;
-			typedef room_2_content::applause applause_1_room_2;
-
-					(void)0; { 
-                tmr::stop();
-                tmr::value(at::value());
-                applause_1_room_1::play();
-                applause_1_room_2::play();
-             }
-				}
-			};
-			typedef wic::event<timedevent_ap_2_event_finished_config> timedevent_ap_2_event_finished;
-
-			/// timedevent_ap_2_event_gamestate ///		
-			struct timedevent_ap_2_event_gamestate_config
-			{
-				constexpr static const char *name = "ddf::magician::timedevent_ap_2_event_gamestate";
-				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x450;
-				static bool cfg_condition()
-				{
-									typedef typename magician::gamestate gs;
-				typedef typename magician::timedevent_ap_2_timer tmr;
-				typedef typename magician::timedevent_ap_2 at;
-
-					return (true);
-				}
-				static void cfg_action()
-				{
-									typedef typename magician::gamestate gs;
-				typedef typename magician::timedevent_ap_2_timer tmr;
-				typedef typename magician::timedevent_ap_2 at;
-
-					(void)0; { 
-				if(gs::value() == 1)
-				{
-					if(tmr::value() < at::value())
-						tmr::start();
-				}
-				else
-					tmr::stop();
-				if(gs::value() == 0)
-					tmr::value(0);
-             }
-				}
-			};
-			typedef wic::event<timedevent_ap_2_event_gamestate_config> timedevent_ap_2_event_gamestate;
-
 			/// timedevent_pc_1_event_finished ///		
 			struct timedevent_pc_1_event_finished_config
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_pc_1_event_finished";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x500;
+				static const uint32_t cfg_member_id = 0x480;
 				static bool cfg_condition()
 				{
 									typedef typename magician::timedevent_pc_1 at;
@@ -5037,7 +5515,7 @@ namespace ddf
 					(void)0; { 
                 tmr::stop();
                 tmr::value(at::value());
-				call::value(3);
+				call::value(0);
              }
 				}
 			};
@@ -5048,7 +5526,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_pc_1_event_gamestate";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x510;
+				static const uint32_t cfg_member_id = 0x490;
 				static bool cfg_condition()
 				{
 									typedef typename magician::gamestate gs;
@@ -5083,7 +5561,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_pc_2_event_finished";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x5c0;
+				static const uint32_t cfg_member_id = 0x500;
 				static bool cfg_condition()
 				{
 									typedef typename magician::timedevent_pc_2 at;
@@ -5103,7 +5581,7 @@ namespace ddf
 					(void)0; { 
                 tmr::stop();
                 tmr::value(at::value());
-                call::value(3);
+                call::value(1);
              }
 				}
 			};
@@ -5114,7 +5592,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::magician::timedevent_pc_2_event_gamestate";
 				static const uint32_t cfg_class_id = 0x2ffff0;
-				static const uint32_t cfg_member_id = 0x5d0;
+				static const uint32_t cfg_member_id = 0x510;
 				static bool cfg_condition()
 				{
 									typedef typename magician::gamestate gs;
@@ -5667,6 +6145,18 @@ namespace ddf
 			}
 
 
+			/// Audio Message URL ///
+			struct audio_message_url_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::villa::audio_message_url";
+				typedef std::string cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x3ffff0;
+				static const uint32_t cfg_member_id          = 0x100;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<audio_message_url_config> audio_message_url;
+
 			/// ComDev Reset ///
 			struct comdev_reset_config : public property_config_base
 			{
@@ -5685,7 +6175,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::villa::freezed1";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x3ffff0;
-				static const uint32_t cfg_member_id          = 0x120;
+				static const uint32_t cfg_member_id          = 0x130;
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -5697,7 +6187,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::villa::freezed5";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x3ffff0;
-				static const uint32_t cfg_member_id          = 0x130;
+				static const uint32_t cfg_member_id          = 0x140;
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -5721,7 +6211,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::villa::gameend";
 				typedef uint8_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x3ffff0;
-				static const uint32_t cfg_member_id          = 0x110;
+				static const uint32_t cfg_member_id          = 0x120;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -5733,7 +6223,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::villa::gamestate";
 				typedef uint8_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x3ffff0;
-				static const uint32_t cfg_member_id          = 0x100;
+				static const uint32_t cfg_member_id          = 0x110;
 				static const uint32_t cfg_cooldown_time      = 1000;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -6091,7 +6581,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::villa::freezetimer1";
 				static const uint32_t cfg_class_id  = 0x3ffff0;
-				static const uint32_t cfg_member_id = 0x150;
+				static const uint32_t cfg_member_id = 0x160;
 				static const uint32_t cfg_interval  = 60000;
 			};
 			typedef typename wic::timer<freezetimer1_config> freezetimer1;
@@ -6101,7 +6591,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::villa::freezetimer5";
 				static const uint32_t cfg_class_id  = 0x3ffff0;
-				static const uint32_t cfg_member_id = 0x160;
+				static const uint32_t cfg_member_id = 0x170;
 				static const uint32_t cfg_interval  = 300000;
 			};
 			typedef typename wic::timer<freezetimer5_config> freezetimer5;
@@ -6111,7 +6601,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::villa::gametimer";
 				static const uint32_t cfg_class_id  = 0x3ffff0;
-				static const uint32_t cfg_member_id = 0x140;
+				static const uint32_t cfg_member_id = 0x150;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<gametimer_config> gametimer;
@@ -6407,36 +6897,13 @@ namespace ddf
       	// Finished
       	case 3:
       		tmr::stop();
-      		tmr::reset();
+			tmr::reset();
       		break;
       }
      }
 				}
 			};
 			typedef wic::event<game_state_changed_config> game_state_changed;
-
-			/// Game Timer Expired ///		
-			struct game_timer_expired_config
-			{
-				constexpr static const char *name = "ddf::villa::game_timer_expired";
-				static const uint32_t cfg_class_id = 0x3ffff0;
-				static const uint32_t cfg_member_id = 0x170;
-				static bool cfg_condition()
-				{
-									typedef typename villa::gametimer tmr;
-				typedef typename villa::gamestate gs;
-
-					return (true && ( tmr::value() >= 3600 ));
-				}
-				static void cfg_action()
-				{
-									typedef typename villa::gametimer tmr;
-				typedef typename villa::gamestate gs;
-
-					(void)0; { gs::value(3); }
-				}
-			};
-			typedef wic::event<game_timer_expired_config> game_timer_expired;
 
 			/// answering_machine ///		
 			struct answering_machine_config
@@ -7367,7 +7834,7 @@ namespace ddf
 					(void)0; { 
 	            tmr::stop();
 	            tmr::value(at::value());
-	            call::value(6);
+	            call::value(4);
 	         }
 				}
 			};
@@ -7434,7 +7901,7 @@ namespace ddf
 					(void)0; { 
 	            tmr::stop();
 	            tmr::value(at::value());
-				call::value(6);            
+				call::value(5);            
 	         }
 				}
 			};
@@ -7501,7 +7968,7 @@ namespace ddf
 					(void)0; { 
 	            tmr::stop();
 	            tmr::value(at::value());
-	            call::value(7);
+	            call::value(6);
 	         }
 				}
 			};
@@ -8022,6 +8489,18 @@ namespace ddf
 			}
 
 
+			/// Audio Message URL ///
+			struct audio_message_url_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::junkyard::audio_message_url";
+				typedef std::string cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x4ffff0;
+				static const uint32_t cfg_member_id          = 0xe0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<audio_message_url_config> audio_message_url;
+
 			/// ComDev Reset ///
 			struct comdev_reset_config : public property_config_base
 			{
@@ -8040,7 +8519,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::freezed1";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0x100;
+				static const uint32_t cfg_member_id          = 0x110;
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -8052,7 +8531,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::freezed5";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0x110;
+				static const uint32_t cfg_member_id          = 0x120;
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -8076,7 +8555,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::gameend";
 				typedef uint8_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0xf0;
+				static const uint32_t cfg_member_id          = 0x100;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -8088,7 +8567,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::gamestate";
 				typedef uint8_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0xe0;
+				static const uint32_t cfg_member_id          = 0xf0;
 				static const uint32_t cfg_cooldown_time      = 1000;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -8160,7 +8639,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::correct_notes";
 				typedef uint8_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0x2f0;
+				static const uint32_t cfg_member_id          = 0x310;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -8184,7 +8663,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::lock_pick_1_pressed";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0x310;
+				static const uint32_t cfg_member_id          = 0x290;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -8196,7 +8675,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::lock_pick_2_pressed";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0x320;
+				static const uint32_t cfg_member_id          = 0x2a0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -8208,7 +8687,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::timedevent_pc_1";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0x3d0;
+				static const uint32_t cfg_member_id          = 0x3e0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -8220,7 +8699,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::timedevent_pc_2";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x4ffff0;
-				static const uint32_t cfg_member_id          = 0x410;
+				static const uint32_t cfg_member_id          = 0x420;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -8560,7 +9039,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::freezetimer1";
 				static const uint32_t cfg_class_id  = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x130;
+				static const uint32_t cfg_member_id = 0x140;
 				static const uint32_t cfg_interval  = 60000;
 			};
 			typedef typename wic::timer<freezetimer1_config> freezetimer1;
@@ -8570,7 +9049,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::freezetimer5";
 				static const uint32_t cfg_class_id  = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x140;
+				static const uint32_t cfg_member_id = 0x150;
 				static const uint32_t cfg_interval  = 300000;
 			};
 			typedef typename wic::timer<freezetimer5_config> freezetimer5;
@@ -8580,7 +9059,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::gametimer";
 				static const uint32_t cfg_class_id  = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x120;
+				static const uint32_t cfg_member_id = 0x130;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<gametimer_config> gametimer;
@@ -8590,7 +9069,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::relock_timer";
 				static const uint32_t cfg_class_id  = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x2b0;
+				static const uint32_t cfg_member_id = 0x2d0;
 				static const uint32_t cfg_interval  = 3000;
 			};
 			typedef typename wic::timer<relock_timer_config> relock_timer;
@@ -8600,7 +9079,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::timedevent_pc_1_timer";
 				static const uint32_t cfg_class_id  = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x3e0;
+				static const uint32_t cfg_member_id = 0x3f0;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_pc_1_timer_config> timedevent_pc_1_timer;
@@ -8610,7 +9089,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::timedevent_pc_2_timer";
 				static const uint32_t cfg_class_id  = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x420;
+				static const uint32_t cfg_member_id = 0x430;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_pc_2_timer_config> timedevent_pc_2_timer;
@@ -8826,7 +9305,7 @@ namespace ddf
       	// Finished
       	case 3:
       		tmr::stop();
-      		tmr::reset();
+			tmr::reset();
       		break;
       }
      }
@@ -8834,35 +9313,12 @@ namespace ddf
 			};
 			typedef wic::event<game_state_changed_config> game_state_changed;
 
-			/// Game Timer Expired ///		
-			struct game_timer_expired_config
-			{
-				constexpr static const char *name = "ddf::junkyard::game_timer_expired";
-				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x150;
-				static bool cfg_condition()
-				{
-									typedef typename junkyard::gametimer tmr;
-				typedef typename junkyard::gamestate gs;
-
-					return (true && ( tmr::value() >= 3600 ));
-				}
-				static void cfg_action()
-				{
-									typedef typename junkyard::gametimer tmr;
-				typedef typename junkyard::gamestate gs;
-
-					(void)0; { gs::value(3); }
-				}
-			};
-			typedef wic::event<game_timer_expired_config> game_timer_expired;
-
 			/// Led strip update ///		
 			struct led_strip_update_config
 			{
 				constexpr static const char *name = "ddf::junkyard::led_strip_update";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x2e0;
+				static const uint32_t cfg_member_id = 0x300;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::led_timer_start lts;
@@ -8892,15 +9348,15 @@ namespace ddf
 			int i = 0;
 			for(; i < blacks; ++i)
 			{
-				v.led[i].red = 0;
-				v.led[i].green = 0;
-				v.led[i].blue = 0;
+				v.led[50-i].red = 0;
+				v.led[50-i].green = 0;
+				v.led[50-i].blue = 0;
 			}
 			for(; i < 50; ++i)
 			{
-				v.led[i].red = 0;
-				v.led[i].green = 40;
-				v.led[i].blue = 0;
+				v.led[50-i].red = 0;
+				v.led[50-i].green = 40;
+				v.led[50-i].blue = 0;
 			}
 			led::value((led::value_type)v);
 	     }
@@ -8913,7 +9369,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::door_state_change";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x290;
+				static const uint32_t cfg_member_id = 0x2b0;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::gamestate gs;
@@ -8948,7 +9404,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::game_end_button_push";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x3b0;
+				static const uint32_t cfg_member_id = 0x3c0;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::entrance_controller::debouncer button;
@@ -8986,7 +9442,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::game_ending";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x3a0;
+				static const uint32_t cfg_member_id = 0x3b0;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::gameend ge;
@@ -9029,7 +9485,6 @@ namespace ddf
 				typedef typename junkyard::secret_box_controller_2::magnetic_lock_3 lock;
 
 					(void)0; {  
-        	indicator::value(1);
         	lock::value(0); 
          }
 				}
@@ -9041,7 +9496,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::gameevent_anamorphic_module";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x380;
+				static const uint32_t cfg_member_id = 0x390;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::secret_box_controller_2::debouncer_1 switch_1;
@@ -9424,7 +9879,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::gameevent_mona_lisa_rescue";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x390;
+				static const uint32_t cfg_member_id = 0x3a0;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::secret_box_controller_2::debouncer_12 picture_switch;
@@ -9481,13 +9936,15 @@ namespace ddf
 					(void)0; { 
             if(lock_pick_1::value())
                 lock_pick_1_pressed::value(true);
+
             else if(lock_pick_2::value())
                 lock_pick_2_pressed::value(lock_pick_1_pressed::value());
+
             else if(lock_pick_3::value())
             {
                 if(lock_pick_1_pressed::value() && lock_pick_2_pressed::value())
-                lock::value(0);
-           	}
+            	    lock::value(0);
+            }
          }
 				}
 			};
@@ -9498,7 +9955,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::piano_key_pressed";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x300;
+				static const uint32_t cfg_member_id = 0x320;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::correct_notes correct_notes;
@@ -9617,12 +10074,37 @@ namespace ddf
 			};
 			typedef wic::event<piano_key_pressed_config> piano_key_pressed;
 
+			/// potato_power_indicator ///		
+			struct potato_power_indicator_config
+			{
+				constexpr static const char *name = "ddf::junkyard::potato_power_indicator";
+				static const uint32_t cfg_class_id = 0x4ffff0;
+				static const uint32_t cfg_member_id = 0x380;
+				static bool cfg_condition()
+				{
+									typedef typename junkyard::secret_box_controller_2::debouncer_10 button;
+				typedef typename junkyard::secret_box_controller_2::light_controller indicator;
+
+					return (true);
+				}
+				static void cfg_action()
+				{
+									typedef typename junkyard::secret_box_controller_2::debouncer_10 button;
+				typedef typename junkyard::secret_box_controller_2::light_controller indicator;
+
+					(void)0; { 
+		indicator::value(button::value());
+         }
+				}
+			};
+			typedef wic::event<potato_power_indicator_config> potato_power_indicator;
+
 			/// relock_event ///		
 			struct relock_event_config
 			{
 				constexpr static const char *name = "ddf::junkyard::relock_event";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x2d0;
+				static const uint32_t cfg_member_id = 0x2f0;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::relock_timer relock_timer;
@@ -9651,12 +10133,14 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::reset_room";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x2a0;
+				static const uint32_t cfg_member_id = 0x2c0;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::gamestate gs;
 				typedef typename junkyard::comdev_reset cr;
 				typedef typename junkyard::led_timer_start lts;
+				typedef typename junkyard::lock_pick_1_pressed lock_pick_1_pressed;
+				typedef typename junkyard::lock_pick_2_pressed lock_pick_2_pressed;
 				typedef typename junkyard::secret_box_controller_1::magnetic_lock_1 lock_11;
 				typedef typename junkyard::secret_box_controller_1::magnetic_lock_2 lock_12;
 				typedef typename junkyard::secret_box_controller_1::magnetic_lock_3 lock_13;
@@ -9678,6 +10162,8 @@ namespace ddf
 									typedef typename junkyard::gamestate gs;
 				typedef typename junkyard::comdev_reset cr;
 				typedef typename junkyard::led_timer_start lts;
+				typedef typename junkyard::lock_pick_1_pressed lock_pick_1_pressed;
+				typedef typename junkyard::lock_pick_2_pressed lock_pick_2_pressed;
 				typedef typename junkyard::secret_box_controller_1::magnetic_lock_1 lock_11;
 				typedef typename junkyard::secret_box_controller_1::magnetic_lock_2 lock_12;
 				typedef typename junkyard::secret_box_controller_1::magnetic_lock_3 lock_13;
@@ -9711,6 +10197,8 @@ namespace ddf
 			v.led[i].blue = 0;
 		}
 		ledstrip::value((ledstrip::value_type)v);
+		lock_pick_1_pressed::value(false);
+		lock_pick_2_pressed::value(false);
 	 }
 				}
 			};
@@ -9721,7 +10209,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::time_up";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x3c0;
+				static const uint32_t cfg_member_id = 0x3d0;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::gametimer tmr;
@@ -9758,7 +10246,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::timedevent_pc_1_event_finished";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x3f0;
+				static const uint32_t cfg_member_id = 0x400;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::timedevent_pc_1 at;
@@ -9778,7 +10266,7 @@ namespace ddf
 					(void)0; { 
 	            tmr::stop();
 	            tmr::value(at::value());
-	            call::value(0);
+	            call::value(7);
 	         }
 				}
 			};
@@ -9789,7 +10277,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::timedevent_pc_1_event_gamestate";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x400;
+				static const uint32_t cfg_member_id = 0x410;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::gamestate gs;
@@ -9825,7 +10313,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::timedevent_pc_2_event_finished";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x430;
+				static const uint32_t cfg_member_id = 0x440;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::timedevent_pc_2 at;
@@ -9845,7 +10333,7 @@ namespace ddf
 					(void)0; { 
 	            tmr::stop();
 	            tmr::value(at::value());
-	            call::value(1);
+	            call::value(8);
 	         }
 				}
 			};
@@ -9856,7 +10344,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::timedevent_pc_2_event_gamestate";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x440;
+				static const uint32_t cfg_member_id = 0x450;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::gamestate gs;
@@ -9892,7 +10380,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::junkyard::top_opening";
 				static const uint32_t cfg_class_id = 0x4ffff0;
-				static const uint32_t cfg_member_id = 0x2c0;
+				static const uint32_t cfg_member_id = 0x2e0;
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::secret_box_controller_1::debouncer_4 on_switch;
@@ -10432,13 +10920,6 @@ static void init()
 	ddf::pirate::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::pirate::game_timer_expired::init();
-	ddf::pirate::gametimer::on_value_change += ddf::pirate::game_timer_expired::monitor;
-
-	ddf::pirate::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::pirate::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::pirate::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::pirate::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::chest_opening::init();
 	ddf::pirate::stone_chest_controller::magnetic_sensor_5::value::on_change += ddf::pirate::chest_opening::monitor;
 
@@ -10446,8 +10927,22 @@ static void init()
 	ddf::pirate::chest_opening::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::chest_opening::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::chest_opening::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::display_update::init();
+	ddf::pirate::pin_code::on_change += ddf::pirate::display_update::monitor;
+
+	ddf::pirate::display_update::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::display_update::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::display_update::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::display_update::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::door_state_change::init();
+	ddf::pirate::gamestate::on_change += ddf::pirate::door_state_change::monitor;
+	ddf::pirate::entrance_hanger_controller::magnetic_sensor::value::on_change += ddf::pirate::door_state_change::monitor;
+
+	ddf::pirate::door_state_change::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::door_state_change::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::door_state_change::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::door_state_change::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::game_end_button_push::init();
-	ddf::pirate::gamestate::on_change += ddf::pirate::game_end_button_push::monitor;
 	ddf::pirate::entrance_hanger_controller::debouncer::value::on_change += ddf::pirate::game_end_button_push::monitor;
 
 	ddf::pirate::game_end_button_push::remote_add(ddf::service::gmclient::device_role::instance(0));
@@ -10455,19 +10950,12 @@ static void init()
 	ddf::pirate::game_end_button_push::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::game_end_button_push::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::game_ending::init();
-	ddf::pirate::game_end::on_change += ddf::pirate::game_ending::monitor;
+	ddf::pirate::gameend::on_change += ddf::pirate::game_ending::monitor;
 
 	ddf::pirate::game_ending::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::game_ending::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::game_ending::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::game_ending::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::pirate::game_start::init();
-	ddf::pirate::entrance_hanger_controller::magnetic_sensor::value::on_change += ddf::pirate::game_start::monitor;
-
-	ddf::pirate::game_start::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::pirate::game_start::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::pirate::game_start::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::pirate::game_start::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::gameevent_call_accepted::init();
 	ddf::pirate::incoming_call_status::on_change += ddf::pirate::gameevent_call_accepted::monitor;
 
@@ -10547,6 +11035,13 @@ static void init()
 	ddf::pirate::gameevent_game_win::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::gameevent_game_win::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::gameevent_game_win::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::gameevent_rex_game_won::init();
+	ddf::pirate::rex_score::on_change += ddf::pirate::gameevent_rex_game_won::monitor;
+
+	ddf::pirate::gameevent_rex_game_won::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::gameevent_rex_game_won::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::gameevent_rex_game_won::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::gameevent_rex_game_won::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::hanger_trigger::init();
 	ddf::pirate::entrance_hanger_controller::debouncer_2::value::on_change += ddf::pirate::hanger_trigger::monitor;
 
@@ -10581,6 +11076,20 @@ static void init()
 	ddf::pirate::laser_turn_off::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::laser_turn_off::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::laser_turn_off::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::left_column_evaluate::init();
+	ddf::pirate::rex_flipper_controller::photosensor_2::value::on_change += ddf::pirate::left_column_evaluate::monitor;
+
+	ddf::pirate::left_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::left_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::left_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::left_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::middle_column_evaluate::init();
+	ddf::pirate::rex_flipper_controller::photosensor_1::value::on_change += ddf::pirate::middle_column_evaluate::monitor;
+
+	ddf::pirate::middle_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::middle_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::middle_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::middle_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::pin_code_accumulation::init();
 	ddf::pirate::cashier_laser_controller::pin_pad::value::on_change += ddf::pirate::pin_code_accumulation::monitor;
 
@@ -10595,12 +11104,62 @@ static void init()
 	ddf::pirate::pin_timeout::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::pin_timeout::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::pin_timeout::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::pirate::rex_table::init();
+	ddf::pirate::reset_room::init();
+	ddf::pirate::gamestate::on_change += ddf::pirate::reset_room::monitor;
 
-	ddf::pirate::rex_table::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::pirate::rex_table::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::pirate::rex_table::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::pirate::rex_table::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::reset_room::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::reset_room::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::reset_room::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::reset_room::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_led_update::init();
+	ddf::pirate::rex_trials_left::on_change += ddf::pirate::rex_led_update::monitor;
+
+	ddf::pirate::rex_led_update::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_led_update::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_led_update::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_led_update::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_photosensor_3_acc::init();
+	ddf::pirate::rex_flipper_controller::photosensor_3::value::on_change += ddf::pirate::rex_photosensor_3_acc::monitor;
+
+	ddf::pirate::rex_photosensor_3_acc::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_photosensor_3_acc::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_photosensor_3_acc::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_photosensor_3_acc::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_photosensor_5_acc::init();
+	ddf::pirate::rex_flipper_controller::photosensor_5::value::on_change += ddf::pirate::rex_photosensor_5_acc::monitor;
+
+	ddf::pirate::rex_photosensor_5_acc::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_photosensor_5_acc::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_photosensor_5_acc::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_photosensor_5_acc::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_photosensor_6_acc::init();
+	ddf::pirate::rex_flipper_controller::photosensor_6::value::on_change += ddf::pirate::rex_photosensor_6_acc::monitor;
+
+	ddf::pirate::rex_photosensor_6_acc::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_photosensor_6_acc::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_photosensor_6_acc::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_photosensor_6_acc::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_photosensor_7_acc::init();
+	ddf::pirate::rex_flipper_controller::photosensor_7::value::on_change += ddf::pirate::rex_photosensor_7_acc::monitor;
+
+	ddf::pirate::rex_photosensor_7_acc::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_photosensor_7_acc::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_photosensor_7_acc::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_photosensor_7_acc::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_table_reset::init();
+	ddf::pirate::gamestate::on_change += ddf::pirate::rex_table_reset::monitor;
+
+	ddf::pirate::rex_table_reset::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_table_reset::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_table_reset::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_table_reset::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::right_column_evaluate::init();
+	ddf::pirate::rex_flipper_controller::photosensor_4::value::on_change += ddf::pirate::right_column_evaluate::monitor;
+
+	ddf::pirate::right_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::right_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::right_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::right_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::rotation_update::init();
 	ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::potentiometer::value::on_change += ddf::pirate::rotation_update::monitor;
 
@@ -10626,6 +11185,15 @@ static void init()
 	ddf::pirate::sign_matching::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::sign_matching::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::sign_matching::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::time_up::init();
+	ddf::pirate::gametimer::on_value_change += ddf::pirate::time_up::monitor;
+	ddf::pirate::gameend::on_change += ddf::pirate::time_up::monitor;
+	ddf::pirate::gamestate::on_change += ddf::pirate::time_up::monitor;
+
+	ddf::pirate::time_up::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::time_up::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::time_up::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::time_up::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::timedevent_an_1_event_finished::init();
 	ddf::pirate::timedevent_an_1_timer::on_value_change += ddf::pirate::timedevent_an_1_event_finished::monitor;
 
@@ -10654,6 +11222,20 @@ static void init()
 	ddf::pirate::timedevent_an_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::timedevent_an_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::timedevent_an_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::timedevent_an_3_event_finished::init();
+	ddf::pirate::timedevent_an_3_timer::on_value_change += ddf::pirate::timedevent_an_3_event_finished::monitor;
+
+	ddf::pirate::timedevent_an_3_event_finished::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::timedevent_an_3_event_finished::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::timedevent_an_3_event_finished::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::timedevent_an_3_event_finished::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::timedevent_an_3_event_gamestate::init();
+	ddf::pirate::gamestate::on_change += ddf::pirate::timedevent_an_3_event_gamestate::monitor;
+
+	ddf::pirate::timedevent_an_3_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::timedevent_an_3_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::timedevent_an_3_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::timedevent_an_3_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::timedevent_ghost_voice_event_finished::init();
 	ddf::pirate::timedevent_ghost_voice_timer::on_value_change += ddf::pirate::timedevent_ghost_voice_event_finished::monitor;
 
@@ -10697,6 +11279,15 @@ static void init()
 	ddf::pirate::timedevent_pc_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::timedevent_pc_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(3));
 
+	ddf::pirate::audio_message_url::init(std::string());
+	ddf::pirate::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(0));
+	ddf::pirate::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(1));
+	ddf::pirate::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(2));
+	ddf::pirate::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(3));
 	ddf::pirate::comdev_reset::init(bool(false));
 	ddf::pirate::comdev_reset::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::comdev_reset::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -10780,11 +11371,6 @@ static void init()
 	ddf::pirate::text_message_sender::remote_add(ddf::service::comdev::device_role::instance(1));
 	ddf::pirate::text_message_sender::remote_add(ddf::service::comdev::device_role::instance(2));
 	ddf::pirate::text_message_sender::remote_add(ddf::service::comdev::device_role::instance(3));
-	ddf::pirate::game_end::init(uint8_t());
-	ddf::pirate::game_end::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::pirate::game_end::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::pirate::game_end::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::pirate::game_end::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::knock_count::init(uint32_t(0));
 	ddf::pirate::knock_count::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::knock_count::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -10795,16 +11381,66 @@ static void init()
 	ddf::pirate::pin_code::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::pin_code::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::pin_code::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::pirate::timedevent_an_1::init(uint64_t(1800));
+	ddf::pirate::rex_left_column_failure::init(bool(false));
+	ddf::pirate::rex_left_column_failure::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_left_column_failure::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_left_column_failure::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_left_column_failure::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_middle_column_failure::init(bool(false));
+	ddf::pirate::rex_middle_column_failure::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_middle_column_failure::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_middle_column_failure::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_middle_column_failure::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_photosensor_3_value::init(bool(false));
+	ddf::pirate::rex_photosensor_3_value::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_photosensor_3_value::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_photosensor_3_value::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_photosensor_3_value::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_photosensor_5_value::init(bool(false));
+	ddf::pirate::rex_photosensor_5_value::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_photosensor_5_value::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_photosensor_5_value::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_photosensor_5_value::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_photosensor_6_value::init(bool(false));
+	ddf::pirate::rex_photosensor_6_value::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_photosensor_6_value::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_photosensor_6_value::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_photosensor_6_value::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_photosensor_7_value::init(bool(false));
+	ddf::pirate::rex_photosensor_7_value::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_photosensor_7_value::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_photosensor_7_value::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_photosensor_7_value::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_right_column_failure::init(bool(false));
+	ddf::pirate::rex_right_column_failure::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_right_column_failure::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_right_column_failure::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_right_column_failure::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_score::init(uint32_t(3));
+	ddf::pirate::rex_score::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_score::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_score::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_score::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_trials_left::init(uint8_t(3));
+	ddf::pirate::rex_trials_left::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_trials_left::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_trials_left::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_trials_left::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::timedevent_an_1::init(uint64_t(300));
 	ddf::pirate::timedevent_an_1::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::timedevent_an_1::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::timedevent_an_1::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::timedevent_an_1::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::pirate::timedevent_an_2::init(uint64_t(3300));
+	ddf::pirate::timedevent_an_2::init(uint64_t(1800));
 	ddf::pirate::timedevent_an_2::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::timedevent_an_2::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::timedevent_an_2::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::timedevent_an_2::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::timedevent_an_3::init(uint64_t(3300));
+	ddf::pirate::timedevent_an_3::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::timedevent_an_3::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::timedevent_an_3::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::timedevent_an_3::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::timedevent_ghost_voice::init(uint64_t(17));
 	ddf::pirate::timedevent_ghost_voice::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::timedevent_ghost_voice::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -10982,6 +11618,12 @@ static void init()
 	ddf::pirate::timedevent_an_2_timer::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::timedevent_an_2_timer::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::timedevent_an_2_timer::remote_add(ddf::service::gmclient::device_role::instance(3));
+
+	ddf::pirate::timedevent_an_3_timer::init();
+	ddf::pirate::timedevent_an_3_timer::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::timedevent_an_3_timer::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::timedevent_an_3_timer::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::timedevent_an_3_timer::remote_add(ddf::service::gmclient::device_role::instance(3));
 
 	ddf::pirate::timedevent_ghost_voice_timer::init();
 	ddf::pirate::timedevent_ghost_voice_timer::remote_add(ddf::service::gmclient::device_role::instance(0));
@@ -11176,13 +11818,6 @@ static void init()
 	ddf::magician::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::game_timer_expired::init();
-	ddf::magician::gametimer::on_value_change += ddf::magician::game_timer_expired::monitor;
-
-	ddf::magician::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::magician::door_state_change::init();
 	ddf::magician::gamestate::on_change += ddf::magician::door_state_change::monitor;
 	ddf::magician::entrance_controller::magnetic_sensor::value::on_change += ddf::magician::door_state_change::monitor;
@@ -11406,20 +12041,6 @@ static void init()
 	ddf::magician::timedevent_an_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::timedevent_an_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_an_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_an_3_event_finished::init();
-	ddf::magician::timedevent_an_3_timer::on_value_change += ddf::magician::timedevent_an_3_event_finished::monitor;
-
-	ddf::magician::timedevent_an_3_event_finished::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_an_3_event_finished::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_an_3_event_finished::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_an_3_event_finished::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_an_3_event_gamestate::init();
-	ddf::magician::gamestate::on_change += ddf::magician::timedevent_an_3_event_gamestate::monitor;
-
-	ddf::magician::timedevent_an_3_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_an_3_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_an_3_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_an_3_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::magician::timedevent_an_4_event_finished::init();
 	ddf::magician::timedevent_an_4_timer::on_value_change += ddf::magician::timedevent_an_4_event_finished::monitor;
 
@@ -11434,20 +12055,6 @@ static void init()
 	ddf::magician::timedevent_an_4_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::timedevent_an_4_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_an_4_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_an_5_event_finished::init();
-	ddf::magician::timedevent_an_5_timer::on_value_change += ddf::magician::timedevent_an_5_event_finished::monitor;
-
-	ddf::magician::timedevent_an_5_event_finished::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_an_5_event_finished::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_an_5_event_finished::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_an_5_event_finished::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_an_5_event_gamestate::init();
-	ddf::magician::gamestate::on_change += ddf::magician::timedevent_an_5_event_gamestate::monitor;
-
-	ddf::magician::timedevent_an_5_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_an_5_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_an_5_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_an_5_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::magician::timedevent_an_6_event_finished::init();
 	ddf::magician::timedevent_an_6_timer::on_value_change += ddf::magician::timedevent_an_6_event_finished::monitor;
 
@@ -11476,20 +12083,6 @@ static void init()
 	ddf::magician::timedevent_ap_1_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::timedevent_ap_1_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_ap_1_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_ap_2_event_finished::init();
-	ddf::magician::timedevent_ap_2_timer::on_value_change += ddf::magician::timedevent_ap_2_event_finished::monitor;
-
-	ddf::magician::timedevent_ap_2_event_finished::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_ap_2_event_finished::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_ap_2_event_finished::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_ap_2_event_finished::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_ap_2_event_gamestate::init();
-	ddf::magician::gamestate::on_change += ddf::magician::timedevent_ap_2_event_gamestate::monitor;
-
-	ddf::magician::timedevent_ap_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_ap_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_ap_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_ap_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::magician::timedevent_pc_1_event_finished::init();
 	ddf::magician::timedevent_pc_1_timer::on_value_change += ddf::magician::timedevent_pc_1_event_finished::monitor;
 
@@ -11519,6 +12112,15 @@ static void init()
 	ddf::magician::timedevent_pc_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_pc_2_event_gamestate::remote_add(ddf::service::gmclient::device_role::instance(3));
 
+	ddf::magician::audio_message_url::init(std::string());
+	ddf::magician::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::magician::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::magician::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::magician::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::magician::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(0));
+	ddf::magician::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(1));
+	ddf::magician::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(2));
+	ddf::magician::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(3));
 	ddf::magician::comdev_reset::init(bool(false));
 	ddf::magician::comdev_reset::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::magician::comdev_reset::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -11627,21 +12229,11 @@ static void init()
 	ddf::magician::timedevent_an_2::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::timedevent_an_2::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_an_2::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_an_3::init(uint64_t(1200));
-	ddf::magician::timedevent_an_3::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_an_3::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_an_3::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_an_3::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::magician::timedevent_an_4::init(uint64_t(1800));
 	ddf::magician::timedevent_an_4::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::magician::timedevent_an_4::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::timedevent_an_4::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_an_4::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_an_5::init(uint64_t(2400));
-	ddf::magician::timedevent_an_5::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_an_5::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_an_5::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_an_5::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::magician::timedevent_an_6::init(uint64_t(3300));
 	ddf::magician::timedevent_an_6::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::magician::timedevent_an_6::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -11652,17 +12244,12 @@ static void init()
 	ddf::magician::timedevent_ap_1::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::timedevent_ap_1::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_ap_1::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_ap_2::init(uint64_t(300));
-	ddf::magician::timedevent_ap_2::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_ap_2::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_ap_2::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_ap_2::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_pc_1::init(uint64_t(1212));
+	ddf::magician::timedevent_pc_1::init(uint64_t(1200));
 	ddf::magician::timedevent_pc_1::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::magician::timedevent_pc_1::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::timedevent_pc_1::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_pc_1::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::magician::timedevent_pc_2::init(uint64_t(2412));
+	ddf::magician::timedevent_pc_2::init(uint64_t(2400));
 	ddf::magician::timedevent_pc_2::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::magician::timedevent_pc_2::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::timedevent_pc_2::remote_add(ddf::service::gmclient::device_role::instance(2));
@@ -11857,23 +12444,11 @@ static void init()
 	ddf::magician::timedevent_an_2_timer::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_an_2_timer::remote_add(ddf::service::gmclient::device_role::instance(3));
 
-	ddf::magician::timedevent_an_3_timer::init();
-	ddf::magician::timedevent_an_3_timer::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_an_3_timer::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_an_3_timer::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_an_3_timer::remote_add(ddf::service::gmclient::device_role::instance(3));
-
 	ddf::magician::timedevent_an_4_timer::init();
 	ddf::magician::timedevent_an_4_timer::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::magician::timedevent_an_4_timer::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::timedevent_an_4_timer::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_an_4_timer::remote_add(ddf::service::gmclient::device_role::instance(3));
-
-	ddf::magician::timedevent_an_5_timer::init();
-	ddf::magician::timedevent_an_5_timer::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_an_5_timer::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_an_5_timer::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_an_5_timer::remote_add(ddf::service::gmclient::device_role::instance(3));
 
 	ddf::magician::timedevent_an_6_timer::init();
 	ddf::magician::timedevent_an_6_timer::remote_add(ddf::service::gmclient::device_role::instance(0));
@@ -11886,12 +12461,6 @@ static void init()
 	ddf::magician::timedevent_ap_1_timer::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::magician::timedevent_ap_1_timer::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::magician::timedevent_ap_1_timer::remote_add(ddf::service::gmclient::device_role::instance(3));
-
-	ddf::magician::timedevent_ap_2_timer::init();
-	ddf::magician::timedevent_ap_2_timer::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::magician::timedevent_ap_2_timer::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::magician::timedevent_ap_2_timer::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::magician::timedevent_ap_2_timer::remote_add(ddf::service::gmclient::device_role::instance(3));
 
 	ddf::magician::timedevent_pc_1_timer::init();
 	ddf::magician::timedevent_pc_1_timer::remote_add(ddf::service::gmclient::device_role::instance(0));
@@ -12220,13 +12789,6 @@ static void init()
 	ddf::villa::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::villa::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::villa::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::villa::game_timer_expired::init();
-	ddf::villa::gametimer::on_value_change += ddf::villa::game_timer_expired::monitor;
-
-	ddf::villa::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::villa::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::villa::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::villa::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::villa::answering_machine::init();
 	ddf::villa::desk_controller::debouncer_4::value::on_change += ddf::villa::answering_machine::monitor;
 
@@ -12497,6 +13059,15 @@ static void init()
 	ddf::villa::video_playing::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::villa::video_playing::remote_add(ddf::service::gmclient::device_role::instance(3));
 
+	ddf::villa::audio_message_url::init(std::string());
+	ddf::villa::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::villa::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::villa::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::villa::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::villa::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(0));
+	ddf::villa::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(1));
+	ddf::villa::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(2));
+	ddf::villa::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(3));
 	ddf::villa::comdev_reset::init(bool(false));
 	ddf::villa::comdev_reset::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::villa::comdev_reset::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -13086,13 +13657,6 @@ static void init()
 	ddf::junkyard::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::junkyard::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::junkyard::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::junkyard::game_timer_expired::init();
-	ddf::junkyard::gametimer::on_value_change += ddf::junkyard::game_timer_expired::monitor;
-
-	ddf::junkyard::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::junkyard::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::junkyard::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::junkyard::game_timer_expired::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::junkyard::led_strip_update::init();
 	ddf::junkyard::gametimer::on_value_change += ddf::junkyard::led_strip_update::monitor;
 
@@ -13261,6 +13825,13 @@ static void init()
 	ddf::junkyard::piano_key_pressed::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::junkyard::piano_key_pressed::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::junkyard::piano_key_pressed::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::junkyard::potato_power_indicator::init();
+	ddf::junkyard::secret_box_controller_2::debouncer_10::value::on_change += ddf::junkyard::potato_power_indicator::monitor;
+
+	ddf::junkyard::potato_power_indicator::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::junkyard::potato_power_indicator::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::junkyard::potato_power_indicator::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::junkyard::potato_power_indicator::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::junkyard::relock_event::init();
 	ddf::junkyard::relock_timer::on_value_change += ddf::junkyard::relock_event::monitor;
 
@@ -13321,6 +13892,15 @@ static void init()
 	ddf::junkyard::top_opening::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::junkyard::top_opening::remote_add(ddf::service::gmclient::device_role::instance(3));
 
+	ddf::junkyard::audio_message_url::init(std::string());
+	ddf::junkyard::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::junkyard::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::junkyard::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::junkyard::audio_message_url::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::junkyard::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(0));
+	ddf::junkyard::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(1));
+	ddf::junkyard::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(2));
+	ddf::junkyard::audio_message_url::remote_add(ddf::service::comdev::device_role::instance(3));
 	ddf::junkyard::comdev_reset::init(bool(false));
 	ddf::junkyard::comdev_reset::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::junkyard::comdev_reset::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -13652,11 +14232,11 @@ static void uninit()
 	ddf::pirate::freeze_5_stop::uninit();
 	ddf::pirate::freeze_5_timeout::uninit();
 	ddf::pirate::game_state_changed::uninit();
-	ddf::pirate::game_timer_expired::uninit();
 	ddf::pirate::chest_opening::uninit();
+	ddf::pirate::display_update::uninit();
+	ddf::pirate::door_state_change::uninit();
 	ddf::pirate::game_end_button_push::uninit();
 	ddf::pirate::game_ending::uninit();
-	ddf::pirate::game_start::uninit();
 	ddf::pirate::gameevent_call_accepted::uninit();
 	ddf::pirate::gameevent_call_declined::uninit();
 	ddf::pirate::gameevent_call_finished::uninit();
@@ -13668,21 +14248,34 @@ static void uninit()
 	ddf::pirate::gameevent_game_reset::uninit();
 	ddf::pirate::gameevent_game_started::uninit();
 	ddf::pirate::gameevent_game_win::uninit();
+	ddf::pirate::gameevent_rex_game_won::uninit();
 	ddf::pirate::hanger_trigger::uninit();
 	ddf::pirate::knock_accumulate::uninit();
 	ddf::pirate::knock_timeout::uninit();
 	ddf::pirate::knot_puzzle::uninit();
 	ddf::pirate::laser_turn_off::uninit();
+	ddf::pirate::left_column_evaluate::uninit();
+	ddf::pirate::middle_column_evaluate::uninit();
 	ddf::pirate::pin_code_accumulation::uninit();
 	ddf::pirate::pin_timeout::uninit();
-	ddf::pirate::rex_table::uninit();
+	ddf::pirate::reset_room::uninit();
+	ddf::pirate::rex_led_update::uninit();
+	ddf::pirate::rex_photosensor_3_acc::uninit();
+	ddf::pirate::rex_photosensor_5_acc::uninit();
+	ddf::pirate::rex_photosensor_6_acc::uninit();
+	ddf::pirate::rex_photosensor_7_acc::uninit();
+	ddf::pirate::rex_table_reset::uninit();
+	ddf::pirate::right_column_evaluate::uninit();
 	ddf::pirate::rotation_update::uninit();
 	ddf::pirate::ship_matching::uninit();
 	ddf::pirate::sign_matching::uninit();
+	ddf::pirate::time_up::uninit();
 	ddf::pirate::timedevent_an_1_event_finished::uninit();
 	ddf::pirate::timedevent_an_1_event_gamestate::uninit();
 	ddf::pirate::timedevent_an_2_event_finished::uninit();
 	ddf::pirate::timedevent_an_2_event_gamestate::uninit();
+	ddf::pirate::timedevent_an_3_event_finished::uninit();
+	ddf::pirate::timedevent_an_3_event_gamestate::uninit();
 	ddf::pirate::timedevent_ghost_voice_event_finished::uninit();
 	ddf::pirate::timedevent_ghost_voice_event_gamestate::uninit();
 	ddf::pirate::timedevent_pc_1_event_finished::uninit();
@@ -13738,6 +14331,7 @@ static void uninit()
 	ddf::pirate::stone_chest_controller::magnetic_lock_2::uninit();
 	ddf::pirate::stone_chest_controller::led_strip::uninit();
 
+	ddf::pirate::audio_message_url::uninit();
 	ddf::pirate::comdev_reset::uninit();
 	ddf::pirate::freezed1::uninit();
 	ddf::pirate::freezed5::uninit();
@@ -13749,11 +14343,20 @@ static void uninit()
 	ddf::pirate::restart_game::uninit();
 	ddf::pirate::text_message::uninit();
 	ddf::pirate::text_message_sender::uninit();
-	ddf::pirate::game_end::uninit();
 	ddf::pirate::knock_count::uninit();
 	ddf::pirate::pin_code::uninit();
+	ddf::pirate::rex_left_column_failure::uninit();
+	ddf::pirate::rex_middle_column_failure::uninit();
+	ddf::pirate::rex_photosensor_3_value::uninit();
+	ddf::pirate::rex_photosensor_5_value::uninit();
+	ddf::pirate::rex_photosensor_6_value::uninit();
+	ddf::pirate::rex_photosensor_7_value::uninit();
+	ddf::pirate::rex_right_column_failure::uninit();
+	ddf::pirate::rex_score::uninit();
+	ddf::pirate::rex_trials_left::uninit();
 	ddf::pirate::timedevent_an_1::uninit();
 	ddf::pirate::timedevent_an_2::uninit();
+	ddf::pirate::timedevent_an_3::uninit();
 	ddf::pirate::timedevent_ghost_voice::uninit();
 	ddf::pirate::timedevent_pc_1::uninit();
 	ddf::pirate::timedevent_pc_2::uninit();
@@ -13789,6 +14392,7 @@ static void uninit()
 	ddf::pirate::pin_timeout_timer::uninit();
 	ddf::pirate::timedevent_an_1_timer::uninit();
 	ddf::pirate::timedevent_an_2_timer::uninit();
+	ddf::pirate::timedevent_an_3_timer::uninit();
 	ddf::pirate::timedevent_ghost_voice_timer::uninit();
 	ddf::pirate::timedevent_pc_1_timer::uninit();
 	ddf::pirate::timedevent_pc_2_timer::uninit();
@@ -13800,7 +14404,6 @@ static void uninit()
 	ddf::magician::freeze_5_stop::uninit();
 	ddf::magician::freeze_5_timeout::uninit();
 	ddf::magician::game_state_changed::uninit();
-	ddf::magician::game_timer_expired::uninit();
 	ddf::magician::door_state_change::uninit();
 	ddf::magician::game_end_button_push::uninit();
 	ddf::magician::game_ending::uninit();
@@ -13831,18 +14434,12 @@ static void uninit()
 	ddf::magician::timedevent_an_1_event_gamestate::uninit();
 	ddf::magician::timedevent_an_2_event_finished::uninit();
 	ddf::magician::timedevent_an_2_event_gamestate::uninit();
-	ddf::magician::timedevent_an_3_event_finished::uninit();
-	ddf::magician::timedevent_an_3_event_gamestate::uninit();
 	ddf::magician::timedevent_an_4_event_finished::uninit();
 	ddf::magician::timedevent_an_4_event_gamestate::uninit();
-	ddf::magician::timedevent_an_5_event_finished::uninit();
-	ddf::magician::timedevent_an_5_event_gamestate::uninit();
 	ddf::magician::timedevent_an_6_event_finished::uninit();
 	ddf::magician::timedevent_an_6_event_gamestate::uninit();
 	ddf::magician::timedevent_ap_1_event_finished::uninit();
 	ddf::magician::timedevent_ap_1_event_gamestate::uninit();
-	ddf::magician::timedevent_ap_2_event_finished::uninit();
-	ddf::magician::timedevent_ap_2_event_gamestate::uninit();
 	ddf::magician::timedevent_pc_1_event_finished::uninit();
 	ddf::magician::timedevent_pc_1_event_gamestate::uninit();
 	ddf::magician::timedevent_pc_2_event_finished::uninit();
@@ -13865,6 +14462,7 @@ static void uninit()
 	ddf::magician::futuristic_safe_controller::magnetic_lock::uninit();
 	ddf::magician::futuristic_safe_controller::addressable_led_strip::uninit();
 
+	ddf::magician::audio_message_url::uninit();
 	ddf::magician::comdev_reset::uninit();
 	ddf::magician::freezed1::uninit();
 	ddf::magician::freezed5::uninit();
@@ -13881,12 +14479,9 @@ static void uninit()
 	ddf::magician::rfid_reader_code::uninit();
 	ddf::magician::timedevent_an_1::uninit();
 	ddf::magician::timedevent_an_2::uninit();
-	ddf::magician::timedevent_an_3::uninit();
 	ddf::magician::timedevent_an_4::uninit();
-	ddf::magician::timedevent_an_5::uninit();
 	ddf::magician::timedevent_an_6::uninit();
 	ddf::magician::timedevent_ap_1::uninit();
-	ddf::magician::timedevent_ap_2::uninit();
 	ddf::magician::timedevent_pc_1::uninit();
 	ddf::magician::timedevent_pc_2::uninit();
 
@@ -13927,12 +14522,9 @@ static void uninit()
 	ddf::magician::pin_timeout_timer::uninit();
 	ddf::magician::timedevent_an_1_timer::uninit();
 	ddf::magician::timedevent_an_2_timer::uninit();
-	ddf::magician::timedevent_an_3_timer::uninit();
 	ddf::magician::timedevent_an_4_timer::uninit();
-	ddf::magician::timedevent_an_5_timer::uninit();
 	ddf::magician::timedevent_an_6_timer::uninit();
 	ddf::magician::timedevent_ap_1_timer::uninit();
-	ddf::magician::timedevent_ap_2_timer::uninit();
 	ddf::magician::timedevent_pc_1_timer::uninit();
 	ddf::magician::timedevent_pc_2_timer::uninit();
 
@@ -13943,7 +14535,6 @@ static void uninit()
 	ddf::villa::freeze_5_stop::uninit();
 	ddf::villa::freeze_5_timeout::uninit();
 	ddf::villa::game_state_changed::uninit();
-	ddf::villa::game_timer_expired::uninit();
 	ddf::villa::answering_machine::uninit();
 	ddf::villa::casette_ejection_event::uninit();
 	ddf::villa::door_state_change::uninit();
@@ -14020,6 +14611,7 @@ static void uninit()
 	ddf::villa::video_device::play_ongoing::uninit();
 	ddf::villa::video_device::livecam_ongoing::uninit();
 
+	ddf::villa::audio_message_url::uninit();
 	ddf::villa::comdev_reset::uninit();
 	ddf::villa::freezed1::uninit();
 	ddf::villa::freezed5::uninit();
@@ -14081,7 +14673,6 @@ static void uninit()
 	ddf::junkyard::freeze_5_stop::uninit();
 	ddf::junkyard::freeze_5_timeout::uninit();
 	ddf::junkyard::game_state_changed::uninit();
-	ddf::junkyard::game_timer_expired::uninit();
 	ddf::junkyard::led_strip_update::uninit();
 	ddf::junkyard::door_state_change::uninit();
 	ddf::junkyard::game_end_button_push::uninit();
@@ -14105,6 +14696,7 @@ static void uninit()
 	ddf::junkyard::gameevent_mona_lisa_rescue::uninit();
 	ddf::junkyard::lockpick_module::uninit();
 	ddf::junkyard::piano_key_pressed::uninit();
+	ddf::junkyard::potato_power_indicator::uninit();
 	ddf::junkyard::relock_event::uninit();
 	ddf::junkyard::reset_room::uninit();
 	ddf::junkyard::time_up::uninit();
@@ -14150,6 +14742,7 @@ static void uninit()
 	ddf::junkyard::secret_box_controller_2::magnetic_lock_3::uninit();
 	ddf::junkyard::secret_box_controller_2::magnetic_lock_4::uninit();
 
+	ddf::junkyard::audio_message_url::uninit();
 	ddf::junkyard::comdev_reset::uninit();
 	ddf::junkyard::freezed1::uninit();
 	ddf::junkyard::freezed5::uninit();
