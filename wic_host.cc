@@ -882,7 +882,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x5b0;
+				static const uint32_t cfg_member_id          = 0x570;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -894,7 +894,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x630;
+				static const uint32_t cfg_member_id          = 0x5f0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -930,7 +930,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x570;
+				static const uint32_t cfg_member_id          = 0x5b0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -942,7 +942,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x5f0;
+				static const uint32_t cfg_member_id          = 0x630;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -991,7 +991,7 @@ namespace ddf
 				{
 					constexpr static const char *name = "ddf::pirate::room_1_content::event_1";
 					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_2.wav";
+					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_1.wav";
 					static const uint32_t cfg_class_id = 0x100080;
 					static const uint32_t cfg_member_id = 0x80;
 				};
@@ -1000,7 +1000,7 @@ namespace ddf
 				{
 					constexpr static const char *name = "ddf::pirate::room_1_content::event_2";
 					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_InGame_Joe_Track2.wav";
+					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_2.wav";
 					static const uint32_t cfg_class_id = 0x100080;
 					static const uint32_t cfg_member_id = 0x90;
 				};
@@ -1009,7 +1009,7 @@ namespace ddf
 				{
 					constexpr static const char *name = "ddf::pirate::room_1_content::event_3";
 					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Joe_verzerrt.wav";
+					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_InGame_Joe_Track1+2.wav";
 					static const uint32_t cfg_class_id = 0x100080;
 					static const uint32_t cfg_member_id = 0xa0;
 				};
@@ -1092,7 +1092,7 @@ namespace ddf
 				{
 					constexpr static const char *name = "ddf::pirate::room_2_content::event_1";
 					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_2.wav";
+					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_1.wav";
 					static const uint32_t cfg_class_id = 0x100070;
 					static const uint32_t cfg_member_id = 0x80;
 				};
@@ -1101,7 +1101,7 @@ namespace ddf
 				{
 					constexpr static const char *name = "ddf::pirate::room_2_content::event_2";
 					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_InGame_Joe_Track2.wav";
+					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_2.wav";
 					static const uint32_t cfg_class_id = 0x100070;
 					static const uint32_t cfg_member_id = 0x90;
 				};
@@ -1110,7 +1110,7 @@ namespace ddf
 				{
 					constexpr static const char *name = "ddf::pirate::room_2_content::event_3";
 					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Joe_verzerrt.wav";
+					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_InGame_Joe_Track1+2.wav";
 					static const uint32_t cfg_class_id = 0x100070;
 					static const uint32_t cfg_member_id = 0xa0;
 				};
@@ -1218,7 +1218,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x5c0;
+				static const uint32_t cfg_member_id = 0x580;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_an_1_timer_config> timedevent_an_1_timer;
@@ -1228,7 +1228,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x640;
+				static const uint32_t cfg_member_id = 0x600;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_an_2_timer_config> timedevent_an_2_timer;
@@ -1258,7 +1258,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x580;
+				static const uint32_t cfg_member_id = 0x5c0;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_pc_1_timer_config> timedevent_pc_1_timer;
@@ -1268,7 +1268,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x600;
+				static const uint32_t cfg_member_id = 0x640;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_pc_2_timer_config> timedevent_pc_2_timer;
@@ -1903,6 +1903,36 @@ namespace ddf
 				}
 			};
 			typedef wic::event<gameevent_game_win_config> gameevent_game_win;
+
+			/// gameevent_map_solved ///		
+			struct gameevent_map_solved_config
+			{
+				constexpr static const char *name = "ddf::pirate::gameevent_map_solved";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x4f0;
+				static bool cfg_condition()
+				{
+									typedef typename pirate::map_controller::magnetic_sensor_1 sensor_1;
+				typedef typename pirate::map_controller::magnetic_sensor_2 sensor_2;
+				typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
+
+					return (true && (  
+        	sensor_1::value() >= 3072 &&  
+        	sensor_2::value() <= 1024 
+         ));
+				}
+				static void cfg_action()
+				{
+									typedef typename pirate::map_controller::magnetic_sensor_1 sensor_1;
+				typedef typename pirate::map_controller::magnetic_sensor_2 sensor_2;
+				typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
+
+					(void)0; {  
+        	lock::value(0); 
+         }
+				}
+			};
+			typedef wic::event<gameevent_map_solved_config> gameevent_map_solved;
 
 			/// gameevent_rex_game_won ///		
 			struct gameevent_rex_game_won_config
@@ -2726,36 +2756,6 @@ namespace ddf
 			};
 			typedef wic::event<rotation_update_config> rotation_update;
 
-			/// ship_matching ///		
-			struct ship_matching_config
-			{
-				constexpr static const char *name = "ddf::pirate::ship_matching";
-				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x4f0;
-				static bool cfg_condition()
-				{
-									typedef typename pirate::map_controller::magnetic_sensor_1 sensor_1;
-				typedef typename pirate::map_controller::magnetic_sensor_2 sensor_2;
-				typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
-
-					return (true && (  
-        	sensor_1::value() >= 3072 && 
-        	sensor_2::value() <= 1024 
-         ));
-				}
-				static void cfg_action()
-				{
-									typedef typename pirate::map_controller::magnetic_sensor_1 sensor_1;
-				typedef typename pirate::map_controller::magnetic_sensor_2 sensor_2;
-				typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
-
-					(void)0; {  
-        	lock::value(0); 
-         }
-				}
-			};
-			typedef wic::event<ship_matching_config> ship_matching;
-
 			/// sign_matching ///		
 			struct sign_matching_config
 			{
@@ -2834,7 +2834,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x5d0;
+				static const uint32_t cfg_member_id = 0x590;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::timedevent_an_1 at;
@@ -2843,7 +2843,7 @@ namespace ddf
 			typedef room_2_content::event_1 event_1_room_2;
 
 					return (true && ( 
-				at::value() <= tmr::value() && tmr::running()
+                at::value() <= tmr::value() && tmr::running()
              ));
 				}
 				static void cfg_action()
@@ -2868,7 +2868,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x5e0;
+				static const uint32_t cfg_member_id = 0x5a0;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::gamestate gs;
@@ -2884,16 +2884,16 @@ namespace ddf
 				typedef typename pirate::timedevent_an_1 at;
 
 					(void)0; { 
-			if(gs::value() == 1)
-			{
-			   if(tmr::value() < at::value())
-				   tmr::start();
-			}
-			else
-			   tmr::stop();
+            if(gs::value() == 1)
+            {
+               if(tmr::value() < at::value())
+                   tmr::start();
+            }
+            else
+               tmr::stop();
 
-			if(gs::value() == 0)
-			   tmr::value(0);
+            if(gs::value() == 0)
+               tmr::value(0);
              }
 				}
 			};
@@ -2904,7 +2904,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x650;
+				static const uint32_t cfg_member_id = 0x610;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::timedevent_an_2 at;
@@ -2913,7 +2913,7 @@ namespace ddf
 			typedef room_2_content::event_2 event_2_room_2;
 
 					return (true && ( 
-				at::value() <= tmr::value() && tmr::running()
+                at::value() <= tmr::value() && tmr::running()
              ));
 				}
 				static void cfg_action()
@@ -2938,7 +2938,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x660;
+				static const uint32_t cfg_member_id = 0x620;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::gamestate gs;
@@ -2954,16 +2954,16 @@ namespace ddf
 				typedef typename pirate::timedevent_an_2 at;
 
 					(void)0; { 
-			if(gs::value() == 1)
-			{
-			   if(tmr::value() < at::value())
-				   tmr::start();
-			}
-			else
-			   tmr::stop();
+            if(gs::value() == 1)
+            {
+               if(tmr::value() < at::value())
+                   tmr::start();
+            }
+            else
+               tmr::stop();
 
-			if(gs::value() == 0)
-			   tmr::value(0);
+            if(gs::value() == 0)
+               tmr::value(0);
              }
 				}
 			};
@@ -3115,7 +3115,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x590;
+				static const uint32_t cfg_member_id = 0x5d0;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::timedevent_pc_1 at;
@@ -3146,7 +3146,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x5a0;
+				static const uint32_t cfg_member_id = 0x5e0;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::gamestate gs;
@@ -3182,7 +3182,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x610;
+				static const uint32_t cfg_member_id = 0x650;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::timedevent_pc_2 at;
@@ -3213,7 +3213,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x620;
+				static const uint32_t cfg_member_id = 0x660;
 				static bool cfg_condition()
 				{
 									typedef typename pirate::gamestate gs;
@@ -3740,7 +3740,7 @@ namespace ddf
 				{
 					constexpr static const char *name = "ddf::magician::room_1_content::applause";
 					typedef room_1 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/EscapeRoomAtmos/DreiFFF_Escape_Applaus.wav";
+					constexpr static const char *cfg_source = "/usr/share/ddf/EscapeRoomAtmos/DreiFFF_Escape_Applaus2.wav";
 				};
 				typedef wic::audio_effect<applause_config> applause;
 				struct chord_config
@@ -3875,7 +3875,7 @@ namespace ddf
 				{
 					constexpr static const char *name = "ddf::magician::room_2_content::applause";
 					typedef room_2 cfg_audio;
-					constexpr static const char *cfg_source = "/usr/share/ddf/EscapeRoomAtmos/DreiFFF_Escape_Applaus.wav";
+					constexpr static const char *cfg_source = "/usr/share/ddf/EscapeRoomAtmos/DreiFFF_Escape_Applaus2.wav";
 				};
 				typedef wic::audio_effect<applause_config> applause;
 				struct chord_config
@@ -11035,6 +11035,14 @@ static void init()
 	ddf::pirate::gameevent_game_win::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::gameevent_game_win::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::gameevent_game_win::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::gameevent_map_solved::init();
+	ddf::pirate::map_controller::magnetic_sensor_1::value::on_change += ddf::pirate::gameevent_map_solved::monitor;
+	ddf::pirate::map_controller::magnetic_sensor_2::value::on_change += ddf::pirate::gameevent_map_solved::monitor;
+
+	ddf::pirate::gameevent_map_solved::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::gameevent_map_solved::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::gameevent_map_solved::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::gameevent_map_solved::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::gameevent_rex_game_won::init();
 	ddf::pirate::rex_score::on_change += ddf::pirate::gameevent_rex_game_won::monitor;
 
@@ -11167,14 +11175,6 @@ static void init()
 	ddf::pirate::rotation_update::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::rotation_update::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::rotation_update::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::pirate::ship_matching::init();
-	ddf::pirate::map_controller::magnetic_sensor_1::value::on_change += ddf::pirate::ship_matching::monitor;
-	ddf::pirate::map_controller::magnetic_sensor_2::value::on_change += ddf::pirate::ship_matching::monitor;
-
-	ddf::pirate::ship_matching::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::pirate::ship_matching::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::pirate::ship_matching::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::pirate::ship_matching::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::sign_matching::init();
 	ddf::pirate::stone_chest_controller::magnetic_sensor_1::value::on_change += ddf::pirate::sign_matching::monitor;
 	ddf::pirate::stone_chest_controller::magnetic_sensor_2::value::on_change += ddf::pirate::sign_matching::monitor;
@@ -13161,7 +13161,7 @@ static void init()
 	ddf::villa::timedevent_funk_1::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::villa::timedevent_funk_1::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::villa::timedevent_funk_1::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::villa::timedevent_funk_2::init(uint64_t(900));
+	ddf::villa::timedevent_funk_2::init(uint64_t(1800));
 	ddf::villa::timedevent_funk_2::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::villa::timedevent_funk_2::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::villa::timedevent_funk_2::remote_add(ddf::service::gmclient::device_role::instance(2));
@@ -13176,7 +13176,7 @@ static void init()
 	ddf::villa::timedevent_pc_1::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::villa::timedevent_pc_1::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::villa::timedevent_pc_1::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::villa::timedevent_pc_2::init(uint64_t(1200));
+	ddf::villa::timedevent_pc_2::init(uint64_t(1500));
 	ddf::villa::timedevent_pc_2::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::villa::timedevent_pc_2::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::villa::timedevent_pc_2::remote_add(ddf::service::gmclient::device_role::instance(2));
@@ -14248,6 +14248,7 @@ static void uninit()
 	ddf::pirate::gameevent_game_reset::uninit();
 	ddf::pirate::gameevent_game_started::uninit();
 	ddf::pirate::gameevent_game_win::uninit();
+	ddf::pirate::gameevent_map_solved::uninit();
 	ddf::pirate::gameevent_rex_game_won::uninit();
 	ddf::pirate::hanger_trigger::uninit();
 	ddf::pirate::knock_accumulate::uninit();
@@ -14267,7 +14268,6 @@ static void uninit()
 	ddf::pirate::rex_table_reset::uninit();
 	ddf::pirate::right_column_evaluate::uninit();
 	ddf::pirate::rotation_update::uninit();
-	ddf::pirate::ship_matching::uninit();
 	ddf::pirate::sign_matching::uninit();
 	ddf::pirate::time_up::uninit();
 	ddf::pirate::timedevent_an_1_event_finished::uninit();
