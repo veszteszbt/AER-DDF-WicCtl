@@ -792,17 +792,17 @@ namespace ddf
 			};
 			typedef property_room<rex_middle_column_failure_config> rex_middle_column_failure;
 
-			/// rex_photosensor_3_value ///
-			struct rex_photosensor_3_value_config : public property_config_base
+			/// rex_photosensor_4_value ///
+			struct rex_photosensor_4_value_config : public property_config_base
 			{
-				constexpr static const char *name = "ddf::pirate::rex_photosensor_3_value";
+				constexpr static const char *name = "ddf::pirate::rex_photosensor_4_value";
 				typedef bool cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
 				static const uint32_t cfg_member_id          = 0x2e0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef property_room<rex_photosensor_3_value_config> rex_photosensor_3_value;
+			typedef property_room<rex_photosensor_4_value_config> rex_photosensor_4_value;
 
 			/// rex_photosensor_5_value ///
 			struct rex_photosensor_5_value_config : public property_config_base
@@ -1558,6 +1558,8 @@ namespace ddf
 				static bool cfg_condition()
 				{
 									typedef typename pirate::gamestate gs;
+				typedef typename pirate::freezed1 f1;
+				typedef typename pirate::freezed5 f5;
 				typedef typename pirate::entrance_hanger_controller::magnetic_sensor entrance_door;
 
 					return (true);
@@ -1565,10 +1567,12 @@ namespace ddf
 				static void cfg_action()
 				{
 									typedef typename pirate::gamestate gs;
+				typedef typename pirate::freezed1 f1;
+				typedef typename pirate::freezed5 f5;
 				typedef typename pirate::entrance_hanger_controller::magnetic_sensor entrance_door;
 
 					(void)0; { 
-        if(entrance_door::value())
+        if(entrance_door::value() && !f1::value() && !f5::value())
         {
             if(gs::value() == 2)
             {
@@ -2116,9 +2120,9 @@ namespace ddf
 				static const uint32_t cfg_member_id = 0x390;
 				static bool cfg_condition()
 				{
-									typedef typename pirate::rex_flipper_controller::photosensor_2 p0;
-				typedef typename pirate::rex_flipper_controller::photosensor_5 p1;
-				typedef typename pirate::rex_photosensor_5_value p1v;
+									typedef typename pirate::rex_flipper_controller::photosensor_3 p0;
+				typedef typename pirate::rex_flipper_controller::photosensor_6 p1;
+				typedef typename pirate::rex_photosensor_6_value p1v;
 				typedef typename pirate::rex_left_column_failure fail;
 				typedef typename pirate::rex_score score;
 				typedef typename pirate::rex_trials_left tl;
@@ -2129,9 +2133,9 @@ namespace ddf
 				}
 				static void cfg_action()
 				{
-									typedef typename pirate::rex_flipper_controller::photosensor_2 p0;
-				typedef typename pirate::rex_flipper_controller::photosensor_5 p1;
-				typedef typename pirate::rex_photosensor_5_value p1v;
+									typedef typename pirate::rex_flipper_controller::photosensor_3 p0;
+				typedef typename pirate::rex_flipper_controller::photosensor_6 p1;
+				typedef typename pirate::rex_photosensor_6_value p1v;
 				typedef typename pirate::rex_left_column_failure fail;
 				typedef typename pirate::rex_score score;
 				typedef typename pirate::rex_trials_left tl;
@@ -2176,11 +2180,11 @@ namespace ddf
 				static bool cfg_condition()
 				{
 									typedef typename pirate::rex_flipper_controller::photosensor_1 p0;
-				typedef typename pirate::rex_flipper_controller::photosensor_3 p1;
-				typedef typename pirate::rex_photosensor_3_value p1v;
-				typedef typename pirate::rex_flipper_controller::photosensor_6 p2;
-				typedef typename pirate::rex_photosensor_6_value p2v;
-				typedef typename pirate::rex_right_column_failure fail;
+				typedef typename pirate::rex_flipper_controller::photosensor_4 p1;
+				typedef typename pirate::rex_photosensor_4_value p1v;
+				typedef typename pirate::rex_flipper_controller::photosensor_7 p2;
+				typedef typename pirate::rex_photosensor_7_value p2v;
+				typedef typename pirate::rex_middle_column_failure fail;
 				typedef typename pirate::rex_score score;
 				typedef typename pirate::rex_trials_left tl;
 
@@ -2191,11 +2195,11 @@ namespace ddf
 				static void cfg_action()
 				{
 									typedef typename pirate::rex_flipper_controller::photosensor_1 p0;
-				typedef typename pirate::rex_flipper_controller::photosensor_3 p1;
-				typedef typename pirate::rex_photosensor_3_value p1v;
-				typedef typename pirate::rex_flipper_controller::photosensor_6 p2;
-				typedef typename pirate::rex_photosensor_6_value p2v;
-				typedef typename pirate::rex_right_column_failure fail;
+				typedef typename pirate::rex_flipper_controller::photosensor_4 p1;
+				typedef typename pirate::rex_photosensor_4_value p1v;
+				typedef typename pirate::rex_flipper_controller::photosensor_7 p2;
+				typedef typename pirate::rex_photosensor_7_value p2v;
+				typedef typename pirate::rex_middle_column_failure fail;
 				typedef typename pirate::rex_score score;
 				typedef typename pirate::rex_trials_left tl;
 
@@ -2456,16 +2460,16 @@ namespace ddf
 			};
 			typedef wic::event<rex_led_update_config> rex_led_update;
 
-			/// rex_photosensor_3_acc ///		
-			struct rex_photosensor_3_acc_config
+			/// rex_photosensor_4_acc ///		
+			struct rex_photosensor_4_acc_config
 			{
-				constexpr static const char *name = "ddf::pirate::rex_photosensor_3_acc";
+				constexpr static const char *name = "ddf::pirate::rex_photosensor_4_acc";
 				static const uint32_t cfg_class_id = 0x1ffff0;
 				static const uint32_t cfg_member_id = 0x350;
 				static bool cfg_condition()
 				{
-									typedef typename pirate::rex_flipper_controller::photosensor_3 p;
-				typedef typename pirate::rex_photosensor_3_value pv;
+									typedef typename pirate::rex_flipper_controller::photosensor_4 p;
+				typedef typename pirate::rex_photosensor_4_value pv;
 				typedef typename pirate::rex_middle_column_failure f;
 
 					return (true && ( 
@@ -2474,8 +2478,8 @@ namespace ddf
 				}
 				static void cfg_action()
 				{
-									typedef typename pirate::rex_flipper_controller::photosensor_3 p;
-				typedef typename pirate::rex_photosensor_3_value pv;
+									typedef typename pirate::rex_flipper_controller::photosensor_4 p;
+				typedef typename pirate::rex_photosensor_4_value pv;
 				typedef typename pirate::rex_middle_column_failure f;
 
 					(void)0; { 
@@ -2486,7 +2490,7 @@ namespace ddf
 		 }
 				}
 			};
-			typedef wic::event<rex_photosensor_3_acc_config> rex_photosensor_3_acc;
+			typedef wic::event<rex_photosensor_4_acc_config> rex_photosensor_4_acc;
 
 			/// rex_photosensor_5_acc ///		
 			struct rex_photosensor_5_acc_config
@@ -2498,7 +2502,7 @@ namespace ddf
 				{
 									typedef typename pirate::rex_flipper_controller::photosensor_5 p;
 				typedef typename pirate::rex_photosensor_5_value pv;
-				typedef typename pirate::rex_left_column_failure f;
+				typedef typename pirate::rex_right_column_failure f;
 
 					return (true && ( 
 			p::value()
@@ -2508,7 +2512,7 @@ namespace ddf
 				{
 									typedef typename pirate::rex_flipper_controller::photosensor_5 p;
 				typedef typename pirate::rex_photosensor_5_value pv;
-				typedef typename pirate::rex_left_column_failure f;
+				typedef typename pirate::rex_right_column_failure f;
 
 					(void)0; { 
 			if(pv::value())
@@ -2530,7 +2534,7 @@ namespace ddf
 				{
 									typedef typename pirate::rex_flipper_controller::photosensor_6 p;
 				typedef typename pirate::rex_photosensor_6_value pv;
-				typedef typename pirate::rex_middle_column_failure f;
+				typedef typename pirate::rex_left_column_failure f;
 
 					return (true && ( 
 			p::value()
@@ -2540,7 +2544,7 @@ namespace ddf
 				{
 									typedef typename pirate::rex_flipper_controller::photosensor_6 p;
 				typedef typename pirate::rex_photosensor_6_value pv;
-				typedef typename pirate::rex_middle_column_failure f;
+				typedef typename pirate::rex_left_column_failure f;
 
 					(void)0; { 
 			if(pv::value())
@@ -2562,7 +2566,7 @@ namespace ddf
 				{
 									typedef typename pirate::rex_flipper_controller::photosensor_7 p;
 				typedef typename pirate::rex_photosensor_7_value pv;
-				typedef typename pirate::rex_right_column_failure f;
+				typedef typename pirate::rex_middle_column_failure f;
 
 					return (true && ( 
 			p::value()
@@ -2572,7 +2576,7 @@ namespace ddf
 				{
 									typedef typename pirate::rex_flipper_controller::photosensor_7 p;
 				typedef typename pirate::rex_photosensor_7_value pv;
-				typedef typename pirate::rex_right_column_failure f;
+				typedef typename pirate::rex_middle_column_failure f;
 
 					(void)0; { 
 			if(pv::value())
@@ -2595,7 +2599,7 @@ namespace ddf
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::rex_score score;
 				typedef typename pirate::rex_trials_left trials;
-				typedef typename pirate::rex_photosensor_3_value p3v;
+				typedef typename pirate::rex_photosensor_4_value p4v;
 				typedef typename pirate::rex_photosensor_5_value p5v;
 				typedef typename pirate::rex_photosensor_6_value p6v;
 				typedef typename pirate::rex_photosensor_7_value p7v;
@@ -2612,7 +2616,7 @@ namespace ddf
 									typedef typename pirate::gamestate gs;
 				typedef typename pirate::rex_score score;
 				typedef typename pirate::rex_trials_left trials;
-				typedef typename pirate::rex_photosensor_3_value p3v;
+				typedef typename pirate::rex_photosensor_4_value p4v;
 				typedef typename pirate::rex_photosensor_5_value p5v;
 				typedef typename pirate::rex_photosensor_6_value p6v;
 				typedef typename pirate::rex_photosensor_7_value p7v;
@@ -2623,7 +2627,7 @@ namespace ddf
 					(void)0; { 
 			score::value(0);
 			trials::value(3);
-			p3v::value(0);
+			p4v::value(0);
 			p5v::value(0);
 			p6v::value(0);
 			p7v::value(0);
@@ -2643,9 +2647,9 @@ namespace ddf
 				static const uint32_t cfg_member_id = 0x3a0;
 				static bool cfg_condition()
 				{
-									typedef typename pirate::rex_flipper_controller::photosensor_4 p0;
-				typedef typename pirate::rex_flipper_controller::photosensor_7 p1;
-				typedef typename pirate::rex_photosensor_7_value p1v;
+									typedef typename pirate::rex_flipper_controller::photosensor_2 p0;
+				typedef typename pirate::rex_flipper_controller::photosensor_5 p1;
+				typedef typename pirate::rex_photosensor_5_value p1v;
 				typedef typename pirate::rex_right_column_failure fail;
 				typedef typename pirate::rex_score score;
 				typedef typename pirate::rex_trials_left tl;
@@ -2656,9 +2660,9 @@ namespace ddf
 				}
 				static void cfg_action()
 				{
-									typedef typename pirate::rex_flipper_controller::photosensor_4 p0;
-				typedef typename pirate::rex_flipper_controller::photosensor_7 p1;
-				typedef typename pirate::rex_photosensor_7_value p1v;
+									typedef typename pirate::rex_flipper_controller::photosensor_2 p0;
+				typedef typename pirate::rex_flipper_controller::photosensor_5 p1;
+				typedef typename pirate::rex_photosensor_5_value p1v;
 				typedef typename pirate::rex_right_column_failure fail;
 				typedef typename pirate::rex_score score;
 				typedef typename pirate::rex_trials_left tl;
@@ -2893,7 +2897,10 @@ namespace ddf
                tmr::stop();
 
             if(gs::value() == 0)
-               tmr::value(0);
+			{
+                tmr::value(0);
+				at::value(at::default_value());
+			}
              }
 				}
 			};
@@ -2963,7 +2970,10 @@ namespace ddf
                tmr::stop();
 
             if(gs::value() == 0)
-               tmr::value(0);
+			{
+                tmr::value(0);
+				at::value(at::default_value());
+			}
              }
 				}
 			};
@@ -3033,7 +3043,10 @@ namespace ddf
 			   tmr::stop();
 
 			if(gs::value() == 0)
-			   tmr::value(0);
+			{
+			    tmr::value(0);
+				at::value(at::default_value());
+			}
              }
 				}
 			};
@@ -3171,7 +3184,10 @@ namespace ddf
 			   tmr::stop();
 
 			if(gs::value() == 0)
-			   tmr::value(0);
+			{
+			    tmr::value(0);
+				at::value(at::default_value());
+			}
              }
 				}
 			};
@@ -3238,7 +3254,10 @@ namespace ddf
 			   tmr::stop();
 
 			if(gs::value() == 0)
-			   tmr::value(0);
+			{
+			    tmr::value(0);
+				at::value(at::default_value());
+			}
              }
 				}
 			};
@@ -4334,6 +4353,8 @@ namespace ddf
 				static bool cfg_condition()
 				{
 									typedef typename magician::gamestate gs;
+				typedef typename magician::freezed1 f1;
+				typedef typename magician::freezed5 f5;
 				typedef typename magician::entrance_controller::magnetic_sensor entrance_door;
 
 					return (true);
@@ -4341,10 +4362,12 @@ namespace ddf
 				static void cfg_action()
 				{
 									typedef typename magician::gamestate gs;
+				typedef typename magician::freezed1 f1;
+				typedef typename magician::freezed5 f5;
 				typedef typename magician::entrance_controller::magnetic_sensor entrance_door;
 
 					(void)0; { 
-        if(entrance_door::value())
+        if(entrance_door::value() && !f1::value() && !f5::value())
         {
             if(gs::value() == 2)
             {
@@ -5208,7 +5231,10 @@ namespace ddf
 				else
 					tmr::stop();
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
              }
 				}
 			};
@@ -5277,7 +5303,10 @@ namespace ddf
 				else
 					tmr::stop();
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
              }
 				}
 			};
@@ -5346,7 +5375,10 @@ namespace ddf
 				else
 					tmr::stop();
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
              }
 				}
 			};
@@ -5415,7 +5447,10 @@ namespace ddf
 				else
 					tmr::stop();
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
              }
 				}
 			};
@@ -5484,7 +5519,10 @@ namespace ddf
 				else
 					tmr::stop();
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
              }
 				}
 			};
@@ -5550,7 +5588,10 @@ namespace ddf
 				else
 					tmr::stop();
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
              }
 				}
 			};
@@ -5616,7 +5657,10 @@ namespace ddf
 				else
 					tmr::stop();
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
              }
 				}
 			};
@@ -6969,6 +7013,8 @@ namespace ddf
 				static bool cfg_condition()
 				{
 									typedef typename villa::gamestate gs;
+				typedef typename villa::freezed1 f1;
+				typedef typename villa::freezed5 f5;
 				typedef typename villa::entrance_controller::magnetic_sensor entrance_door;
 
 					return (true);
@@ -6976,10 +7022,12 @@ namespace ddf
 				static void cfg_action()
 				{
 									typedef typename villa::gamestate gs;
+				typedef typename villa::freezed1 f1;
+				typedef typename villa::freezed5 f5;
 				typedef typename villa::entrance_controller::magnetic_sensor entrance_door;
 
 					(void)0; { 
-        if(entrance_door::value())
+        if(entrance_door::value() && !f1::value() && !f5::value())
         {
             if(gs::value() == 2)
             {
@@ -7663,7 +7711,10 @@ namespace ddf
 					tmr::stop();
 
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
 	         }
 				}
 			};
@@ -7733,7 +7784,10 @@ namespace ddf
 					tmr::stop();
 
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
 	         }
 				}
 			};
@@ -7803,7 +7857,10 @@ namespace ddf
 					tmr::stop();
 
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
 		     }
 				}
 			};
@@ -7870,7 +7927,10 @@ namespace ddf
 					tmr::stop();
 
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
 	         }
 				}
 			};
@@ -7937,7 +7997,10 @@ namespace ddf
 					tmr::stop();
 
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
 	         }
 				}
 			};
@@ -8004,7 +8067,10 @@ namespace ddf
 					tmr::stop();
 
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
 	         }
 				}
 			};
@@ -9373,6 +9439,8 @@ namespace ddf
 				static bool cfg_condition()
 				{
 									typedef typename junkyard::gamestate gs;
+				typedef typename junkyard::freezed1 f1;
+				typedef typename junkyard::freezed5 f5;
 				typedef typename junkyard::entrance_controller::magnetic_sensor entrance_door;
 
 					return (true);
@@ -9380,10 +9448,12 @@ namespace ddf
 				static void cfg_action()
 				{
 									typedef typename junkyard::gamestate gs;
+				typedef typename junkyard::freezed1 f1;
+				typedef typename junkyard::freezed5 f5;
 				typedef typename junkyard::entrance_controller::magnetic_sensor entrance_door;
 
 					(void)0; { 
-        if(entrance_door::value())
+        if(entrance_door::value() && !f1::value() && !f5::value())
         {
             if(gs::value() == 2)
             {
@@ -10302,7 +10372,10 @@ namespace ddf
 					tmr::stop();
 
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
 	         }
 				}
 			};
@@ -10369,7 +10442,10 @@ namespace ddf
 					tmr::stop();
 
 				if(gs::value() == 0)
+				{
 					tmr::value(0);
+					at::value(at::default_value());
+				}
 	         }
 				}
 			};
@@ -10936,6 +11012,8 @@ static void init()
 	ddf::pirate::display_update::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::door_state_change::init();
 	ddf::pirate::gamestate::on_change += ddf::pirate::door_state_change::monitor;
+	ddf::pirate::freezed1::on_change += ddf::pirate::door_state_change::monitor;
+	ddf::pirate::freezed5::on_change += ddf::pirate::door_state_change::monitor;
 	ddf::pirate::entrance_hanger_controller::magnetic_sensor::value::on_change += ddf::pirate::door_state_change::monitor;
 
 	ddf::pirate::door_state_change::remote_add(ddf::service::gmclient::device_role::instance(0));
@@ -11085,7 +11163,7 @@ static void init()
 	ddf::pirate::laser_turn_off::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::laser_turn_off::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::left_column_evaluate::init();
-	ddf::pirate::rex_flipper_controller::photosensor_2::value::on_change += ddf::pirate::left_column_evaluate::monitor;
+	ddf::pirate::rex_flipper_controller::photosensor_3::value::on_change += ddf::pirate::left_column_evaluate::monitor;
 
 	ddf::pirate::left_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::left_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -11126,13 +11204,13 @@ static void init()
 	ddf::pirate::rex_led_update::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::rex_led_update::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::rex_led_update::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::pirate::rex_photosensor_3_acc::init();
-	ddf::pirate::rex_flipper_controller::photosensor_3::value::on_change += ddf::pirate::rex_photosensor_3_acc::monitor;
+	ddf::pirate::rex_photosensor_4_acc::init();
+	ddf::pirate::rex_flipper_controller::photosensor_4::value::on_change += ddf::pirate::rex_photosensor_4_acc::monitor;
 
-	ddf::pirate::rex_photosensor_3_acc::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::pirate::rex_photosensor_3_acc::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::pirate::rex_photosensor_3_acc::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::pirate::rex_photosensor_3_acc::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_photosensor_4_acc::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_photosensor_4_acc::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_photosensor_4_acc::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_photosensor_4_acc::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::rex_photosensor_5_acc::init();
 	ddf::pirate::rex_flipper_controller::photosensor_5::value::on_change += ddf::pirate::rex_photosensor_5_acc::monitor;
 
@@ -11162,7 +11240,7 @@ static void init()
 	ddf::pirate::rex_table_reset::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::rex_table_reset::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::right_column_evaluate::init();
-	ddf::pirate::rex_flipper_controller::photosensor_4::value::on_change += ddf::pirate::right_column_evaluate::monitor;
+	ddf::pirate::rex_flipper_controller::photosensor_2::value::on_change += ddf::pirate::right_column_evaluate::monitor;
 
 	ddf::pirate::right_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::right_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -11391,11 +11469,11 @@ static void init()
 	ddf::pirate::rex_middle_column_failure::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::rex_middle_column_failure::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::rex_middle_column_failure::remote_add(ddf::service::gmclient::device_role::instance(3));
-	ddf::pirate::rex_photosensor_3_value::init(bool(false));
-	ddf::pirate::rex_photosensor_3_value::remote_add(ddf::service::gmclient::device_role::instance(0));
-	ddf::pirate::rex_photosensor_3_value::remote_add(ddf::service::gmclient::device_role::instance(1));
-	ddf::pirate::rex_photosensor_3_value::remote_add(ddf::service::gmclient::device_role::instance(2));
-	ddf::pirate::rex_photosensor_3_value::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::rex_photosensor_4_value::init(bool(false));
+	ddf::pirate::rex_photosensor_4_value::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::rex_photosensor_4_value::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::rex_photosensor_4_value::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::rex_photosensor_4_value::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::rex_photosensor_5_value::init(bool(false));
 	ddf::pirate::rex_photosensor_5_value::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::rex_photosensor_5_value::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -11820,6 +11898,8 @@ static void init()
 	ddf::magician::game_state_changed::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::magician::door_state_change::init();
 	ddf::magician::gamestate::on_change += ddf::magician::door_state_change::monitor;
+	ddf::magician::freezed1::on_change += ddf::magician::door_state_change::monitor;
+	ddf::magician::freezed5::on_change += ddf::magician::door_state_change::monitor;
 	ddf::magician::entrance_controller::magnetic_sensor::value::on_change += ddf::magician::door_state_change::monitor;
 
 	ddf::magician::door_state_change::remote_add(ddf::service::gmclient::device_role::instance(0));
@@ -12805,6 +12885,8 @@ static void init()
 	ddf::villa::casette_ejection_event::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::villa::door_state_change::init();
 	ddf::villa::gamestate::on_change += ddf::villa::door_state_change::monitor;
+	ddf::villa::freezed1::on_change += ddf::villa::door_state_change::monitor;
+	ddf::villa::freezed5::on_change += ddf::villa::door_state_change::monitor;
 	ddf::villa::entrance_controller::magnetic_sensor::value::on_change += ddf::villa::door_state_change::monitor;
 
 	ddf::villa::door_state_change::remote_add(ddf::service::gmclient::device_role::instance(0));
@@ -13666,6 +13748,8 @@ static void init()
 	ddf::junkyard::led_strip_update::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::junkyard::door_state_change::init();
 	ddf::junkyard::gamestate::on_change += ddf::junkyard::door_state_change::monitor;
+	ddf::junkyard::freezed1::on_change += ddf::junkyard::door_state_change::monitor;
+	ddf::junkyard::freezed5::on_change += ddf::junkyard::door_state_change::monitor;
 	ddf::junkyard::entrance_controller::magnetic_sensor::value::on_change += ddf::junkyard::door_state_change::monitor;
 
 	ddf::junkyard::door_state_change::remote_add(ddf::service::gmclient::device_role::instance(0));
@@ -14261,7 +14345,7 @@ static void uninit()
 	ddf::pirate::pin_timeout::uninit();
 	ddf::pirate::reset_room::uninit();
 	ddf::pirate::rex_led_update::uninit();
-	ddf::pirate::rex_photosensor_3_acc::uninit();
+	ddf::pirate::rex_photosensor_4_acc::uninit();
 	ddf::pirate::rex_photosensor_5_acc::uninit();
 	ddf::pirate::rex_photosensor_6_acc::uninit();
 	ddf::pirate::rex_photosensor_7_acc::uninit();
@@ -14347,7 +14431,7 @@ static void uninit()
 	ddf::pirate::pin_code::uninit();
 	ddf::pirate::rex_left_column_failure::uninit();
 	ddf::pirate::rex_middle_column_failure::uninit();
-	ddf::pirate::rex_photosensor_3_value::uninit();
+	ddf::pirate::rex_photosensor_4_value::uninit();
 	ddf::pirate::rex_photosensor_5_value::uninit();
 	ddf::pirate::rex_photosensor_6_value::uninit();
 	ddf::pirate::rex_photosensor_7_value::uninit();

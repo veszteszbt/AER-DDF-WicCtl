@@ -33,6 +33,9 @@ public:
 	static void value(value_type v)
 	{ property::value(v); }
 
+	static value_type default_value()
+	{ return property::default_value(); }
+
 	static void remote_add(wicp::role_type &role)
 	{ property::remote_add(role); }
 
