@@ -11,6 +11,7 @@ extern "C"
 
 #include <video/frame.h>
 #include <functional>
+#include <journal.h>
 
 
 namespace video {

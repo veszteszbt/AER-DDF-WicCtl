@@ -7,6 +7,7 @@
 #include <iostream>
 #include <video/frame.h>
 #include <video/color.h>
+#include <journal.h>
 
 namespace video
 {
@@ -79,12 +80,26 @@ namespace video
 					_c.red = static_cast<uint8_t>(totalred[_i] / totalpixels[_i]);
 					_c.green = static_cast<uint8_t>(totalgreen[_i] / totalpixels[_i]);
 					_c.blue = static_cast<uint8_t>(totalblue[_i] / totalpixels[_i]);
-					std::cout << "avg color for area " << _i << ": (" << (int)_c.red << ',' << (int)_c.green << ',' << (int)_c.blue << ")" << std::endl;
-					result[_i] =  _c.is_near(_a[_i].c, _a[_i].eps);
+					const bool r = _c.is_near(_a[_i].c, _a[_i].eps);
+					result[_i] = r;
+
+					journal(journal::debug,"video.color_checker") <<
+						"area: " << _i <<
+						"; " << (r?"match":"no match") <<
+						"; avg area color: (" << std::dec <<
+						(int)_c.red << ',' << (int)_c.green << ',' << (int)_c.blue << ")" <<
+						"; expected color: ("  <<
+						(int)_a[_i].c.red << ',' << (int)_a[_i].c.green << ',' << (int)_a[_i].c.blue << ")" <<
+						" +- " << (int)_a[_i].eps <<
+						journal::end;
 				}
 				else
 				{
-					std::cout << "Error: area index " << _i << ": no image pixel within specified bounds." << std::endl;
+					journal(journal::error,"video.color_checker") <<
+						"area index " << _i << ": no image pixel within specified bounds" << std::dec <<
+						"; frame size: " << _p.width << 'x' << _p.height <<
+						"; area bounds: " << a.x << ',' << a.y << ' ' << a.w << 'x' << a.h <<
+						journal::end;
 					result[_i] = false;
 				}
 			}
