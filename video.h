@@ -17,17 +17,14 @@ namespace wic
 
 		static void start()
 		{
-			stream = new ::video::stream_reader(TConfig::cfg_source);
-
 			while(running)
 				stream->process_frame();
-
-			delete stream;
 		}
 
 	public:
 		static void init()
 		{
+			stream = new ::video::stream_reader(TConfig::cfg_source);
 			running = true;
 			process = new std::thread(start);
 		}
@@ -39,7 +36,9 @@ namespace wic
 				return;
 			process->join();
 			delete process;
+			delete stream;
 			process = 0;
+			stream = 0;
 		}
 
 		static void add_processor(void (*f)(::video::frame))
