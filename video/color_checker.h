@@ -19,7 +19,7 @@ namespace video
 			color c;
 			uint8_t eps;
 
-			area(int _x,int _y,int _w,int _h,color _c,uint8_t _eps)
+			constexpr area(int _x,int _y,int _w,int _h,color _c,uint8_t _eps)
 				: x(_x), y(_y), w(_w), h(_h), c(_c), eps(_eps)
 			{}
 
@@ -29,10 +29,16 @@ namespace video
 	private:
 		const std::vector<area> _a;
 		bool *result;
+
 	public:
+
+
 		color_checker(const std::initializer_list<area> &_vec)
 			: _a(_vec), result(new bool[_vec.size()])
 		{}
+
+		size_t size() const
+		{ return _a.size(); }
 
 		bool get_result(int index)
 		{ return result[index]; }
@@ -98,7 +104,7 @@ namespace video
 					journal(journal::error,"video.color_checker") <<
 						"area index " << _i << ": no image pixel within specified bounds" << std::dec <<
 						"; frame size: " << _p.width << 'x' << _p.height <<
-						"; area bounds: " << a.x << ',' << a.y << ' ' << a.w << 'x' << a.h <<
+						"; area bounds: " << _a[_i].x << ',' << _a[_i].y << ' ' << _a[_i].w << 'x' << _a[_i].h <<
 						journal::end;
 					result[_i] = false;
 				}

@@ -12,6 +12,7 @@ extern "C"
 #include <video/frame.h>
 #include <functional>
 #include <journal.h>
+#include <sched/listener.h>
 
 
 namespace video {
@@ -30,6 +31,8 @@ struct stream_reader
 
     AVDictionary    *optionsDict = NULL;
     struct SwsContext      *sws_ctx = NULL;
+
+    sched::event<frame> on_frame;
 
     stream_reader(const std::string& _stream)
     {
@@ -124,7 +127,7 @@ struct stream_reader
     }
 
 
-    void process_frame(std::function<void(frame)> f)
+    void process_frame()
     {
 
         AVPacket        packet;
@@ -154,7 +157,7 @@ struct stream_reader
                     pFrameRGB->linesize
                 );
         
-                f(frame(pCodecCtx->width, pCodecCtx->height, pFrameRGB));
+                on_frame(frame(pCodecCtx->width, pCodecCtx->height, pFrameRGB));
             }
         }
         
