@@ -34,12 +34,11 @@ struct stream_reader
 
     sched::event<frame> on_frame;
 
-    static void av_log_handler(void* /*avcl*/,int severity,const char *format, va_list args)
+    static void av_log_handler(void* /*avcl*/,int severity,const char *format, va_list argptr)
     {
     	char *buf = new char[65536];
-	snprintf(buf,65536,format,args);
+	vsnprintf(buf,65536,format,argptr);
 	journal(journal::info,"video.avlib") << buf << journal::end;
-
     }
 
     stream_reader(const std::string& _stream)
