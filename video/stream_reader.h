@@ -39,6 +39,7 @@ struct stream_reader
     	char *buf = new char[65536];
 	vsnprintf(buf,65536,format,argptr);
 	journal(journal::info,"video.avlib") << buf << journal::end;
+	delete buf;	
     }
 
     stream_reader(const std::string& _stream)
