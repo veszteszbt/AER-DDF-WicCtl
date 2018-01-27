@@ -34,10 +34,19 @@ struct stream_reader
 
     sched::event<frame> on_frame;
 
+    static void av_log_handler(void* /*avcl*/,int severity,const char *format, va_list args)
+    {
+    	char *buf = new char[65536];
+	snprintf(buf,65536,format,args);
+	journal(journal::info,"video.avlib") << buf << journal::end;
+
+    }
+
     stream_reader(const std::string& _stream)
     {
         avformat_network_init();
         av_register_all();
+	av_log_set_callback(av_log_handler);
 
         //Open video file
         if(avformat_open_input(&pFormatCtx, _stream.c_str()/*"rtsp://admin:Almafa123@192.168.1.108:554"*/, NULL, NULL)!=0) { throw -1; }

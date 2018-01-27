@@ -15,16 +15,24 @@ namespace wic
 
 		static volatile bool running;
 
+		static sched::event<::video::frame> on_frame;
+
+		static void frame_handler(::video::frame f)
+		{ on_frame(f); }
+
 		static void start()
 		{
+			stream = new ::video::stream_reader(TConfig::cfg_source);
+			stream->on_frame += frame_handler;
+
 			while(running)
 				stream->process_frame();
 		}
 
+
 	public:
 		static void init()
 		{
-			stream = new ::video::stream_reader(TConfig::cfg_source);
 			running = true;
 			process = new std::thread(start);
 		}
@@ -42,20 +50,23 @@ namespace wic
 		}
 
 		static void add_processor(void (*f)(::video::frame))
-		{ stream->on_frame += f; }
+		{ on_frame += f; }
 
 		static void del_processor(void (*f)(::video::frame))
-		{ stream->on_frame -= f; }
+		{ on_frame -= f; }
 
 	};
 
 	template<typename c>
-	::video::stream_reader *video<c>::stream;
+	::video::stream_reader *video<c>::stream = 0;
 
 	template<typename c>
-	std::thread *video<c>::process;
+	std::thread *video<c>::process = 0;
 
 	template<typename c>
-	volatile bool video<c>::running;
+	volatile bool video<c>::running = false;
+
+	template<typename c>
+	sched::event<::video::frame> video<c>::on_frame;
 }
 #endif
