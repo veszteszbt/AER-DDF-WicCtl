@@ -18,13 +18,13 @@ LIBS=-pthread -lmysqlcppconn -lasound -lsndfile -lavformat -lavcodec -lswresampl
 all: wicctl wic_host
 
 wicctl: wicctl.cc wicctl.h
-	g++ -I. -std=c++14 -lusb-1.0 -o wicctl wicctl.cc
+	g++-7.2.0 -I. -std=c++14 -lusb-1.0 -o wicctl wicctl.cc
 
 %.o: %.cc
 	g++ -DLOG_SQL -I. -g3 -std=c++14 -fdiagnostics-color -o $@ -c $<
 
 wic_host: wic_host.o alsa_host.o journal.o sched/process.o
-	g++ -I. -g3 -std=c++14 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o journal.o sched/process.o $(LIBS)
+	g++-7.2.0 -I. -g3 -std=c++14 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o journal.o sched/process.o $(LIBS)
 
 clean:
 	rm *.o wicctl wic_host 

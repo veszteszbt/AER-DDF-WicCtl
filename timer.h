@@ -134,6 +134,9 @@ namespace wic
 			prop_running::on_change += running_change_handler;
 			prop_value::on_change += value_change_handler;
 			proc = new std::thread(thread_start);
+#ifdef __linux__
+	pthread_setname_np(proc->native_handle(),"wic timer");
+#endif
 		}
 
 		static void uninit()

@@ -3,6 +3,10 @@
 # include <algorithm>
 # include <type_traits>
 # include <cstdint>
+
+#ifdef htons
+# undef htons
+#endif
 namespace types
 {
 	namespace integer
@@ -218,9 +222,7 @@ namespace types
 		}
 
 		template<typename T>
-		typename std::remove_reference<
-			typename std::remove_cv<T>::type
-		>::type
+		std::remove_reference_t<std::remove_cv_t<T>>
 		htons(T value)
 		{
 			static_assert(
