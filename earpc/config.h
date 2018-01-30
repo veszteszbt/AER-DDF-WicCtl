@@ -26,11 +26,11 @@ struct config
                                    
 	static const uint16_t            cfg_remote_port          = tRemotePort;
 
-	static earpc::udp                cfg_connection;
+	static ::earpc::udp                cfg_connection;
 };
 
 template<typename a, typename b, uint16_t lp, uint16_t rp>
-earpc::udp config<a,b,lp,rp>::cfg_connection(lp,rp);
+::earpc::udp config<a,b,lp,rp>::cfg_connection(lp,rp);
 
 typedef config<uint64_t,uint32_t,1234,1234> default_config;
 

@@ -5,6 +5,9 @@
 # include <chrono>
 # include <algorithm>
 # include <net/ipv4_address.h>
+#ifdef min
+# undef min
+#endif
 namespace earpc {
 namespace types {
 
