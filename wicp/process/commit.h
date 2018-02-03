@@ -82,7 +82,7 @@ namespace process
 
 				const history_record hr(value);
 				history.push_front(hr);
-				if(history.size() > 16)
+				if(history.size() > TEnv::history_size)
 					history.pop_back();
 				history_lock.unlock();
 

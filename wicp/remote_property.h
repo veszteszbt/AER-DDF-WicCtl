@@ -294,6 +294,13 @@ namespace wicp
 			proc_commit::notify();
 			return env::value;
 		}
+
+		static void clear_history()
+		{
+			history_lock.lock();
+			history.clear();
+			history_lock.unlock();
+		}
 	};
 
 	template<typename e>

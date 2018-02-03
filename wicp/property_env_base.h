@@ -42,6 +42,8 @@ namespace wicp
 
 		static const uint32_t                        cooldown_time = TConfig::cfg_cooldown_time;
 
+		static const uint32_t                        history_size  = TConfig::cfg_history_size;
+
 		constexpr static const bool                  commit_change_only   = TConfig::cfg_commit_change_only;
 
 		static const class_id_type                   class_id      = TConfig::cfg_class_id;

@@ -202,6 +202,13 @@ namespace wicp
 			return false;
 		}
 
+		static void clear_history()
+		{
+			history_lock.lock();
+			history.clear();
+			history_lock.unlock();
+		}
+
 	};
 
 	template<typename c>
