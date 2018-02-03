@@ -83,6 +83,9 @@ namespace wic
 		static void play()
 		{ property::value(true); }
 
+		static void cancel()
+		{ property::value(false); }
+
 		typedef expose_property<property> playing;
 	};
 
