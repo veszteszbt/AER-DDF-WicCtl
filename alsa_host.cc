@@ -8,13 +8,16 @@ template <typename T> int sgn(T val) {
 }
 
 alsa_host::player_t::stream_type::stream_type(
+	alsa_host::stream_id_type pid,
 	uint8_t pchannel,
 	std::basic_istream<int16_t> &pstream,
 	std::function<void()> pcallback
 )
-	: channel(pchannel)
+	: id(pid)
+	, channel(pchannel)
 	, stream(pstream)
 	, callback(pcallback)
+	, paused(false)
 {}
 
 std::string alsa_host::player_t::hwname(uint8_t v)
@@ -66,6 +69,8 @@ void alsa_host::player_t::start()
 			stream != streams.end();
 		)
 		{
+			if(stream->paused)
+				continue;
 			stream->stream.read(sbuffer,period);
 			const size_t wbytes = stream->stream.gcount();
 			for(size_t i = 0; i < wbytes; ++i)
@@ -109,6 +114,7 @@ void alsa_host::player_t::start()
 			else switch(result)
 			{
 				case -EAGAIN:
+					std::cout << "\e[33;01m - \e[0malsa host: pcm buffer overrun for device " << (int)device << std::endl;
 					continue;
 
 				case -EPIPE:
@@ -117,8 +123,12 @@ void alsa_host::player_t::start()
 					break;
 
 				case -ESTRPIPE:
+					std::cout << "\e[33;01m - \e[0malsa host: pcm instance for device " << (int)device << "is paused; resuming" << std::endl;
 					pcm.resume();
 					break;
+
+				default:
+					std::cout << "\e[33;01m - \e[0malsa host: pcm instance for device " << (int)device << " reported unknown error " << result << std::endl;
 					
 			}
 
@@ -183,12 +193,79 @@ alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
 uint8_t alsa_host::player_t::num_channels()
 { return channels; }
 
-void alsa_host::player_t::play(std::basic_istream<int16_t> &stream, uint8_t channel, std::function<void()> callback)
+
+alsa_host::stream_id_type
+alsa_host::player_t::play(std::basic_istream<int16_t> &stream, uint8_t channel, std::function<void()> callback)
 {
+	static alsa_host::stream_id_type last_sid = 0;
+
 	streams_lock.lock();
-	streams.push_back(stream_type(channel,stream,callback));
+
+	alsa_host::stream_id_type sid = last_sid + 1;
+
+	bool u = true;
+	while(u)
+	{
+		if(!++sid)
+			continue;
+
+		u = false;
+
+		for(auto s : streams)
+			if(s.id == sid)
+			{
+				u = true;
+				break;
+			}
+	}
+
+	streams.push_back(stream_type(sid,channel,stream,callback));
+	last_sid = sid;
 	streams_lock.unlock();
 	notify();
+	return sid;
+}
+
+void
+alsa_host::player_t::cancel(stream_id_type sid)
+{
+	streams_lock.lock();
+	for(auto i = streams.begin(); i != streams.end(); ++i)
+		if(i->id == sid)
+		{
+			std::function<void()> f = i->callback;
+			streams.erase(i);
+			streams_lock.unlock();
+			f();
+			return;
+		}
+	streams_lock.unlock();
+}
+
+void
+alsa_host::player_t::pause(stream_id_type sid)
+{
+	streams_lock.lock();
+	for(auto i = streams.begin(); i != streams.end(); ++i)
+		if(i->id == sid)
+		{
+			i->paused = true;
+			break;
+		}
+	streams_lock.unlock();
+}
+
+void
+alsa_host::player_t::resume(stream_id_type sid)
+{
+	streams_lock.lock();
+	for(auto i = streams.begin(); i != streams.end(); ++i)
+		if(i->id == sid)
+		{
+			i->paused = false;
+			break;
+		}
+	streams_lock.unlock();
 }
 
 alsa_host::player_t::~player_t()
@@ -312,7 +389,8 @@ bool alsa_host::exists(uint8_t card_id, uint8_t channel_id)
 	return (card != cards_by_id.end() && card->second->player().num_channels() > channel_id);
 }
 
-void alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_id, std::function<void()> callback)
+alsa_host::stream_id_type
+alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_id, std::function<void()> callback)
 {
 	cards_by_id_t::iterator card = cards_by_id.find(card_id);
 	if(card == cards_by_id.end())
@@ -320,11 +398,45 @@ void alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_i
 		std::cout << "\e[31;01m - \e[0malsa host: play error: invalid card id `" << (int)card_id << "' specified" << std::endl;
 		//TODO: do on worker thread
 		callback();
-		return;
+		return 0;
 	}
 	
 	file_play_handle f(file,callback);
 
-	card->second->player().play(f.stream(),channel_id,f);
+	return card->second->player().play(f.stream(),channel_id,f);
+}
+
+void
+alsa_host::cancel(uint8_t card_id, stream_id_type sid)
+{
+	cards_by_id_t::iterator card = cards_by_id.find(card_id);
+	if(card == cards_by_id.end())
+	{
+		std::cout << "\e[31;01m - \e[0malsa host: cancel error: invalid card id `" << (int)card_id << "' specified" << std::endl;
+		return;
+	}
+	card->second->player().cancel(sid);
+}
+void
+alsa_host::pause(uint8_t card_id, stream_id_type sid)
+{
+	cards_by_id_t::iterator card = cards_by_id.find(card_id);
+	if(card == cards_by_id.end())
+	{
+		std::cout << "\e[31;01m - \e[0malsa host: cancel error: invalid card id `" << (int)card_id << "' specified" << std::endl;
+		return;
+	}
+	card->second->player().pause(sid);
+}
+void
+alsa_host::resume(uint8_t card_id, stream_id_type sid)
+{
+	cards_by_id_t::iterator card = cards_by_id.find(card_id);
+	if(card == cards_by_id.end())
+	{
+		std::cout << "\e[31;01m - \e[0malsa host: cancel error: invalid card id `" << (int)card_id << "' specified" << std::endl;
+		return;
+	}
+	card->second->player().resume(sid);
 }
 alsa_host::cards_by_id_t alsa_host::cards_by_id;

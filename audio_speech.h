@@ -25,6 +25,8 @@ namespace wic
 
 		static volatile bool is_playing;
 
+		static volatile typename audio::stream_id_type stream_id;
+
 		static std::mutex lock;
 
 		static void change_handler()
@@ -36,15 +38,16 @@ namespace wic
 				{
 					is_playing = true;
 					lock.unlock();
-					audio::play(TConfig::cfg_source,finish_handler);
+					stream_id = audio::play(TConfig::cfg_source,finish_handler);
 					journal(journal::trace,"wic.audio.speech") << TConfig::name << ": " << "started" << journal::end;
 					return;
 				}
 			}
 			else if(is_playing)
 			{
-				property::value(true);
-				journal(journal::warning,"wic.audio.speech") << TConfig::name << ": " << " stop signal before finish; resetting" << journal::end;
+				audio::cancel(stream_id);
+				stream_id = 0;
+				journal(journal::trace,"wic.audio.speech") << TConfig::name << ": " << " cancelled" << journal::end;
 
 			} else
 				journal(journal::trace,"wic.audio.speech") << TConfig::name << ": " << "finished" << journal::end;
@@ -88,5 +91,8 @@ namespace wic
 
 	template<typename c>
 	std::mutex audio_speech<c>::lock;
+
+	template<typename c>
+	volatile typename audio_speech<c>::audio::stream_id_type audio_speech<c>::stream_id = 0;
 }
 #endif

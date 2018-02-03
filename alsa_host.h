@@ -14,6 +14,8 @@ class isoundstream;
 class alsa_host
 {
 public:
+	typedef uint32_t stream_id_type;
+
 	class player_t
 	{
 		alsa::pcm::pcm_t pcm;
@@ -34,13 +36,18 @@ public:
 
 		struct stream_type
 		{
+			stream_id_type               id;
+
 			const uint8_t                channel;
 
 			std::basic_istream<int16_t> &stream;
 
 			std::function<void()>        callback;
 
+			bool                         paused;
+
 			stream_type(
+				stream_id_type id,
 				uint8_t pchannel,
 				std::basic_istream<int16_t> &pstream,
 				std::function<void()> pcallback
@@ -72,11 +79,17 @@ public:
 
 		uint8_t num_channels();
 
-		void play(
+		stream_id_type play(
 			std::basic_istream<int16_t> &stream,
 			uint8_t channel,
 			std::function<void()> callback
 		);
+
+		void cancel(stream_id_type sid);
+
+		void pause(stream_id_type sid);
+
+		void resume(stream_id_type sid);
 
 		~player_t();
 	};
@@ -134,18 +147,23 @@ private:
 	};
 
 public:
-
 	static void init();
 
 	static void uninit();
 
 	static bool exists(uint8_t card, uint8_t channel);
 
-	static void play(
+	static stream_id_type play(
 		const std::string &file,
 		uint8_t card_id,
 		uint8_t channel_id,
 		std::function<void()> callback = nop
 	);
+
+	static void cancel(uint8_t card_id, stream_id_type sid);
+
+	static void pause(uint8_t card_id, stream_id_type sid);
+
+	static void resume(uint8_t card_id, stream_id_type sid);
 };
 #endif

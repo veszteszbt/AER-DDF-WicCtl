@@ -12,6 +12,8 @@ namespace wic
 
 		static const uint8_t channel = TConfig::cfg_channel;
 	public:
+		typedef alsa_host::stream_id_type stream_id_type;
+
 		static void init()
 		{
 			if(!alsa_host::exists(device,channel))
@@ -26,11 +28,20 @@ namespace wic
 		static void uninit()
 		{}
 
-		static void play(const std::string &file)
-		{ alsa_host::play(file,device,channel); }
+		static stream_id_type play(const std::string &file)
+		{ return alsa_host::play(file,device,channel); }
 
-		static void play(const std::string &file, std::function<void()> callback)
-		{ alsa_host::play(file,device,channel,callback); }
+		static stream_id_type play(const std::string &file, std::function<void()> callback)
+		{ return alsa_host::play(file,device,channel,callback); }
+
+		static void cancel(stream_id_type sid)
+		{ alsa_host::cancel(device,sid); }
+
+		static void pause(stream_id_type sid)
+		{ alsa_host::pause(device,sid); }
+
+		static void resume(stream_id_type sid)
+		{ alsa_host::resume(device,sid); }
 	};
 }
 #endif
