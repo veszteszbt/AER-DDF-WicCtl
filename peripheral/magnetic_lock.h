@@ -7,3 +7,4 @@ template<typename TConfig>
 using magnetic_lock = gpio_output<TConfig>;
 
 }
+#endif

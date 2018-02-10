@@ -57,8 +57,5 @@ namespace peripheral
 
 		typedef expose_property<property> value;
 	};
-
-	template<typename TConfig>
-	using dimmable_led_strip = pwm_output<TConfig>;
 }
 #endif

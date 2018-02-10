@@ -4,7 +4,7 @@
 namespace peripheral {
 
 template<typename TConfig>
-using dimmable_led_strip = gpio_input<TConfig>;
+using dimmable_led_strip = pwm_output<TConfig>;
 
 }
 #endif

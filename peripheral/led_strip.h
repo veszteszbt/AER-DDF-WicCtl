@@ -7,3 +7,5 @@ template<typename TConfig>
 using led_strip = gpio_output<TConfig>;
 
 }
+
+#endif
