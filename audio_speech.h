@@ -38,7 +38,7 @@ namespace wic
 				{
 					is_playing = true;
 					lock.unlock();
-					stream_id = audio::play(TConfig::cfg_source,finish_handler);
+					stream_id = audio::play(TConfig::cfg_source,TConfig::cfg_gain,finish_handler);
 					journal(journal::trace,"wic.audio.speech") << TConfig::name << ": " << "started" << journal::end;
 					return;
 				}

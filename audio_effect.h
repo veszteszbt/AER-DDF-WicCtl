@@ -17,7 +17,7 @@ namespace wic
 		{}
 
 		static void play()
-		{ audio::play(TConfig::cfg_source); }
+		{ audio::play(TConfig::cfg_source,TConfig::cfg_gain); }
 	};
 }
 #endif

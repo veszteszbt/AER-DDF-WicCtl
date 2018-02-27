@@ -40,6 +40,8 @@ public:
 
 			const uint8_t                channel;
 
+			const float                  gain;
+
 			std::basic_istream<int16_t> &stream;
 
 			std::function<void()>        callback;
@@ -50,6 +52,7 @@ public:
 				stream_id_type id,
 				uint8_t pchannel,
 				std::basic_istream<int16_t> &pstream,
+				float pgain,
 				std::function<void()> pcallback
 			);
 		};
@@ -82,6 +85,7 @@ public:
 		stream_id_type play(
 			std::basic_istream<int16_t> &stream,
 			uint8_t channel,
+			float gain,
 			std::function<void()> callback
 		);
 
@@ -157,6 +161,7 @@ public:
 		const std::string &file,
 		uint8_t card_id,
 		uint8_t channel_id,
+		float gain,
 		std::function<void()> callback = nop
 	);
 

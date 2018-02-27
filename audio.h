@@ -28,11 +28,11 @@ namespace wic
 		static void uninit()
 		{}
 
-		static stream_id_type play(const std::string &file)
-		{ return alsa_host::play(file,device,channel); }
+		static stream_id_type play(const std::string &file, float gain)
+		{ return alsa_host::play(file,device,channel,gain); }
 
-		static stream_id_type play(const std::string &file, std::function<void()> callback)
-		{ return alsa_host::play(file,device,channel,callback); }
+		static stream_id_type play(const std::string &file, float gain, std::function<void()> callback)
+		{ return alsa_host::play(file,device,channel,gain, callback); }
 
 		static void cancel(stream_id_type sid)
 		{ alsa_host::cancel(device,sid); }

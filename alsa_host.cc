@@ -11,12 +11,14 @@ alsa_host::player_t::stream_type::stream_type(
 	alsa_host::stream_id_type pid,
 	uint8_t pchannel,
 	std::basic_istream<int16_t> &pstream,
+	float pgain,
 	std::function<void()> pcallback
 )
 	: id(pid)
 	, channel(pchannel)
 	, stream(pstream)
 	, callback(pcallback)
+	, gain(pgain)
 	, paused(false)
 {}
 
@@ -80,12 +82,12 @@ void alsa_host::player_t::start()
 				const int16_t b = sbuffer[i];
 
 				buffer[index] =
-					(a < 0 && b < 0)
+					static_cast<int16_t>(stream->gain*((a < 0 && b < 0)
 						? ((int)a + (int)b) - (((int)a * (int)b)/INT16_MIN)
 						: ((a > 0 && b > 0)
 							? ((int)a + (int)b) - (((int)a * (int)b)/INT16_MAX)
 							: (a + b)
-						);
+						)));
 
 			}
 
@@ -170,7 +172,7 @@ alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
 
 	double period_msec = static_cast<double>(period)*1000/rate;
 	if(period_msec < 2.0)
-		period = static_cast<snd_pcm_uframes_t>(4*rate/1000);
+		period = static_cast<snd_pcm_uframes_t>(8*rate/1000);
 
 
 	dir = 0;
@@ -195,7 +197,7 @@ uint8_t alsa_host::player_t::num_channels()
 
 
 alsa_host::stream_id_type
-alsa_host::player_t::play(std::basic_istream<int16_t> &stream, uint8_t channel, std::function<void()> callback)
+alsa_host::player_t::play(std::basic_istream<int16_t> &stream, uint8_t channel, float gain, std::function<void()> callback)
 {
 	static alsa_host::stream_id_type last_sid = 0;
 
@@ -219,7 +221,7 @@ alsa_host::player_t::play(std::basic_istream<int16_t> &stream, uint8_t channel, 
 			}
 	}
 
-	streams.push_back(stream_type(sid,channel,stream,callback));
+	streams.push_back(stream_type(sid,channel,stream,gain,callback));
 	last_sid = sid;
 	streams_lock.unlock();
 	notify();
@@ -390,7 +392,7 @@ bool alsa_host::exists(uint8_t card_id, uint8_t channel_id)
 }
 
 alsa_host::stream_id_type
-alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_id, std::function<void()> callback)
+alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_id, float gain, std::function<void()> callback)
 {
 	cards_by_id_t::iterator card = cards_by_id.find(card_id);
 	if(card == cards_by_id.end())
@@ -403,7 +405,7 @@ alsa_host::play(const std::string &file, uint8_t card_id, uint8_t channel_id, st
 	
 	file_play_handle f(file,callback);
 
-	return card->second->player().play(f.stream(),channel_id,f);
+	return card->second->player().play(f.stream(),channel_id,gain,f);
 }
 
 void
