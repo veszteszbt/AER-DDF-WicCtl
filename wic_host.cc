@@ -800,6 +800,30 @@ namespace ddf
 			};
 			typedef property_room<knock_count_config> knock_count;
 
+			/// map_sensor1_triggered ///
+			struct map_sensor1_triggered_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::map_sensor1_triggered";
+				typedef bool cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x5c0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<map_sensor1_triggered_config> map_sensor1_triggered;
+
+			/// map_sensor2_triggered ///
+			struct map_sensor2_triggered_config : public property_config_base
+			{
+				constexpr static const char *name = "ddf::pirate::map_sensor2_triggered";
+				typedef bool cfg_value_type;
+				static const uint32_t cfg_class_id           = 0x1ffff0;
+				static const uint32_t cfg_member_id          = 0x5d0;
+				static const uint32_t cfg_cooldown_time      = 0;
+				static const bool     cfg_commit_change_only = true;
+			};
+			typedef property_room<map_sensor2_triggered_config> map_sensor2_triggered;
+
 			/// pin_code ///
 			struct pin_code_config : public property_config_base
 			{
@@ -938,7 +962,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::star_value";
 				typedef uint16_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x5f0;
+				static const uint32_t cfg_member_id          = 0x640;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -950,7 +974,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x6d0;
+				static const uint32_t cfg_member_id          = 0x720;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -962,7 +986,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x750;
+				static const uint32_t cfg_member_id          = 0x7a0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -974,7 +998,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_an_3";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x7d0;
+				static const uint32_t cfg_member_id          = 0x820;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -986,7 +1010,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_ghost_voice";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x680;
+				static const uint32_t cfg_member_id          = 0x6d0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -998,7 +1022,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x710;
+				static const uint32_t cfg_member_id          = 0x760;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -1010,7 +1034,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2";
 				typedef uint64_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x790;
+				static const uint32_t cfg_member_id          = 0x7e0;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -1022,7 +1046,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::pirate::wheel_last_pos";
 				typedef uint16_t cfg_value_type;
 				static const uint32_t cfg_class_id           = 0x1ffff0;
-				static const uint32_t cfg_member_id          = 0x5e0;
+				static const uint32_t cfg_member_id          = 0x630;
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
@@ -1047,6 +1071,14 @@ namespace ddf
 					constexpr static const float cfg_gain = 1;
 				};
 				typedef wic::audio_effect<chord_config> chord;
+				struct progress_config
+				{
+					constexpr static const char *name = "ddf::pirate::room_1_content::progress";
+					typedef room_1 cfg_audio;
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/progress.wav";
+					constexpr static const float cfg_gain = 1.3;
+				};
+				typedef wic::audio_effect<progress_config> progress;
 				struct careful_config
 				{
 					constexpr static const char *name = "ddf::pirate::room_1_content::careful";
@@ -1054,7 +1086,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x20;
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<careful_config> careful;
 				struct event_1_config
@@ -1064,7 +1096,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_1.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x80;
+					static const uint32_t cfg_member_id = 0x90;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
@@ -1074,7 +1106,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_2.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x90;
+					static const uint32_t cfg_member_id = 0xa0;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
@@ -1084,7 +1116,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_InGame_Joe_Track1+2.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0xa0;
+					static const uint32_t cfg_member_id = 0xb0;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct failstate_config
@@ -1094,7 +1126,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Failstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x60;
+					static const uint32_t cfg_member_id = 0x70;
 				};
 				typedef wic::audio_speech<failstate_config> failstate;
 				struct gminc_config
@@ -1104,7 +1136,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x50;
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<gminc_config> gminc;
 				struct ghost_voice_config
@@ -1114,7 +1146,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Joe_verzerrt.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0xb0;
+					static const uint32_t cfg_member_id = 0xc0;
 				};
 				typedef wic::audio_speech<ghost_voice_config> ghost_voice;
 				struct rules_config
@@ -1124,7 +1156,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x30;
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<rules_config> rules;
 				struct techdiff_config
@@ -1134,7 +1166,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x40;
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct winstate_config
@@ -1144,7 +1176,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Winstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100080;
-					static const uint32_t cfg_member_id = 0x70;
+					static const uint32_t cfg_member_id = 0x80;
 				};
 				typedef wic::audio_speech<winstate_config> winstate;
 
@@ -1168,6 +1200,14 @@ namespace ddf
 					constexpr static const float cfg_gain = 1;
 				};
 				typedef wic::audio_effect<chord_config> chord;
+				struct progress_config
+				{
+					constexpr static const char *name = "ddf::pirate::room_2_content::progress";
+					typedef room_2 cfg_audio;
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/progress.wav";
+					constexpr static const float cfg_gain = 1.3;
+				};
+				typedef wic::audio_effect<progress_config> progress;
 				struct careful_config
 				{
 					constexpr static const char *name = "ddf::pirate::room_2_content::careful";
@@ -1175,7 +1215,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x20;
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<careful_config> careful;
 				struct event_1_config
@@ -1185,7 +1225,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_1.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x80;
+					static const uint32_t cfg_member_id = 0x90;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
@@ -1195,7 +1235,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Wetter_2.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x90;
+					static const uint32_t cfg_member_id = 0xa0;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
@@ -1205,7 +1245,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_InGame_Joe_Track1+2.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0xa0;
+					static const uint32_t cfg_member_id = 0xb0;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct failstate_config
@@ -1215,7 +1255,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Failstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x60;
+					static const uint32_t cfg_member_id = 0x70;
 				};
 				typedef wic::audio_speech<failstate_config> failstate;
 				struct gminc_config
@@ -1225,7 +1265,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x50;
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<gminc_config> gminc;
 				struct ghost_voice_config
@@ -1235,7 +1275,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Joe_verzerrt.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0xb0;
+					static const uint32_t cfg_member_id = 0xc0;
 				};
 				typedef wic::audio_speech<ghost_voice_config> ghost_voice;
 				struct rules_config
@@ -1245,7 +1285,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x30;
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<rules_config> rules;
 				struct techdiff_config
@@ -1255,7 +1295,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x40;
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct winstate_config
@@ -1265,7 +1305,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Pirate/DDF_EscapeRoom_Geisterpiraten_Winstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x100070;
-					static const uint32_t cfg_member_id = 0x70;
+					static const uint32_t cfg_member_id = 0x80;
 				};
 				typedef wic::audio_speech<winstate_config> winstate;
 
@@ -1335,7 +1375,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::ghost_blink_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x670;
+				static const uint32_t cfg_member_id = 0x6c0;
 				static const uint32_t cfg_interval  = 200;
 			};
 			typedef typename wic::timer<ghost_blink_timer_config> ghost_blink_timer;
@@ -1375,7 +1415,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x6e0;
+				static const uint32_t cfg_member_id = 0x730;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_an_1_timer_config> timedevent_an_1_timer;
@@ -1385,7 +1425,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x760;
+				static const uint32_t cfg_member_id = 0x7b0;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_an_2_timer_config> timedevent_an_2_timer;
@@ -1395,7 +1435,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_3_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x7e0;
+				static const uint32_t cfg_member_id = 0x830;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_an_3_timer_config> timedevent_an_3_timer;
@@ -1405,7 +1445,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_ghost_voice_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x690;
+				static const uint32_t cfg_member_id = 0x6e0;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_ghost_voice_timer_config> timedevent_ghost_voice_timer;
@@ -1415,7 +1455,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x720;
+				static const uint32_t cfg_member_id = 0x770;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_pc_1_timer_config> timedevent_pc_1_timer;
@@ -1425,7 +1465,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2_timer";
 				static const uint32_t cfg_class_id  = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x7a0;
+				static const uint32_t cfg_member_id = 0x7f0;
 				static const uint32_t cfg_interval  = 1000;
 			};
 			typedef typename wic::timer<timedevent_pc_2_timer_config> timedevent_pc_2_timer;
@@ -1747,13 +1787,20 @@ namespace ddf
 				static bool cfg_condition()
 				{
 					typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_3 boat_door;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && (  !boat_door::value()  ));
 				}
 				static void cfg_action()
 				{
 					typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_3 boat_door;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
-(void)0;
+(void)0; { 
+			progress_1::play();
+			progress_2::play();
+		 }
 				}
 			};
 			typedef wic::event<gameevent_boat_door_opened_config> gameevent_boat_door_opened;
@@ -1763,7 +1810,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::gameevent_bright_star";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x610;
+				static const uint32_t cfg_member_id = 0x660;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::star_value sv;
@@ -1785,7 +1832,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::gameevent_brightest_star";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x620;
+				static const uint32_t cfg_member_id = 0x670;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::star_value sv;
@@ -1976,7 +2023,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::gameevent_chest_opening";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x660;
+				static const uint32_t cfg_member_id = 0x6b0;
 				static bool cfg_condition()
 				{
 					typedef typename pirate::stone_chest_controller::led_strip chest;
@@ -2217,13 +2264,20 @@ namespace ddf
 				static bool cfg_condition()
 				{
 					typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1 door;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && ( !door::value() ));
 				}
 				static void cfg_action()
 				{
 					typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1 door;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
-(void)0;
+(void)0; { 
+			progress_1::play();
+			progress_2::play();
+		 }
 				}
 			};
 			typedef wic::event<gameevent_ghostbox_opened_config> gameevent_ghostbox_opened;
@@ -2233,17 +2287,24 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::gameevent_key_released";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x5d0;
+				static const uint32_t cfg_member_id = 0x610;
 				static bool cfg_condition()
 				{
 					typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && ( !lock::value() ));
 				}
 				static void cfg_action()
 				{
 					typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
-(void)0;
+(void)0; { 
+			progress_1::play();
+			progress_2::play();
+		 }
 				}
 			};
 			typedef wic::event<gameevent_key_released_config> gameevent_key_released;
@@ -2284,17 +2345,24 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::gameevent_lattice_opened";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x650;
+				static const uint32_t cfg_member_id = 0x6a0;
 				static bool cfg_condition()
 				{
 					typedef typename pirate::stone_chest_controller::magnetic_lock_2 latticelock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && ( !latticelock::value() ));
 				}
 				static void cfg_action()
 				{
 					typedef typename pirate::stone_chest_controller::magnetic_lock_2 latticelock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
-(void)0;
+(void)0; { 
+			progress_1::play();
+			progress_2::play();
+		 }
 				}
 			};
 			typedef wic::event<gameevent_lattice_opened_config> gameevent_lattice_opened;
@@ -2362,6 +2430,8 @@ namespace ddf
 				typedef typename pirate::rex_enabled en;
 				typedef typename pirate::rex_score score;
 					typedef typename pirate::rex_flipper_controller::magnetic_lock lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && ( 
 			335 == score::value() && en::value()
 		 ));
@@ -2371,8 +2441,12 @@ namespace ddf
 				typedef typename pirate::rex_enabled en;
 				typedef typename pirate::rex_score score;
 					typedef typename pirate::rex_flipper_controller::magnetic_lock lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
 (void)0; { 
+			progress_1::play();
+			progress_2::play();
 			lock::value(0);
 		 }
 				}
@@ -2436,7 +2510,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::ghost_blinking";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x6c0;
+				static const uint32_t cfg_member_id = 0x710;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::ghost_blink_timer tmr;
@@ -2506,12 +2580,14 @@ namespace ddf
 				{
 					typedef typename pirate::entrance_hanger_controller::debouncer_2 hanger;
 					typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_3 boat_door;
-					return (true && (  hanger::value()  ));
+					typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1 ghostbox_door;
+					return (true && (  hanger::value() && !ghostbox_door::value()  ));
 				}
 				static void cfg_action()
 				{
 					typedef typename pirate::entrance_hanger_controller::debouncer_2 hanger;
 					typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_3 boat_door;
+					typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1 ghostbox_door;
 	
 (void)0; {  boat_door::value(0);  }
 				}
@@ -2691,26 +2767,106 @@ namespace ddf
 			};
 			typedef wic::event<left_column_evaluate_config> left_column_evaluate;
 
+			/// map_reset ///		
+			struct map_reset_config
+			{
+				constexpr static const char *name = "ddf::pirate::map_reset";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x620;
+				static bool cfg_condition()
+				{
+				typedef typename pirate::gamestate gs;
+				typedef typename pirate::map_sensor1_triggered sensor_1;
+				typedef typename pirate::map_sensor2_triggered sensor_2;
+					return (true && ( 
+			!gs::value()
+		 ));
+				}
+				static void cfg_action()
+				{
+				typedef typename pirate::gamestate gs;
+				typedef typename pirate::map_sensor1_triggered sensor_1;
+				typedef typename pirate::map_sensor2_triggered sensor_2;
+	
+(void)0; { 
+			sensor_1::value(0);
+			sensor_2::value(0);
+		 }
+				}
+			};
+			typedef wic::event<map_reset_config> map_reset;
+
+			/// map_sensor1 ///		
+			struct map_sensor1_config
+			{
+				constexpr static const char *name = "ddf::pirate::map_sensor1";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x5e0;
+				static bool cfg_condition()
+				{
+					typedef typename pirate::map_controller::magnetic_sensor_1 s;
+				typedef typename pirate::map_sensor1_triggered p;
+					return (true && ( 
+			s::value() <= 1600 
+		 ));
+				}
+				static void cfg_action()
+				{
+					typedef typename pirate::map_controller::magnetic_sensor_1 s;
+				typedef typename pirate::map_sensor1_triggered p;
+	
+(void)0; { 
+			p::value(1);
+		 }
+				}
+			};
+			typedef wic::event<map_sensor1_config> map_sensor1;
+
+			/// map_sensor2 ///		
+			struct map_sensor2_config
+			{
+				constexpr static const char *name = "ddf::pirate::map_sensor2";
+				static const uint32_t cfg_class_id = 0x1ffff0;
+				static const uint32_t cfg_member_id = 0x5f0;
+				static bool cfg_condition()
+				{
+					typedef typename pirate::map_controller::magnetic_sensor_2 s;
+				typedef typename pirate::map_sensor2_triggered p;
+					return (true && ( 
+			s::value() >= 2400
+		 ));
+				}
+				static void cfg_action()
+				{
+					typedef typename pirate::map_controller::magnetic_sensor_2 s;
+				typedef typename pirate::map_sensor2_triggered p;
+	
+(void)0; { 
+			p::value(1);
+		 }
+				}
+			};
+			typedef wic::event<map_sensor2_config> map_sensor2;
+
 			/// map_solved ///		
 			struct map_solved_config
 			{
 				constexpr static const char *name = "ddf::pirate::map_solved";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x5c0;
+				static const uint32_t cfg_member_id = 0x600;
 				static bool cfg_condition()
 				{
-					typedef typename pirate::map_controller::magnetic_sensor_1 sensor_1;
-					typedef typename pirate::map_controller::magnetic_sensor_2 sensor_2;
+				typedef typename pirate::map_sensor1_triggered sensor_1;
+				typedef typename pirate::map_sensor2_triggered sensor_2;
 					typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
 					return (true && (  
-			sensor_1::value() >= 3072 &&  
-			sensor_2::value() <= 1024 
+			sensor_1::value() && sensor_2::value()
 		 ));
 				}
 				static void cfg_action()
 				{
-					typedef typename pirate::map_controller::magnetic_sensor_1 sensor_1;
-					typedef typename pirate::map_controller::magnetic_sensor_2 sensor_2;
+				typedef typename pirate::map_sensor1_triggered sensor_1;
+				typedef typename pirate::map_sensor2_triggered sensor_2;
 					typedef typename pirate::stone_chest_controller::magnetic_lock_1 lock;
 	
 (void)0; {  
@@ -3286,7 +3442,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::rotation_update";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x600;
+				static const uint32_t cfg_member_id = 0x650;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::gamestate gs;
@@ -3353,7 +3509,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::sign_matching";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x640;
+				static const uint32_t cfg_member_id = 0x690;
 				static bool cfg_condition()
 				{
 					typedef typename pirate::stone_chest_controller::magnetic_sensor_1 stone_1;
@@ -3492,7 +3648,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x6f0;
+				static const uint32_t cfg_member_id = 0x740;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::timedevent_an_1 __timedevent_at;
@@ -3526,7 +3682,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_1_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x700;
+				static const uint32_t cfg_member_id = 0x750;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::gamestate gs;
@@ -3564,7 +3720,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x770;
+				static const uint32_t cfg_member_id = 0x7c0;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::timedevent_an_2 __timedevent_at;
@@ -3598,7 +3754,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_2_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x780;
+				static const uint32_t cfg_member_id = 0x7d0;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::gamestate gs;
@@ -3636,7 +3792,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_3_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x7f0;
+				static const uint32_t cfg_member_id = 0x840;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::timedevent_an_3 __timedevent_at;
@@ -3670,7 +3826,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_an_3_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x800;
+				static const uint32_t cfg_member_id = 0x850;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::gamestate gs;
@@ -3708,7 +3864,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_ghost_voice_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x6a0;
+				static const uint32_t cfg_member_id = 0x6f0;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::timedevent_ghost_voice __timedevent_at;
@@ -3749,7 +3905,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_ghost_voice_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x6b0;
+				static const uint32_t cfg_member_id = 0x700;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::gamestate gs;
@@ -3787,7 +3943,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x730;
+				static const uint32_t cfg_member_id = 0x780;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::timedevent_pc_1 __timedevent_at;
@@ -3818,7 +3974,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_1_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x740;
+				static const uint32_t cfg_member_id = 0x790;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::gamestate gs;
@@ -3856,7 +4012,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2_event_finished";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x7b0;
+				static const uint32_t cfg_member_id = 0x800;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::timedevent_pc_2 __timedevent_at;
@@ -3887,7 +4043,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::timedevent_pc_2_event_gamestate";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x7c0;
+				static const uint32_t cfg_member_id = 0x810;
 				static bool cfg_condition()
 				{
 				typedef typename pirate::gamestate gs;
@@ -3955,7 +4111,7 @@ namespace ddf
 			{
 				constexpr static const char *name = "ddf::pirate::wheel_reset";
 				static const uint32_t cfg_class_id = 0x1ffff0;
-				static const uint32_t cfg_member_id = 0x630;
+				static const uint32_t cfg_member_id = 0x680;
 				static bool cfg_condition()
 				{
 					typedef typename pirate::ghostbox_picture_laser_boat_wheel_controller::potentiometer wheel;
@@ -4526,6 +4682,14 @@ namespace ddf
 					constexpr static const float cfg_gain = 1;
 				};
 				typedef wic::audio_effect<chord_config> chord;
+				struct progress_config
+				{
+					constexpr static const char *name = "ddf::magician::room_1_content::progress";
+					typedef room_1 cfg_audio;
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/progress.wav";
+					constexpr static const float cfg_gain = 1.3;
+				};
+				typedef wic::audio_effect<progress_config> progress;
 				struct careful_config
 				{
 					constexpr static const char *name = "ddf::magician::room_1_content::careful";
@@ -4533,7 +4697,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x20;
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<careful_config> careful;
 				struct failstate_config
@@ -4543,7 +4707,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusionen_Failstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0xe0;
+					static const uint32_t cfg_member_id = 0xf0;
 				};
 				typedef wic::audio_speech<failstate_config> failstate;
 				struct gminc_config
@@ -4553,7 +4717,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x50;
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<gminc_config> gminc;
 				struct rules_config
@@ -4563,7 +4727,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x30;
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<rules_config> rules;
 				struct techdiff_config
@@ -4573,7 +4737,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x40;
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct winstate_config
@@ -4583,7 +4747,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusionen_Winstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0xd0;
+					static const uint32_t cfg_member_id = 0xe0;
 				};
 				typedef wic::audio_speech<winstate_config> winstate;
 				struct event_1_config
@@ -4593,7 +4757,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_0030.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x70;
+					static const uint32_t cfg_member_id = 0x80;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
@@ -4603,7 +4767,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_1000.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x80;
+					static const uint32_t cfg_member_id = 0x90;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
@@ -4613,7 +4777,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_2000.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0x90;
+					static const uint32_t cfg_member_id = 0xa0;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
@@ -4623,7 +4787,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_3000.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0xa0;
+					static const uint32_t cfg_member_id = 0xb0;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 				struct event_5_config
@@ -4633,7 +4797,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_4000.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0xb0;
+					static const uint32_t cfg_member_id = 0xc0;
 				};
 				typedef wic::audio_speech<event_5_config> event_5;
 				struct event_6_config
@@ -4643,7 +4807,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_5500.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200060;
-					static const uint32_t cfg_member_id = 0xc0;
+					static const uint32_t cfg_member_id = 0xd0;
 				};
 				typedef wic::audio_speech<event_6_config> event_6;
 
@@ -4675,6 +4839,14 @@ namespace ddf
 					constexpr static const float cfg_gain = 1;
 				};
 				typedef wic::audio_effect<chord_config> chord;
+				struct progress_config
+				{
+					constexpr static const char *name = "ddf::magician::room_2_content::progress";
+					typedef room_2 cfg_audio;
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/progress.wav";
+					constexpr static const float cfg_gain = 1.3;
+				};
+				typedef wic::audio_effect<progress_config> progress;
 				struct careful_config
 				{
 					constexpr static const char *name = "ddf::magician::room_2_content::careful";
@@ -4682,7 +4854,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x20;
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<careful_config> careful;
 				struct failstate_config
@@ -4692,7 +4864,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusionen_Failstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0xe0;
+					static const uint32_t cfg_member_id = 0xf0;
 				};
 				typedef wic::audio_speech<failstate_config> failstate;
 				struct gminc_config
@@ -4702,7 +4874,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x50;
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<gminc_config> gminc;
 				struct rules_config
@@ -4712,7 +4884,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x30;
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<rules_config> rules;
 				struct techdiff_config
@@ -4722,7 +4894,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x40;
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct winstate_config
@@ -4732,7 +4904,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusionen_Winstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0xd0;
+					static const uint32_t cfg_member_id = 0xe0;
 				};
 				typedef wic::audio_speech<winstate_config> winstate;
 				struct event_1_config
@@ -4742,7 +4914,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_0030.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x70;
+					static const uint32_t cfg_member_id = 0x80;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
@@ -4752,7 +4924,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_1000.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x80;
+					static const uint32_t cfg_member_id = 0x90;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
@@ -4762,7 +4934,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_2000.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0x90;
+					static const uint32_t cfg_member_id = 0xa0;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
@@ -4772,7 +4944,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_3000.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0xa0;
+					static const uint32_t cfg_member_id = 0xb0;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 				struct event_5_config
@@ -4782,7 +4954,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_4000.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0xb0;
+					static const uint32_t cfg_member_id = 0xc0;
 				};
 				typedef wic::audio_speech<event_5_config> event_5;
 				struct event_6_config
@@ -4792,7 +4964,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Magician/DDF_EscapeRoom_Illusion_Ansager_5500.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x200050;
-					static const uint32_t cfg_member_id = 0xc0;
+					static const uint32_t cfg_member_id = 0xd0;
 				};
 				typedef wic::audio_speech<event_6_config> event_6;
 
@@ -5280,6 +5452,8 @@ namespace ddf
 					typedef typename magician::cupboard_controller::debouncer debouncer;
 					typedef typename magician::cupboard_controller::magnetic_lock magnetic_lock;
 					typedef typename magician::futuristic_safe_controller::addressable_led_strip led;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && ( 
             debouncer::value() && magnetic_lock::value()
          ));
@@ -5289,9 +5463,13 @@ namespace ddf
 					typedef typename magician::cupboard_controller::debouncer debouncer;
 					typedef typename magician::cupboard_controller::magnetic_lock magnetic_lock;
 					typedef typename magician::futuristic_safe_controller::addressable_led_strip led;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
 (void)0; { 
             magnetic_lock::value(0);
+	    progress_1::play();
+	    progress_2::play();
             led::enabled(false);
             led::enabled(true);
             led::value_type x = led::value();
@@ -5551,6 +5729,8 @@ namespace ddf
 					typedef typename magician::design_board_controller::linear_magnetic_sensor_2 sensor_2;
 					typedef typename magician::design_board_controller::linear_magnetic_sensor_3 sensor_3;
 					typedef typename magician::design_board_controller::magnetic_lock lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && (  
 			sensor_1::value() &&
 			sensor_2::value() &&
@@ -5563,9 +5743,13 @@ namespace ddf
 					typedef typename magician::design_board_controller::linear_magnetic_sensor_2 sensor_2;
 					typedef typename magician::design_board_controller::linear_magnetic_sensor_3 sensor_3;
 					typedef typename magician::design_board_controller::magnetic_lock lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
 (void)0; {  
 			lock::value(0); 
+			progress_1::play();
+			progress_2::play();
 		 }
 				}
 			};
@@ -5718,6 +5902,8 @@ namespace ddf
 				typedef typename magician::rfid_reader_code rfid_reader_code;
 				typedef typename magician::pin_code code;
 					typedef typename magician::futuristic_safe_controller::buzzer buzzer;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && ( 
 			rfid::value() == rfid_reader_code::value() &&
 			key_switch::value() &&
@@ -5736,6 +5922,8 @@ namespace ddf
 				typedef typename magician::rfid_reader_code rfid_reader_code;
 				typedef typename magician::pin_code code;
 					typedef typename magician::futuristic_safe_controller::buzzer buzzer;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
 (void)0; { 
 			const uint16_t v = code::value();
@@ -5746,6 +5934,8 @@ namespace ddf
 				timer::stop();
 				lock::value(0);
 				ge::value(1);
+				progress_1::play();
+				progress_2::play();
 			}
 			else
 				buzzer::beep(200,200);
@@ -7380,6 +7570,14 @@ namespace ddf
 					constexpr static const float cfg_gain = 1;
 				};
 				typedef wic::audio_effect<chord_config> chord;
+				struct progress_config
+				{
+					constexpr static const char *name = "ddf::villa::room_1_content::progress";
+					typedef room_1 cfg_audio;
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/progress.wav";
+					constexpr static const float cfg_gain = 1.3;
+				};
+				typedef wic::audio_effect<progress_config> progress;
 				struct careful_config
 				{
 					constexpr static const char *name = "ddf::villa::room_1_content::careful";
@@ -7387,7 +7585,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x20;
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<careful_config> careful;
 				struct gminc_config
@@ -7397,7 +7595,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x50;
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<gminc_config> gminc;
 				struct rules_config
@@ -7407,7 +7605,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x30;
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<rules_config> rules;
 				struct techdiff_config
@@ -7417,7 +7615,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x40;
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct event_1_config
@@ -7427,7 +7625,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk1.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x60;
+					static const uint32_t cfg_member_id = 0x70;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
@@ -7437,7 +7635,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk2.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x70;
+					static const uint32_t cfg_member_id = 0x80;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
@@ -7447,7 +7645,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk3.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x80;
+					static const uint32_t cfg_member_id = 0x90;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
@@ -7457,7 +7655,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Winstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0x90;
+					static const uint32_t cfg_member_id = 0xa0;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 				struct event_5_config
@@ -7467,7 +7665,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Failstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300080;
-					static const uint32_t cfg_member_id = 0xa0;
+					static const uint32_t cfg_member_id = 0xb0;
 				};
 				typedef wic::audio_speech<event_5_config> event_5;
 
@@ -7491,6 +7689,14 @@ namespace ddf
 					constexpr static const float cfg_gain = 1;
 				};
 				typedef wic::audio_effect<chord_config> chord;
+				struct progress_config
+				{
+					constexpr static const char *name = "ddf::villa::room_2_content::progress";
+					typedef room_2 cfg_audio;
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/progress.wav";
+					constexpr static const float cfg_gain = 1.3;
+				};
+				typedef wic::audio_effect<progress_config> progress;
 				struct careful_config
 				{
 					constexpr static const char *name = "ddf::villa::room_2_content::careful";
@@ -7498,7 +7704,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x20;
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<careful_config> careful;
 				struct gminc_config
@@ -7508,7 +7714,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x50;
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<gminc_config> gminc;
 				struct rules_config
@@ -7518,7 +7724,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x30;
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<rules_config> rules;
 				struct techdiff_config
@@ -7528,7 +7734,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x40;
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct event_1_config
@@ -7538,7 +7744,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk1.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x60;
+					static const uint32_t cfg_member_id = 0x70;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
@@ -7548,7 +7754,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk2.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x70;
+					static const uint32_t cfg_member_id = 0x80;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
@@ -7558,7 +7764,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Anrufbe_Funk3.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x80;
+					static const uint32_t cfg_member_id = 0x90;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
@@ -7568,7 +7774,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Winstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0x90;
+					static const uint32_t cfg_member_id = 0xa0;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 				struct event_5_config
@@ -7578,7 +7784,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Villa/DDF_EscapeRoom_Totenkopf_Failstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x300070;
-					static const uint32_t cfg_member_id = 0xa0;
+					static const uint32_t cfg_member_id = 0xb0;
 				};
 				typedef wic::audio_speech<event_5_config> event_5;
 
@@ -8141,6 +8347,8 @@ namespace ddf
 					typedef typename villa::safe_controller::debouncer_2 switch_2;
 					typedef typename villa::desk_controller::debouncer_3 switch_3;
 					typedef typename villa::control_room_controller::magnetic_lock secret_door;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && (  
 			switch_1::value() &&
 			switch_2::value() &&
@@ -8153,9 +8361,13 @@ namespace ddf
 					typedef typename villa::safe_controller::debouncer_2 switch_2;
 					typedef typename villa::desk_controller::debouncer_3 switch_3;
 					typedef typename villa::control_room_controller::magnetic_lock secret_door;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
 (void)0; {  
-    		secret_door::value(0); 
+    			secret_door::value(0); 
+			progress_1::play();
+			progress_2::play();
 		 }
 				}
 			};
@@ -9970,6 +10182,14 @@ namespace ddf
 					constexpr static const float cfg_gain = 1;
 				};
 				typedef wic::audio_effect<chord_config> chord;
+				struct progress_config
+				{
+					constexpr static const char *name = "ddf::junkyard::room_1_content::progress";
+					typedef room_1 cfg_audio;
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/progress.wav";
+					constexpr static const float cfg_gain = 1.3;
+				};
+				typedef wic::audio_effect<progress_config> progress;
 				struct atmo_blacky_config
 				{
 					constexpr static const char *name = "ddf::junkyard::room_1_content::atmo_blacky";
@@ -10073,7 +10293,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x20;
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<careful_config> careful;
 				struct gminc_config
@@ -10083,7 +10303,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x50;
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<gminc_config> gminc;
 				struct rules_config
@@ -10093,7 +10313,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x30;
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<rules_config> rules;
 				struct techdiff_config
@@ -10103,7 +10323,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x40;
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct event_1_config
@@ -10113,7 +10333,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Junkyard/DDF_EscapeRoom_Schrottplatz_Event_1.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0xf0;
+					static const uint32_t cfg_member_id = 0x100;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
@@ -10123,7 +10343,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Junkyard/DDF_EscapeRoom_Schrottplatz_Event_2.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x100;
+					static const uint32_t cfg_member_id = 0x110;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
@@ -10133,7 +10353,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Junkyard/DDF_EscapeRoom_Schrottplatz_Intro_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x110;
+					static const uint32_t cfg_member_id = 0x120;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
@@ -10143,7 +10363,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Junkyard/DDF_EscapeRoom_Schrottplatz_Winstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x120;
+					static const uint32_t cfg_member_id = 0x130;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 				struct event_5_config
@@ -10153,7 +10373,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Junkyard/DDF_EscapeRoom_Schrottplatz_Failstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400060;
-					static const uint32_t cfg_member_id = 0x130;
+					static const uint32_t cfg_member_id = 0x140;
 				};
 				typedef wic::audio_speech<event_5_config> event_5;
 
@@ -10177,6 +10397,14 @@ namespace ddf
 					constexpr static const float cfg_gain = 1;
 				};
 				typedef wic::audio_effect<chord_config> chord;
+				struct progress_config
+				{
+					constexpr static const char *name = "ddf::junkyard::room_2_content::progress";
+					typedef room_2 cfg_audio;
+					constexpr static const char *cfg_source = "/usr/share/ddf/audio/progress.wav";
+					constexpr static const float cfg_gain = 1.3;
+				};
+				typedef wic::audio_effect<progress_config> progress;
 				struct atmo_blacky_config
 				{
 					constexpr static const char *name = "ddf::junkyard::room_2_content::atmo_blacky";
@@ -10280,7 +10508,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/careful.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x20;
+					static const uint32_t cfg_member_id = 0x30;
 				};
 				typedef wic::audio_speech<careful_config> careful;
 				struct gminc_config
@@ -10290,7 +10518,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/gminc.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x50;
+					static const uint32_t cfg_member_id = 0x60;
 				};
 				typedef wic::audio_speech<gminc_config> gminc;
 				struct rules_config
@@ -10300,7 +10528,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/rules.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x30;
+					static const uint32_t cfg_member_id = 0x40;
 				};
 				typedef wic::audio_speech<rules_config> rules;
 				struct techdiff_config
@@ -10310,7 +10538,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/audio/soundalert/techdiff.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x40;
+					static const uint32_t cfg_member_id = 0x50;
 				};
 				typedef wic::audio_speech<techdiff_config> techdiff;
 				struct event_1_config
@@ -10320,7 +10548,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Junkyard/DDF_EscapeRoom_Schrottplatz_Event_1.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0xf0;
+					static const uint32_t cfg_member_id = 0x100;
 				};
 				typedef wic::audio_speech<event_1_config> event_1;
 				struct event_2_config
@@ -10330,7 +10558,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Junkyard/DDF_EscapeRoom_Schrottplatz_Event_2.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x100;
+					static const uint32_t cfg_member_id = 0x110;
 				};
 				typedef wic::audio_speech<event_2_config> event_2;
 				struct event_3_config
@@ -10340,7 +10568,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Junkyard/DDF_EscapeRoom_Schrottplatz_Intro_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x110;
+					static const uint32_t cfg_member_id = 0x120;
 				};
 				typedef wic::audio_speech<event_3_config> event_3;
 				struct event_4_config
@@ -10350,7 +10578,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Junkyard/DDF_EscapeRoom_Schrottplatz_Winstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x120;
+					static const uint32_t cfg_member_id = 0x130;
 				};
 				typedef wic::audio_speech<event_4_config> event_4;
 				struct event_5_config
@@ -10360,7 +10588,7 @@ namespace ddf
 					constexpr static const char *cfg_source = "/usr/share/ddf/Junkyard/DDF_EscapeRoom_Schrottplatz_Failstate_Musik.wav";
 					constexpr static const float cfg_gain = 1;
 					static const uint32_t cfg_class_id = 0x400050;
-					static const uint32_t cfg_member_id = 0x130;
+					static const uint32_t cfg_member_id = 0x140;
 				};
 				typedef wic::audio_speech<event_5_config> event_5;
 
@@ -10833,6 +11061,8 @@ namespace ddf
 					typedef typename junkyard::secret_box_controller_2::debouncer_8 switch_8;
 					typedef typename junkyard::secret_box_controller_2::debouncer_9 switch_9;
 					typedef typename junkyard::secret_box_controller_2::magnetic_lock_4 lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && (  
             switch_1::value() && 
             switch_5::value() && 
@@ -10851,9 +11081,13 @@ namespace ddf
 					typedef typename junkyard::secret_box_controller_2::debouncer_8 switch_8;
 					typedef typename junkyard::secret_box_controller_2::debouncer_9 switch_9;
 					typedef typename junkyard::secret_box_controller_2::magnetic_lock_4 lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
 (void)0; {  
             lock::value(0); 
+	    progress_1::play();
+	    progress_2::play();
          }
 				}
 			};
@@ -11205,6 +11439,8 @@ namespace ddf
 				{
 					typedef typename junkyard::secret_box_controller_1::debouncer_5 button;
 					typedef typename junkyard::secret_box_controller_1::magnetic_lock_4 lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && (  
             button::value() 
          ));
@@ -11213,9 +11449,13 @@ namespace ddf
 				{
 					typedef typename junkyard::secret_box_controller_1::debouncer_5 button;
 					typedef typename junkyard::secret_box_controller_1::magnetic_lock_4 lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
 (void)0; {  
             lock::value(0); 
+		progress_1::play();
+		progress_2::play();
          }
 				}
 			};
@@ -11231,6 +11471,8 @@ namespace ddf
 				{
 					typedef typename junkyard::secret_box_controller_1::debouncer_6 button;
 					typedef typename junkyard::secret_box_controller_2::magnetic_lock_1 lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && (  
             button::value() 
          ));
@@ -11239,9 +11481,13 @@ namespace ddf
 				{
 					typedef typename junkyard::secret_box_controller_1::debouncer_6 button;
 					typedef typename junkyard::secret_box_controller_2::magnetic_lock_1 lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
 (void)0; {  
             lock::value(0); 
+		progress_1::play();
+		progress_2::play();
          }
 				}
 			};
@@ -11257,6 +11503,8 @@ namespace ddf
 				{
 					typedef typename junkyard::secret_box_controller_1::debouncer_7 button;
 					typedef typename junkyard::secret_box_controller_2::magnetic_lock_2 lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && (  
             button::value() 
          ));
@@ -11265,9 +11513,13 @@ namespace ddf
 				{
 					typedef typename junkyard::secret_box_controller_1::debouncer_7 button;
 					typedef typename junkyard::secret_box_controller_2::magnetic_lock_2 lock;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
 (void)0; {  
             lock::value(0); 
+		progress_1::play();
+		progress_2::play();
          }
 				}
 			};
@@ -11315,6 +11567,8 @@ namespace ddf
 					typedef typename junkyard::secret_box_controller_1::magnetic_lock_3 lock;
 				typedef typename junkyard::lock_pick_1_pressed lock_pick_1_pressed;
 				typedef typename junkyard::lock_pick_2_pressed lock_pick_2_pressed;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 					return (true && ( 
             lock_pick_1::value() ||
             lock_pick_2::value() ||
@@ -11329,6 +11583,8 @@ namespace ddf
 					typedef typename junkyard::secret_box_controller_1::magnetic_lock_3 lock;
 				typedef typename junkyard::lock_pick_1_pressed lock_pick_1_pressed;
 				typedef typename junkyard::lock_pick_2_pressed lock_pick_2_pressed;
+			typedef room_1_content::progress progress_1;
+			typedef room_2_content::progress progress_2;
 	
 (void)0; { 
             if(lock_pick_1::value())
@@ -11340,7 +11596,11 @@ namespace ddf
             else if(lock_pick_3::value())
             {
                 if(lock_pick_1_pressed::value() && lock_pick_2_pressed::value())
+		{
+		    progress_1::play();
+		    progress_2::play();
             	    lock::value(0);
+		}
             }
          }
 				}
@@ -13074,9 +13334,30 @@ static void init()
 	ddf::pirate::left_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::left_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::left_column_evaluate::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::map_reset::init();
+	ddf::pirate::gamestate::on_change += ddf::pirate::map_reset::monitor;
+
+	ddf::pirate::map_reset::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::map_reset::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::map_reset::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::map_reset::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::map_sensor1::init();
+	ddf::pirate::map_controller::magnetic_sensor_1::value::on_change += ddf::pirate::map_sensor1::monitor;
+
+	ddf::pirate::map_sensor1::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::map_sensor1::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::map_sensor1::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::map_sensor1::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::map_sensor2::init();
+	ddf::pirate::map_controller::magnetic_sensor_2::value::on_change += ddf::pirate::map_sensor2::monitor;
+
+	ddf::pirate::map_sensor2::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::map_sensor2::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::map_sensor2::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::map_sensor2::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::map_solved::init();
-	ddf::pirate::map_controller::magnetic_sensor_1::value::on_change += ddf::pirate::map_solved::monitor;
-	ddf::pirate::map_controller::magnetic_sensor_2::value::on_change += ddf::pirate::map_solved::monitor;
+	ddf::pirate::map_sensor1_triggered::on_change += ddf::pirate::map_solved::monitor;
+	ddf::pirate::map_sensor2_triggered::on_change += ddf::pirate::map_solved::monitor;
 
 	ddf::pirate::map_solved::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::map_solved::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -13400,6 +13681,16 @@ static void init()
 	ddf::pirate::knock_count::remote_add(ddf::service::gmclient::device_role::instance(1));
 	ddf::pirate::knock_count::remote_add(ddf::service::gmclient::device_role::instance(2));
 	ddf::pirate::knock_count::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::map_sensor1_triggered::init(bool(false));
+	ddf::pirate::map_sensor1_triggered::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::map_sensor1_triggered::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::map_sensor1_triggered::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::map_sensor1_triggered::remote_add(ddf::service::gmclient::device_role::instance(3));
+	ddf::pirate::map_sensor2_triggered::init(bool(false));
+	ddf::pirate::map_sensor2_triggered::remote_add(ddf::service::gmclient::device_role::instance(0));
+	ddf::pirate::map_sensor2_triggered::remote_add(ddf::service::gmclient::device_role::instance(1));
+	ddf::pirate::map_sensor2_triggered::remote_add(ddf::service::gmclient::device_role::instance(2));
+	ddf::pirate::map_sensor2_triggered::remote_add(ddf::service::gmclient::device_role::instance(3));
 	ddf::pirate::pin_code::init(std::string());
 	ddf::pirate::pin_code::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::pin_code::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -13498,6 +13789,7 @@ static void init()
 
 	ddf::pirate::room_1::init();
 	ddf::pirate::room_1_content::chord::init();
+	ddf::pirate::room_1_content::progress::init();
 	ddf::pirate::room_1_content::careful::init();
 	ddf::pirate::room_1_content::careful::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::room_1_content::careful::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -13561,6 +13853,7 @@ static void init()
 
 	ddf::pirate::room_2::init();
 	ddf::pirate::room_2_content::chord::init();
+	ddf::pirate::room_2_content::progress::init();
 	ddf::pirate::room_2_content::careful::init();
 	ddf::pirate::room_2_content::careful::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::pirate::room_2_content::careful::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -14334,6 +14627,7 @@ static void init()
 	ddf::magician::room_1::init();
 	ddf::magician::room_1_content::applause::init();
 	ddf::magician::room_1_content::chord::init();
+	ddf::magician::room_1_content::progress::init();
 	ddf::magician::room_1_content::careful::init();
 	ddf::magician::room_1_content::careful::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::magician::room_1_content::careful::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -14410,6 +14704,7 @@ static void init()
 	ddf::magician::room_2::init();
 	ddf::magician::room_2_content::applause::init();
 	ddf::magician::room_2_content::chord::init();
+	ddf::magician::room_2_content::progress::init();
 	ddf::magician::room_2_content::careful::init();
 	ddf::magician::room_2_content::careful::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::magician::room_2_content::careful::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -15310,6 +15605,7 @@ static void init()
 
 	ddf::villa::room_1::init();
 	ddf::villa::room_1_content::chord::init();
+	ddf::villa::room_1_content::progress::init();
 	ddf::villa::room_1_content::careful::init();
 	ddf::villa::room_1_content::careful::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::villa::room_1_content::careful::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -15367,6 +15663,7 @@ static void init()
 
 	ddf::villa::room_2::init();
 	ddf::villa::room_2_content::chord::init();
+	ddf::villa::room_2_content::progress::init();
 	ddf::villa::room_2_content::careful::init();
 	ddf::villa::room_2_content::careful::remote_add(ddf::service::gmclient::device_role::instance(0));
 	ddf::villa::room_2_content::careful::remote_add(ddf::service::gmclient::device_role::instance(1));
@@ -16286,6 +16583,7 @@ static void init()
 
 	ddf::junkyard::room_1::init();
 	ddf::junkyard::room_1_content::chord::init();
+	ddf::junkyard::room_1_content::progress::init();
 	ddf::junkyard::room_1_content::atmo_blacky::init();
 	ddf::junkyard::room_1_content::atmo_junkyard::init();
 	ddf::junkyard::room_1_content::atmo_telephone::init();
@@ -16355,6 +16653,7 @@ static void init()
 
 	ddf::junkyard::room_2::init();
 	ddf::junkyard::room_2_content::chord::init();
+	ddf::junkyard::room_2_content::progress::init();
 	ddf::junkyard::room_2_content::atmo_blacky::init();
 	ddf::junkyard::room_2_content::atmo_junkyard::init();
 	ddf::junkyard::room_2_content::atmo_telephone::init();
@@ -16580,6 +16879,9 @@ static void uninit()
 	ddf::pirate::knock_timeout::uninit();
 	ddf::pirate::laser_turn_off::uninit();
 	ddf::pirate::left_column_evaluate::uninit();
+	ddf::pirate::map_reset::uninit();
+	ddf::pirate::map_sensor1::uninit();
+	ddf::pirate::map_sensor2::uninit();
 	ddf::pirate::map_solved::uninit();
 	ddf::pirate::middle_column_evaluate::uninit();
 	ddf::pirate::pin_code_accumulation::uninit();
@@ -16675,6 +16977,8 @@ static void uninit()
 	ddf::pirate::text_message::uninit();
 	ddf::pirate::text_message_sender::uninit();
 	ddf::pirate::knock_count::uninit();
+	ddf::pirate::map_sensor1_triggered::uninit();
+	ddf::pirate::map_sensor2_triggered::uninit();
 	ddf::pirate::pin_code::uninit();
 	ddf::pirate::rex_enabled::uninit();
 	ddf::pirate::rex_left_column_failure::uninit();
@@ -16696,6 +17000,7 @@ static void uninit()
 	ddf::pirate::wheel_last_pos::uninit();
 
 	ddf::pirate::room_1_content::chord::uninit();
+	ddf::pirate::room_1_content::progress::uninit();
 	ddf::pirate::room_1_content::careful::uninit();
 	ddf::pirate::room_1_content::event_1::uninit();
 	ddf::pirate::room_1_content::event_2::uninit();
@@ -16708,6 +17013,7 @@ static void uninit()
 	ddf::pirate::room_1_content::winstate::uninit();
 	ddf::pirate::room_1::uninit();
 	ddf::pirate::room_2_content::chord::uninit();
+	ddf::pirate::room_2_content::progress::uninit();
 	ddf::pirate::room_2_content::careful::uninit();
 	ddf::pirate::room_2_content::event_1::uninit();
 	ddf::pirate::room_2_content::event_2::uninit();
@@ -16829,6 +17135,7 @@ static void uninit()
 
 	ddf::magician::room_1_content::applause::uninit();
 	ddf::magician::room_1_content::chord::uninit();
+	ddf::magician::room_1_content::progress::uninit();
 	ddf::magician::room_1_content::careful::uninit();
 	ddf::magician::room_1_content::failstate::uninit();
 	ddf::magician::room_1_content::gminc::uninit();
@@ -16844,6 +17151,7 @@ static void uninit()
 	ddf::magician::room_1::uninit();
 	ddf::magician::room_2_content::applause::uninit();
 	ddf::magician::room_2_content::chord::uninit();
+	ddf::magician::room_2_content::progress::uninit();
 	ddf::magician::room_2_content::careful::uninit();
 	ddf::magician::room_2_content::failstate::uninit();
 	ddf::magician::room_2_content::gminc::uninit();
@@ -16982,6 +17290,7 @@ static void uninit()
 	ddf::villa::timedevent_pc_3::uninit();
 
 	ddf::villa::room_1_content::chord::uninit();
+	ddf::villa::room_1_content::progress::uninit();
 	ddf::villa::room_1_content::careful::uninit();
 	ddf::villa::room_1_content::gminc::uninit();
 	ddf::villa::room_1_content::rules::uninit();
@@ -16993,6 +17302,7 @@ static void uninit()
 	ddf::villa::room_1_content::event_5::uninit();
 	ddf::villa::room_1::uninit();
 	ddf::villa::room_2_content::chord::uninit();
+	ddf::villa::room_2_content::progress::uninit();
 	ddf::villa::room_2_content::careful::uninit();
 	ddf::villa::room_2_content::gminc::uninit();
 	ddf::villa::room_2_content::rules::uninit();
@@ -17136,6 +17446,7 @@ static void uninit()
 	ddf::junkyard::timedevent_pc_2::uninit();
 
 	ddf::junkyard::room_1_content::chord::uninit();
+	ddf::junkyard::room_1_content::progress::uninit();
 	ddf::junkyard::room_1_content::atmo_blacky::uninit();
 	ddf::junkyard::room_1_content::atmo_junkyard::uninit();
 	ddf::junkyard::room_1_content::atmo_telephone::uninit();
@@ -17159,6 +17470,7 @@ static void uninit()
 	ddf::junkyard::room_1_content::event_5::uninit();
 	ddf::junkyard::room_1::uninit();
 	ddf::junkyard::room_2_content::chord::uninit();
+	ddf::junkyard::room_2_content::progress::uninit();
 	ddf::junkyard::room_2_content::atmo_blacky::uninit();
 	ddf::junkyard::room_2_content::atmo_junkyard::uninit();
 	ddf::junkyard::room_2_content::atmo_telephone::uninit();
