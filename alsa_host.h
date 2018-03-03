@@ -18,7 +18,7 @@ public:
 
 	class player_t
 	{
-		alsa::pcm::pcm_t pcm;
+		alsa::pcm::pcm_t *pcm;
 
 		int16_t *buffer;
 
@@ -75,7 +75,9 @@ public:
 
 		void start();
 
-		std::thread process;
+		std::thread *process;
+
+		void init_pcm();
 
 	public:
 		player_t(uint8_t pdevice, unsigned prate = 44100);

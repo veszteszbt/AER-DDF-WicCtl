@@ -228,14 +228,4 @@ volatile bool          journal::is_running = true;
 std::thread   *journal::process = 0;
 
 
-std::map<std::string,uint8_t> journal::domains = {
-{"earpc.call",0},
-{"earpc.call.incoming",0},
-{"earpc.call.outgoing",0},
-{"earpc.process.callback",0},
-{"earpc.process.expiry",0},
-{"earpc.process.feedback",0},
-{"earpc.process.master",0},
-{"earpc.process.recv",0},
-{"earpc.process.send",0}
-};
+std::map<std::string,uint8_t> journal::domains = {};

@@ -51,7 +51,7 @@ void alsa_host::player_t::start()
 
 	while(!disposed)
 	{
-		if(pcm.delay() > period*4)
+		if(pcm->delay() > period*4)
 			std::this_thread::sleep_for(std::chrono::microseconds(1000000l*period/rate));
 
 		memset(buffer,0,period*channels*2);
@@ -78,14 +78,14 @@ void alsa_host::player_t::start()
 			for(size_t i = 0; i < wbytes; ++i)
 			{
 				const int index = i*channels+stream->channel;
-				const int16_t a = buffer[index];
-				const int16_t b = sbuffer[i];
+				const int a = static_cast<int>(buffer[index]);
+				const int b = static_cast<int>(stream->gain*sbuffer[i]);
 
 				buffer[index] =
-					static_cast<int16_t>(stream->gain*((a < 0 && b < 0)
-						? ((int)a + (int)b) - (((int)a * (int)b)/INT16_MIN)
+					static_cast<int16_t>(((a < 0 && b < 0)
+						? (a + b) - ((a * b)/INT16_MIN)
 						: ((a > 0 && b > 0)
-							? ((int)a + (int)b) - (((int)a * (int)b)/INT16_MAX)
+							? (a + b) - ((a * b)/INT16_MAX)
 							: (a + b)
 						)));
 
@@ -106,7 +106,7 @@ void alsa_host::player_t::start()
 
 		for(int size = period; size > 0;)
 		{
-			int result = pcm.writei(reinterpret_cast<void*>(p),size);
+			int result = pcm->writei(reinterpret_cast<void*>(p),size);
 			if(result >= 0)
 			{
 				size -= result;
@@ -121,16 +121,26 @@ void alsa_host::player_t::start()
 
 				case -EPIPE:
 					std::cout << "\e[33;01m - \e[0malsa host: pcm buffer underrun for device " << (int)device << std::endl;
-					pcm.prepare();
+					pcm->prepare();
 					break;
 
 				case -ESTRPIPE:
 					std::cout << "\e[33;01m - \e[0malsa host: pcm instance for device " << (int)device << "is paused; resuming" << std::endl;
-					pcm.resume();
+					pcm->resume();
 					break;
 
 				default:
-					std::cout << "\e[33;01m - \e[0malsa host: pcm instance for device " << (int)device << " reported unknown error " << result << std::endl;
+					std::cout << "\e[33;01m - \e[0malsa host: pcm instance for device " << (int)device << " reported unknown error; reinitializing in 3 seconds" << result << std::endl;
+					std::this_thread::sleep_for(std::chrono::seconds(3));
+					try
+					{ init_pcm(); }
+					catch(alsa::error &e)
+					{
+						std::cout << "\e[31;01m - \e[0malsa host: pcm instance reinit for device " << (int)device << " failed; retrying in 3 seconds" << std::endl;
+						std::this_thread::sleep_for(std::chrono::seconds(3));
+					
+					}
+					break;
 					
 			}
 
@@ -141,34 +151,19 @@ void alsa_host::player_t::start()
 }
 
 
-alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
-	: pcm(hwname(pdevice).c_str(),SND_PCM_STREAM_PLAYBACK,0)
-	, device(pdevice)
-	, rate(prate)
-	, disposed(false)
-	, process(&alsa_host::player_t::start,this)
+void alsa_host::player_t::init_pcm()
 {
-	
-	{
-#ifdef __linux__
-		std::stringstream s;
-		s << "alsa host " << std::dec << (int)pdevice;
-		sched_param p;
-		int policy;
-		pthread_setname_np(process.native_handle(),s.str().c_str());
-#endif
-		pthread_getschedparam(process.native_handle(),&policy,&p);
-		p.sched_priority = sched_get_priority_max(SCHED_RR);
-		pthread_setschedparam(process.native_handle(),SCHED_RR,&p);
-	}
-	pcm.params.access(SND_PCM_ACCESS_RW_INTERLEAVED);
-	pcm.params.format(SND_PCM_FORMAT_S16_LE);
-	channels = pcm.params.channels_max();
-	pcm.params.channels(channels);
+
+	delete pcm;
+	pcm = new alsa::pcm::pcm_t(hwname(device).c_str(),SND_PCM_STREAM_PLAYBACK,0);
+	pcm->params.access(SND_PCM_ACCESS_RW_INTERLEAVED);
+	pcm->params.format(SND_PCM_FORMAT_S16_LE);
+	channels = pcm->params.channels_max();
+	pcm->params.channels(channels);
 
 	int dir = 0;
-	pcm.params.set_rate_near(&rate,&dir);
-	pcm.params.get_period_size_min(&period,&dir);
+	pcm->params.set_rate_near(&rate,&dir);
+	pcm->params.get_period_size_min(&period,&dir);
 
 	double period_msec = static_cast<double>(period)*1000/rate;
 	if(period_msec < 2.0)
@@ -176,16 +171,40 @@ alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
 
 
 	dir = 0;
-	pcm.params.set_period_size(period,dir);
+	pcm->params.set_period_size(period,dir);
 
-	pcm.params.apply();
+	pcm->params.apply();
 
-	pcm.params.get_period_size(&period,&dir);
+	pcm->params.get_period_size(&period,&dir);
 	period_msec = static_cast<double>(period)*1000/rate;
 
 	std::cout << "\e[37;01m - \e[0malsa host: rate for card " << std::dec << (int)device << ": " << rate << " Hz" << std::endl;
 	std::cout << "\e[37;01m - \e[0malsa host: period for card " << std::dec << (int)device << ": " << period_msec << " msec" << std::endl;
 
+
+}
+
+alsa_host::player_t::player_t(uint8_t pdevice, unsigned prate)
+	: pcm(0)
+	, device(pdevice)
+	, rate(prate)
+	, disposed(false)
+	, process(0)
+{
+	init_pcm();
+	process = new std::thread(&alsa_host::player_t::start,this);
+	{
+#ifdef __linux__
+		std::stringstream s;
+		s << "alsa host " << std::dec << (int)pdevice;
+		sched_param p;
+		int policy;
+		pthread_setname_np(process->native_handle(),s.str().c_str());
+#endif
+		pthread_getschedparam(process->native_handle(),&policy,&p);
+		p.sched_priority = sched_get_priority_max(SCHED_RR);
+		pthread_setschedparam(process->native_handle(),SCHED_RR,&p);
+	}
 	const unsigned l = period*channels;
 	buffer = new int16_t[l];
 	sbuffer = new int16_t[period];
@@ -272,9 +291,13 @@ alsa_host::player_t::resume(stream_id_type sid)
 
 alsa_host::player_t::~player_t()
 {
-	disposed = true;
-	notify();
-	process.join();
+	if(process)
+	{
+		disposed = true;
+		notify();
+		process->join();
+	}
+	delete process;
 	delete buffer;
 	delete sbuffer;
 }
@@ -291,14 +314,6 @@ alsa_host::alsa_card_t::alsa_card_t(int pid)
 	, hwid(ll_get_hwid(pid))
 	
 {
-	snd_ctl_t *ctl;
-
-	if(snd_ctl_open(&ctl,hwid.c_str(),0))
-	{
-		std::cout << "\e[31;01m - \e[0malsa host: error obtaining ctl for sound card #" << id << std::endl;
-		return;
-	}
-
 	std::cout << "\e[32;01m - \e[0malsa host: registered sound card #" << id << " - " << name << " ("<<longname<<")" << std::endl;
 	_player = new player_t(id);
 }
