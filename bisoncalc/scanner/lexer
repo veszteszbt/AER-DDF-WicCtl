@@ -1,0 +1,57 @@
+
+WS [ \n\t\r]
+
+%%
+
+"if" return Parser::KEYWORD_IF; 
+"then" return Parser::KEYWORD_THEN; 
+"else" return Parser::KEYWORD_ELSE; 
+"elif" return Parser::KEYWORD_ELIF; 
+"fi" return Parser::KEYWORD_FI; 
+"case" return Parser::KEYWORD_CASE; 
+"in" return Parser::KEYWORD_IN; 
+"esac" return Parser::KEYWORD_ESAC; 
+"for" return Parser::KEYWORD_FOR; 
+"while" return Parser::KEYWORD_WHILE; 
+"until" return Parser::KEYWORD_UNTIL; 
+"do" return Parser::KEYWORD_DO; 
+"done" return Parser::KEYWORD_DONE; 
+"{" return Parser::OCURLY; 
+"}" return Parser::CCURLY; 
+
+"|" return Parser::PIPE_SYMBOL; 
+"&&" return Parser::ANDF_SYMBOL; 
+"||" return Parser::ORF_SYMBOL; 
+";" return Parser::COMMAND_SEPARATOR; 
+";;" return Parser::CASE_DELIMITER; 
+"&" return Parser::BACKGROUND_COMMANDS; 
+"(" return Parser::OPARENTHESIS; 
+")" return Parser::CPARENTHESIS; 
+"<" return Parser::INPUT_REDIRECTION; 
+"<<" return Parser::INPUT_FROM_A_HERE_DOCUMENT; 
+">" return Parser::OUTPUT_CREATION; 
+">>" return Parser::OUTPUT_APPEND; 
+
+"+" return Parser::OPERATOR_PLUS;
+"-" return Parser::OPERATOR_MINUS;
+"/" return Parser::OPERATOR_DIVISION;
+"*" return Parser::OPERATOR_MULTIPLICATION;
+"%" return Parser::OPERATOR_MODULO;
+"^" return Parser::OPERATOR_POWER;
+"=" return Parser::OPERATOR_LET_BE;
+"==" return Parser::OPERATOR_EQUALS;
+
+['][^']*['] return Parser::SINGLEQUOTE; 
+["]([^\\\"]|\\.)*["] return Parser::DOUBLEQUOTE; 
+[0-9]*[.][0-9]+ return Parser::FLOAT;
+[0-9]+ return Parser::INTEGER; 
+[a-zA-Z][a-zA-Z0-9]* return Parser::IDENTIFIER;
+
+{WS}+
+
+.           {
+                std::cerr << lineNr() << ": Lexical error." << std::endl;
+                exit(1);
+            }
+
+%%

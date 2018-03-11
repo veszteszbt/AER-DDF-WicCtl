@@ -1,0 +1,369 @@
+%baseclass-preinclude cmath
+
+%scanner ../scanner/Scanner.h
+
+
+%token KEYWORD_IF
+%token KEYWORD_THEN
+%token KEYWORD_ELSE
+%token KEYWORD_ELIF
+%token KEYWORD_FI
+%token KEYWORD_CASE
+%token KEYWORD_IN
+%token KEYWORD_ESAC
+%token KEYWORD_FOR
+%token KEYWORD_WHILE
+%token KEYWORD_UNTIL
+%token KEYWORD_DO
+%token KEYWORD_DONE
+%token OCURLY
+%token CCURLY
+%token PIPE_SYMBOL
+%token ANDF_SYMBOL
+%token ORF_SYMBOL
+%token COMMAND_SEPARATOR
+%token CASE_DELIMITER
+%token BACKGROUND_COMMANDS
+%token OPARENTHESIS
+%token CPARENTHESIS
+%token INPUT_REDIRECTION
+%token INPUT_FROM_A_HERE_DOCUMENT
+%token OUTPUT_CREATION
+%token OUTPUT_APPEND
+%token SINGLEQUOTE
+%token DOUBLEQUOTE
+%token FLOAT
+%token INTEGER
+%token IDENTIFIER
+%token OPERATOR_LET_BE
+
+%left OPERATOR_EQUALS
+%left OPERATOR_PLUS OPERATOR_MINUS
+%left OPERATOR_MULTIPLICATION OPERATOR_DIVISION OPERATOR_MODULO
+%left OPERATOR_POWER
+
+
+%%
+
+
+start:
+    command_list
+    {
+        std::cout << "command_list" << std::endl;
+    }
+;
+
+item:
+    IDENTIFIER
+    {
+        std::cout << "identifier" << std::endl;
+    }
+|
+    input_output
+    {
+        std::cout << "input_output" << std::endl;
+    }
+|
+    IDENTIFIER OPERATOR_LET_BE value
+    {
+        std::cout << "= value" << std::endl;
+    }
+;
+
+value:
+    value OPERATOR_PLUS value
+    {
+        std::cout << "value + value" << std::endl;
+        $$ = $1 + $3;
+        std::cout << $$ << " az osszeg" << std::endl;
+    }
+|
+    value OPERATOR_MINUS value
+    {
+        std::cout << "value - value" << std::endl;
+    }
+|
+    value OPERATOR_MULTIPLICATION value
+    {
+        std::cout << "value * value" << std::endl;
+    }
+|
+    value OPERATOR_DIVISION value
+    {
+        std::cout << "value / value" << std::endl;
+    }
+|
+    value OPERATOR_POWER value
+    {
+        std::cout << "value ^ value" << std::endl;
+    }
+|
+    value OPERATOR_MODULO value
+    {
+        std::cout << "value % value" << std::endl;
+    }
+|
+    value OPERATOR_EQUALS value
+    {
+        std::cout << "value == value" << std::endl;
+    }
+|
+    OPARENTHESIS value CPARENTHESIS
+    {
+        std::cout << "( value )" << std::endl;
+    }
+|
+    FLOAT
+    {
+        std::cout << "float" << std::endl;
+    }
+|
+    INTEGER
+    {
+        std::cout << "integer" << std::endl;
+    }
+|
+    SINGLEQUOTE
+    {
+        std::cout << "singlequote" << std::endl;
+    }
+|
+    DOUBLEQUOTE
+    {
+        std::cout << "doublequote" << std::endl;
+    }
+|
+    IDENTIFIER
+    {
+        std::cout << "identifier" << std::endl;
+    }
+;
+
+simple_command:
+    item
+    {
+        std::cout << "item" << std::endl;
+    }
+|
+    simple_command item
+    {
+        std::cout << "simple_command item" << std::endl;
+    }
+;
+
+command:
+    simple_command
+    {
+        std::cout << "simple_command" << std::endl;
+    }
+|
+    OPARENTHESIS command_list CPARENTHESIS
+    {
+        std::cout << "OPARENTHESIS command_list CPARENTHESIS" << std::endl;
+    }
+|
+    OCURLY command_list CCURLY
+    {
+        std::cout << "OCURLY command_list CCURLY" << std::endl;
+    }
+|
+    KEYWORD_FOR IDENTIFIER KEYWORD_DO command_list KEYWORD_DONE
+    {
+        std::cout << "KEYWORD_FOR IDENTIFIER KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+    }
+|
+    KEYWORD_FOR IDENTIFIER KEYWORD_IF wordholderfirst KEYWORD_DO command_list KEYWORD_DONE
+    {
+        std::cout << "KEYWORD_FOR IDENTIFIER KEYWORD_IF wordholderfirst KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+    }
+|
+    KEYWORD_WHILE command_list KEYWORD_DO command_list KEYWORD_DONE
+    {
+        std::cout << "KEYWORD_WHILE command_list KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+    }
+|
+    KEYWORD_UNTIL command_list KEYWORD_DO command_list KEYWORD_DONE
+    {
+        std::cout << "KEYWORD_UNTIL command_list KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+    }
+|
+    KEYWORD_CASE IDENTIFIER KEYWORD_IN case_partholderfirst KEYWORD_ESAC
+    {
+        std::cout << "KEYWORD_CASE IDENTIFIER KEYWORD_IN case_partholderfirst KEYWORD_ESAC" << std::endl;
+    }
+|
+    KEYWORD_IF command_list KEYWORD_THEN command_list else_part KEYWORD_FI
+    {
+        std::cout << "KEYWORD_IF command_list KEYWORD_THEN command_list else_part KEYWORD_FI" << std::endl;
+    }
+;
+
+wordholderfirst:
+    wordholder IDENTIFIER
+    {
+        std::cout << "wordholder IDENTIFIER" << std::endl;
+    }
+;
+
+wordholder:
+    wordholder IDENTIFIER
+    {
+        std::cout << "wordholder IDENTIFIER" << std::endl;
+    }
+|
+    //empty
+    {
+        std::cout << "empty" << std::endl;
+    }
+;
+
+case_partholderfirst:
+    case_partholder case_part
+    {
+        std::cout << "case_partholder case_part" << std::endl;
+    }
+;
+
+case_partholder:
+    case_partholder case_part
+    {
+        std::cout << "case_partholder case_part" << std::endl;
+    }
+|
+    //empty
+    {
+        std::cout << "empty" << std::endl;
+    }
+;
+
+
+pipeline:
+    command
+    {
+        std::cout << "command" << std::endl;
+    }
+|
+    pipeline PIPE_SYMBOL command
+    {
+        std::cout << "pipeline PIPE_SYMBOL command" << std::endl;
+    }
+;
+
+andor:
+    pipeline
+    {
+        std::cout << "pipeline" << std::endl;
+    }
+|
+    andor ANDF_SYMBOL pipeline
+    {
+        std::cout << "andor ANDF_SYMBOL pipeline" << std::endl;
+    }
+|
+    andor ORF_SYMBOL pipeline
+    {
+        std::cout << "andor ORF_SYMBOL pipeline" << std::endl;
+    }
+;
+
+command_list:
+    andor
+    {
+        std::cout << "andor" << std::endl;
+    }
+|
+    command_list COMMAND_SEPARATOR
+    {
+        std::cout << "command_list COMMAND_SEPARATOR" << std::endl;
+    }
+|
+    command_list BACKGROUND_COMMANDS
+    {
+        std::cout << "command_list BACKGROUND_COMMANDS" << std::endl;
+    }
+|
+    command_list COMMAND_SEPARATOR andor
+    {
+        std::cout << "command_list COMMAND_SEPARATOR andor" << std::endl;
+    }
+|
+    command_list BACKGROUND_COMMANDS andor
+    {
+        std::cout << "command_list BACKGROUND_COMMANDS andor" << std::endl;
+    }
+;
+
+input_output:
+    OUTPUT_CREATION file
+    {
+        std::cout << "OUTPUT_APPEND file" << std::endl;
+    }
+|
+    INPUT_REDIRECTION file
+    {
+        std::cout << "INPUT_REDIRECTION file" << std::endl;
+    }
+|
+    OUTPUT_APPEND IDENTIFIER
+    {
+        std::cout << "OUTPUT_APPEND IDENTIFIER" << std::endl;
+    }
+|
+    INPUT_FROM_A_HERE_DOCUMENT IDENTIFIER
+    {
+        std::cout << "INPUT_FROM_A_HERE_DOCUMENT IDENTIFIER" << std::endl;
+    }
+;
+
+file:
+    IDENTIFIER
+    {
+        std::cout << "WORD" << std::endl;
+    }
+|
+    BACKGROUND_COMMANDS INTEGER
+    {
+        std::cout << "BACKGROUND_COMMANDS INTEGER" << std::endl;
+    }
+|
+    BACKGROUND_COMMANDS OPERATOR_MINUS
+    {
+        std::cout << "BACKGROUND_COMMANDS OPERATOR_MINUS" << std::endl;
+    }
+;
+
+case_part:
+    pattern CCURLY command_list CASE_DELIMITER
+    {
+        std::cout << "pattern CCURLY command_list CASE_DELIMITER" << std::endl;
+    }
+;
+
+pattern:
+    IDENTIFIER
+    {
+        std::cout << "WORD" << std::endl;
+    }
+|
+    pattern PIPE_SYMBOL IDENTIFIER
+    {
+        std::cout << "pattern PIPE_SYMBOL IDENTIFIER" << std::endl;
+    }
+;
+
+else_part:
+    KEYWORD_ELIF command_list KEYWORD_THEN command_list else_part
+    {
+        std::cout << "KEYWORD_ELIF command_list KEYWORD_THEN command_list else_part" << std::endl;
+    }
+|
+    KEYWORD_ELSE command_list
+    {
+        std::cout << "KEYWORD_ELSE command_list" << std::endl;
+    }
+|
+    //empty
+    {
+        std::cout << "empty" << std::endl;
+    }
+;
