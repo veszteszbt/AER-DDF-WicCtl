@@ -1,0 +1,11 @@
+i="0"
+
+if [ $i -gt 1 ]
+then
+echo hiba
+elif [ $i -eq 0 ]
+then
+echo 9ok
+else
+echo hiba
+fi

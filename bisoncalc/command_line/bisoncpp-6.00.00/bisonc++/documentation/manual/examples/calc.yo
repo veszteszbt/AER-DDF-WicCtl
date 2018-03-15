@@ -1,0 +1,40 @@
+We now modify tt(rpn) to handle infix operators instead of postfix. Infix
+notation requires us to define operator precedence and to extend the grammar
+with nested expressions. Here is b()'s grammar specification for tt(calc), an
+infix calculator:
+        verbinclude(calc/parser/grammar)
+    The functions tt(lex), tt(error) and tt(main) are identical to the ones 
+used with tt(rpn).
+
+This example illustrates  several important new features:
+    itemization(
+    it() In the first section (b() directives), tt(%left) declares token types
+stating that the mentioned operators are left-associative. The directives
+tt(%left) and tt(%right) (right associativity) are used instead of tt(%token),
+which is merely used to declare a token identifier. The tokens mentioned with
+tt(%left) and tt(%right) are single-character tokens, which ordinarily don't
+need to be declared. We declare them here to specify their priority and
+associativity.
+    it() Operator precedence is determined by the ordering of the directives;
+the earlier tt(%left) and tt(%right) are specified, the lower the priority of
+the operators that are following these keywords. So addition/subtraction have
+the lowest precedence, multiplication and division are next, then unary minus
+(tt(NEG)), and exponentiation has the highest precedence. See section
+ref(PRECEDENCE).
+    it() Another important new feature is the tt(%prec) directive encountered
+in the grammar section at the definition of the unary minus operator
+production rule. The tt(%prec) directive indicates that the minus operator in
+the production rule `tt('-' exp)' has tt(NEG's), rather than the minus
+(tt('-')) operator's precedence. See section ref(CONDEP).
+    )
+
+Here is a sample run of tt(calc):
+        verb(
+    % calc
+    4 + 4.5 - (34/(8*3+-3))
+            6.88095
+    -56 + 2
+            -54
+    3 ^ 2
+            9
+        )

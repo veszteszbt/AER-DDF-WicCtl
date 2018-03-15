@@ -1,0 +1,15 @@
+The tt(%stype) directive is used to specify a single semantic value type. By
+default the semantic value type is tt(int). For single type semantic values
+several dollar-notations are available. If some of the dollar-notations shown
+below appear to be redundant: that's because their meanings are identical when
+using single type semantic values. Their meanings differ, however, when using
+union or polymorphic semantic values. Furthermore, below the notation $1 is
+used as a generic reference to semantic values of production rule
+components. Instead of $1 other available numbered dollar references can also
+be used.
+
+Here is the overview:
+    includefile(stypedollar.yo)
+
+
+

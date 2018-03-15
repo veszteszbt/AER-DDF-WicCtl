@@ -1,0 +1,15 @@
+The tt(%union) directive is used to specify a union of semantic value types.
+Although each semantic value type can be used for each tt(STYPE__) variable,
+(non)terminals are in practice associated with a single type. These
+associations are automatically applied through b()'s  dollar-notations.
+
+Note that the tt(%union) directive is now largely superseded by the facilities
+offered by the tt(%polymorphic) directive. Using tt(%union) is considered
+somewhat `old school', as tt(%polymorphic) implements cleaner type
+definitions, allowing b() and the bf(C++) compiler to verify that types are
+correctly being used.
+
+In the next overview the notation $1 is used as a generic reference to
+semantic values of production rule components. Instead of $1 other available
+numbered dollar references can also be used.
+

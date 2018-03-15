@@ -1,0 +1,16 @@
+%token i
+%default-actions quiet
+
+%%
+
+E: 
+    i
+|
+    i
+|
+    E '+' E
+|
+    E '*' E
+;
+
+

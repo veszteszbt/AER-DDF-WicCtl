@@ -1,0 +1,68 @@
+em(Symbols) are the building blocks of b() grammars.
+
+A em(terminal symbol) (also known as a em(token)) represents a class of
+syntactically equivalent symbols. Tokens are represented in b()'s parser class
+by a number, defined in an enum. The parser's tt(lex) member function returns
+a token value indicating what kind of token has been read. You don't need to
+know what the code value is; instead, its symbol should always be used.  By
+convention, it contains uppercase characters.
+
+em(Nonterminal symbol) define concepts of grammars. The symbol name is used in
+writing grammar rules. By convention, it contains lowercase characters.
+
+Symbol names consist of letters, digits (not at the beginning), and
+underscores. B() does not support periods in symbol names
+(users familiar with Bison may observe that Bison em(does) support periods in
+symbol names, but the Bison's user guide states that `periods make sense only
+in nonterminals'. Even so, it appears that periods in symbols are hardly ever
+used).
+
+There are two ways terminal symbols can be referred to:
+    itemization(
+    it() A em(named token) is an identifier, like an identifier in
+bf(C++). Each token name must be defined with a b() directive such as
+tt(%token). See section ref(TOKTYPENAMES).
+    it() A tt(character token) (or tt(literal character token)) is written in
+the grammar using bf(C++)'s character constants syntax; for example, 'tt(+)'
+is a character token. A character token doesn't need to be declared unless you
+need to specify its semantic value data type (cf. section ref(SEMANTICS)),
+associativity, or precedence (cf. section ref(PRECEDENCE)).
+    )
+    
+      By convention, a character token is only used to represent that
+particular character. Thus, the token 'tt(+)' is represents the character
+`tt(+)' as a token.
+
+      All common escape sequences that can be used in bf(C++)'s character
+constants can be used in b() as well. Be careful not to use the tt(0)
+character as a character literal because its ASCII code, zero, is the code
+tt(lex) returns to indicate end-of-input (see section ref(LEX)). If your
+program em(must) be able to return 0-byte characters, define a special token
+(e.g., tt(ZERO_BYTE)) and return that token instead.
+
+    Note that em(literal string tokens), formally supported in Bison, are
+em(not) supported by b(). Again, such tokens are hardly ever encountered, and
+lexical scanner generators (like bf(flex)(1) and bf(flexc++)(1)) do not
+support them. Common practice is to define a symbolic name for a literal
+string token. So, a token like tt(EQ) may be defined in the grammar file, with
+the lexical scanner returning tt(EQ) when it matches tt(==).
+
+The value returned by the parser's tt(lex) member is always a terminal
+token. The numeric code for a character token is simply the ASCII code of that
+character, and tt(lex) can simply return that character constant as a token
+value. Each named token becomes a bf(C++) enumeration value in the parser base
+class header file, and tt(lex) can return such enumeration identifiers as
+well. When using an externally defined lexical scanner, that lexical scanner
+should include the parser's base class header file, and it should return
+either character constants or the token identifiers defined in that header
+file. So, if (%token NUM) was defined in the parser class tt(Parser), then the
+lexical scanner may return tt(Parser::NUM).
+
+The symbol `tt(error)' is a reserved em(terminal) symbol reserved by b() for
+error recovery purposes (see chapter ref(RECOVERY)). The tt(error) symbol
+should not be used for other purposes. In particular, the parser's member
+function tt(lex) should never return tt(error). Several more identifiers
+should not be used as terminal symbols either. See section ref(IMPROPER) for
+an overview.
+
+

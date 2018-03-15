@@ -1,0 +1,186 @@
+#include "Parser.ih"
+#include <vector>
+#include <map>
+
+/*
+    Lexical scanner returns a double floating point 
+    number on the stack and the token NUM, or the ASCII
+    character read if not a number.  Skips all blanks
+    and tabs, returns 0 for EOF.
+*/
+
+
+enum tokennames{
+    "FOR",
+    "DO",
+    "DONE",
+    "WHILE",
+    "IN",
+    "UNTIL",
+    "CASE",
+    "ESAC",
+    "IF",
+    "FI",
+    "THEN",
+    "ELIF",
+    "ELSE",
+    "OPARENTHESES",
+    "CPARENTHESES",
+    "OCURLY",
+    "CCURLY",
+    "ET",
+    "SEMICOLON",
+    "DOUBLESEMICOLON",
+    "AND",
+    "OR",
+    "PIPE",
+    "ASSIGN",
+    "HEXADECIMAL",
+    "NUMBER",
+    "NAME",
+    "WORD"
+};
+
+std::map<std::string directive, std::string token> dirlist {
+{"for","FOR"},
+{"do","DO"},
+{"done","DONE"},
+{"while","WHILE"},
+{"in","IN"},
+{"until","UNTIL"},
+{"case","CASE"},
+{"esac","ESAC"},
+{"if","IF"},
+{"fi","FI"},
+{"then","THEN"},
+{"elif","ELIF"},
+{"else","ELSE"},
+{"(","OPARENTHESES"},
+{")","CPARENTHESES"},
+{"{","OCURLY"},
+{"}","CCURLY"},
+{"&","ET"},
+{";","SEMICOLON"},
+{";;","DOUBLESEMICOLON"},
+{"&&","AND"},
+{"||","OR"},
+{"|","PIPE"},
+{"=","ASSIGN"}
+};
+
+int Parser::lex()
+{
+    //char c;
+    
+    std::string token;
+    std::cin >> token;
+                                    // get the next non-ws character
+    if (!std::cin.fail())
+    {
+        auto d = dirlist.find(token;
+        if (d!=dirlist.end())
+        {
+            return (d->dirlist);
+        }
+        else
+        {
+            char c;
+            if (isalpha(token[1])
+            {
+                int i=1;
+                bool isWord = true;
+                while (i<token.size() && isWord)
+                {
+                    c=token[++i];
+                    if(!isalpha(c) && !isdigit(c) && c != "_")
+                    {
+                        isWord = false;
+                    }
+                }
+                if(!isWord)
+                {
+                    throw -1;
+                }
+                else
+                {
+                    d_val__.u_wor = token;
+                    return "WORD";
+                }
+
+            }
+            else
+            {
+                bool isHex = (token[1] == "0" && token[2] == "x");
+                bool isNumber = true;
+                bool isName = true;
+                bool isPartial = false;
+                int i=0;
+                if (isHex)
+                {
+                    i=2;
+                }
+                while(i<temp2.size() && (isNumber || isName))
+                {
+                    c=token[++i];
+                    if (isHex)
+                    {
+                        if(!isdigit(c))
+                        {
+                            isHex = false;
+                            isNumber = false;
+                        }
+                    }
+
+                    if(!isdigit(c))
+                    {
+                        if(!isPartial && token[i]=".")
+                        {
+                            isPartial = true;
+                        }
+                        else
+                        {
+                            bool isNumber = false;
+                            if(!isalpha(c) && c != "_")
+                            {
+                                isName = false;
+                            }
+                        }
+                    }
+                }
+                if(isHex)
+                {
+                    d_val__.u_hex = token;
+                    return "HEXADECIMAL";
+                }
+                if(isNumber)
+                {
+                    d_val__.u_num = token;
+                    return "NUMBER";
+                }
+                if(isName)
+                {
+                    d_val__.u_nam = token;
+                    return "NAME";
+                }
+                throw -1;
+            }
+        }
+    }
+    else
+    {
+        return 0;
+    }
+        
+
+    if (!std::cin)                  // no characters were obtained
+              // indicate End Of Input  
+    
+    if (c == '.' || isdigit(c))     // if a digit char was found
+    {
+        std::cin.putback(c);        // return the character
+        std::cin >> d_val__;        // extract a number
+        return NUM;                 // return the NUM token
+    }
+
+    return c;                       // otherwise return the extracted char.
+}

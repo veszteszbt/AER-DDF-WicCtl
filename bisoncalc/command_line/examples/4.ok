@@ -1,0 +1,11 @@
+i="0"
+while [ $i -lt 10 ]
+do
+i=$[ $i+1 ]
+done
+if [ $i -eq 10 ]
+then
+echo 4ok
+else
+echo hiba
+fi

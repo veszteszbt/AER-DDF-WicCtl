@@ -1,0 +1,37 @@
+Here is an overview of special syntactic constructions that may be used
+inside action blocks:
+    itemization(
+    itt($$) and tt($i) notations represent semantic values of the nonterminal
+defined by production rules and semantic values of components of production
+rules. Different `dollar-notations' are available for different types (single,
+union, or polymorphic) of semantic values. Refer to section ref(ACTIONS) for a
+complete description.
+
+    itt(@@) and tt(@n): Usually these represent plain old data (a bf(C)-type
+structure) containing information about line numbers and column numbers that
+is associated with, respectively, the rule's nonterminal and the production
+rule's n+sups(th) component. The default structure is defined like this (see
+also section ref(LSPNEEDED)):
+           verb(
+    struct LTYPE__
+    {
+        int timestamp;
+        int first_line;
+        int first_column;
+        int last_line;
+        int last_column;
+        char *text;
+    };
+           )
+    Thus, to get the starting line number of the third component, you would
+use tt(@3.first_line).
+
+    In order for the members of this structure to contain valid information,
+you must make sure the lexical scanner supplies this information about each
+token. If you need only certain fields, then the lexical scanner 
+only has to provide those fields. 
+
+    Be advised that using this or corresponding (custom-defined, see sections
+ref(LTYPE) and ref(LOCSTRUCT)) constructions may somewhat slow down the
+parsing process.
+    )

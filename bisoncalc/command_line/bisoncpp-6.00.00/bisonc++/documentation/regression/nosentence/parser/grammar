@@ -1,0 +1,8 @@
+%token NR
+%default-actions quiet
+
+%%
+
+start:
+    NR start
+;

@@ -1,0 +1,76 @@
+    // Include this file in the sources of the class Parser.
+
+// $insert class.h
+#include "Parser.h"
+
+#include <bobcat/mstream>
+#include <bobcat/ranger>
+#include <bobcat/pattern>
+
+#include "../block/block.h"
+#include "../options/options.h"
+
+
+using namespace std;
+using namespace FBB;
+
+inline string const &Parser::productionTag(int nr) const
+{
+    return nr == numeric_limits<int>::max() ? d_rules.sType() :
+                                              d_rules.sType(nr);
+}
+
+inline void Parser::checkEmptyBlocktype() 
+{
+    checkFirstType();
+}
+
+inline void Parser::warnTagMismatches() const
+{
+    d_options.setTagMismatches(d_scanner.matched(), 
+                                d_scanner.filename(), d_scanner.lineNr());
+}
+
+inline void Parser::constructorChecks() const
+{
+    d_options.setConstructorChecks(d_scanner.matched(), 
+                                d_scanner.filename(), d_scanner.lineNr());
+}
+
+inline void Parser::defaultAction() const
+{
+    d_options.setDefaultAction(d_scanner.matched(), 
+                                d_scanner.filename(), d_scanner.lineNr());
+}
+
+inline int Parser::nComponents(int nElements)
+{
+    return nElements >= 0 ? nElements : -nElements - 1;
+}
+
+inline void Parser::print()
+{
+    if (d_arg.option('T'))
+        print__();
+}
+
+inline void Parser::setNegativeDollarIndices()
+{
+    d_negativeDollarIndicesOK = true;
+}        
+
+inline void Parser::setExpectedConflicts()
+{
+    Rules::setExpectedConflicts(d_scanner.number());
+}
+
+// $insert lex
+inline int Parser::lex()
+{
+    return d_scanner.lex();
+}
+
+inline void Parser::exceptionHandler(std::exception const &exc)
+{
+    throw;  // re-implement to handle exceptions thrown by actions
+}

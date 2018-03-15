@@ -1,0 +1,35 @@
+A formal grammar selects tokens only by their classifications: for example, if
+a rule mentions the terminal symbol `integer constant', it means that em(any)
+integer constant is grammatically valid in that position. The precise value of
+the constant is irrelevant when input is being parsed: if `tt(x + 4)' is
+grammatically correct then `tt(x + 1)' or `tt(x + 3989)' is also
+grammatically correct.
+
+But actual values are very important for understanding the input's meaning. A
+compiler is useless if it fails to distinguish between 4, 1 and 3989 as
+constants that are being used in a program. Therefore, each token in a b()
+grammar has both a token type and a em(semantic value). See section
+ref(SEMANTICS) for details.
+
+A token is a terminal symbol defined in the grammar, such as tt(INTEGER),
+tt(IDENTIFIER) or 'tt(,)'. Tokens are used by the parser to make decisions
+about the continuation of the parsing process, but for that only the mere
+tokens are required, and nothing else.
+
+Semantic values represent any additionally available information about tokens,
+such as the values of integers, or the names of identifiers. (A token such as
+'tt(,)' which is just punctuation normally doesn't have a particular semantic
+value.)
+
+For example, an token might be an tt(INTEGER), having the semantic value
+4. Another tt(INTEGER) token could have semantic value 3989. When a grammar
+rule indicates that tt(INTEGER) is allowed, either of these token/value
+combinations is acceptable because each token is tt(INTEGER). When the parser
+accepts the token, it may store the token's semantic value for future
+reference on a em(semantic value stack).
+
+Nonterminal symbols often also have semantic values. For example, in a
+calculator, an expression typically has a semantic value that is a number. In
+a compiler for a programming language, an expression typically has a semantic
+value that is a tree structure describing the meaning of the expression.
+

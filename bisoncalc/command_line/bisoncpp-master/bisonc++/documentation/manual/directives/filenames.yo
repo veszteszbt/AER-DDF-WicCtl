@@ -1,0 +1,4 @@
+Syntax:     bf(%filenames) tt(filename) 
+
+tt(Filename) is a generic filename, used for all header files generated
+by bic().  

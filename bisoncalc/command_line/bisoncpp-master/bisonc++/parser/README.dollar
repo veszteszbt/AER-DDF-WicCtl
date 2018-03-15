@@ -1,0 +1,187 @@
+
+Single:
+              AtDollar                      handler:
+              Pattern   represents:         (empty: see up)
+------------------------------------------------------------------
+$$          -   DD      d_val               dval
+_$$         -   refDD   d_val               dval       
+$$.         -   DDm     d_val.              dvalMem
+$$->        -   DDp     d_val->             dvalPtr
+$$(             DDpar   d_val(              dvalPar
+            
+$nr         -   Dn      d_vsp[idx]          dvsp        
+_$nr        -   refDn   d_vsp[idx]          dvsp        
+$nr.        -   Dnm     d_vsp[idx].         svsMem
+$nr->       -   Dnp     d_vsp[idx]->        svsPtr
+            
+$-nr        -   D_      d_vsp[idx]          dvsp        
+_$-nr       -   refD_   d_vsp[idx]          dvsp        
+$-nr.       -   D_m     d_vsp[idx].         svsMem
+$-nr->      -   D_p     d_vsp[idx]->        svsPtr
+            
+$<TAG>-nr   -   Dt_     err                 errNoTag
+$<TAG>-nr.  -   Dt_m    err        
+$<TAG>-nr-> -   Dt_p    err
+-----------------------------------------------------------------
+
+===============================================================================================
+
+Unions:
+                                   represents:
+              AtDollar  ---------------------------------                       handler:        
+              Pattern   tagged:                 untagged:       x =             (empty: see up) 
+-----------------------------------------------------------------------------------------------
+$$          -   DD      d_val.TAG               d_val           d_val           dvalUnion       
+_$$         -   refDD   d_val or dval.Tag       d_val                           dvalRefUnion
+$$.         -   DDm     d_val.TAG.              d_val.                          dvalUnionMem    
+$$->        -   DDp     d_val.TAG->             d_val->                         dvalUnionPtr    
+$$(             DDpar   d_val(                                                  dvalPar
+                                                                                                
+$nr         -   Dn      d_vsp[idx].TAG          d_vsp[idx]      d_vsp[idx]      svsUnion        
+_$nr        -   refDn   d_vsp[idx] or ...Tag    d_vsp[idx]                      svsRefUnion
+$nr.        -   Dnm     d_vsp[idx].TAG.         d_vsp[idx].                     svsUnionMem     
+$nr->       -   Dnp     d_vsp[idx].TAG->        d_vsp[idx]->                    svsUnionPtr     
+                                                                                                
+$-nr        -   D_      d_vsp[idx]              d_vsp[idx]      d_vsp[idx]      svs             
+_$-nr       -   refD_   d_vsp[idx]              d_vsp[idx]                                      
+$-nr.       -   D_m     d_vsp[idx].             d_vsp[idx].                     svsMem          
+$-nr->      -   D_p     d_vsp[idx]->            d_vsp[idx]->                    svsPtr          
+                                                                                                
+$<TAG>-nr   -   Dt_     d_vsp[idx].TAG                                          svsUnionTag     
+$<TAG>-nr.  -   Dt_m    d_vsp[idx].TAG.                                         svsUnionTagMem  
+$<TAG>-nr-> -   Dt_p    d_vsp[idx].TAG->                                        svsUnionTagPtr  
+-----------------------------------------------------------------------------------------------
+
+
+===============================================================================================
+
+Polymorphic:
+                                   represents:
+              AtDollar  ---------------------------------                       handler:        
+              Pattern       tagged:             untagged:       x =             (empty: see up) 
+-----------------------------------------------------------------------------------------------
+$$          -   DD      d_val.get<TAG>()        d_val           d_val           dvalPoly       
+_$$         -   refDD   d_val                   d_val                           dval            
+$$.         -   DDm     d_val.get<TAG>().       d_val.                          dvalPolyMem    
+$$->        -   DDp     d_val.get<TAG>()->      d_val->                         dvalPolyPtr    
+$$(             DDpar   d_val(                                                  dvalPolyPar
+                                                                                                
+$nr         -   Dn      d_vsp[idx].get<TAG>()   d_vsp[idx]      d_vsp[idx]      svsPoly        
+_$nr        -   refDn   d_vsp[idx]              d_vsp[idx]                      svs             
+$nr.        -   Dnm     d_vsp[idx].get<TAG>().  d_vsp[idx].                     svsPolyMem     
+$nr->       -   Dnp     d_vsp[idx].get<TAG>()-> d_vsp[idx]->                    svsPolyPtr     
+                                                                                                
+$-nr        -   D_      d_vsp[idx]              d_vsp[idx]      d_vsp[idx]      svs             
+_$-nr       -   refD_   d_vsp[idx]              d_vsp[idx]                                      
+$-nr.       -   D_m     d_vsp[idx].             d_vsp[idx].                     svsMem          
+$-nr->      -   D_p     d_vsp[idx]->            d_vsp[idx]->                    svsPtr          
+                                                                                                
+$<TAG>-nr   -   Dt_     d_vsp[idx].get<TAG>()                                   svsPolyTag     
+$<TAG>-nr.  -   Dt_m    d_vsp[idx].get<TAG>().                                  svsPolyTagMem  
+$<TAG>-nr-> -   Dt_p    d_vsp[idx].get<TAG>()->                                 svsPolyTagPtr  
+-----------------------------------------------------------------------------------------------
+
+
+========================= BELOW: OLD, IGNORE ==================================================
+===============================================================================================
+===============================================================================================
+
+Handling $-specifications: see semtag.cc
+
+-------------------------------------------------------------------------
+Negative $-index e.g,, ($-1, S<type>-1):
+-------------------------------------------------------------------------
+specification:      action:
+-------------------------------------------------------------------------
+    $-1             d_negativeDollarIndicesOK  or SINGLE or no auto assoc: 
+                                                                no action
+                    else: warn STYPE__ is used
+
+    $<type>-1       err: no <type> allowed for neg. indices
+-------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+$$. or $i.
+-----------------------------------------------------------------------------
+$$. and $i. are handled like $$ and $1, but the action `AUTO' (auto was
+            specified, but $$. or $i. was used) the warnAutoIgnored warning
+            is issued, and no field substitution takes place
+-----------------------------------------------------------------------------
+  auto:       $<spec>:          action:
+-----------------------------------------------------------------------------
+    id          -               NONE (AUTO fm semTag): warnAutoIgnored
+(all other combinations: as with $$ and $i, below)
+-----------------------------------------------------------------------------
+
+
+
+-----------------------------------------------------------------------------
+$$ or $i specifications (i >= 0):
+-----------------------------------------------------------------------------
+  auto:       $<spec>:          action:
+-----------------------------------------------------------------------------
+    -           -               NONE
+                STYPE__         NONE
+                <xx>            SINGLE: err: <xx> not defined        
+                                semType UNION:  EXPLICIT
+                                        POLYMORPHIC: existing tag: EXPLICIT
+                                                     otherwise: ERR
+                                                        <xx> not defined
+-----------------------------------------------------------------------------
+    STYPE__     -               NONE
+                STYPE__         NONE
+                <xx>            SINGLE: err: <xx> not defined        
+                                semType UNION:  EXPLICIT
+                                        POLYMORPHIC: existing tag: EXPLICIT
+                                                     otherwise: ERR
+                                                        <xx> not defined
+-----------------------------------------------------------------------------
+    id                          OK for UNION, possibly OK for POLYMORHPHIC
+                -               AUTO
+                STYPE__         NONE
+                <xx>            semType UNION:  EXPLICIT
+                                        POLYMORPHIC: existing tag: EXPLICIT
+                                                            + warn
+                                                     otherwise: ERR
+                                                        <xx> not defined
+-----------------------------------------------------------------------------
+    illegal id                  only possible for POLYMORHPHIC
+                -               ERR: <id> not defined
+                STYPE__         NONE
+                <xx>            semType UNION:  EXPLICIT
+                                        POLYMORPHIC: existing tag: EXPLICIT
+                                                     otherwise: ERR
+                                                        <xx> not defined
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+$$( : (followed by an optional argument list and );
+-----------------------------------------------------------------------------
+                                only available for POLYMORPHIC
+-----------------------------------------------------------------------------
+    rule not associated with a %type tag: invalid.
+
+calls d_val__ = STYPE__::semantic<id>(...
+
+    d_val is directly initialized (no default constructor for the rule's
+semantic type is required) with a semantic value, constructed using the
+perfectly forwarded arguments passed to $$(
+-----------------------------------------------------------------------------
+ 
+-----------------------------------------------------------------------------
+
+
+NONE: parse.cc does not use a field specification
+AUTO: replace the $-spec by d_val__.field or d_val__.get<>() from 
+        d_rules.sType()
+EXPLICIT: replace the $-spec by d_val__.field or d_val__.get<>() from 
+          atd.id()
+
+
+
+
+
+=============================================================================
+    lhs type    
+    
+    none

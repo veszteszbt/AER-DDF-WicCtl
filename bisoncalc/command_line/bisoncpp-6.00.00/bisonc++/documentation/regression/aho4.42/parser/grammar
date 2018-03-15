@@ -1,0 +1,16 @@
+/* AHO et al, example 4.42 */
+
+%default-actions quiet
+%token c d
+
+%%     
+
+S: 
+    C C
+;
+
+C:
+    c C
+|
+    d
+;
