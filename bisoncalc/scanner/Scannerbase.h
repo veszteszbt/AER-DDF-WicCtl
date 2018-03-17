@@ -195,6 +195,7 @@ public:
 protected:
     ScannerBase(std::istream &in, std::ostream &out);
     ScannerBase(std::string const &infilename, std::string const &outfilename);
+    ScannerBase(std::string const &infilename, std::ostream &out);
     ~ScannerBase();
 
     bool            popStream();

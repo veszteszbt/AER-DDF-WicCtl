@@ -439,6 +439,14 @@ ScannerBase::ScannerBase(std::string const &infilename, std::string const &outfi
     d_dfaBase__(s_dfa__)
 {}
 
+ScannerBase::ScannerBase(std::string const &infilename, std::ostream &out)
+:
+    d_filename(infilename),
+    d_out(new std::ostream(out.rdbuf())),
+    d_input(new std::ifstream(infilename)),
+    d_dfaBase__(s_dfa__)
+{}
+
 void ScannerBase::switchStreams(std::istream &in, std::ostream &out)
 {
     switchStream__(in, 1);

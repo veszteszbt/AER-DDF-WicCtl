@@ -16,7 +16,9 @@ class Scanner: public ScannerBase
                                 std::ostream &out = std::cout);
 
         Scanner(std::string const &infile, std::string const &outfile);
-        
+        //edited
+        Scanner(std::string const &infile, std::ostream &out);
+
         // $insert lexFunctionDecl
         int lex();
 
@@ -42,6 +44,12 @@ inline Scanner::Scanner(std::istream &in, std::ostream &out)
 inline Scanner::Scanner(std::string const &infile, std::string const &outfile)
 :
     ScannerBase(infile, outfile)
+{}
+
+//edited
+inline Scanner::Scanner(std::string const &infile, std::ostream &out)
+:
+    ScannerBase(infile, out)
 {}
 
 // $insert inlineLexFunction
