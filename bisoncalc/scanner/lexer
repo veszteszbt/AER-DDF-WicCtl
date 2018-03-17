@@ -30,16 +30,25 @@ WS [ \n\t\r]
 "<" return Parser::INPUT_REDIRECTION; 
 "<<" return Parser::INPUT_FROM_A_HERE_DOCUMENT; 
 ">" return Parser::OUTPUT_CREATION; 
-">>" return Parser::OUTPUT_APPEND; 
+">>" return Parser::OUTPUT_APPEND;
+"!" return Parser::NEGATE;
 
 "+" return Parser::OPERATOR_PLUS;
 "-" return Parser::OPERATOR_MINUS;
 "/" return Parser::OPERATOR_DIVISION;
 "*" return Parser::OPERATOR_MULTIPLICATION;
 "%" return Parser::OPERATOR_MODULO;
-"^" return Parser::OPERATOR_POWER;
+"**" return Parser::OPERATOR_POWER;
 "=" return Parser::OPERATOR_LET_BE;
-"==" return Parser::OPERATOR_EQUALS;
+"-eq" return Parser::OPERATOR_EQUAL;
+"-gt" return Parser::OPERATOR_GREATER_THAN;
+"-lt" return Parser::OPERATOR_LESS_THAN;
+"-ge" return Parser::OPERATOR_GREATER_EQUAL;
+"-le" return Parser::OPERATOR_LESS_EQUAL;
+"-ne" return Parser::OPERATOR_NOT_EQUAL;
+"-a" return Parser::OPERATOR_AND;
+"-o" return Parser::OPERATOR_OR;
+
 
 ['][^']*['] return Parser::SINGLEQUOTE; 
 ["]([^\\\"]|\\.)*["] return Parser::DOUBLEQUOTE; 
