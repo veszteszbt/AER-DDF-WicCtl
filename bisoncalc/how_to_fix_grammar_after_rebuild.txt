@@ -1,0 +1,37 @@
+how to make it accept files:
+
+---------------Parser.h
+
+Parser(std::string inFile) : d_scanner(inFile, std::cout){}
+
+
+
+
+how to do syntax line:
+---------------parser.ih
+inline void Parser::error()
+{
+    std::cerr << d_loc__.first_line << " :Syntax error\n";
+}
+
+// $insert lex
+inline int Parser::lex()
+{
+    d_loc__.first_line = d_scanner.lineNr();
+    return d_scanner.lex();
+}
+----------------parserbase.h (before the STYPE) (line ~87)
+// $insert LTYPE
+    struct LTYPE__
+    {
+        int timestamp;
+        int first_line;
+        int first_column;
+        int last_line;
+        int last_column;
+        char *text;
+    };
+
+// $insert LTYPEdata
+        LTYPE__   d_loc__;
+

@@ -4,17 +4,48 @@ program=`pwd`
 program=`basename $program`
 
 case $1 in
+    (flex)
+        read -p "WARNING: This operation will delete your current flex++ files! Press \"y\" to continue.
+" answer
+        case $answer in
+        ("y")
+            cd scanner
+            echo "rm -f lex.cc Scanner.ih Scanner.h Scannerbase.h"
+            rm -f lex.cc Scanner.ih Scanner.h Scannerbase.h
+            echo "flexc++ lexer"
+            flexc++ lexer
+            cd ..
+        ;;
+        (*)
+            echo "Operation aborted."
+        ;;
+        esac
+    ;;
     (bison)
-        cd parser
-        rm -f Parser.h Parserbase.h parse.cc Parser.ih
-        bisonc++ grammar
-        cd ..
+        read -p "WARNING: This operation will delete your current bisonc++ files! Press \"y\" to continue.
+" answer
+        case $answer in
+        ("y")
+            cd parser
+            echo "rm -f Parser.h Parserbase.h parse.cc Parser.ih"
+            rm -f Parser.h Parserbase.h parse.cc Parser.ih
+            echo "bisonc++ grammar"
+            bisonc++ grammar
+            cd ..
+        ;;
+        (*)
+            echo "Operation aborted."
+        ;;
+        esac
     ;;
     (build)
         echo "g++ --std=c++17 -Wall -o commandline main.cc parser/parse.cc scanner/lex.cc"
         g++ --std=c++17 -Wall -o commandline main.cc parser/parse.cc scanner/lex.cc
     ;;
     (*)
-        echo "use \"./make bison\" for grammar reset or \"./make build\" for build"
+        echo "use
+\"./make bison\" for grammar reset
+\"./make flex\" for lexer reset
+\"./make build\" for build"
     ;;
 esac
