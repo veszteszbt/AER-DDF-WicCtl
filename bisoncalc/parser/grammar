@@ -290,9 +290,9 @@ caseparts2:
 ;
 
 case_part:
-	pattern CCURLY command_list CASE_DELIMITER
+	pattern CPARENTHESIS command_list CASE_DELIMITER
 	{
-		std::cout << "pattern CCURLY command_list CASE_DELIMITER" << std::endl;
+		std::cout << "pattern CPARENTHESIS command_list CASE_DELIMITER" << std::endl;
 	}
 ;
 
