@@ -14,18 +14,20 @@ struct variable_desc
 {
     variable_desc(int row_number, type data_type) : decl_row(row_number), var_type(data_type) {}
     variable_desc(){} //kell a maphoz
+
     int decl_row;
     type var_type;
 };
 
 struct expression_desc
 {
+    expression_desc(int row_number, type data_type) : row(row_number), expr_type(data_type) {}
+    expression_desc(expression_desc* other) : row(other->row), expr_type(other->expr_type) {}
+    expression_desc(){}
+
     int row;
     type expr_type;
     //TODO value here???
-    expression_desc( int row_number, type data_type) : row(row_number), expr_type(data_type) {}
-    expression_desc(expression_desc* other) : row(other->row), expr_type(other->expr_type) {}
-    expression_desc(){}
 
     void set_row(int r)
     {
@@ -39,9 +41,11 @@ struct expression_desc
 
 struct command_desc
 {
-    int row;
+
     command_desc(int row_number) : row(row_number) {}
     command_desc(){}
+
+    int row;
 
     void set_row(int r)
     {
@@ -55,16 +59,17 @@ struct command_desc
 
 struct command_list_desc
 {
-    std::vector<command_desc> command_list;
     command_list_desc(command_list_desc* other){
-        int osize = other->command_list.size();
+        unsigned int osize = other->command_list.size();
         command_list.resize(osize);
-        for(int i=0;i<osize;i++)
+        for(unsigned int i=0;i<osize;i++)
         {
             command_list[i] = other->command_list[i];
         }
     }
     command_list_desc(){}
+
+    std::vector<command_desc> command_list;
 
     void add(command_desc* cd)
     {
@@ -73,7 +78,7 @@ struct command_list_desc
 
     void add(command_list_desc* other)
     {
-        for(int i=0;i<other->command_list.size();i++)
+        for(unsigned int i=0;i<other->command_list.size();i++)
         {
             command_list.push_back(other->command_list[i]);
         }
@@ -83,21 +88,23 @@ struct command_list_desc
 
 struct expr_binary : public expression_desc
 {
-    int row;
-    type expr_type;
-    expression_desc* l;
-    expression_desc* r;
     expr_binary(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right), row(row_number){}
     expr_binary(){}
+
+    int row;
+    expression_desc* l;
+    expression_desc* r;
+    type expr_type;
 };
 
 struct expr_unary : public expression_desc
 {
-    int row;
-    type expr_type;
-    expression_desc* e;
     expr_unary(int row_number, expression_desc* ex) : e(ex), row(row_number) {}
     expr_unary(){}
+
+    int row;
+    expression_desc* e;
+    type expr_type;
 };
 
 struct expr_add : public expr_binary
@@ -287,62 +294,69 @@ struct expr_um : public expr_unary
     }
 };
 
-struct assign_desc
+struct assign_desc : public command_desc
 {
+    assign_desc(std::string* var_name_, expression_desc* value_) : var_name(var_name_), value(value_) {}
+
     std::string* var_name;
     expression_desc* value;
-    assign_desc(std::string* var_name_, expression_desc* value_) : var_name(var_name_), value(value_) {}
 };
 
 
 struct for_3_desc : public command_desc
 {
+    for_3_desc(assign_desc* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_) :
+     start(start_), loop_condition(condition_), iterate(iterate_), commands(commands_) {}
+
     assign_desc* start;
     expression_desc* loop_condition;
     expression_desc* iterate;
     command_list_desc* commands;
-    for_3_desc(assign_desc* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_) :
-     start(start_), loop_condition(condition_), iterate(iterate_), commands(commands_) {}
 };
 
 struct for_in_desc : public command_desc
 {
+    for_in_desc(expression_desc* variable_, expression_desc* loop_expr_, command_list_desc* commands_) :
+    variable(variable_), loop_expr(loop_expr_), commands(commands_) {}
+
     expression_desc* variable;
     expression_desc* loop_expr;
     command_list_desc* commands;
-    for_in_desc(expression_desc* variable_, expression_desc* loop_expr_, command_list_desc* commands_) :
-    variable(variable_), loop_expr(loop_expr_), commands(commands_) {}
 };
 
 struct if_desc : public command_desc
 {
+    if_desc(expression_desc* condition_, command_list_desc* commands_pos_, command_list_desc* commands_neg_) : 
+    condition(condition_), commands_pos(commands_pos_), commands_neg(commands_neg_) {}
+
     expression_desc* condition;
     command_list_desc* commands_pos;
     command_list_desc* commands_neg;
-    if_desc(expression_desc* condition_, command_list_desc* commands_pos_, command_list_desc* commands_neg_) : 
-    condition(condition_), commands_pos(commands_pos_), commands_neg(commands_neg_) {}
 };
 
 struct while_desc : public command_desc
 {
+    while_desc(expression_desc* condition_, command_list_desc* commands_) : loop_condition(condition_), commands(commands_) {}
+
     expression_desc* loop_condition;
     command_list_desc* commands;
-    while_desc(expression_desc* condition_, command_list_desc* commands_) : loop_condition(condition_), commands(commands_) {}
 };
 
 struct until_desc : public command_desc
 {
+    until_desc(expression_desc* condition_, command_list_desc* commands_) : loop_condition(condition_), commands(commands_) {}
+
     expression_desc* loop_condition;
     command_list_desc* commands;
-    until_desc(expression_desc* condition_, command_list_desc* commands_) : loop_condition(condition_), commands(commands_) {}
 };
 
 struct case_desc : public command_desc
 {
-    expression_desc* case_expr;
-    command_list_desc* case_parts;
     case_desc(expression_desc* case_expr_, command_list_desc* case_parts_) :
     case_expr(case_expr_), case_parts(case_parts_) {}
+
+    expression_desc* case_expr;
+    command_list_desc* case_parts;
 };
 
 #endif
