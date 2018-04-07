@@ -8,14 +8,14 @@ case $1 in
         read -p "WARNING: This operation will delete your current flex++ files! Press \"y\" to continue. Or press \"i\" to prevent auto inserting and generate clean.
 " answer
         case $answer in
-	    ("i")
-	        cd scanner
+        ("i")
+            cd scanner
             echo "rm -f lex.cc Scanner.ih Scanner.h Scannerbase.h"
             rm -f lex.cc Scanner.ih Scanner.h Scannerbase.h
             echo "flexc++ lexer"
             flexc++ lexer
-	        cd ..
-	    ;;
+            cd ..
+        ;;
         ("y")
             cd scanner
             echo "rm -f lex.cc Scanner.ih Scanner.h Scannerbase.h"
@@ -23,7 +23,7 @@ case $1 in
             echo "flexc++ lexer"
             flexc++ lexer
 
-	        echo "inserting into Scanner.h"
+            echo "inserting into Scanner.h"
             sed -i 's/#include "Scannerbase.h"/#include "Scannerbase.h"\n#include "..\/parser\/Parserbase.h"/' Scanner.h
             sed -i 's/Scanner(std::string const &infile, std::string const &outfile);/Scanner(std::string const \&infile, std::ostream \&out);\n\t\tScanner(std::string const \&infile, std::string const \&outfile);/' Scanner.h
             sed -i 's/inline Scanner::Scanner(std::string const &infile, std::string const &outfile)/inline Scanner::Scanner(std::string const \&infile, std::ostream \&out)\n:\n\tScannerBase(infile, out)\n{}\n\ninline Scanner::Scanner(std::string const \&infile, std::string const \&outfile)/' Scanner.h
@@ -44,14 +44,14 @@ case $1 in
         read -p "WARNING: This operation will delete your current bisonc++ files! Press \"y\" to continue. Or press \"i\" to prevent auto inserting and generate clean.
 " answer
         case $answer in
-	    ("i")
+        ("i")
             cd parser
             echo "rm -f Parser.h Parserbase.h parse.cc Parser.ih"
             rm -f Parser.h Parserbase.h parse.cc Parser.ih
             echo "bisonc++ grammar"
             bisonc++ grammar
             cd ..
-	;;
+    ;;
         ("y")
             cd parser
             echo "rm -f Parser.h Parserbase.h parse.cc Parser.ih"
