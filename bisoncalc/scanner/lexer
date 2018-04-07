@@ -49,12 +49,17 @@ WS [ \n\t\r]
 "-a" return Parser::OPERATOR_AND;
 "-o" return Parser::OPERATOR_OR;
 
+"TRUE" return Parser::CONST_TRUE;
+"FALSE" return Parser::CONST_FALSE;
+"PI" return Parser::CONST_PI;
+
 
 ['][^']*['] return Parser::SINGLEQUOTE; 
 ["]([^\\\"]|\\.)*["] return Parser::DOUBLEQUOTE; 
-[0-9]*[.][0-9]+ return Parser::FLOAT;
-[0-9]+ return Parser::INTEGER; 
-[a-zA-Z][a-zA-Z0-9]* return Parser::IDENTIFIER;
+[0-9]*[.][0-9]+ return Parser::DOUBLE;
+[0-9]+ return Parser::INTEGER;
+0x[0-9] return Parser::HEXADECIMAL;
+[a-zA-Z]([a-zA-Z0-9]|"_")* return Parser::IDENTIFIER;
 
 {WS}+
 
