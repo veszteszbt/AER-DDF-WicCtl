@@ -65,7 +65,7 @@ case $1 in
 
             echo "insering into Parser.ih"
             sed -i 's/std::cerr << "Syntax error\\n";/std::cerr << d_loc__.first_line << " :Syntax error\\n";/' Parser.ih
-            sed -i 's/return d_scanner.lex();/int ret = d_scanner.lex();\n\td_loc__.first_line = d_scanner.lineNr();\n\tif( ret == IDENTIFIER )\n\t{\n\t\td_val__.str = new std::string(d_scanner.matched());\n\t}\n\treturn d_scanner.lex();/' Parser.ih
+            sed -i 's/return d_scanner.lex();/int ret = d_scanner.lex();\n\td_loc__.first_line = d_scanner.lineNr();\n\tif( ret == IDENTIFIER )\n\t{\n\t\td_val__.str = new std::string(d_scanner.matched());\n\t}\n\treturn ret;/' Parser.ih
             cd ..
         ;;
         (*)
@@ -75,7 +75,7 @@ case $1 in
     ;;
     (build)
         echo "g++ --std=c++17 -Wall -o commandline main.cc parser/parse.cc scanner/lex.cc"
-        g++ --std=c++17 -Wall -o commandline main.cc parser/parse.cc scanner/lex.cc
+        g++ --std=c++17 -g3 -Wall -o commandline main.cc parser/parse.cc scanner/lex.cc
     ;;
     (*)
         echo "use
