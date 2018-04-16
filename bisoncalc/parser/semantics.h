@@ -17,6 +17,11 @@ struct variable_desc
 
     int decl_row;
     type var_type;
+    /*union{
+        int intval;
+        double doubleval;
+        std::string strval;
+    };*/
 };
 
 struct expression_desc
@@ -27,15 +32,19 @@ struct expression_desc
 
     int row;
     type expr_type;
-    //TODO value here???
+    /*union{
+        int intval;
+        double doubleval;
+        std::string strval;
+    };*/
 
-    void set_row(int r)
+    void set_row(int &r)
     {
         row=r;
     }
     int get_row()
     {
-        return this->row;
+        return row;
     }
 };
 
@@ -47,13 +56,13 @@ struct command_desc
 
     int row;
 
-    void set_row(int r)
+    void set_row(int &r)
     {
         row=r;
     }
     int get_row()
     {
-        return this->row;
+        return row;
     }
 };
 
@@ -88,7 +97,7 @@ struct command_list_desc
 
 struct expr_binary : public expression_desc
 {
-    expr_binary(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right), row(row_number){}
+    expr_binary(int row_number, expression_desc* left, expression_desc* right) :  row(row_number), l(left), r(right) {}
     expr_binary(){}
 
     int row;
