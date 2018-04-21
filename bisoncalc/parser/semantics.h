@@ -17,7 +17,7 @@ struct variable_desc
 
     int decl_row;
     type var_type;
-    /*union{
+    /*union value{
         int intval;
         double doubleval;
         std::string strval;
@@ -27,7 +27,8 @@ struct variable_desc
 struct expression_desc
 {
     expression_desc(int row_number, type data_type) : row(row_number), expr_type(data_type) {}
-    expression_desc(expression_desc* other) : row(other->row), expr_type(other->expr_type) {}
+    expression_desc(int row_number, type data_type, int value) : row(row_number), expr_type(data_type), intval(value) {}
+    //expression_desc(expression_desc* other) : row(other->row), expr_type(other->expr_type) {}
     expression_desc(){}
 
     int row;
@@ -37,6 +38,7 @@ struct expression_desc
         double doubleval;
         std::string strval;
     };*/
+    int intval;
 
     void set_row(int &r)
     {
@@ -45,6 +47,11 @@ struct expression_desc
     int get_row()
     {
         return row;
+    }
+
+    int get_value()
+    {
+        return intval;
     }
 };
 
@@ -116,12 +123,19 @@ struct expr_unary : public expression_desc
     type expr_type;
 };
 
+struct expr_asg : public expr_unary
+{
+    expr_asg(int row_number, std::string* var_name, expression_desc* right){}
+};
+
 struct expr_add : public expr_binary
 {
     expr_add(int row_number, expression_desc* left, expression_desc* right){
         if (left->expr_type == right->expr_type)
         {
             expr_type = left->expr_type;
+            intval = left->intval + right->intval;
+            std::cout << "eredmeny :" << intval << std::endl;
         }
         else
         {
@@ -164,6 +178,8 @@ struct expr_mul : public expr_binary
         if (left->expr_type == right->expr_type)
         {
             expr_type = left->expr_type;
+            intval = left->intval * right->intval;
+            std::cout << "eredmeny :" << intval << std::endl;
         }
         else
         {

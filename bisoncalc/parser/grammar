@@ -7,9 +7,9 @@
 %union
 {
 	std::string *str;
+	int *integ;
 	expression_desc *exd;
 	command_list_desc *cld;
-	assign_desc *ad;
 	command_desc *cd;
 }
 
@@ -43,7 +43,7 @@
 %token SINGLEQUOTE
 %token DOUBLEQUOTE
 %token DOUBLE
-%token INTEGER
+%token <integ> INTEGER
 %token <str> IDENTIFIER
 %token NEGATE
 %token HEXADECIMAL
@@ -62,7 +62,6 @@
 
 %type <exd> expression
 %type <exd> input_output
-%type <ad> assign
 %type <cld> command_list
 %type <cld> command
 %type <cld> else_part
@@ -104,15 +103,6 @@ command:
 		std::cout << "command -> expression" << std::endl;
 	}
 |
-	assign
-	{
-		// $$ = new command_list_desc();
-		//command_desc* tempcd = new command_desc($1->get_row());
-		// $$->add(tempcd);
-		//delete tempcd;
-		std::cout << "command -> assign" << std::endl;
-	}
-|
 	OPARENTHESIS command_list CPARENTHESIS
 	{
 		// $$ = $2;
@@ -147,13 +137,13 @@ command:
 		std::cout << "command -> KEYWORD_FOR IDENTIFIER KEYWORD_IN expression KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
 	}
 |
-	KEYWORD_FOR OPARENTHESIS assign COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression CPARENTHESIS KEYWORD_DO command_list KEYWORD_DONE
+	KEYWORD_FOR OPARENTHESIS expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression CPARENTHESIS KEYWORD_DO command_list KEYWORD_DONE
 	{
 		// command_desc* tempcd = new for_3_desc($3, $5, $7, $10);
 		// $$ = new command_list_desc();
 		// $$->add(tempcd);
 		//delete tempcd;
-		std::cout << "command -> KEYWORD_FOR OPARENTHESIS assign COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression CPARENTHESIS KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+		std::cout << "command -> KEYWORD_FOR OPARENTHESIS expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression CPARENTHESIS KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
 	}
 |
 	KEYWORD_WHILE expression KEYWORD_DO command_list KEYWORD_DONE
@@ -191,128 +181,140 @@ command:
 
 
 expression:
+	IDENTIFIER OPERATOR_LET_BE expression
+	{
+		std::cout << "expression -> IDENTIFIER OPERATOR_LET_BE expression" << std::endl;
+		
+		$$ = new expr_asg(d_loc__.first_line, $1, $3);
+	}
+|
 	NEGATE expression
 	{
-		// $$ = new expr_neg(d_loc__.first_line, $2);
+		$$ = new expr_neg(d_loc__.first_line, $2);
 		std::cout << "expression -> NEGATE expression" << std::endl;
 	}
 |
 	expression OPERATOR_AND expression
 	{
-		// $$ = new expr_and(d_loc__.first_line,$1,$3);
+		$$ = new expr_and(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_AND expression" << std::endl;
 	}
 |
 	expression OPERATOR_OR expression
 	{
-		// $$ = new expr_or(d_loc__.first_line,$1,$3);
+		$$ = new expr_or(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_OR expression" << std::endl;
 	}
 |
 	expression OPERATOR_EQUAL expression
 	{
-		// $$ = new expr_eq(d_loc__.first_line,$1,$3);
+		$$ = new expr_eq(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_EQUAL expression" << std::endl;
 	}
 |
 	expression OPERATOR_NOT_EQUAL expression
 	{
-		// $$ = new expr_neq(d_loc__.first_line,$1,$3);
+		$$ = new expr_neq(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_NOT_EQUAL expression" << std::endl;
 	}
 |
 	expression OPERATOR_LESS_EQUAL expression
 	{
-		// $$ = new expr_leq(d_loc__.first_line,$1,$3);
+		$$ = new expr_leq(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_LESS_EQUAL expression" << std::endl;
 	}
 |
 	expression OPERATOR_GREATER_EQUAL expression
 	{
-		// $$ = new expr_geq(d_loc__.first_line,$1,$3);
+		$$ = new expr_geq(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_GREATER_EQUAL expression" << std::endl;
 	}
 |
 	expression OPERATOR_LESS_THAN expression
 	{
-		// $$ = new expr_lt(d_loc__.first_line,$1,$3);
+		$$ = new expr_lt(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_LESS_THAN expression" << std::endl;
 	}
 |
 	expression OPERATOR_GREATER_THAN expression
 	{
-		// $$ = new expr_gt(d_loc__.first_line,$1,$3);
+		$$ = new expr_gt(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_GREATER_THAN expression" << std::endl;
 	}
 |
 	expression OPERATOR_PLUS expression
 	{
-		// $$ = new expr_add(d_loc__.first_line,$1,$3);
+		$$ = new expr_add(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_PLUS expression" << std::endl;
 	}
 |
 	expression OPERATOR_MINUS expression
 	{
-		// $$ = new expr_dif(d_loc__.first_line,$1,$3);
+		$$ = new expr_dif(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_MINUS expression" << std::endl;
 	}
 |
 	expression OPERATOR_MULTIPLICATION expression
 	{
-		// $$ = new expr_mul(d_loc__.first_line,$1,$3);
+		$$ = new expr_mul(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_MULTIPLICATION expression" << std::endl;
 	}
 |
 	expression OPERATOR_DIVISION expression
 	{
-		// $$ = new expr_div(d_loc__.first_line,$1,$3);
+		$$ = new expr_div(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_DIVISION expression" << std::endl;
 	}
 |
 	expression OPERATOR_MODULO expression
 	{
-		// $$ = new expr_mod(d_loc__.first_line,$1,$3);
+		$$ = new expr_mod(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_MODULO expression" << std::endl;
 	}
 |
 	expression OPERATOR_POWER expression
 	{
-		// $$ = new expr_pow(d_loc__.first_line,$1,$3);
+		$$ = new expr_pow(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_POWER expression" << std::endl;
 	}
 |
 	OPERATOR_MINUS expression %prec UNARY_MINUS
 	{
-		// $$ = new expr_neg(d_loc__.first_line,$2);
+		$$ = new expr_neg(d_loc__.first_line,$2);
 		std::cout << "expression -> OPERATOR_MINUS expression %prec UNARY_MINUS" << std::endl;
 	}
 |
 	INTEGER
 	{
-		//// $$ = d_scanner.intValue();
-		// $$ = new expression_desc(d_loc__.first_line, u_integer);
+		// értékre hivatkozás											std::cout << "INTEGER: " << *$1 << std::endl;
+		$$ = new expression_desc(d_loc__.first_line, u_integer, *$1);
 		std::cout << "expression -> INTEGER" << std::endl;
 	}
 |
 	DOUBLE
 	{
 		//// $$ = d_scanner.doubleValue();
-		// $$ = new expression_desc(d_loc__.first_line, u_double);
+		$$ = new expression_desc(d_loc__.first_line, u_double);
 		std::cout << "expression -> DOUBLE" << std::endl;
 	}
 |
 	SINGLEQUOTE
 	{
 		//// $$ = d_scanner.matched();
-		// $$ = new expression_desc(d_loc__.first_line, u_string);
+		$$ = new expression_desc(d_loc__.first_line, u_string);
 		std::cout << "expression -> SINGLEQUOTE" << std::endl;
 	}
 |
 	DOUBLEQUOTE
 	{
 		//$ = d_scanner.matched();
-		// $$ = new expression_desc(d_loc__.first_line, u_string);
+		$$ = new expression_desc(d_loc__.first_line, u_string);
 		std::cout << "expression -> DOUBLEQUOTE" << std::endl;
+	}
+|
+	HEXADECIMAL
+	{
+		std::cout << "expression -> HEXADECIMAL" << std::endl;
 	}
 |
 	input_output
@@ -401,44 +403,7 @@ input_output:
 
 	
 	
-assign:
-	IDENTIFIER OPERATOR_LET_BE expression
-	{
-		std::cout << "assign -> IDENTIFIER OPERATOR_LET_BE expression" << std::endl;
-		/*if (symbol_table.count(*$1) == 0 )
-		{
-			//symbol_table[*$1] = variable_desc( d_loc__.first_line, $3->expr_type); //$3->val //?????????????;
-			//// $$ = new command_desc(d_loc__.first_line);
-		}
-		else
-		{
-			//if (symbol_table[*$1].var_type != $3->expr_type)
-			//{
-				//switch($3->expr_type)
-				//{
-				//	case(u_integer):
-				//		//symbol_table[*$1] = variable_desc( d_loc__.first_line, u_integer, $3->intval);
-				//	break;
-				//	case(u_double):
-				//		//symbol_table[*$1] = variable_desc( d_loc__.first_line, u_double, $3->doubleval);
-				//	break;
-				//	case(u_string):
-				//		//symbol_table[*$1] = variable_desc( d_loc__.first_line, u_string, $3->stringval);
-				//	break;
-				//	default:
-				//	std::cout << "Cannot read expression type of " << $3 << std::endl;
-				//}
-				//symbol_table[*$1] = variable_desc( d_loc__.first_line, $3->expr_type);
-				//tempcd = new command_desc(d_loc__.first_line);
-			//}
-			//else
-			//{
-			//	// $$ = new command_desc(d_loc__.first_line);
-			//}
-		}*/
-		// $$ = new assign_desc($1, $3);
-	}
-;
+
 	
 caseparts:
 	case_part caseparts2
