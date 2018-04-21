@@ -39,6 +39,7 @@ WS [ \n\t\r]
 "*" return Parser::OPERATOR_MULTIPLICATION;
 "%" return Parser::OPERATOR_MODULO;
 "**" return Parser::OPERATOR_POWER;
+"^" return Parser::OPERATOR_POWER;
 "=" return Parser::OPERATOR_LET_BE;
 "-eq" return Parser::OPERATOR_EQUAL;
 "-gt" return Parser::OPERATOR_GREATER_THAN;
