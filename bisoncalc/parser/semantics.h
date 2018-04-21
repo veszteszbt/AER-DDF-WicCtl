@@ -12,7 +12,7 @@ enum type{ u_integer, u_double, u_string };
 
 struct variable_desc
 {
-    variable_desc(int row_number, type data_type) : decl_row(row_number), var_type(data_type) {}
+    variable_desc(int row_number, type data_type, int value=0) : decl_row(row_number), var_type(data_type), intval(value) {}
     variable_desc(){} //kell a maphoz
 
     int decl_row;
@@ -22,6 +22,7 @@ struct variable_desc
         double doubleval;
         std::string strval;
     };*/
+    int intval;
 };
 
 struct expression_desc
@@ -125,7 +126,21 @@ struct expr_unary : public expression_desc
 
 struct expr_asg : public expr_unary
 {
-    expr_asg(int row_number, std::string* var_name, expression_desc* right){}
+    expr_asg(int row_number, std::string* var_name, expression_desc* ex){
+        intval = ex->intval;
+        /*if (symbol_table.count(*var_name) != 0)
+        {
+            symbol_table[symbol_table.find(*var_name)].mapped_type = 
+            variable_desc(symbol_table[symbol_table.find(*var_name)].mapped_type.decl_row, ex->expr_type, ex->intval);
+        }
+        else
+        {
+            symbol_table[*var_name] = variable_desc(row_number, ex->expr_type, ex->intval);
+        }*/
+        std::cout << "Assign " << intval << " to variable name " << *var_name << std::endl;
+    }
+    std::string* var_name;
+    expression_desc* value;
 };
 
 struct expr_add : public expr_binary
@@ -157,6 +172,8 @@ struct expr_dif : public expr_binary
         if (left->expr_type == right->expr_type)
         {
             expr_type = left->expr_type;
+            intval = left->intval - right->intval;
+            std::cout << "eredmeny :" << intval << std::endl;
         }
         else
         {
@@ -200,7 +217,17 @@ struct expr_div : public expr_binary
     expr_div(int row_number, expression_desc* left, expression_desc* right){
         if (left->expr_type == right->expr_type)
         {
-            expr_type = left->expr_type;
+            if (right->intval == 0)
+            {
+                std::cout << "ERROR: division by 0" << std::endl;
+                exit(1);
+            }
+            else
+            {
+                expr_type = left->expr_type;
+                intval = left->intval / right->intval;
+                std::cout << "eredmeny :" << intval << std::endl;
+            }
         }
         else
         {
@@ -222,6 +249,8 @@ struct expr_pow : public expr_binary
         if (left->expr_type == right->expr_type)
         {
             expr_type = left->expr_type;
+            intval = pow(left->intval, right->intval);
+            std::cout << "eredmeny :" << intval << std::endl;
         }
         else
         {
@@ -237,67 +266,13 @@ struct expr_pow : public expr_binary
     }
 };
 
-struct expr_or : public expr_binary
-{
-    expr_or(int row_number, expression_desc* left, expression_desc* right){
-        expr_type = u_integer;
-    }
-};
-
-struct expr_and : public expr_binary
-{
-    expr_and(int row_number, expression_desc* left, expression_desc* right){
-        expr_type = u_integer;
-    }
-};
-
-struct expr_eq : public expr_binary
-{
-    expr_eq(int row_number, expression_desc* left, expression_desc* right){
-        expr_type = u_integer;
-    }
-};
-
-struct expr_neq : public expr_binary
-{
-    expr_neq(int row_number, expression_desc* left, expression_desc* right){
-        expr_type = u_integer;
-    }
-};
-
-struct expr_leq : public expr_binary
-{
-    expr_leq(int row_number, expression_desc* left, expression_desc* right){
-        expr_type = u_integer;
-    }
-};
-
-struct expr_geq : public expr_binary
-{
-    expr_geq(int row_number, expression_desc* left, expression_desc* right){
-        expr_type = u_integer;
-    }
-};
-
-struct expr_lt : public expr_binary
-{
-    expr_lt(int row_number, expression_desc* left, expression_desc* right){
-        expr_type = u_integer;
-    }
-};
-
-struct expr_gt : public expr_binary
-{
-    expr_gt(int row_number, expression_desc* left, expression_desc* right){
-        expr_type = u_integer;
-    }
-};
-
 struct expr_mod : public expr_binary
 {
     expr_mod(int row_number, expression_desc* left, expression_desc* right){
         if(left->expr_type==u_integer && right->expr_type==u_integer){
             expr_type = u_integer;
+            intval = left->intval % right->intval;
+            std::cout << "eredmeny :" << intval << std::endl;
         }
         else{
             //error
@@ -305,10 +280,156 @@ struct expr_mod : public expr_binary
     }
 };
 
+struct expr_or : public expr_binary
+{
+    expr_or(int row_number, expression_desc* left, expression_desc* right){
+        if (left->intval != 0 || right->intval != 0)
+        {
+            intval = 1;
+            std::cout << "TRUE" << std::endl;
+        }
+        else
+        {
+            intval = 0;
+            std::cout << "FALSE" << std::endl;
+        }
+        expr_type = u_integer;
+    }
+};
+
+struct expr_and : public expr_binary
+{
+    expr_and(int row_number, expression_desc* left, expression_desc* right){
+        if (left->intval != 0 && right->intval != 0)
+        {
+            intval = 1;
+            std::cout << "TRUE" << std::endl;
+        }
+        else
+        {
+            intval = 0;
+            std::cout << "FALSE" << std::endl;
+        }
+        expr_type = u_integer;
+    }
+};
+
+struct expr_eq : public expr_binary
+{
+    expr_eq(int row_number, expression_desc* left, expression_desc* right){
+        if (left->intval == right->intval)
+        {
+            intval = 1;
+            std::cout << "TRUE" << std::endl;
+        }
+        else
+        {
+            intval = 0;
+            std::cout << "FALSE" << std::endl;
+        }
+        expr_type = u_integer;
+    }
+};
+
+struct expr_neq : public expr_binary
+{
+    expr_neq(int row_number, expression_desc* left, expression_desc* right){
+        if (left->intval != right->intval)
+        {
+            intval = 1;
+            std::cout << "TRUE" << std::endl;
+        }
+        else
+        {
+            intval = 0;
+            std::cout << "FALSE" << std::endl;
+        }
+        expr_type = u_integer;
+    }
+};
+
+struct expr_leq : public expr_binary
+{
+    expr_leq(int row_number, expression_desc* left, expression_desc* right){
+        if (left->intval > right->intval)
+        {
+            intval = 0;
+            std::cout << "FALSE" << std::endl;
+        }
+        else
+        {
+            intval = 1;
+            std::cout << "TRUE" << std::endl;
+        }
+        expr_type = u_integer;
+    }
+};
+
+struct expr_geq : public expr_binary
+{
+    expr_geq(int row_number, expression_desc* left, expression_desc* right){
+        if (left->intval < right->intval)
+        {
+            intval = 0;
+            std::cout << "FALSE" << std::endl;
+        }
+        else
+        {
+            intval = 1;
+            std::cout << "TRUE" << std::endl;
+        }
+        expr_type = u_integer;
+    }
+};
+
+struct expr_lt : public expr_binary
+{
+    expr_lt(int row_number, expression_desc* left, expression_desc* right){
+        if (left->intval < right->intval)
+        {
+            intval = 1;
+            std::cout << "TRUE" << std::endl;
+        }
+        else
+        {
+            intval = 0;
+            std::cout << "FALSE" << std::endl;
+        }
+        expr_type = u_integer;
+    }
+};
+
+struct expr_gt : public expr_binary
+{
+    expr_gt(int row_number, expression_desc* left, expression_desc* right){
+        if (left->intval > right->intval)
+        {
+            intval = 1;
+            std::cout << "TRUE" << std::endl;
+        }
+        else
+        {
+            intval = 0;
+            std::cout << "FALSE" << std::endl;
+        }
+        expr_type = u_integer;
+    }
+};
+
 struct expr_neg : public expr_unary
 {
     expr_neg(int row_number, expression_desc* ex){
         expr_type = u_integer;
+        if (ex->intval != 0)
+        {
+            intval = 0;
+            std::cout << "FALSE" << std::endl;
+        }
+        else
+        {
+            intval = 1;
+            std::cout << "TRUE" << std::endl;
+        }
     }
 };
 
@@ -316,24 +437,17 @@ struct expr_um : public expr_unary
 {
     expr_um(int row_number, expression_desc* ex){
         expr_type = ex->expr_type;
+        intval = -1 * ex->intval;
+        std::cout << "eredmeny :" << intval << std::endl;
     }
 };
 
-struct assign_desc : public command_desc
-{
-    assign_desc(std::string* var_name_, expression_desc* value_) : var_name(var_name_), value(value_) {}
-
-    std::string* var_name;
-    expression_desc* value;
-};
-
-
 struct for_3_desc : public command_desc
 {
-    for_3_desc(assign_desc* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_) :
+    for_3_desc(expr_asg* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_) :
      start(start_), loop_condition(condition_), iterate(iterate_), commands(commands_) {}
 
-    assign_desc* start;
+    expr_asg* start;
     expression_desc* loop_condition;
     expression_desc* iterate;
     command_list_desc* commands;

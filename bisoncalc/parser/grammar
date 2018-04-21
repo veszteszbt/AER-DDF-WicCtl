@@ -280,7 +280,7 @@ expression:
 |
 	OPERATOR_MINUS expression %prec UNARY_MINUS
 	{
-		$$ = new expr_neg(d_loc__.first_line,$2);
+		$$ = new expr_um(d_loc__.first_line,$2);
 		std::cout << "expression -> OPERATOR_MINUS expression %prec UNARY_MINUS" << std::endl;
 	}
 |
@@ -358,12 +358,14 @@ expression:
 		//// $$ = 0;
 
 		//// $$ = new expression_desc(value=0)
+		$$ = new expression_desc(d_loc__.first_line, u_integer, 1);
 		std::cout << "expression -> CONST_TRUE" << std::endl;
 	}
 |
 	CONST_FALSE
 	{
 		//// $$ = 1;
+		$$ = new expression_desc(d_loc__.first_line, u_integer, 0);
 		std::cout << "expression -> CONST_FALSE" << std::endl;
 
 	}
