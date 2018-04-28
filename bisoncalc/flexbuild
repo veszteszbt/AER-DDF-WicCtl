@@ -1,0 +1,19 @@
+#!/bin/bash
+
+cd scanner
+echo "rm -f lex.cc Scanner.ih Scanner.h Scannerbase.h"
+rm -f lex.cc Scanner.ih Scanner.h Scannerbase.h
+echo "flexc++ lexer"
+flexc++ lexer
+
+echo "inserting into Scanner.h"
+sed -i 's/#include "Scannerbase.h"/#include "Scannerbase.h"\n#include "..\/parser\/Parserbase.h"/' Scanner.h
+sed -i 's/Scanner(std::string const &infile, std::string const &outfile);/Scanner(std::string const \&infile, std::ostream \&out);\n\t\tScanner(std::string const \&infile, std::string const \&outfile);/' Scanner.h
+sed -i 's/inline Scanner::Scanner(std::string const &infile, std::string const &outfile)/inline Scanner::Scanner(std::string const \&infile, std::ostream \&out)\n:\n\tScannerBase(infile, out)\n{}\n\ninline Scanner::Scanner(std::string const \&infile, std::string const \&outfile)/' Scanner.h
+
+echo "insering into Scannerbase.h"
+sed -i 's/ScannerBase(std::string const &infilename, std::string const &outfilename);/ScannerBase(std::string const \&infilename, std::string const \&outfilename);\n\tScannerBase(std::string const \&infilename, std::ostream \&out);/' Scannerbase.h
+
+echo "inserting into lex.cc"
+sed -i 's/void ScannerBase::switchStream__(std::istream &in, size_t lineNr)/ScannerBase::ScannerBase(std::string const \&infilename, std::ostream \&out)\n:\n\td_filename(infilename),\n\td_out(new std::ostream(out.rdbuf())),\n\td_input(new std::ifstream(infilename)),\n\td_dfaBase__(s_dfa__)\n{}\n\nvoid ScannerBase::switchStream__(std::istream \&in, size_t lineNr)/' lex.cc
+cd ..

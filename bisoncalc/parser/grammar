@@ -8,6 +8,7 @@
 {
 	std::string *str;
 	int *integ;
+	double *dbl;
 	expression_desc *exd;
 	command_list_desc *cld;
 	command_desc *cd;
@@ -103,12 +104,6 @@ command:
 		std::cout << "command -> expression" << std::endl;
 	}
 |
-	OPARENTHESIS command_list CPARENTHESIS
-	{
-		// $$ = $2;
-		std::cout << "command -> OPARENTHESIS command_list CPARENTHESIS" << std::endl;
-	}
-|
 	OCURLY command_list CCURLY
 	{
 		std::cout << "command -> OCURLY command_list CCURLY" << std::endl;
@@ -137,13 +132,13 @@ command:
 		std::cout << "command -> KEYWORD_FOR IDENTIFIER KEYWORD_IN expression KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
 	}
 |
-	KEYWORD_FOR OPARENTHESIS expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression CPARENTHESIS KEYWORD_DO command_list KEYWORD_DONE
+	KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE
 	{
 		// command_desc* tempcd = new for_3_desc($3, $5, $7, $10);
 		// $$ = new command_list_desc();
 		// $$->add(tempcd);
 		//delete tempcd;
-		std::cout << "command -> KEYWORD_FOR OPARENTHESIS expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression CPARENTHESIS KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+		std::cout << "command -> KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
 	}
 |
 	KEYWORD_WHILE expression KEYWORD_DO command_list KEYWORD_DONE
@@ -181,11 +176,16 @@ command:
 
 
 expression:
+	OPARENTHESIS expression CPARENTHESIS
+	{
+		$$ = new expr_par(d_loc__.first_line, $2);
+		std::cout << "expression -> OPARENTHESIS expression CPARENTHESIS" << std::endl;
+	}
+|
 	IDENTIFIER OPERATOR_LET_BE expression
 	{
-		std::cout << "expression -> IDENTIFIER OPERATOR_LET_BE expression" << std::endl;
-		
 		$$ = new expr_asg(d_loc__.first_line, $1, $3);
+		std::cout << "expression -> IDENTIFIER OPERATOR_LET_BE expression" << std::endl;
 	}
 |
 	NEGATE expression
@@ -244,6 +244,7 @@ expression:
 |
 	expression OPERATOR_PLUS expression
 	{
+		std::cout << "dloc:" << d_loc__.first_line << std::endl;
 		$$ = new expr_add(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_PLUS expression" << std::endl;
 	}
@@ -372,8 +373,9 @@ expression:
 |
 	CONST_PI
 	{
-		constexpr float Pi = acos(-1);
+		constexpr double Pi = acos(-1);
 		//// $$ = Pi;
+		$$ = new expression_desc(d_loc__.first_line, u_double, Pi);
 		std::cout << "expression -> CONST_Pi" << std::endl;
 
 	}
