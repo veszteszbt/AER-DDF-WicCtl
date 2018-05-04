@@ -44,9 +44,9 @@ WS [ \n\t\r]
 "-eq" return Parser::OPERATOR_EQUAL;
 "-gt" return Parser::OPERATOR_GREATER_THAN;
 "-lt" return Parser::OPERATOR_LESS_THAN;
-"-ge" return Parser::OPERATOR_GREATER_EQUAL;
-"-le" return Parser::OPERATOR_LESS_EQUAL;
-"-ne" return Parser::OPERATOR_NOT_EQUAL;
+"-geq" return Parser::OPERATOR_GREATER_EQUAL;
+"-leq" return Parser::OPERATOR_LESS_EQUAL;
+"-neq" return Parser::OPERATOR_NOT_EQUAL;
 "-a" return Parser::OPERATOR_AND;
 "-o" return Parser::OPERATOR_OR;
 
