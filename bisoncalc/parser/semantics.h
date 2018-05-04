@@ -170,232 +170,168 @@ struct expr_mul : public expr_binary
 
 struct expr_div : public expr_binary
 {
-	expr_div(int row_number, expression_desc* left, expression_desc* right){
-		if (left->expr_type == right->expr_type)
-		{
-			if (right->intval == 0)
-			{
-				std::cout << "ERROR: division by 0" << std::endl;
-				exit(1);
-			}
-			else
-			{
-				expr_type = left->expr_type;
-				intval = left->intval / right->intval;
-				std::cout << "eredmeny :" << intval << std::endl;
-			}
-		}
-		else
-		{
-			if (left->expr_type==u_string || right->expr_type==u_string)
-			{
-				expr_type = u_string;
-			}
-			else
-			{
-				expr_type = u_double;
-			}
-		}
-	}
+	expr_div(int row_number, expression_desc* left, expression_desc* right);
+	
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_pow : public expr_binary
 {
-	expr_pow(int row_number, expression_desc* left, expression_desc* right){
-		if (left->expr_type == right->expr_type)
-		{
-			expr_type = left->expr_type;
-			intval = pow(left->intval, right->intval);
-			std::cout << "eredmeny :" << intval << std::endl;
-		}
-		else
-		{
-			if (left->expr_type==u_string || right->expr_type==u_string)
-			{
-				expr_type = u_string;
-			}
-			else
-			{
-				expr_type = u_double;
-			}
-		}
-	}
+	expr_pow(int row_number, expression_desc* left, expression_desc* right);
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_mod : public expr_binary
 {
-	expr_mod(int row_number, expression_desc* left, expression_desc* right){
-		if(left->expr_type==u_integer && right->expr_type==u_integer){
-			expr_type = u_integer;
-			intval = left->intval % right->intval;
-			std::cout << "eredmeny :" << intval << std::endl;
-		}
-		else{
-			//error
-		}
-	}
+	expr_mod(int row_number, expression_desc* left, expression_desc* right);
+
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_or : public expr_binary
 {
-	expr_or(int row_number, expression_desc* left, expression_desc* right){
-		if (left->intval != 0 || right->intval != 0)
-		{
-			intval = 1;
-			std::cout << "TRUE" << std::endl;
-		}
-		else
-		{
-			intval = 0;
-			std::cout << "FALSE" << std::endl;
-		}
-		expr_type = u_integer;
-	}
+	expr_or(int row_number, expression_desc* left, expression_desc* right);
+
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_and : public expr_binary
 {
-	expr_and(int row_number, expression_desc* left, expression_desc* right){
-		if (left->intval != 0 && right->intval != 0)
-		{
-			intval = 1;
-			std::cout << "TRUE" << std::endl;
-		}
-		else
-		{
-			intval = 0;
-			std::cout << "FALSE" << std::endl;
-		}
-		expr_type = u_integer;
-	}
+	expr_and(int row_number, expression_desc* left, expression_desc* right);
+
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_eq : public expr_binary
 {
-	expr_eq(int row_number, expression_desc* left, expression_desc* right){
-		if (left->intval == right->intval)
-		{
-			intval = 1;
-			std::cout << "TRUE" << std::endl;
-		}
-		else
-		{
-			intval = 0;
-			std::cout << "FALSE" << std::endl;
-		}
-		expr_type = u_integer;
-	}
+	expr_eq(int row_number, expression_desc* left, expression_desc* right);
+
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_neq : public expr_binary
 {
-	expr_neq(int row_number, expression_desc* left, expression_desc* right){
-		if (left->intval != right->intval)
-		{
-			intval = 1;
-			std::cout << "TRUE" << std::endl;
-		}
-		else
-		{
-			intval = 0;
-			std::cout << "FALSE" << std::endl;
-		}
-		expr_type = u_integer;
-	}
+	expr_neq(int row_number, expression_desc* left, expression_desc* right);
+
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_leq : public expr_binary
 {
-	expr_leq(int row_number, expression_desc* left, expression_desc* right){
-		if (left->intval > right->intval)
-		{
-			intval = 0;
-			std::cout << "FALSE" << std::endl;
-		}
-		else
-		{
-			intval = 1;
-			std::cout << "TRUE" << std::endl;
-		}
-		expr_type = u_integer;
-	}
+	expr_leq(int row_number, expression_desc* left, expression_desc* right);
+
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_geq : public expr_binary
 {
-	expr_geq(int row_number, expression_desc* left, expression_desc* right){
-		if (left->intval < right->intval)
-		{
-			intval = 0;
-			std::cout << "FALSE" << std::endl;
-		}
-		else
-		{
-			intval = 1;
-			std::cout << "TRUE" << std::endl;
-		}
-		expr_type = u_integer;
-	}
+	expr_geq(int row_number, expression_desc* left, expression_desc* right);
+
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_lt : public expr_binary
 {
-	expr_lt(int row_number, expression_desc* left, expression_desc* right){
-		if (left->intval < right->intval)
-		{
-			intval = 1;
-			std::cout << "TRUE" << std::endl;
-		}
-		else
-		{
-			intval = 0;
-			std::cout << "FALSE" << std::endl;
-		}
-		expr_type = u_integer;
-	}
+	expr_lt(int row_number, expression_desc* left, expression_desc* right);
+
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_gt : public expr_binary
 {
-	expr_gt(int row_number, expression_desc* left, expression_desc* right){
-		if (left->intval > right->intval)
-		{
-			intval = 1;
-			std::cout << "TRUE" << std::endl;
-		}
-		else
-		{
-			intval = 0;
-			std::cout << "FALSE" << std::endl;
-		}
-		expr_type = u_integer;
-	}
+	expr_gt(int row_number, expression_desc* left, expression_desc* right);
+
+	expression_desc* l;
+	expression_desc* r;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_neg : public expr_unary
 {
-	expr_neg(int row_number, expression_desc* ex){
-		expr_type = u_integer;
-		if (ex->intval != 0)
-		{
-			intval = 0;
-			std::cout << "FALSE" << std::endl;
-		}
-		else
-		{
-			intval = 1;
-			std::cout << "TRUE" << std::endl;
-		}
-	}
+	expr_neg(int row_number, expression_desc* ex);
+
+	expression_desc* e;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct expr_um : public expr_unary
 {
-	expr_um(int row_number, expression_desc* ex){
-		expr_type = ex->expr_type;
-		intval = -1 * ex->intval;
-		std::cout << "eredmeny :" << intval << std::endl;
-	}
+	expr_um(int row_number, expression_desc* ex);
+
+	expression_desc* e;
+	int intval;
+
+	void evaluate();
+	int get_value();
+	int get_row();
 };
 
 struct for_3_desc : public command_desc
