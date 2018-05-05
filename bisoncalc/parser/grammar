@@ -53,6 +53,8 @@
 %token CONST_FALSE
 %token CONST_PI
 
+%token EXIT_CALL;
+
 %right OPERATOR_LET_BE
 %left OPERATOR_AND OPERATOR_OR
 %left OPERATOR_EQUAL OPERATOR_GREATER_THAN OPERATOR_LESS_THAN OPERATOR_GREATER_EQUAL OPERATOR_LESS_EQUAL OPERATOR_NOT_EQUAL
@@ -74,7 +76,7 @@
 start:
 	command_list
 	{
-		std::cout << "command_list" << std::endl;
+		journal(journal::info, "parser") << "command_list" << journal::end;
 	}
 ;
 
@@ -84,13 +86,13 @@ command_list:
 	{	
 		// $$ = new command_list_desc();
 		// $$->add($1);
-		std::cout << "command_list COMMAND_SEPARATOR command" << std::endl;
+		journal(journal::info, "parser") << "command_list COMMAND_SEPARATOR command" << journal::end;
 	}
 |
 	command
 	{
 		//// $$ = new command_desc(d_loc__.first_line);
-		std::cout << "command_list -> command" << std::endl;
+		journal(journal::info, "parser") << "command_list -> command" << journal::end;
 	}
 ;
 
@@ -101,26 +103,27 @@ command:
 		// command_desc* tempcd = new command_desc($1->get_row());
 		// $$->add(tempcd);
 		//delete tempcd;
-		std::cout << "command -> expression" << std::endl;
+		std::cout << $1->get_value() << std::endl;
+		journal(journal::info, "parser") << "command -> expression" << journal::end;
 	}
 |
 	OCURLY command_list CCURLY
 	{
-		std::cout << "command -> OCURLY command_list CCURLY" << std::endl;
+		journal(journal::info, "parser") << "command -> OCURLY command_list CCURLY" << journal::end;
 	}
 |
 	KEYWORD_FOR expression KEYWORD_DO command_list KEYWORD_DONE
 	{
 		/*if ($2->expr_type != u_integer) // az expression NAME (porkmail szerint)
 		{
-			std::cerr << "Incorrect condition in For loop" << std::endl;
+			std::cerr << "Incorrect condition in For loop" << journal::end;
 			exit(1);
 		}
 		else
 		{
 			// $$ = new command_desc($2->row);
 		}*/
-		std::cout << "command -> KEYWORD_FOR expression KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+		journal(journal::info, "parser") << "command -> KEYWORD_FOR expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
 	KEYWORD_FOR expression KEYWORD_IN expression KEYWORD_DO command_list KEYWORD_DONE
@@ -129,7 +132,7 @@ command:
 		// $$ = new command_list_desc();
 		// $$->add(tempcd);
 		//delete tempcd;
-		std::cout << "command -> KEYWORD_FOR IDENTIFIER KEYWORD_IN expression KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+		journal(journal::info, "parser") << "command -> KEYWORD_FOR IDENTIFIER KEYWORD_IN expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
 	KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE
@@ -138,7 +141,7 @@ command:
 		// $$ = new command_list_desc();
 		// $$->add(tempcd);
 		//delete tempcd;
-		std::cout << "command -> KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+		journal(journal::info, "parser") << "command -> KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
 	KEYWORD_WHILE expression KEYWORD_DO command_list KEYWORD_DONE
@@ -147,7 +150,7 @@ command:
 		// $$ = new command_list_desc();
 		// $$->add(tempcd);
 		//delete tempcd;
-		std::cout << "command -> KEYWORD_WHILE expression KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+		journal(journal::info, "parser") << "command -> KEYWORD_WHILE expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
 	KEYWORD_UNTIL expression KEYWORD_DO command_list KEYWORD_DONE
@@ -156,12 +159,12 @@ command:
 		// $$ = new command_list_desc();
 		// $$->add(tempcd);
 		//delete tempcd;
-		std::cout << "command -> KEYWORD_UNTIL expression KEYWORD_DO command_list KEYWORD_DONE" << std::endl;
+		journal(journal::info, "parser") << "command -> KEYWORD_UNTIL expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
 	KEYWORD_CASE expression KEYWORD_IN caseparts KEYWORD_ESAC
 	{
-		std::cout << "command -> KEYWORD_CASE expression KEYWORD_IN caseparts KEYWORD_ESAC" << std::endl;
+		journal(journal::info, "parser") << "command -> KEYWORD_CASE expression KEYWORD_IN caseparts KEYWORD_ESAC" << journal::end;
 	}
 |
 	KEYWORD_IF expression KEYWORD_THEN command_list else_part KEYWORD_FI
@@ -170,7 +173,16 @@ command:
 		// $$ = new command_list_desc();
 		// $$->add(tempcd);
 		//delete tempcd;
-		std::cout << "command -> KEYWORD_IF expression KEYWORD_THEN command_list else_part KEYWORD_FI" << std::endl;
+		journal(journal::info, "parser") << "command -> KEYWORD_IF expression KEYWORD_THEN command_list else_part KEYWORD_FI" << journal::end;
+	}
+|
+	EXIT_CALL
+	{
+		std::cout << "Exit call" << std::endl;
+		journal(journal::info, "parser") << "Exit call" << journal::end;
+		journal::uninit();
+		exit(1);
+		std::terminate();
 	}
 ;
 
@@ -179,170 +191,168 @@ expression:
 	OPARENTHESIS expression CPARENTHESIS
 	{
 		$$ = new expr_par(d_loc__.first_line, $2);
-		std::cout << "expression -> OPARENTHESIS expression CPARENTHESIS" << std::endl;
+		journal(journal::info, "parser") << "expression -> OPARENTHESIS expression CPARENTHESIS" << journal::end;
 	}
 |
 	IDENTIFIER OPERATOR_LET_BE expression
 	{
 		$$ = new expr_asg(d_loc__.first_line, $1, $3);
-		std::cout << "expression -> IDENTIFIER OPERATOR_LET_BE expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> IDENTIFIER OPERATOR_LET_BE expression" << journal::end;
 	}
 |
 	NEGATE expression
 	{
 		$$ = new expr_neg(d_loc__.first_line, $2);
-		std::cout << "expression -> NEGATE expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> NEGATE expression" << journal::end;
 	}
 |
 	expression OPERATOR_AND expression
 	{
 		$$ = new expr_and(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_AND expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_AND expression" << journal::end;
 	}
 |
 	expression OPERATOR_OR expression
 	{
 		$$ = new expr_or(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_OR expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_OR expression" << journal::end;
 	}
 |
 	expression OPERATOR_EQUAL expression
 	{
 		$$ = new expr_eq(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_EQUAL expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_EQUAL expression" << journal::end;
 	}
 |
 	expression OPERATOR_NOT_EQUAL expression
 	{
 		$$ = new expr_neq(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_NOT_EQUAL expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_NOT_EQUAL expression" << journal::end;
 	}
 |
 	expression OPERATOR_LESS_EQUAL expression
 	{
 		$$ = new expr_leq(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_LESS_EQUAL expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_LESS_EQUAL expression" << journal::end;
 	}
 |
 	expression OPERATOR_GREATER_EQUAL expression
 	{
 		$$ = new expr_geq(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_GREATER_EQUAL expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_GREATER_EQUAL expression" << journal::end;
 	}
 |
 	expression OPERATOR_LESS_THAN expression
 	{
 		$$ = new expr_lt(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_LESS_THAN expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_LESS_THAN expression" << journal::end;
 	}
 |
 	expression OPERATOR_GREATER_THAN expression
 	{
 		$$ = new expr_gt(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_GREATER_THAN expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_GREATER_THAN expression" << journal::end;
 	}
 |
 	expression OPERATOR_PLUS expression
 	{
-		//std::cout << "dloc:" << d_loc__.first_line << std::endl;
 		$$ = new expr_add(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_PLUS expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_PLUS expression" << journal::end;
 	}
 |
 	expression OPERATOR_MINUS expression
 	{
 		$$ = new expr_dif(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_MINUS expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_MINUS expression" << journal::end;
 	}
 |
 	expression OPERATOR_MULTIPLICATION expression
 	{
 		$$ = new expr_mul(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_MULTIPLICATION expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_MULTIPLICATION expression" << journal::end;
 	}
 |
 	expression OPERATOR_DIVISION expression
 	{
 		$$ = new expr_div(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_DIVISION expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_DIVISION expression" << journal::end;
 	}
 |
 	expression OPERATOR_MODULO expression
 	{
 		$$ = new expr_mod(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_MODULO expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_MODULO expression" << journal::end;
 	}
 |
 	expression OPERATOR_POWER expression
 	{
 		$$ = new expr_pow(d_loc__.first_line,$1,$3);
-		std::cout << "expression -> expression OPERATOR_POWER expression" << std::endl;
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_POWER expression" << journal::end;
 	}
 |
 	OPERATOR_MINUS expression %prec UNARY_MINUS
 	{
 		$$ = new expr_um(d_loc__.first_line,$2);
-		std::cout << "expression -> OPERATOR_MINUS expression %prec UNARY_MINUS" << std::endl;
+		journal(journal::info, "parser") << "expression -> OPERATOR_MINUS expression %prec UNARY_MINUS" << journal::end;
 	}
 |
 	INTEGER
 	{
-		// értékre hivatkozás											std::cout << "INTEGER: " << *$1 << std::endl;
 		$$ = new expr_const(d_loc__.first_line, *$1, u_integer);
-		std::cout << "expression -> INTEGER" << std::endl;
+		journal(journal::info, "parser") << "expression -> INTEGER" << journal::end;
 	}
 |
 	DOUBLE
 	{
 		//$$ = new expr_const(d_loc__.first_line, *$1, u_double);
-		std::cout << "expression -> DOUBLE" << std::endl;
+		journal(journal::info, "parser") << "expression -> DOUBLE" << journal::end;
 	}
 |
 	SINGLEQUOTE
 	{
 		//$$ = new expr_const(d_loc__.first_line, *$1, u_string);
-		std::cout << "expression -> SINGLEQUOTE" << std::endl;
+		journal(journal::info, "parser") << "expression -> SINGLEQUOTE" << journal::end;
 	}
 |
 	DOUBLEQUOTE
 	{
 		//$$ = new expr_const(d_loc__.first_line, *$1, u_string);
-		std::cout << "expression -> DOUBLEQUOTE" << std::endl;
+		journal(journal::info, "parser") << "expression -> DOUBLEQUOTE" << journal::end;
 	}
 |
 	HEXADECIMAL
 	{
-		std::cout << "expression -> HEXADECIMAL" << std::endl;
+		journal(journal::info, "parser") << "expression -> HEXADECIMAL" << journal::end;
 	}
 |
 	input_output
 	{
-		std::cout << "expression -> input_output" << std::endl;
+		journal(journal::info, "parser") << "expression -> input_output" << journal::end;
 	}
 |
 	IDENTIFIER
 	{
 		$$ = new expr_var(d_loc__.first_line, *$1);
-		std::cout << "expression -> IDENTIFIER" << std::endl;
+		journal(journal::info, "parser") << "expression -> IDENTIFIER" << journal::end;
 	}
 |
 	CONST_TRUE
 	{
 		$$ = new expr_const(d_loc__.first_line, 1, u_integer);
-		std::cout << "expression -> CONST_TRUE" << std::endl;
+		journal(journal::info, "parser") << "expression -> CONST_TRUE" << journal::end;
 	}
 |
 	CONST_FALSE
 	{
 		$$ = new expr_const(d_loc__.first_line, 0, u_integer);
-		std::cout << "expression -> CONST_FALSE" << std::endl;
+		journal(journal::info, "parser") << "expression -> CONST_FALSE" << journal::end;
 	}
 |
 	CONST_PI
 	{
 		constexpr double Pi = acos(-1);
 		$$ = new expr_const(d_loc__.first_line, Pi, u_double);
-		std::cout << "expression -> CONST_Pi" << std::endl;
+		journal(journal::info, "parser") << "expression -> CONST_Pi" << journal::end;
 
 	}
 ;
@@ -352,22 +362,22 @@ expression:
 input_output:
 	OUTPUT_CREATION IDENTIFIER
 	{
-		std::cout << "input_output -> OUTPUT_CREATION IDENTIFIER" << std::endl;
+		journal(journal::info, "parser") << "input_output -> OUTPUT_CREATION IDENTIFIER" << journal::end;
 	}
 |
 	INPUT_REDIRECTION IDENTIFIER
 	{
-		std::cout << "input_output -> INPUT_REDIRECTION IDENTIFIER" << std::endl;
+		journal(journal::info, "parser") << "input_output -> INPUT_REDIRECTION IDENTIFIER" << journal::end;
 	}
 |
 	INPUT_FROM_A_HERE_DOCUMENT IDENTIFIER
 	{
-		std::cout << "input_output -> INPUT_FROM_A_HERE_DOCUMENT IDENTIFIER" << std::endl;
+		journal(journal::info, "parser") << "input_output -> INPUT_FROM_A_HERE_DOCUMENT IDENTIFIER" << journal::end;
 	}
 |
 	OUTPUT_APPEND IDENTIFIER
 	{
-		std::cout << "input_output -> OUTPUT_APPEND IDENTIFIER" << std::endl;
+		journal(journal::info, "parser") << "input_output -> OUTPUT_APPEND IDENTIFIER" << journal::end;
 	}
 ;
 
@@ -378,26 +388,26 @@ input_output:
 caseparts:
 	case_part caseparts2
 	{
-		std::cout << "caseparts -> case_part caseparts2" << std::endl;
+		journal(journal::info, "parser") << "caseparts -> case_part caseparts2" << journal::end;
 	}
 ;
 
 caseparts2:
 	case_part caseparts2
 	{
-		std::cout << "caseparts2 -> case_part caseparts2" << std::endl;
+		journal(journal::info, "parser") << "caseparts2 -> case_part caseparts2" << journal::end;
 	}
 |
 	//empty
 	{
-		std::cout << "caseparts2 -> empty" << std::endl;
+		journal(journal::info, "parser") << "caseparts2 -> empty" << journal::end;
 	}
 ;
 
 case_part:
 	pattern CPARENTHESIS command_list CASE_DELIMITER
 	{
-		std::cout << "case_part -> pattern CPARENTHESIS command_list CASE_DELIMITER" << std::endl;
+		journal(journal::info, "parser") << "case_part -> pattern CPARENTHESIS command_list CASE_DELIMITER" << journal::end;
 	}
 ;
 
@@ -407,25 +417,25 @@ else_part:
 		//// $$ = new command_desc($2->row);
 		// $$ = new command_list_desc();
 		// $$->add($2);
-		std::cout << "else_part -> KEYWORD_ELSE command_list" << std::endl;
+		journal(journal::info, "parser") << "else_part -> KEYWORD_ELSE command_list" << journal::end;
 	}
 |
 	//empty
 	{
 		//// $$ = new command_desc(d_loc__.first_line);
-		std::cout << "else_part -> empty" << std::endl;
+		journal(journal::info, "parser") << "else_part -> empty" << journal::end;
 	}
 ;
 
 pattern:
 	IDENTIFIER
 	{
-		std::cout << "pattern -> IDENTIFIER" << std::endl;
+		journal(journal::info, "parser") << "pattern -> IDENTIFIER" << journal::end;
 	}
 |
 	pattern PIPE_SYMBOL IDENTIFIER
 	{
-		std::cout << "pattern -> pattern PIPE_SYMBOL IDENTIFIER" << std::endl;
+		journal(journal::info, "parser") << "pattern -> pattern PIPE_SYMBOL IDENTIFIER" << journal::end;
 	}
 ;
 	

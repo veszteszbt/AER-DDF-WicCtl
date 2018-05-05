@@ -1,4 +1,3 @@
-
 WS [ \n\t\r]
 
 %%
@@ -49,10 +48,19 @@ WS [ \n\t\r]
 "-neq" return Parser::OPERATOR_NOT_EQUAL;
 "-a" return Parser::OPERATOR_AND;
 "-o" return Parser::OPERATOR_OR;
+"and" return Parser::OPERATOR_AND;
+"or" return Parser::OPERATOR_OR;
+"AND" return Parser::OPERATOR_AND;
+"OR" return Parser::OPERATOR_OR;
+"exit" return Parser::EXIT_CALL;
+"EXIT" return Parser::EXIT_CALL;
 
 "TRUE" return Parser::CONST_TRUE;
+"true" return Parser::CONST_TRUE;
 "FALSE" return Parser::CONST_FALSE;
+"false" return Parser::CONST_FALSE;
 "PI" return Parser::CONST_PI;
+"pi" return Parser::CONST_PI;
 
 
 ['][^']*['] return Parser::SINGLEQUOTE; 
@@ -66,7 +74,7 @@ WS [ \n\t\r]
 
 .           {
                 std::cerr << lineNr() << ": Lexical error." << std::endl;
-                exit(1);
+                std::terminate();
             }
 
 %%

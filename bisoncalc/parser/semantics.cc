@@ -69,6 +69,11 @@ void command_list_desc::add(command_list_desc* other)
 	delete other;
 }
 
+expr_const::expr_const(int row_number, int value, type var_type) : row(row_number), intval(value), expr_type(var_type)
+{
+	//std::cout << intval << std::endl;
+}
+
 int expr_const::get_value()
 {
 	return intval;
@@ -90,13 +95,14 @@ expr_var::expr_var(int row_number, std::string var_name) : row(row_number), name
 	if (it == parser.symbol_table.end())
 	{
 		std::cerr << row << ": ERROR: Variable " << name << " has no value yet!" << std::endl;
-		exit(1);
+		journal(journal::info, "semantics") << row << ": ERROR: Variable " << name << " has no value yet!" << journal::end;
+		std::terminate();
 	}
 	else
 	{
 		variable_desc v = it->second;
 		intval = v.intval;
-		//std::cout << "get value " << intval << " (was " << v.intval << ") from symbol table for vname " << name << std::endl;
+		//std::cout << intval << std::endl;
 		row = v.decl_row;
 		expr_type = v.var_type;
 	}
@@ -118,28 +124,28 @@ type expr_var::get_type()
 	return expr_type;
 }
 
-expr_asg::expr_asg(int row_number, std::string* var_name, expression_desc* ex)
+expr_asg::expr_asg(int row_number, std::string* var_name, expression_desc* ex) : vname(var_name), e(ex)
 {
-	intval = ex->get_value();
-	expr_type = ex->get_type();
+	intval = e->get_value();
+	expr_type = e->get_type();
 	//std::cout << "ex->get_value() " << ex->get_value() << ", intval " << intval << std::endl;
-	if (parser.symbol_table.count(*var_name) != 0)
+	if (parser.symbol_table.count(*vname) != 0)
 	{
 		//std::cout << "variable already in, updating value" << std::endl;
-		parser.symbol_table[*var_name] = 
-		variable_desc(parser.symbol_table[*var_name].decl_row, expr_type, intval);
+		parser.symbol_table[*vname] = 
+		variable_desc(parser.symbol_table[*vname].decl_row, expr_type, intval);
 	}
 	else
 	{
 		//std::cout << "new variable" << std::endl;
-		parser.symbol_table[*var_name] = variable_desc(row_number, expr_type, intval);
+		parser.symbol_table[*vname] = variable_desc(row_number, expr_type, intval);
 	}
-	//std::cout << "Assign " << intval << " to variable name " << *var_name << std::endl;
+	std::cout << "Assigned " << intval << " to variable name " << *var_name << std::endl;
 }
 
 int expr_asg::get_value()
 {
-	return 1;
+	return e->get_value();
 }
 
 void expr_asg::evaluate()
@@ -155,7 +161,7 @@ expr_par::expr_par(int row_number, expression_desc* nested) : row(row_number), e
 	evaluate();
 	//std::cout << "row:" << row << std::endl;
 	//std::cout << "nested->get_row():" << e->get_row() << std::endl;
-	//std::cout << "intval:" << intval << std::endl;
+	//std::cout << intval << std::endl;
 	//std::cout << "nested->get_value():" << e->get_value() << std::endl;
 }
 
@@ -182,6 +188,7 @@ expr_add::expr_add(int row_number, expression_desc* left, expression_desc* right
 	{
 		expr_type = left->get_type();
 		evaluate();
+		//std::cout << intval << std::endl;
 	}
 	else
 	{
@@ -199,7 +206,6 @@ expr_add::expr_add(int row_number, expression_desc* left, expression_desc* right
 void expr_add::evaluate()
 {
 	intval = l->get_value() + r->get_value();
-	//std::cout << "eredmeny :" << intval << std::endl;
 }
 
 int expr_add::get_value()
@@ -225,6 +231,7 @@ expr_dif::expr_dif(int row_number, expression_desc* left, expression_desc* right
 	{
 		expr_type = left->get_type();
 		evaluate();
+		//std::cout << intval << std::endl;
 	}
 	else
 	{
@@ -266,6 +273,7 @@ expr_mul::expr_mul(int row_number, expression_desc* left, expression_desc* right
 	{
 		expr_type = left->get_type();
 		evaluate();
+		//std::cout << intval << std::endl;
 	}
 	else
 	{
@@ -304,12 +312,14 @@ expr_div::expr_div(int row_number, expression_desc* left, expression_desc* right
 		if (right->get_value() == 0)
 		{
 			std::cerr << row << ": ERROR: division by 0" << std::endl;
-			exit(1);
+			journal(journal::info, "semantics") << row << ": ERROR: division by 0" << journal::end;
+			std::terminate();
 		}
 		else
 		{
 			expr_type = left->get_type();
 			evaluate();
+			//std::cout << intval << std::endl;
 		}
 	}
 	else
@@ -352,6 +362,7 @@ expr_pow::expr_pow(int row_number, expression_desc* left, expression_desc* right
 	{
 		expr_type = left->get_type();
 		intval = pow(left->get_value(), right->get_value());
+		//std::cout << intval << std::endl;
 		//std::cout << "eredmeny :" << intval << std::endl;
 	}
 	else
@@ -395,15 +406,19 @@ expr_mod::expr_mod(int row_number, expression_desc* left, expression_desc* right
 		{
 			expr_type = u_integer;
 			evaluate();
+			//std::cout << intval << std::endl;
 		}
 		else
 		{
 			std::cerr << row << ": ERROR: modulo cannot be 0!" << std::endl;
-			exit(1);
+			journal(journal::info, "semantics") << row << ": ERROR: modulo cannot be 0!" << journal::end;
+			std::terminate();
 		}
 	}
 	else{
 		std::cerr << row << ": ERROR: modulo operator only accepts integer type!" << std::endl;
+		journal(journal::info, "semantics") << row << ": ERROR: modulo operator only accepts integer type!" << journal::end;
+		std::terminate();
 	}
 }
 
@@ -747,6 +762,7 @@ expr_um::expr_um(int row_number, expression_desc* ex) : e(ex)
 {
 	expr_type = u_integer;
 	evaluate();
+	//std::cout << intval << std::endl;
 }
 
 void expr_um::evaluate()

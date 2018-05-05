@@ -1,0 +1,659 @@
+2018.05.05 13:15:14.980861 [INFO] (main) program started
+2018.05.05 13:24:11.986439 [INFO] (main) program started
+2018.05.05 13:24:14.171209 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:24:14.171263 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:24:14.171288 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 13:24:14.171309 [INFO] (parser) command -> expression
+2018.05.05 13:24:14.171361 [INFO] (parser) command_list -> command
+2018.05.05 13:26:17.569180 [INFO] (main) program started
+2018.05.05 13:26:22.119542 [INFO] (main) program started
+2018.05.05 13:26:31.241822 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:26:31.241876 [INFO] (parser) expression -> IDENTIFIER OPERATOR_LET_BE expression
+2018.05.05 13:26:31.241898 [INFO] (parser) command -> expression
+2018.05.05 13:26:31.241917 [INFO] (parser) command_list -> command
+2018.05.05 13:26:34.215722 [INFO] (parser) expression -> IDENTIFIER
+2018.05.05 13:26:34.215776 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:26:34.215800 [INFO] (parser) expression -> expression OPERATOR_LESS_THAN expression
+2018.05.05 13:26:34.215819 [INFO] (parser) command -> expression
+2018.05.05 13:26:34.215838 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 13:26:50.722852 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:26:50.722903 [INFO] (parser) expression -> IDENTIFIER OPERATOR_LET_BE expression
+2018.05.05 13:26:50.722935 [INFO] (parser) expression -> IDENTIFIER
+2018.05.05 13:26:50.722959 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:26:50.722998 [INFO] (parser) expression -> expression OPERATOR_LESS_THAN expression
+2018.05.05 13:26:50.723083 [INFO] (parser) expression -> IDENTIFIER
+2018.05.05 13:26:50.723121 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:26:50.723161 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 13:26:50.723191 [INFO] (parser) expression -> IDENTIFIER OPERATOR_LET_BE expression
+2018.05.05 13:26:50.723214 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:26:50.723236 [INFO] (parser) command -> expression
+2018.05.05 13:26:50.723254 [INFO] (parser) command_list -> command
+2018.05.05 13:26:50.723271 [INFO] (parser) command -> KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE
+2018.05.05 13:26:50.723289 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 13:27:49.689770 [INFO] (main) program started
+2018.05.05 13:27:53.207992 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:29:01.552286 [INFO] (main) program started
+2018.05.05 13:29:03.778180 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:29:15.999553 [INFO] (main) program started
+2018.05.05 13:29:17.853162 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:29:17.853217 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:29:31.243323 [INFO] (main) program started
+2018.05.05 13:29:32.869784 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:29:32.869841 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:33:26.672218 [INFO] (main) program started
+2018.05.05 13:33:29.675173 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:33:29.675223 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:33:29.675331 [INFO] (semantics) 1: ERROR: division by 0
+2018.05.05 13:34:15.160043 [INFO] (main) program started
+2018.05.05 13:34:17.680627 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:34:17.680685 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:34:17.680775 [INFO] (semantics) 1: ERROR: division by 0
+2018.05.05 13:34:21.103991 [INFO] (main) program started
+2018.05.05 13:34:22.850167 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:34:22.850230 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:34:22.850338 [INFO] (semantics) 1: ERROR: modulo cannot be 0!
+2018.05.05 13:34:25.539036 [INFO] (main) program started
+2018.05.05 13:34:26.436833 [INFO] (semantics) 1: ERROR: Variable x has no value yet!
+2018.05.05 13:34:28.096827 [INFO] (main) program started
+2018.05.05 13:34:29.532110 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:34:29.532162 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:34:32.420312 [INFO] (main) program started
+2018.05.05 13:34:33.886478 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:34:33.886537 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:34:33.886647 [INFO] (semantics) 1: ERROR: division by 0
+2018.05.05 13:39:29.731891 [INFO] (main) program started
+2018.05.05 13:39:31.413963 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:39:31.414012 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:39:42.326454 [INFO] (main) program started
+2018.05.05 13:39:43.889294 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:39:43.889345 [INFO] (parser) expression -> INTEGER
+2018.05.05 13:39:47.345470 [INFO] (main) program started
+2018.05.05 13:45:48.686844 [INFO] (main) program started
+2018.05.05 13:48:00.842865 [INFO] (main) program started
+2018.05.05 13:48:04.987375 [INFO] (main) program started
+2018.05.05 13:52:17.048415 [INFO] (main) program started
+2018.05.05 13:59:35.781514 [INFO] (main) program started
+2018.05.05 14:02:33.683233 [INFO] (main) program started
+2018.05.05 14:02:35.338357 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:02:35.338427 [INFO] (parser) expression -> IDENTIFIER OPERATOR_LET_BE expression
+2018.05.05 14:02:35.338465 [INFO] (parser) command -> expression
+2018.05.05 14:02:35.338483 [INFO] (parser) command_list -> command
+2018.05.05 14:02:36.687045 [INFO] (parser) expression -> IDENTIFIER
+2018.05.05 14:04:14.801627 [INFO] (main) program started
+2018.05.05 14:04:16.204878 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:04:16.204938 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:04:16.205031 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:04:16.205065 [INFO] (parser) command -> expression
+2018.05.05 14:04:16.205105 [INFO] (parser) command_list -> command
+2018.05.05 14:04:19.217717 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:04:19.217768 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:04:19.217824 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:04:19.217860 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:04:19.217941 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:04:19.217979 [INFO] (parser) command -> expression
+2018.05.05 14:04:19.218001 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:05:08.888803 [INFO] (main) program started
+2018.05.05 14:05:10.771022 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:05:10.771073 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:05:10.771143 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:05:10.771177 [INFO] (parser) command -> expression
+2018.05.05 14:05:10.771218 [INFO] (parser) command_list -> command
+2018.05.05 14:05:14.062455 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:05:14.062513 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:05:14.062569 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:05:14.062606 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:05:14.062677 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:05:14.062719 [INFO] (parser) command -> expression
+2018.05.05 14:05:14.062752 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:07:54.455880 [INFO] (main) program started
+2018.05.05 14:07:55.975119 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:07:55.975223 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:07:55.975253 [INFO] (parser) command -> expression
+2018.05.05 14:07:55.975278 [INFO] (parser) command_list -> command
+2018.05.05 14:08:00.824153 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:00.824229 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:08:00.824266 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:00.824304 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:08:00.824380 [INFO] (parser) expression -> expression OPERATOR_MINUS expression
+2018.05.05 14:08:00.824417 [INFO] (parser) command -> expression
+2018.05.05 14:08:00.824447 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:08:08.759460 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:08.759521 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:08.759585 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:08:08.759629 [INFO] (parser) command -> expression
+2018.05.05 14:08:08.759658 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:08:12.867070 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:12.867147 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:08:12.867178 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:12.867243 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:08:12.867290 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:08:12.867323 [INFO] (parser) command -> expression
+2018.05.05 14:08:12.867354 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:08:18.526514 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:18.526567 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:18.526614 [INFO] (parser) expression -> expression OPERATOR_MODULO expression
+2018.05.05 14:08:18.526643 [INFO] (parser) command -> expression
+2018.05.05 14:08:18.526673 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:08:22.733801 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:22.733860 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:22.733925 [INFO] (parser) expression -> expression OPERATOR_MODULO expression
+2018.05.05 14:08:22.733970 [INFO] (parser) command -> expression
+2018.05.05 14:08:22.733999 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:08:27.414113 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:27.414173 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:08:27.414217 [INFO] (parser) expression -> expression OPERATOR_LESS_THAN expression
+2018.05.05 14:08:27.414248 [INFO] (parser) command -> expression
+2018.05.05 14:08:27.414281 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:08:35.564992 [INFO] (parser) expression -> CONST_TRUE
+2018.05.05 14:08:35.565068 [INFO] (parser) expression -> CONST_TRUE
+2018.05.05 14:08:37.306700 [INFO] (parser) expression -> expression OPERATOR_AND expression
+2018.05.05 14:08:37.306748 [INFO] (parser) command -> expression
+2018.05.05 14:08:37.306769 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:13:15.415133 [INFO] (main) program started
+2018.05.05 14:13:16.239826 [INFO] (parser) Exit call
+2018.05.05 14:13:16.239876 [INFO] (parser) command_list -> command
+2018.05.05 14:13:23.704018 [INFO] (parser) command_list
+2018.05.05 14:13:26.725983 [INFO] (main) program started
+2018.05.05 14:13:27.907021 [INFO] (parser) Exit call
+2018.05.05 14:13:27.907066 [INFO] (parser) command_list -> command
+2018.05.05 14:13:55.461538 [INFO] (main) program started
+2018.05.05 14:14:16.743869 [INFO] (main) program started
+2018.05.05 14:14:17.840533 [INFO] (parser) Exit call
+2018.05.05 14:14:38.057951 [INFO] (main) program started
+2018.05.05 14:14:42.616500 [INFO] (main) program started
+2018.05.05 14:14:45.606234 [INFO] (parser) expression -> CONST_TRUE
+2018.05.05 14:14:45.606291 [INFO] (parser) expression -> CONST_TRUE
+2018.05.05 14:14:46.732804 [INFO] (parser) expression -> expression OPERATOR_AND expression
+2018.05.05 14:14:46.732847 [INFO] (parser) command -> expression
+2018.05.05 14:14:46.732870 [INFO] (parser) command_list -> command
+2018.05.05 14:15:43.834934 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:15:43.835017 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835062 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835114 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835152 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835189 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835225 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835271 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835309 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835347 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835385 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835423 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835463 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835501 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835540 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835584 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835625 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835666 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835742 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835783 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835824 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835866 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835907 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835949 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.835991 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836041 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836083 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836126 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836170 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836214 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836258 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836302 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836347 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836470 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:15:43.836503 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836527 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836551 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836575 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836598 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836622 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836647 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836670 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836694 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836717 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836740 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836763 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836787 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836810 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836833 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836856 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836885 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836909 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836932 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836955 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.836979 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837002 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837025 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837048 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837072 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837096 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837119 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837142 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837166 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837189 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837213 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837236 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837264 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837288 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837314 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837366 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837393 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:43.837418 [INFO] (parser) expression -> expression OPERATOR_MINUS expression
+2018.05.05 14:15:43.837445 [INFO] (parser) command -> expression
+2018.05.05 14:15:43.837487 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:15:59.935170 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:15:59.935241 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935293 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935348 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935393 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935456 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935500 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935549 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935609 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935666 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935748 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935804 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935865 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935913 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.935961 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936003 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936043 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936092 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936138 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936184 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936229 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936274 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936320 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936366 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936411 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936456 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936502 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936549 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936595 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936640 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936685 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936731 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936776 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936822 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936867 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936912 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.936958 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937003 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937048 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937093 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937207 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:15:59.937252 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937299 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937345 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937396 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937423 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937450 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937472 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937501 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937542 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937565 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937591 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937614 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937641 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937664 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937691 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937714 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937743 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937766 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937792 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937815 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937841 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937865 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937892 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937915 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937941 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937964 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.937989 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938012 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938039 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938062 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938089 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938112 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938138 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938161 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938187 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938211 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938237 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938260 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938286 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938308 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938335 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938357 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938384 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938407 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938530 [INFO] (parser) expression -> expression OPERATOR_MINUS expression
+2018.05.05 14:15:59.938659 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:15:59.938710 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938758 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938811 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938858 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938906 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.938954 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939003 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939051 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939099 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939147 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939203 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939250 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939297 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939344 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939391 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939438 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939487 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939535 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939584 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939639 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939703 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939756 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939803 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939852 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939900 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939949 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.939997 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940048 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940095 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940141 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940190 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940238 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940286 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940334 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940382 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940430 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940479 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940526 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940573 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940621 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940669 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940717 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940763 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940810 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940857 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940905 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940952 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.940999 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941047 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941094 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941148 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941196 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941246 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941294 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941341 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941389 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941437 [INFO] (parser) expression -> expression OPERATOR_MINUS expression
+2018.05.05 14:15:59.941512 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:15:59.941562 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941610 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941656 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941705 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941753 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941799 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941848 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941897 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941945 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.941992 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.942040 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.942086 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.942133 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.942180 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.942232 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.942277 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.942325 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.942380 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:15:59.942429 [INFO] (parser) expression -> expression OPERATOR_MINUS expression
+2018.05.05 14:15:59.942464 [INFO] (parser) command -> expression
+2018.05.05 14:15:59.942503 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:16:27.450746 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:16:27.450821 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.450864 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.450924 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.450968 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451011 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451052 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451079 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451103 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451127 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451152 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451176 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451199 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451222 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451246 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451269 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451293 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451321 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451360 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451400 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451440 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451481 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451519 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451562 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451604 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451644 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451710 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451759 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451803 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451857 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451891 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451940 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.451982 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452038 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452094 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452153 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452199 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452255 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452308 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452362 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452415 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452469 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452523 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452575 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452628 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452680 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452732 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452785 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452838 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452891 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452943 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.452995 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453048 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453100 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453157 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453203 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453258 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453310 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453361 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453414 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453468 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453519 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453572 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453625 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453677 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453731 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453783 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453835 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453887 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453939 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.453991 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454044 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454095 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454148 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454201 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454262 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454315 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454367 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454420 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454473 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454524 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454577 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454629 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454682 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454734 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454787 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454839 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454890 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454942 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.454995 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455047 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455182 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:16:27.455234 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455284 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455333 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455386 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455434 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455483 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455533 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455583 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455632 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455692 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455749 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455797 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455847 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455896 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455945 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.455993 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456040 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456087 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456134 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456182 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456232 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456279 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456327 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456375 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456422 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456469 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456517 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456566 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456614 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456662 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456710 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456757 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456805 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456853 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456900 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456947 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.456993 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457041 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457088 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457137 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457188 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457235 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457282 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457334 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457385 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457431 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457479 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457526 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457574 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457622 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457669 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457717 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457765 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457814 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457861 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457909 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.457955 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.458004 [INFO] (parser) expression -> OPERATOR_MINUS expression %prec UNARY_MINUS
+2018.05.05 14:16:27.458053 [INFO] (parser) expression -> expression OPERATOR_MINUS expression
+2018.05.05 14:16:27.458088 [INFO] (parser) command -> expression
+2018.05.05 14:16:27.458127 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:16:47.703588 [INFO] (main) program started
+2018.05.05 14:18:00.849955 [INFO] (main) program started
+2018.05.05 14:18:54.931257 [INFO] (main) program started
+2018.05.05 14:19:52.663961 [INFO] (main) program started
+2018.05.05 14:20:35.438779 [INFO] (main) program started
+2018.05.05 14:22:42.445976 [INFO] (main) program started
+2018.05.05 14:22:55.746903 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:22:55.746957 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:22:55.747031 [INFO] (parser) expression -> expression OPERATOR_EQUAL expression
+2018.05.05 14:22:55.747095 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:22:55.747140 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:22:55.747204 [INFO] (parser) expression -> expression OPERATOR_EQUAL expression
+2018.05.05 14:22:55.747274 [INFO] (parser) expression -> expression OPERATOR_OR expression
+2018.05.05 14:22:55.747310 [INFO] (parser) command -> expression
+2018.05.05 14:24:41.299992 [INFO] (main) program started
+2018.05.05 14:24:43.070650 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:24:43.070703 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:26:17.780346 [INFO] (main) program started
+2018.05.05 14:26:23.337355 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:26:23.337408 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:26:23.337483 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:26:23.337517 [INFO] (parser) command -> expression
+2018.05.05 14:26:23.337558 [INFO] (parser) command_list -> command
+2018.05.05 14:26:24.893775 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:26:24.893821 [INFO] (parser) command -> expression
+2018.05.05 14:26:24.893841 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:26:50.646306 [INFO] (main) program started
+2018.05.05 14:26:52.419889 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:26:52.420007 [INFO] (parser) expression -> IDENTIFIER OPERATOR_LET_BE expression
+2018.05.05 14:26:52.420060 [INFO] (parser) command -> expression
+2018.05.05 14:26:52.420093 [INFO] (parser) command_list -> command
+2018.05.05 14:26:53.418042 [INFO] (parser) expression -> IDENTIFIER
+2018.05.05 14:26:53.418096 [INFO] (parser) command -> expression
+2018.05.05 14:26:53.418117 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:27:01.009232 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:27:01.009319 [INFO] (parser) expression -> OPARENTHESIS expression CPARENTHESIS
+2018.05.05 14:27:01.009360 [INFO] (parser) command -> expression
+2018.05.05 14:27:01.009401 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:28:31.550635 [INFO] (main) program started
+2018.05.05 14:28:33.270577 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:28:33.270626 [INFO] (parser) command -> expression
+2018.05.05 14:28:33.270646 [INFO] (parser) command_list -> command
+2018.05.05 14:28:35.171990 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:28:35.172052 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:28:35.172104 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:28:35.172147 [INFO] (parser) command -> expression
+2018.05.05 14:28:35.172183 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:28:43.702052 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:28:43.702130 [INFO] (parser) expression -> IDENTIFIER OPERATOR_LET_BE expression
+2018.05.05 14:28:43.702166 [INFO] (parser) command -> expression
+2018.05.05 14:28:43.702209 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:28:47.066960 [INFO] (parser) expression -> IDENTIFIER
+2018.05.05 14:28:47.067039 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:28:47.067089 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:28:47.067126 [INFO] (parser) command -> expression
+2018.05.05 14:31:06.546302 [INFO] (main) program started
+2018.05.05 14:31:07.795106 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:31:07.795174 [INFO] (parser) command -> expression
+2018.05.05 14:31:07.795210 [INFO] (parser) command_list -> command
+2018.05.05 14:31:10.151667 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:31:10.151751 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:31:10.151799 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:31:10.151854 [INFO] (parser) command -> expression
+2018.05.05 14:31:10.151883 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:31:19.185858 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:31:19.185945 [INFO] (parser) expression -> IDENTIFIER OPERATOR_LET_BE expression
+2018.05.05 14:31:19.185997 [INFO] (parser) command -> expression
+2018.05.05 14:31:19.186033 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:33:43.892582 [INFO] (main) program started
+2018.05.05 14:33:45.127486 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:33:45.127541 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:33:45.127567 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.05.05 14:33:45.127650 [INFO] (parser) command -> expression
+2018.05.05 14:33:45.127716 [INFO] (parser) command_list -> command
+2018.05.05 14:33:46.332517 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:33:46.332593 [INFO] (parser) command -> expression
+2018.05.05 14:33:46.332621 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:33:57.534615 [INFO] (parser) expression -> CONST_TRUE
+2018.05.05 14:33:57.534681 [INFO] (parser) expression -> CONST_TRUE
+2018.05.05 14:33:57.534722 [INFO] (parser) expression -> expression OPERATOR_AND expression
+2018.05.05 14:33:57.534783 [INFO] (parser) command -> expression
+2018.05.05 14:33:57.534820 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:34:43.087572 [INFO] (main) program started
+2018.05.05 14:34:50.327360 [INFO] (main) program started
+2018.05.05 14:34:52.823588 [INFO] (parser) expression -> CONST_FALSE
+2018.05.05 14:34:52.823660 [INFO] (parser) expression -> CONST_TRUE
+2018.05.05 14:34:55.683377 [INFO] (parser) expression -> expression OPERATOR_AND expression
+2018.05.05 14:39:44.844747 [INFO] (main) program started
+2018.05.05 14:39:46.865672 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:39:46.865791 [INFO] (parser) expression -> IDENTIFIER OPERATOR_LET_BE expression
+2018.05.05 14:39:46.865847 [INFO] (parser) command -> expression
+2018.05.05 14:39:46.865877 [INFO] (parser) command_list -> command
+2018.05.05 14:39:53.491609 [INFO] (parser) expression -> IDENTIFIER
+2018.05.05 14:39:53.491706 [INFO] (parser) command -> expression
+2018.05.05 14:39:53.491737 [INFO] (parser) command_list COMMAND_SEPARATOR command
+2018.05.05 14:40:48.194633 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:40:48.194683 [INFO] (parser) expression -> INTEGER
+2018.05.05 14:40:50.557018 [INFO] (main) program started

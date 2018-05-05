@@ -1,12 +1,14 @@
 CXX=g++
-CXXFLAGS= -std=c++17 -Wall -g3
+CXXFLAGS= -std=c++17 -Wall -g3 -pthread -I.
 SDIR=scanner
 PDIR=parser
+JDIR=journal
 FDEPS=$(SDIR)/Scanner.h $(SDIR)/Scanner.ih $(SDIR)/Scannerbase.h
 BDEPS=$(PDIR)/Parser.h $(PDIR)/Parser.ih $(PDIR)/Parserbase.h
 SDEPS=$(PDIR)/semantics.h
+JDEPS=$(JDIR)/journal.h
 DEPS=$(SDIR)/Scanner.h $(SDIR)/Scanner.ih $(SDIR)/Scannerbase.h $(PDIR)/Parser.h $(PDIR)/Parser.ih $(PDIR)/Parserbase.h $(PDIR)/semantics.h
-OBJ=main.o lex.o parse.o semantics.o
+OBJ=main.o lex.o parse.o semantics.o journal.o
 
 main: $(OBJ)
 	$(CXX) $(CXXFLAGS) -o commandline $(OBJ)
@@ -22,6 +24,10 @@ parse.o: $(PDIR)/parse.cc $(BDEPS)
 
 semantics.o: $(PDIR)/semantics.cc $(SDEPS)
 	$(CXX) $(CXXFLAGS) -c $(PDIR)/semantics.cc
+
+journal.o: $(JDIR)/journal.cc $(JDEPS)
+	$(CXX) $(CXXFLAGS) -I$(JDIR) -c $(JDIR)/journal.cc
+
 
 .PHONY: clean flex bison
 

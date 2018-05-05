@@ -7,13 +7,14 @@
 #include <sstream>
 #include <vector>
 #include <cmath>
+#include <journal/journal.h>
 
 
 enum type{ u_integer, u_double, u_string };
 
 struct variable_desc
 {
-	variable_desc(int row_number, type data_type, int value=0) : decl_row(row_number), var_type(data_type), intval(value) {}
+	variable_desc(int row_number, type data_type, int value) : decl_row(row_number), var_type(data_type), intval(value) {}
 	variable_desc(){} //kell a maphoz
 
 	int decl_row;
@@ -107,7 +108,7 @@ struct expr_unary : public expression_desc
 
 struct expr_const : public expression_desc
 {
-	expr_const(int row_number, int value, type var_type) : row(row_number), intval(value), expr_type(var_type){}
+	expr_const(int row_number, int value, type var_type);
 
 	int row;
 	int intval;
@@ -136,8 +137,8 @@ struct expr_var : public expression_desc
 struct expr_asg : public expr_unary
 {
 	expr_asg(int row_number, std::string* var_name, expression_desc* ex);
-	std::string* var_name;
-	expression_desc* value;
+	std::string* vname;
+	expression_desc* e;
 	type expr_type;
 
 	int get_value();
