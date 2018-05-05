@@ -120,20 +120,18 @@ struct expr_const : public expression_desc
 
 struct expr_var : public expression_desc
 {
-	expr_var(std::string var_name);
+	expr_var(int row_number, std::string var_name);
 
+	int row;
 	std::string name;
 	
 	type expr_type;
-	int row;
 	int intval;
 
 	int get_value();
 	void evaluate();
 	type get_type();
 };
-
-//extern std::map<std::string, variable_desc> Parser::symbol_table;
 
 struct expr_asg : public expr_unary
 {
@@ -210,11 +208,13 @@ struct expr_mul : public expr_binary
 struct expr_div : public expr_binary
 {
 	expr_div(int row_number, expression_desc* left, expression_desc* right);
-	
+
+	int row;	
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
 	type expr_type;
+
 
 	void evaluate();
 	int get_value();
@@ -240,6 +240,7 @@ struct expr_mod : public expr_binary
 {
 	expr_mod(int row_number, expression_desc* left, expression_desc* right);
 
+	int row;
 	expression_desc* l;
 	expression_desc* r;
 	int intval;

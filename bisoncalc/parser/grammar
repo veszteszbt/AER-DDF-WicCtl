@@ -244,7 +244,7 @@ expression:
 |
 	expression OPERATOR_PLUS expression
 	{
-		std::cout << "dloc:" << d_loc__.first_line << std::endl;
+		//std::cout << "dloc:" << d_loc__.first_line << std::endl;
 		$$ = new expr_add(d_loc__.first_line,$1,$3);
 		std::cout << "expression -> expression OPERATOR_PLUS expression" << std::endl;
 	}
@@ -322,7 +322,7 @@ expression:
 |
 	IDENTIFIER
 	{
-		$$ = new expr_var(*$1);
+		$$ = new expr_var(d_loc__.first_line, *$1);
 		std::cout << "expression -> IDENTIFIER" << std::endl;
 	}
 |
