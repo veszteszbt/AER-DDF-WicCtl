@@ -43,12 +43,14 @@ struct expression_desc
 	};*/
 	int intval;
 
-	//virtual void evaluate()  = 0;
+	
 
 	void set_row(int &r);
 	int get_row();
-	//virtual int get_value() =0;
-	int get_value();
+	virtual int get_value() = 0;
+	virtual void evaluate() = 0;
+	virtual type get_type() = 0;
+	
 };
 
 struct command_desc
@@ -103,6 +105,33 @@ struct expr_unary : public expression_desc
 	type expr_type;
 };
 
+struct expr_const : public expression_desc
+{
+	expr_const(int row_number, int value, type var_type) : row(row_number), intval(value), expr_type(var_type){}
+
+	int row;
+	int intval;
+	type expr_type;
+	
+	int get_value();
+	void evaluate();
+	type get_type();
+};
+
+struct expr_var : public expression_desc
+{
+	expr_var(std::string var_name);
+
+	std::string name;
+	
+	type expr_type;
+	int row;
+	int intval;
+
+	int get_value();
+	void evaluate();
+	type get_type();
+};
 
 //extern std::map<std::string, variable_desc> Parser::symbol_table;
 
@@ -111,22 +140,26 @@ struct expr_asg : public expr_unary
 	expr_asg(int row_number, std::string* var_name, expression_desc* ex);
 	std::string* var_name;
 	expression_desc* value;
+	type expr_type;
+
 	int get_value();
+	void evaluate();
+	type get_type();
 };
 
 struct expr_par : public expr_unary
 {
-	expr_par(int row_number, expression_desc* nested) : row(row_number), intval(nested->get_value()){
-		std::cout << "row:" << row << std::endl;
-		std::cout << "nested->get_row():" << nested->get_row() << std::endl;
-		std::cout << "intval:" << intval << std::endl;
-		std::cout << "nested->get_value():" << nested->get_value() << std::endl;
-	}
+	expr_par(int row_number, expression_desc* nested);
 
+	
 	int row;
+	expression_desc* e;
 	int intval;
+	type expr_type;
 
 	int get_value();
+	void evaluate();
+	type get_type();
 };
 
 struct expr_add : public expr_binary
@@ -136,10 +169,12 @@ struct expr_add : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_dif : public expr_binary
@@ -149,10 +184,12 @@ struct expr_dif : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_mul : public expr_binary
@@ -162,10 +199,12 @@ struct expr_mul : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_div : public expr_binary
@@ -175,10 +214,12 @@ struct expr_div : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_pow : public expr_binary
@@ -187,10 +228,12 @@ struct expr_pow : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_mod : public expr_binary
@@ -200,10 +243,12 @@ struct expr_mod : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_or : public expr_binary
@@ -213,10 +258,12 @@ struct expr_or : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_and : public expr_binary
@@ -226,10 +273,12 @@ struct expr_and : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_eq : public expr_binary
@@ -239,10 +288,12 @@ struct expr_eq : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_neq : public expr_binary
@@ -252,10 +303,12 @@ struct expr_neq : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_leq : public expr_binary
@@ -265,10 +318,12 @@ struct expr_leq : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_geq : public expr_binary
@@ -278,10 +333,12 @@ struct expr_geq : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_lt : public expr_binary
@@ -291,10 +348,12 @@ struct expr_lt : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_gt : public expr_binary
@@ -304,10 +363,12 @@ struct expr_gt : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_neg : public expr_unary
@@ -316,10 +377,12 @@ struct expr_neg : public expr_unary
 
 	expression_desc* e;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct expr_um : public expr_unary
@@ -328,10 +391,12 @@ struct expr_um : public expr_unary
 
 	expression_desc* e;
 	int intval;
+	type expr_type;
 
 	void evaluate();
 	int get_value();
 	int get_row();
+	type get_type();
 };
 
 struct for_3_desc : public command_desc

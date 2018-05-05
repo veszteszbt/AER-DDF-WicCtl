@@ -288,28 +288,25 @@ expression:
 	INTEGER
 	{
 		// értékre hivatkozás											std::cout << "INTEGER: " << *$1 << std::endl;
-		$$ = new expression_desc(d_loc__.first_line, u_integer, *$1);
+		$$ = new expr_const(d_loc__.first_line, *$1, u_integer);
 		std::cout << "expression -> INTEGER" << std::endl;
 	}
 |
 	DOUBLE
 	{
-		//// $$ = d_scanner.doubleValue();
-		$$ = new expression_desc(d_loc__.first_line, u_double);
+		//$$ = new expr_const(d_loc__.first_line, *$1, u_double);
 		std::cout << "expression -> DOUBLE" << std::endl;
 	}
 |
 	SINGLEQUOTE
 	{
-		//// $$ = d_scanner.matched();
-		$$ = new expression_desc(d_loc__.first_line, u_string);
+		//$$ = new expr_const(d_loc__.first_line, *$1, u_string);
 		std::cout << "expression -> SINGLEQUOTE" << std::endl;
 	}
 |
 	DOUBLEQUOTE
 	{
-		//$ = d_scanner.matched();
-		$$ = new expression_desc(d_loc__.first_line, u_string);
+		//$$ = new expr_const(d_loc__.first_line, *$1, u_string);
 		std::cout << "expression -> DOUBLEQUOTE" << std::endl;
 	}
 |
@@ -325,57 +322,26 @@ expression:
 |
 	IDENTIFIER
 	{
-		//const char *x = $1;
-		//if (!x)
-		//{
-		//	std::cout << "x null" << std::endl;
-		//}
-		/*if( symbol_table.count( *$1) == 0)
-		{
-			std::cerr << d_loc__.first_line << ": " << *$1 << "variable doesn't have a value yet." << std::endl;
-
-		}
-		else
-		{
-			variable_desc vd = symbol_table[*$1];
-			//switch(vd.var_type)
-			//case(u_integer):
-			//	// $$ = new expression_desc(vd.decl_row, vd.var_type, vd.intval);
-			//break;
-			//case(u_double):
-			//	// $$ = new expression_desc(vd.decl_row, vd.var_type, vd.doubleval);
-			//break;
-			//case(u_string):
-			//	// $$ = new expression_desc(vd.decl_row, vd.var_type, vd.stringval);
-			//break;
-			//default:
-			//	std::cout << "Cannot determine " << $1 << "'s type." << std::endl;
-		}*/
+		$$ = new expr_var(*$1);
 		std::cout << "expression -> IDENTIFIER" << std::endl;
 	}
 |
 	CONST_TRUE
 	{
-		//// $$ = 0;
-
-		//// $$ = new expression_desc(value=0)
-		$$ = new expression_desc(d_loc__.first_line, u_integer, 1);
+		$$ = new expr_const(d_loc__.first_line, 1, u_integer);
 		std::cout << "expression -> CONST_TRUE" << std::endl;
 	}
 |
 	CONST_FALSE
 	{
-		//// $$ = 1;
-		$$ = new expression_desc(d_loc__.first_line, u_integer, 0);
+		$$ = new expr_const(d_loc__.first_line, 0, u_integer);
 		std::cout << "expression -> CONST_FALSE" << std::endl;
-
 	}
 |
 	CONST_PI
 	{
 		constexpr double Pi = acos(-1);
-		//// $$ = Pi;
-		$$ = new expression_desc(d_loc__.first_line, u_double, Pi);
+		$$ = new expr_const(d_loc__.first_line, Pi, u_double);
 		std::cout << "expression -> CONST_Pi" << std::endl;
 
 	}
