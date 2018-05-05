@@ -29,7 +29,7 @@ journal.o: $(JDIR)/journal.cc $(JDEPS)
 	$(CXX) $(CXXFLAGS) -I$(JDIR) -c $(JDIR)/journal.cc
 
 
-.PHONY: clean flex bison
+.PHONY: clean flex bison test
 
 clean:
 	rm -f $(OBJ)
@@ -38,3 +38,5 @@ flex:
 	./flexbuild
 bison:
 	./bisonbuild
+test:
+	./test/test.sh

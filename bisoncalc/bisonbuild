@@ -1,16 +1,34 @@
 #!/bin/bash
 
-cd parser
-echo "rm -f Parser.h Parserbase.h parse.cc Parser.ih"
-rm -f Parser.h Parserbase.h parse.cc Parser.ih
-echo "bisonc++ grammar"
-bisonc++ grammar
+read -p "WARNING: This operation will delete your current bisonc++ files! Press \"i\" to continue. Or press \"y\" to prevent auto inserting and generate clean.
+" answer
+	case $answer in
+	("i")
+		cd parser
+		echo "rm -f Parser.h Parserbase.h parse.cc Parser.ih"
+		rm -f Parser.h Parserbase.h parse.cc Parser.ih
+		echo "bisonc++ grammar"
+		bisonc++ grammar
 
-echo "insering into Parser.h"
-sed -i 's/Parser() = default;/Parser() = default;\n\t\tParser(std::string inFile) : d_scanner(inFile, std::cout){}/' Parser.h
-sed -i 's/private:/\tstd::map<std::string, variable_desc> symbol_table;\n\nprivate:/' Parser.h
+		echo "insering into Parser.h"
+		sed -i 's/Parser() = default;/Parser() = default;\n\t\tParser(std::string inFile) : d_scanner(inFile, std::cout){}/' Parser.h
+		sed -i 's/private:/\tstd::map<std::string, variable_desc> symbol_table;\n\nprivate:/' Parser.h
 
-echo "insering into Parser.ih"
-sed -i 's/std::cerr << "Syntax error\\n";/std::cerr << d_loc__.first_line << ": Syntax error\\n";\n\tstd::terminate();/' Parser.ih
-sed -i 's/return d_scanner.lex();/int ret = d_scanner.lex();\n\td_loc__.first_line = d_scanner.lineNr();\n\tif( ret == IDENTIFIER || ret == SINGLEQUOTE || ret == DOUBLEQUOTE )\n\t{\n\t\td_val__.str = new std::string(d_scanner.matched());\n\t}\n\telse if( ret == INTEGER )\n\t{\n\t\td_val__.integ = new int(stoi(d_scanner.matched()));\n\t}\n\telse if( ret == DOUBLE )\n\t{\n\t\td_val__.dbl = new double(stod(d_scanner.matched()));\n\t}\n\treturn ret;/' Parser.ih
-cd ..
+		echo "insering into Parser.ih"
+		sed -i 's/std::cerr << "Syntax error\\n";/std::cerr << d_loc__.first_line << ": Syntax error\\n";\n\tstd::terminate();/' Parser.ih
+		sed -i 's/return d_scanner.lex();/int ret = d_scanner.lex();\n\td_loc__.first_line = d_scanner.lineNr();\n\tif( ret == IDENTIFIER || ret == SINGLEQUOTE || ret == DOUBLEQUOTE )\n\t{\n\t\td_val__.str = new std::string(d_scanner.matched());\n\t}\n\telse if( ret == INTEGER )\n\t{\n\t\td_val__.integ = new int(stoi(d_scanner.matched()));\n\t}\n\telse if( ret == DOUBLE )\n\t{\n\t\td_val__.dbl = new double(stod(d_scanner.matched()));\n\t}\n\treturn ret;/' Parser.ih
+		cd ..
+	;;
+	("y")
+		cd parser
+		echo "rm -f Parser.h Parserbase.h parse.cc Parser.ih"
+		rm -f Parser.h Parserbase.h parse.cc Parser.ih
+		echo "bisonc++ grammar"
+		bisonc++ grammar
+		cd ..
+	;;
+	(*)
+		echo "Operation aborted."
+	;;
+	esac
+	

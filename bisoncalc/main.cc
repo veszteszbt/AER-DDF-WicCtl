@@ -1,10 +1,27 @@
 #include "parser/Parser.ih"
+#include "journal/journal.h"
 
-Parser parser;
+Parser* parser;
 
-int main()
+int main(int argc, char* argv[])
 {
-	parser.parse();
+	journal::init("test/journal.txt");
+	journal(journal::info,"main") << "program started" << journal::end;
+	if (argc < 2)
+	{
+		parser = new Parser;
+		(*parser).parse();
+	}
+	else
+	{
+		std::string filename = argv[1];
+		parser = new Parser(filename);
+		(*parser).parse();
+	}
+	delete parser;
+	journal(journal::info,"main") << "program finished" << journal::end;
+	journal::uninit();
+	return 0;
 }
 
 
