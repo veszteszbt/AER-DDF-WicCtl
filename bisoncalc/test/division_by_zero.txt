@@ -1,0 +1,2 @@
+1: ERROR: division by 0
+terminate called without an active exception

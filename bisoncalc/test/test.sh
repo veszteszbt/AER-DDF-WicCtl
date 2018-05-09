@@ -18,6 +18,22 @@ echo -e "\e[31;01mfail\e[0m on ${a}"
 fails=$[ $fails+1 ]
 fi
 done
+
+for a in test/*.wrong
+do
+file=${a:0:-6}
+x=`./commandline ${file}.wrong 2>&1`
+y=`cat ${file}.txt`
+if [ "$x" == "$y" ]
+then
+echo -e "\e[32;01mpass\e[0m on ${a}"
+passes=$[ $passes+1 ]
+else
+echo -e "\e[31;01mfail\e[0m on ${a}"
+fails=$[ $fails+1 ]
+fi
+done
+
 echo "passes=$passes"
 echo "fails=$fails"
 end_time=$( date +%s.%N )
