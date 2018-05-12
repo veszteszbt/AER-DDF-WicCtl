@@ -12,6 +12,7 @@
 
 enum type{ u_integer, u_double, u_string };
 
+
 struct variable_desc
 {
 	variable_desc(int row_number, type data_type, int value) : decl_row(row_number), var_type(data_type), intval(value) {}
@@ -66,6 +67,7 @@ struct command_desc
 
 	void set_row(int &r);
 	int get_row();
+	virtual void evaluate() = 0;
 	//int get_value();
 };
 
@@ -75,7 +77,7 @@ struct command_list_desc
 	command_list_desc(){}
 	//command_list_desc(command_desc* c) : row(c->get_row()), intval(c->get_value()){}
 
-	std::vector<command_desc> command_list;
+	std::vector<command_desc*> command_list;
 	int row;
 	//int intval;
 
@@ -83,6 +85,7 @@ struct command_list_desc
 	int get_row();
 	void add(command_desc* cd);
 	void add(command_list_desc* other);
+	void evaluate();
 };
 
 struct expr_binary : public expression_desc
@@ -134,14 +137,16 @@ struct expr_var : public expression_desc
 	type get_type();
 };
 
-struct expr_asg : public expr_unary
+struct expr_asg : public expression_desc
 {
 	expr_asg(int row_number, std::string* var_name, expression_desc* ex);
+	int row;
 	std::string* vname;
 	expression_desc* e;
 	type expr_type;
 
 	int get_value();
+	std::string get_name();
 	void evaluate();
 	type get_type();
 };
@@ -403,13 +408,13 @@ struct expr_um : public expr_unary
 
 struct for_3_desc : public command_desc
 {
-	for_3_desc(expr_asg* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_) :
-	 start(start_), loop_condition(condition_), iterate(iterate_), commands(commands_) {}
-
-	expr_asg* start;
+	for_3_desc(expression_desc* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_);
+	expression_desc* start;
 	expression_desc* loop_condition;
 	expression_desc* iterate;
 	command_list_desc* commands;
+
+	void evaluate();
 };
 
 struct for_in_desc : public command_desc
@@ -420,6 +425,8 @@ struct for_in_desc : public command_desc
 	expression_desc* variable;
 	expression_desc* loop_expr;
 	command_list_desc* commands;
+	
+	void evaluate();
 };
 
 struct if_desc : public command_desc
@@ -430,6 +437,8 @@ struct if_desc : public command_desc
 	expression_desc* condition;
 	command_list_desc* commands_pos;
 	command_list_desc* commands_neg;
+
+	void evaluate();
 };
 
 struct while_desc : public command_desc
@@ -438,6 +447,8 @@ struct while_desc : public command_desc
 
 	expression_desc* loop_condition;
 	command_list_desc* commands;
+
+	void evaluate();
 };
 
 struct until_desc : public command_desc
@@ -446,6 +457,8 @@ struct until_desc : public command_desc
 
 	expression_desc* loop_condition;
 	command_list_desc* commands;
+
+	void evaluate();
 };
 
 struct case_desc : public command_desc
@@ -455,6 +468,16 @@ struct case_desc : public command_desc
 
 	expression_desc* case_expr;
 	command_list_desc* case_parts;
+
+	void evaluate();
+};
+
+struct command_expr : public command_desc
+{
+	command_expr(expression_desc* ex);
+	expression_desc* e;
+
+	void evaluate();
 };
 
 #endif

@@ -63,10 +63,11 @@
 %left OPERATOR_POWER
 %right UNARY_MINUS
 
+%type <cld> start
 %type <exd> expression
 %type <exd> input_output
 %type <cld> command_list
-%type <cld> command
+%type <cd> command
 %type <cld> else_part
 
 
@@ -76,6 +77,7 @@
 start:
 	command_list
 	{
+		//$$ = new command_list_desc();
 		journal(journal::info, "parser") << "command_list" << journal::end;
 	}
 ;
@@ -84,14 +86,16 @@ start:
 command_list:
 	command_list COMMAND_SEPARATOR command
 	{	
-		// $$ = new command_list_desc();
-		// $$->add($1);
+		$$ = new command_list_desc();
+		$$->add($3);
 		journal(journal::info, "parser") << "command_list COMMAND_SEPARATOR command" << journal::end;
 	}
 |
 	command
 	{
 		//// $$ = new command_desc(d_loc__.first_line);
+		$$ = new command_list_desc();
+		$$->add($1);
 		journal(journal::info, "parser") << "command_list -> command" << journal::end;
 	}
 ;
@@ -104,6 +108,7 @@ command:
 		// $$->add(tempcd);
 		//delete tempcd;
 		std::cout << $1->get_value() << std::endl;
+		$$ = new command_expr($1);
 		journal(journal::info, "parser") << "command -> expression" << journal::end;
 	}
 |
@@ -141,6 +146,8 @@ command:
 		// $$ = new command_list_desc();
 		// $$->add(tempcd);
 		//delete tempcd;
+		//std::cout << $8->get_value() << "val" << std::endl;
+		$$ = new for_3_desc($2, $4, $6, $8);
 		journal(journal::info, "parser") << "command -> KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
