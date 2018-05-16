@@ -39,6 +39,10 @@ int command_desc::get_row()
     return intval;
 }*/
 
+command_list_desc::command_list_desc()
+{
+}
+
 command_list_desc::command_list_desc(command_list_desc* other)
 {
 	unsigned int osize = other->command_list.size();
@@ -77,7 +81,6 @@ void command_list_desc::evaluate()
 {
 	for (std::vector<command_desc*>::iterator it = command_list.begin(); it != command_list.end();++it)
 	{
-		//std::cout << "cld evaluate" << std::endl;
 		(*it)->evaluate();
 	}
 }
@@ -142,13 +145,16 @@ type expr_var::get_type()
 
 expr_asg::expr_asg(int row_number, std::string* var_name, expression_desc* ex) : row(row_number), vname(var_name), e(ex)
 {
-
+	//std::cout << "asg constructor" << std::endl;
+	//std::cout << "asg constructed" << std::endl;
 	//std::cout << "ex->get_value() " << ex->get_value() << ", intval " << intval << std::endl;
 	//evaluate();
 }
 
 int expr_asg::get_value()
 {
+	//std::cout << "asg::get_value()" << std::endl;
+	//evaluate();
 	return e->get_value();
 }
 
@@ -158,6 +164,8 @@ std::string expr_asg::get_name(){
 
 void expr_asg::evaluate()
 {
+	//std::cout << "asg::evaluate()" << std::endl;
+	//std::cout << "starting asg evaluate" << std::endl;
 	e->evaluate();
 	intval = e->get_value();
 	expr_type = e->get_type();
@@ -174,6 +182,7 @@ void expr_asg::evaluate()
 		(*parser).symbol_table[*vname] = variable_desc(row, expr_type, intval);
 	}
 	//std::cout << "assigned " << intval << " to variable " << (*vname) << std::endl; 
+	//std::cout << "asg evaluated" << std::endl;
 	journal(journal::info, "semantics") << "Assigned " << intval << " to variable name " << (*vname) << journal::end;
 }
 
@@ -184,7 +193,7 @@ type expr_asg::get_type()
 
 expr_par::expr_par(int row_number, expression_desc* nested) : row(row_number), e(nested)
 {
-	evaluate();
+	//evaluate();
 	//std::cout << "row:" << row << std::endl;
 	//std::cout << "nested->get_row():" << e->get_row() << std::endl;
 	//std::cout << intval << std::endl;
@@ -193,6 +202,7 @@ expr_par::expr_par(int row_number, expression_desc* nested) : row(row_number), e
 
 int expr_par::get_value()
 {
+	evaluate();
 	return intval;
 }
 
@@ -211,11 +221,14 @@ type expr_par::get_type()
 
 expr_add::expr_add(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//std::cout << "add constructor" << std::endl;
+	//std::cout << "add constructed" << std::endl;
+	//evaluate();
 }
 
 void expr_add::evaluate()
 {
+	//std::cout << "add::evaluate()" << std::endl;
 	l->evaluate();
 	r->evaluate();
 	if (l->get_type() == r->get_type())
@@ -234,11 +247,14 @@ void expr_add::evaluate()
 		{
 			expr_type = u_double;
 		}
-	}	
+	}
+	//std::cout << "add evaluated" << std::endl;
 }
 
 int expr_add::get_value()
 {
+	//std::cout << "add::get_value()" << std::endl;
+	//std::cout << "returning add value" << std::endl;
 	//evaluate();
 	//std::cout << "evaluate" << std::endl;
 	//std::cout << "intval = " << intval << std::endl;
@@ -257,7 +273,7 @@ type expr_add::get_type()
 
 expr_dif::expr_dif(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 }
 
 void expr_dif::evaluate()
@@ -302,7 +318,7 @@ type expr_dif::get_type()
 
 expr_mul::expr_mul(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 }
 
 void expr_mul::evaluate()
@@ -332,6 +348,7 @@ void expr_mul::evaluate()
 
 int expr_mul::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -342,7 +359,7 @@ type expr_mul::get_type()
 
 expr_div::expr_div(int row_number, expression_desc* left, expression_desc* right)  : row(row_number), l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 }
 
 void expr_div::evaluate()
@@ -385,6 +402,7 @@ int expr_div::get_row()
 
 int expr_div::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -395,7 +413,7 @@ type expr_div::get_type()
 
 expr_pow::expr_pow(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 }
 
 void expr_pow::evaluate()
@@ -430,6 +448,7 @@ int expr_pow::get_row()
 
 int expr_pow::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -440,7 +459,7 @@ type expr_pow::get_type()
 
 expr_mod::expr_mod(int row_number, expression_desc* left, expression_desc* right) : row(row_number), l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 }
 
 void expr_mod::evaluate()
@@ -477,6 +496,7 @@ int expr_mod::get_row()
 
 int expr_mod::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -487,7 +507,7 @@ type expr_mod::get_type()
 
 expr_or::expr_or(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 	expr_type = u_integer;
 }
 
@@ -514,6 +534,7 @@ int expr_or::get_row()
 
 int expr_or::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -524,7 +545,7 @@ type expr_or::get_type()
 
 expr_and::expr_and(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 	expr_type = u_integer;
 }
 
@@ -551,6 +572,7 @@ int expr_and::get_row()
 
 int expr_and::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -561,7 +583,7 @@ type expr_and::get_type()
 
 expr_eq::expr_eq(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 	expr_type = u_integer;
 }
 
@@ -588,6 +610,7 @@ int expr_eq::get_row()
 
 int expr_eq::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -598,7 +621,7 @@ type expr_eq::get_type()
 
 expr_neq::expr_neq(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 	expr_type = u_integer;
 }
 
@@ -625,6 +648,7 @@ int expr_neq::get_row()
 
 int expr_neq::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -635,7 +659,7 @@ type expr_neq::get_type()
 
 expr_leq::expr_leq(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 	expr_type = u_integer;
 }
 
@@ -662,6 +686,7 @@ int expr_leq::get_row()
 
 int expr_leq::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -672,7 +697,7 @@ type expr_leq::get_type()
 
 expr_geq::expr_geq(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 	expr_type = u_integer;
 }
 
@@ -699,6 +724,7 @@ int expr_geq::get_row()
 
 int expr_geq::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -709,12 +735,14 @@ type expr_geq::get_type()
 
 expr_lt::expr_lt(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
+	//std::cout << "lt constructed" << std::endl;
 	expr_type = u_integer;
 }
 
 void expr_lt::evaluate()
 {
+	//std::cout << "starting lt evaluate" << std::endl;
 	l->evaluate();
 	r->evaluate();
 	//std::cout << "left " << l->get_value() << " , right " << r->get_value() << std::endl;
@@ -728,6 +756,7 @@ void expr_lt::evaluate()
 		intval = 0;
 		//std::cout << "FALSE" << std::endl;
 	}
+	//std::cout << "lt evaluated" << std::endl;
 }
 
 int expr_lt::get_row()
@@ -737,6 +766,8 @@ int expr_lt::get_row()
 
 int expr_lt::get_value()
 {
+	//std::cout << "returning lt value" << std::endl;
+	//evaluate();
 	return intval;
 }
 
@@ -747,7 +778,7 @@ type expr_lt::get_type()
 
 expr_gt::expr_gt(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
-	evaluate();
+	//evaluate();
 	expr_type = u_integer;
 }
 
@@ -774,6 +805,7 @@ int expr_gt::get_row()
 
 int expr_gt::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -784,7 +816,7 @@ type expr_gt::get_type()
 
 expr_neg::expr_neg(int row_number, expression_desc* ex) : e(ex)
 {
-	evaluate();
+	//evaluate();
 	expr_type = u_integer;
 }
 
@@ -810,6 +842,7 @@ int expr_neg::get_row()
 
 int expr_neg::get_value()
 {
+	evaluate();
 	return intval;
 }
 
@@ -821,7 +854,7 @@ type expr_neg::get_type()
 expr_um::expr_um(int row_number, expression_desc* ex) : e(ex)
 {
 	expr_type = u_integer;
-	evaluate();
+	//evaluate();
 	//std::cout << intval << std::endl;
 }
 
@@ -840,6 +873,7 @@ int expr_um::get_row()
 
 int expr_um::get_value()
 {
+	//evaluate();
 	return intval;
 }
 
@@ -848,19 +882,17 @@ type expr_um::get_type()
 	return expr_type;
 }
 
-for_3_desc::for_3_desc
-(expression_desc* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_)
-: start(start_), loop_condition(condition_), iterate(iterate_), commands(commands_) 
+for_3_desc::for_3_desc(int row_number, expression_desc* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_): 
+row(row_number), start(start_), loop_condition(condition_), iterate(iterate_), commands(commands_) 
 {
 	//std::cout << "for3 desc" << std::endl;
-	evaluate();
+	//evaluate();
 }
 
 
 void for_3_desc::evaluate()
 {
 	start->evaluate();
-	std::cout << "start evaluate" << std::endl;
 	while(true)
 	{
 		loop_condition->evaluate();
@@ -871,20 +903,137 @@ void for_3_desc::evaluate()
 		}
 		else
 		{
-			iterate->evaluate();
-			//std::cout << "ITERATE" << std::endl; 
+			iterate->evaluate(); 
 			commands->evaluate();
 		}
 	}
 }
 
+for_in_desc::for_in_desc(int row_number, std::string* variable_, c_expression_list* cel, command_list_desc* commands_) : variable(variable_), elements(cel), commands(commands_)
+{
+	//evaluate();
+}
+
+void for_in_desc::evaluate()
+{
+	for(int i=0;i<elements->return_size();i++)
+	{
+		expr_asg* a = new expr_asg(row, variable, elements->return_element(i));
+		a->evaluate();
+		//std::cout << a->get_value() << "a value" << std::endl;
+		commands->evaluate();
+	}
+}
+
 command_expr::command_expr(expression_desc* ex) : e(ex)
 {
-	evaluate();
+	//evaluate();
 }
 
 void command_expr::evaluate()
 {
 	//std::cout << "e->evaluate()" << std::endl;
 	e->evaluate();
+	std::cout << e->get_value() << std::endl;
+}
+
+c_expression_list::c_expression_list(c_expression_list* other)
+{
+	unsigned int osize = other->expr_list.size();
+	expr_list.resize(osize);
+	for(unsigned int i=0;i<osize;i++)
+	{
+		expr_list[i] = other->expr_list[i];
+	}
+}
+
+void c_expression_list::add(expression_desc* e)
+{
+	expr_list.push_back(e);
+}
+
+void c_expression_list::add(c_expression_list* other)
+{
+	for(unsigned int i=0;i<other->expr_list.size();i++)
+	{
+		expr_list.push_back(other->expr_list[i]);
+	}
+	//delete other???
+}
+
+int c_expression_list::return_size()
+{
+	return expr_list.size();
+}
+
+expression_desc* c_expression_list::return_element(unsigned int i)
+{
+	if (i<expr_list.size())
+	{
+		return expr_list[i];
+	}
+	else
+	{
+		std::cout << "ERROR: indexing error in expression_list" << std::endl;
+		std::terminate();
+	}
+}
+
+if_desc::if_desc(int row_number, expression_desc* condition_, command_list_desc* commands_pos_, command_list_desc* commands_neg_) :
+row(row_number), condition(condition_), commands_pos(commands_pos_), commands_neg(commands_neg_)
+{
+	
+}
+
+void if_desc::evaluate()
+{
+	condition->evaluate();
+	if(condition->get_value() == 0)
+	{
+		commands_neg->evaluate();
+	}
+	else
+	{
+		commands_pos->evaluate();
+	}
+}
+
+while_desc::while_desc(int row_number, expression_desc* condition_, command_list_desc* commands_) :
+row(row_number), loop_condition(condition_), commands(commands_) 
+{}
+
+void while_desc::evaluate()
+{
+	while(true)
+	{
+		loop_condition->evaluate();
+		if (loop_condition->get_value() == 0)
+		{
+			break;
+		}
+		else
+		{
+			commands->evaluate();
+		}
+	}
+}
+
+until_desc::until_desc(int row_number, expression_desc* condition_, command_list_desc* commands_) : 
+row(row_number), loop_condition(condition_), commands(commands_) 
+{}
+
+void until_desc::evaluate()
+{
+	while(true)
+	{
+		loop_condition->evaluate();
+		if (loop_condition->get_value() == 1)
+		{
+			break;
+		}
+		else
+		{
+			commands->evaluate();
+		}
+	}
 }

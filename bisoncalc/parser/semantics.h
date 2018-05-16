@@ -74,7 +74,7 @@ struct command_desc
 struct command_list_desc
 {
 	command_list_desc(command_list_desc* other);
-	command_list_desc(){}
+	command_list_desc();
 	//command_list_desc(command_desc* c) : row(c->get_row()), intval(c->get_value()){}
 
 	std::vector<command_desc*> command_list;
@@ -149,6 +149,17 @@ struct expr_asg : public expression_desc
 	std::string get_name();
 	void evaluate();
 	type get_type();
+};
+
+struct c_expression_list
+{
+	c_expression_list(){}
+	c_expression_list(c_expression_list* other);
+	std::vector<expression_desc*> expr_list;
+	void add(expression_desc* e);
+	void add(c_expression_list* other);
+	int return_size();
+	expression_desc* return_element(unsigned int i);
 };
 
 struct expr_par : public expr_unary
@@ -408,7 +419,9 @@ struct expr_um : public expr_unary
 
 struct for_3_desc : public command_desc
 {
-	for_3_desc(expression_desc* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_);
+	for_3_desc(int row_number, expression_desc* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_);
+	
+	int row;
 	expression_desc* start;
 	expression_desc* loop_condition;
 	expression_desc* iterate;
@@ -419,11 +432,11 @@ struct for_3_desc : public command_desc
 
 struct for_in_desc : public command_desc
 {
-	for_in_desc(expression_desc* variable_, expression_desc* loop_expr_, command_list_desc* commands_) :
-	variable(variable_), loop_expr(loop_expr_), commands(commands_) {}
+	for_in_desc(int row_number, std::string* variable_, c_expression_list* cel, command_list_desc* commands_);
 
-	expression_desc* variable;
-	expression_desc* loop_expr;
+	int row;
+	std::string* variable;
+	c_expression_list* elements;
 	command_list_desc* commands;
 	
 	void evaluate();
@@ -431,9 +444,9 @@ struct for_in_desc : public command_desc
 
 struct if_desc : public command_desc
 {
-	if_desc(expression_desc* condition_, command_list_desc* commands_pos_, command_list_desc* commands_neg_) : 
-	condition(condition_), commands_pos(commands_pos_), commands_neg(commands_neg_) {}
+	if_desc(int row_number, expression_desc* condition_, command_list_desc* commands_pos_, command_list_desc* commands_neg_);
 
+	int row;
 	expression_desc* condition;
 	command_list_desc* commands_pos;
 	command_list_desc* commands_neg;
@@ -443,8 +456,9 @@ struct if_desc : public command_desc
 
 struct while_desc : public command_desc
 {
-	while_desc(expression_desc* condition_, command_list_desc* commands_) : loop_condition(condition_), commands(commands_) {}
+	while_desc(int row_number, expression_desc* condition_, command_list_desc* commands_);
 
+	int row;
 	expression_desc* loop_condition;
 	command_list_desc* commands;
 
@@ -453,8 +467,9 @@ struct while_desc : public command_desc
 
 struct until_desc : public command_desc
 {
-	until_desc(expression_desc* condition_, command_list_desc* commands_) : loop_condition(condition_), commands(commands_) {}
+	until_desc(int row_number, expression_desc* condition_, command_list_desc* commands_);
 
+	int row;
 	expression_desc* loop_condition;
 	command_list_desc* commands;
 
@@ -479,5 +494,7 @@ struct command_expr : public command_desc
 
 	void evaluate();
 };
+
+
 
 #endif
