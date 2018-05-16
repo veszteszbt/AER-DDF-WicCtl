@@ -1,0 +1,8 @@
+x=5;
+if x -eq 6 then
+y=4;
+else
+y=3;
+fi;
+y;
+exit

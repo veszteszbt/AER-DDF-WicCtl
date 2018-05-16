@@ -1,0 +1,8 @@
+for x in 1,4,7,10 do
+if x%2 -eq 0 then
+y = x + 1;
+else
+y=x;
+fi;
+done;
+exit
