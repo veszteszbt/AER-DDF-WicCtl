@@ -371,8 +371,9 @@ namespace earpc
 
 		static void uninit()
 		{
-			master_process->join();
-			delete master_process;
+			env_base::conn.close();
+//			master_process->join();
+//			delete master_process;
 		}
 	};
 

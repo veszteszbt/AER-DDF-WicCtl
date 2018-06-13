@@ -93,17 +93,21 @@ namespace earpc
 			sock_in.sin_family = PF_INET;
 		}
 
-		~udp()
+		void close()
 		{
-
 #ifdef __linux__			
 			shutdown(sock, 2);
-			close(sock);
+			::close(sock);
 #elif defined(_MSC_VER) || defined(__MINGW32__)			
 			shutdown(sock, 2);
-			closesocket(sock);
+			::closesocket(sock);
 #endif
+		
+		}
 
+		~udp()
+		{
+			close();
 		}
 
 		int send(net::ipv4_address ip, uint16_t port, const void *buffer, uint16_t size)

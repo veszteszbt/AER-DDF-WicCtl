@@ -10631,7 +10631,7 @@ namespace ddf
 				constexpr static const char *name = "ddf::junkyard::relock_timer";
 				static const uint32_t cfg_class_id  = 0x4ffff0;
 				static const uint32_t cfg_member_id = 0x310;
-				static const uint32_t cfg_interval  = 3000;
+				static const uint32_t cfg_interval  = 8000;
 			};
 			typedef typename wic::timer<relock_timer_config> relock_timer;
 
@@ -11027,7 +11027,7 @@ namespace ddf
 					typedef typename junkyard::secret_box_controller_2::light_controller indicator;
 					typedef typename junkyard::secret_box_controller_2::magnetic_lock_3 lock;
 					return (true && ( 
-        	button::value() 
+        	button::value()
          ));
 				}
 				static void cfg_action()
@@ -11036,8 +11036,10 @@ namespace ddf
 					typedef typename junkyard::secret_box_controller_2::light_controller indicator;
 					typedef typename junkyard::secret_box_controller_2::magnetic_lock_3 lock;
 	
-(void)0; {  
-        	lock::value(0); 
+(void)0; { 
+		std::this_thread::sleep_for(std::chrono::milliseconds(300));
+		if(button::value())
+	        	lock::value(0);
          }
 				}
 			};
@@ -11065,7 +11067,11 @@ namespace ddf
 			typedef room_2_content::progress progress_2;
 					return (true && (  
             switch_1::value() && 
+            !switch_2::value() && 
+            !switch_3::value() && 
+            !switch_4::value() && 
             switch_5::value() && 
+            !switch_6::value() && 
             switch_7::value() 
          ));
 				}
