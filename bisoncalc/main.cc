@@ -5,17 +5,22 @@ Parser* parser;
 
 int main(int argc, char* argv[])
 {
-	journal::init("test/journal.txt");
+	journal::init("journal/journal.txt");
 	journal(journal::info,"main") << "program started" << journal::end;
+	
+	std::map<std::string, variable_desc> default_symtable;
+	
 	if (argc < 2)
 	{
 		parser = new Parser;
+		//(*parser).symbol_table.emplace_back(default_symtable);
 		(*parser).parse();
 	}
 	else
 	{
 		std::string filename = argv[1];
 		parser = new Parser(filename);
+		//(*parser).symbol_table.emplace_back(default_symtable);
 		(*parser).parse();
 	}
 	delete parser;

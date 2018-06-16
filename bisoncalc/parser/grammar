@@ -13,6 +13,8 @@
 	command_list_desc *cld;
 	command_desc *cd;
 	c_expression_list *cel;
+	casepart *cp;
+	casepartvector *cpv;
 }
 
 %token KEYWORD_IF
@@ -28,6 +30,7 @@
 %token KEYWORD_UNTIL
 %token KEYWORD_DO
 %token KEYWORD_DONE
+%token KEYWORD_DEFAULT
 %token OCURLY
 %token CCURLY
 %token PIPE_SYMBOL
@@ -72,6 +75,8 @@
 %type <cd> command
 %type <cld> else_part
 %type <cel> expression_list
+%type <cp> case_part
+%type <cpv> caseparts
 
 
 %%
@@ -121,10 +126,6 @@ command_list:
 command:
 	expression
 	{
-		// $$ = new command_list_desc();
-		// command_desc* tempcd = new command_desc($1->get_row());
-		// $$->add(tempcd);
-		//delete tempcd;
 		//std::cout << $1->get_value() << std::endl;
 		$$ = new command_expr($1);
 		journal(journal::info, "parser") << "command -> expression" << journal::end;
@@ -132,7 +133,10 @@ command:
 |
 	OCURLY command_list CCURLY
 	{
+		//(*parser).symbol_table.increase_stack();
+		//$$ = new command_expr($2);
 		journal(journal::info, "parser") << "command -> OCURLY command_list CCURLY" << journal::end;
+		//(*parser).symbol_table.decrease_stack();
 	}
 |
 	KEYWORD_FOR expression KEYWORD_DO command_list KEYWORD_DONE
@@ -173,9 +177,10 @@ command:
 		journal(journal::info, "parser") << "command -> KEYWORD_UNTIL expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
-	KEYWORD_CASE expression KEYWORD_IN caseparts KEYWORD_ESAC
+	KEYWORD_CASE expression KEYWORD_IN caseparts KEYWORD_DEFAULT CPARENTHESIS command_list CASE_DELIMITER KEYWORD_ESAC
 	{
-		journal(journal::info, "parser") << "command -> KEYWORD_CASE expression KEYWORD_IN caseparts KEYWORD_ESAC" << journal::end;
+		$$ = new case_desc(d_loc__.first_line, $2, $4, $7);
+		journal(journal::info, "parser") << "command -> KEYWORD_CASE expression KEYWORD_IN caseparts KEYWORD_DEFAULT CPARENTHESIS command_list CASE_DELIMITER KEYWORD_ESAC" << journal::end;
 	}
 |
 	KEYWORD_IF expression KEYWORD_THEN command_list else_part KEYWORD_FI
@@ -184,7 +189,6 @@ command:
 		journal(journal::info, "parser") << "command -> KEYWORD_IF expression KEYWORD_THEN command_list else_part KEYWORD_FI" << journal::end;
 	}
 ;
-
 
 expression:
 	OPARENTHESIS expression CPARENTHESIS
@@ -356,8 +360,6 @@ expression:
 	}
 ;
 
-
-
 input_output:
 	OUTPUT_CREATION IDENTIFIER
 	{
@@ -380,33 +382,30 @@ input_output:
 	}
 ;
 
-	
-	
 
-	
 caseparts:
-	case_part caseparts2
+	caseparts case_part
 	{
-		journal(journal::info, "parser") << "caseparts -> case_part caseparts2" << journal::end;
-	}
-;
-
-caseparts2:
-	case_part caseparts2
-	{
-		journal(journal::info, "parser") << "caseparts2 -> case_part caseparts2" << journal::end;
+		$$ = new casepartvector();
+		$$->add($1);
+		$$->add($2);
+		delete $1;
+		journal(journal::info, "parser") << "caseparts -> case_part caseparts" << journal::end;
 	}
 |
-	//empty
+	case_part
 	{
-		journal(journal::info, "parser") << "caseparts2 -> empty" << journal::end;
+		$$ = new casepartvector();
+		$$->add($1);
+		journal(journal::info, "parser") << "caseparts -> case_part" << journal::end;
 	}
 ;
 
 case_part:
-	pattern CPARENTHESIS command_list CASE_DELIMITER
+	expression CPARENTHESIS command_list CASE_DELIMITER
 	{
-		journal(journal::info, "parser") << "case_part -> pattern CPARENTHESIS command_list CASE_DELIMITER" << journal::end;
+		$$ = new casepart($1, $3);
+		journal(journal::info, "parser") << "case_part -> expression CPARENTHESIS command_list CASE_DELIMITER" << journal::end;
 	}
 ;
 
@@ -425,23 +424,11 @@ else_part:
 		journal(journal::info, "parser") << "else_part -> empty" << journal::end;
 	}
 ;
-
-pattern:
-	IDENTIFIER
-	{
-		journal(journal::info, "parser") << "pattern -> IDENTIFIER" << journal::end;
-	}
-|
-	pattern PIPE_SYMBOL IDENTIFIER
-	{
-		journal(journal::info, "parser") << "pattern -> pattern PIPE_SYMBOL IDENTIFIER" << journal::end;
-	}
-;
 	
 expression_list:
 	expression_list ELEMENT_SEPARATOR expression
 	{
-		$$=new c_expression_list();
+		$$ = new c_expression_list();
 		$$->add($1);
 		$$->add($3);	
 		journal(journal::info, "parser") << "expression_list -> expression_list ELEMENT_SEPARATOR expression" << journal::end;

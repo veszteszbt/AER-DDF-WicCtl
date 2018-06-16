@@ -121,8 +121,8 @@ int expr_var::get_value()
 
 void expr_var::evaluate()
 {
-	auto it = (*parser).symbol_table.find(name);
-	if (it == (*parser).symbol_table.end())
+	int i = (*parser).symbol_table.find_variable(&name);
+	if (i == -1)
 	{
 		std::cerr << row << ": ERROR: Variable " << name << " has no value yet!" << std::endl;
 		journal(journal::info, "semantics") << row << ": ERROR: Variable " << name << " has no value yet!" << journal::end;
@@ -130,7 +130,7 @@ void expr_var::evaluate()
 	}
 	else
 	{
-		variable_desc v = it->second;
+		variable_desc v = (*parser).symbol_table.get_value(&name);
 		intval = v.intval;
 		//std::cout << name << " = " << intval << std::endl;
 		row = v.decl_row;
@@ -170,17 +170,18 @@ void expr_asg::evaluate()
 	intval = e->get_value();
 	expr_type = e->get_type();
 
-	if ((*parser).symbol_table.count(*vname) != 0)
+	/*if ((*parser).symbol_table.back().count(*vname) != 0)
 	{
 		//std::cout << "variable already in, updating value" << std::endl;
-		(*parser).symbol_table[*vname] = 
-		variable_desc((*parser).symbol_table[*vname].decl_row, expr_type, intval);
+		(*parser).symbol_table.back()[*vname] = 
+		variable_desc((*parser).symbol_table.back()[*vname].decl_row, expr_type, intval);
 	}
 	else
 	{
 		//std::cout << "new variable" << std::endl;
-		(*parser).symbol_table[*vname] = variable_desc(row, expr_type, intval);
-	}
+		(*parser).symbol_table.back()[*vname] = variable_desc(row, expr_type, intval);
+	}*/
+	(*parser).symbol_table.set_value(vname, variable_desc(row, expr_type, intval));
 	//std::cout << "assigned " << intval << " to variable " << (*vname) << std::endl; 
 	//std::cout << "asg evaluated" << std::endl;
 	journal(journal::info, "semantics") << "Assigned " << intval << " to variable name " << (*vname) << journal::end;
@@ -916,7 +917,7 @@ for_in_desc::for_in_desc(int row_number, std::string* variable_, c_expression_li
 
 void for_in_desc::evaluate()
 {
-	for(int i=0;i<elements->return_size();i++)
+	for(int i=0;i<elements->get_size();i++)
 	{
 		expr_asg* a = new expr_asg(row, variable, elements->return_element(i));
 		a->evaluate();
@@ -961,7 +962,7 @@ void c_expression_list::add(c_expression_list* other)
 	//delete other???
 }
 
-int c_expression_list::return_size()
+int c_expression_list::get_size()
 {
 	return expr_list.size();
 }
@@ -1035,5 +1036,56 @@ void until_desc::evaluate()
 		{
 			commands->evaluate();
 		}
+	}
+}
+
+
+casepart::casepart(expression_desc* cn, command_list_desc* cm) : condition(cn), command(cm)
+{}
+
+void casepart::evaluate()
+{
+	command->evaluate();
+}
+
+
+case_desc::case_desc(int row_number, expression_desc* case_expr_, casepartvector* caseparts_, command_list_desc* dcase) :
+row(row_number), case_expr(case_expr_), case_parts(caseparts_->case_parts), defaultcase(dcase)
+{}
+
+
+void case_desc::evaluate()
+{
+	case_expr->evaluate();
+	auto it = case_parts.begin();
+	bool found = false;
+	while (it!=case_parts.end() && found == false)
+	{
+		//condition evaluate?
+		if (case_expr->get_value() == ((*it)->condition->get_value()))
+		{
+			found = true;
+			(*it)->evaluate();
+		}
+		it++;
+	}
+	if (!found)
+	{
+		defaultcase->evaluate();
+	}
+}
+
+casepartvector::casepartvector(){}
+
+void casepartvector::add(casepart* cp)
+{
+	case_parts.push_back(cp);
+}
+
+void casepartvector::add(casepartvector* other)
+{
+	for(unsigned int i=0;i<other->case_parts.size();i++)
+	{
+		case_parts.push_back(other->case_parts[i]);
 	}
 }

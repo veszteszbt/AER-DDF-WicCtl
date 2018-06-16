@@ -1,0 +1,12 @@
+case 3 in
+1)
+	x=7;
+;;
+2)
+	x=9;
+;;
+default)
+	x=10;
+;;
+esac;
+exit

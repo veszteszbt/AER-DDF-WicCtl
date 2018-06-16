@@ -15,6 +15,7 @@ WS [ \n\t\r]
 "until" return Parser::KEYWORD_UNTIL; 
 "do" return Parser::KEYWORD_DO; 
 "done" return Parser::KEYWORD_DONE; 
+"default" return Parser::KEYWORD_DEFAULT;
 "{" return Parser::OCURLY; 
 "}" return Parser::CCURLY; 
 
@@ -22,6 +23,7 @@ WS [ \n\t\r]
 "&&" return Parser::ANDF_SYMBOL; 
 "||" return Parser::ORF_SYMBOL; 
 ";" return Parser::COMMAND_SEPARATOR; 
+"," return Parser::ELEMENT_SEPARATOR;
 ";;" return Parser::CASE_DELIMITER; 
 "&" return Parser::BACKGROUND_COMMANDS; 
 "(" return Parser::OPARENTHESIS; 

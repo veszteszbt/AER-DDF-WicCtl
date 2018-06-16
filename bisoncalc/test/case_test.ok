@@ -1,0 +1,16 @@
+x=5;
+case x in
+3)
+	x=7;
+;;
+4)
+	x=8;
+;;
+5)
+	x=9;
+;;
+default)
+	x=0;
+;;
+esac;
+exit

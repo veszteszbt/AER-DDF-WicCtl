@@ -8,25 +8,10 @@
 #include <vector>
 #include <cmath>
 #include <journal/journal.h>
+#include "symbol_table.h"
 
 
-enum type{ u_integer, u_double, u_string };
 
-
-struct variable_desc
-{
-	variable_desc(int row_number, type data_type, int value) : decl_row(row_number), var_type(data_type), intval(value) {}
-	variable_desc(){} //kell a maphoz
-
-	int decl_row;
-	type var_type;
-	/*union value{
-		int intval;
-		double doubleval;
-		std::string strval;
-	};*/
-	int intval;
-};
 
 struct expression_desc
 {
@@ -158,7 +143,7 @@ struct c_expression_list
 	std::vector<expression_desc*> expr_list;
 	void add(expression_desc* e);
 	void add(c_expression_list* other);
-	int return_size();
+	int get_size();
 	expression_desc* return_element(unsigned int i);
 };
 
@@ -476,13 +461,34 @@ struct until_desc : public command_desc
 	void evaluate();
 };
 
+struct casepart
+{
+	casepart(expression_desc* cn, command_list_desc* cm);
+	expression_desc* condition;
+	command_list_desc* command;
+	
+	void evaluate();
+};
+
+struct casepartvector
+{
+	casepartvector();
+	std::vector<casepart*> case_parts;
+
+	void add(casepart* cp);
+	void add(casepartvector* other);
+};
+
 struct case_desc : public command_desc
 {
-	case_desc(expression_desc* case_expr_, command_list_desc* case_parts_) :
-	case_expr(case_expr_), case_parts(case_parts_) {}
+	case_desc(int row_number, expression_desc* case_expr_, casepartvector* caseparts_, command_list_desc* dcase);
 
+	int row;
 	expression_desc* case_expr;
-	command_list_desc* case_parts;
+	std::vector<casepart*> case_parts;
+	command_list_desc* defaultcase;
+	
+	
 
 	void evaluate();
 };
@@ -495,6 +501,9 @@ struct command_expr : public command_desc
 	void evaluate();
 };
 
-
+//struct sytable_stack : public command_desc
+//{
+//	sytable_stack(command_list_desc* cd);
+//}
 
 #endif
