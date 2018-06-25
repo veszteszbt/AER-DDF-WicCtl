@@ -1,0 +1,148 @@
+megkérdezni hogy assembly kell-e
+
+a delete $-eket kihozni elágazásból
+
+command desc-eket jól megcscinálni
+
+szimbólumtáblás elfedés
+
+for x=0; x<valami;x++nál xnek csak int érték??
+
+[plang--.y: error 1] Line 5: %type not available for %stype semantic values
+amikor deváét fordítom
+
+
+
+
+//////////////
+
+
+
+keyword true/false??? + más konstansok       --------- lexikális elemzővel
+
+//delete-k kivevése ( a fa felépítéséhez kell)
+
+//for x..in (stringen végig iterál, más class kell mint a normál for)
+
+//////////////////////
+
+
+false/true érték használat $$hez
+
+a paraméterként megadott command_line_desc segmentation faultot okoz, expression is (2. paraméter?) -------probably fixed
+
+///////////
+
+assign-ot bele rakni expression-ba
+
+case-ra rájönni
+
+////
+
+hexadecimal később - még kell
+
+intval -doubleval -strval menjen, ne csak intval
+
+symbol tableba szúrás grammarban vagy semantics.h-ban?
+
+ZÁRÓJELEKET JÓL MEGCSINÁLNI !!!!! shift/reduce
+
+for while stb hogyan???
+
+////////////////
+
+zárójelek számítanak? // majd megoldom a shift/reduce-ot
+
+stringes cucc hogyan? // fixed(?)
+
+az evaluate() nem éri el a left rightot... // fixed
+
+union?????? // később
+
+a hiba traces dolgot hogyan?
+gdb commandline
+run()
+bt (ha segfaultol)
+
+warningok? // oldd meg --------- solved
+
+symbol table semantics.h-ban nem látszik//solved
+
+üllői út 206 center
+
+/////////
+
+link error//lol
+
+makefileban átírni symbol tablet publicra//done
+
+evaluate-t megírni mindegyikre(de kell-e egyáltalán?)//megírtam
+
+zárójel operátor nem kap értéket//solved
+
+ha .h ban van változás, makefile nem fordít
+
+ha átírom a variable_descet expr_var : public expression_desc-re akkor nem kapja meg az eredményt//solved
+
+valószínűleg az expression_desc get_value függvénye hívódik meg a gyereke helyett, virtualizálni és felüldef összesbe?//done
+
+////////////////////////
+
+row kell-e?
+
+{} ??? mi legyen vele (elfedés???)
+
+ciklus/elágazás operátorok?
+
+double, string variant?
+
+tesztek HOGYAN?
+mit írjon ki a shell pontosan?
+
+header file + make file
+
+fix row in cc? // fixed
+
+journal sehogy se írja ki exit vagy terminate előtt
+
+csak legutolsó művelet kiírása//fixed?
+
+teszt fájloknál majd compare azt amit kiírt egy előre megírt fájlhoz
+
+//
+
+sudo service sshd start
+
+műveletek (pl összeadás 2x hívódik meg)//solved
+
+////
+
+case??????????
+
+curly????
+
+double
+string
+
+//
+
+symbol table osztály
+
+//
+
+ha string->int vagy double akkor delete string először
+
+string 0
+double -> int static cast
+
+- * / stb stringgel?
+logikai operátorok stringgel??
+
+//
+
+string értékadás hogyan
+
+//
+
+double chained operator valamiért rossz
+string segfaultol

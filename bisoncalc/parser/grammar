@@ -31,6 +31,7 @@
 %token KEYWORD_DO
 %token KEYWORD_DONE
 %token KEYWORD_DEFAULT
+%token KEYWORD_LOCAL
 %token OCURLY
 %token CCURLY
 %token PIPE_SYMBOL
@@ -46,9 +47,9 @@
 %token INPUT_FROM_A_HERE_DOCUMENT
 %token OUTPUT_CREATION
 %token OUTPUT_APPEND
-%token SINGLEQUOTE
-%token DOUBLEQUOTE
-%token DOUBLE
+%token <str>SINGLEQUOTE
+%token <str>DOUBLEQUOTE
+%token <dbl>DOUBLE
 %token <integ> INTEGER
 %token <str> IDENTIFIER
 %token NEGATE
@@ -133,10 +134,8 @@ command:
 |
 	OCURLY command_list CCURLY
 	{
-		//(*parser).symbol_table.increase_stack();
-		//$$ = new command_expr($2);
+		$$ = new sytable_stack($2);
 		journal(journal::info, "parser") << "command -> OCURLY command_list CCURLY" << journal::end;
-		//(*parser).symbol_table.decrease_stack();
 	}
 |
 	KEYWORD_FOR expression KEYWORD_DO command_list KEYWORD_DONE
@@ -201,6 +200,12 @@ expression:
 	{
 		$$ = new expr_asg(d_loc__.first_line, $1, $3);
 		journal(journal::info, "parser") << "expression -> IDENTIFIER OPERATOR_LET_BE expression" << journal::end;
+	}
+|
+	KEYWORD_LOCAL IDENTIFIER OPERATOR_LET_BE expression
+	{
+		$$ = new expr_local_asg(d_loc__.first_line, $2, $4);
+		journal(journal::info, "parser") << "expression -> KEYWORD_LOCAL IDENTIFIER OPERATOR_LET_BE expression" << journal::end;
 	}
 |
 	NEGATE expression
@@ -301,25 +306,25 @@ expression:
 |
 	INTEGER
 	{
-		$$ = new expr_const(d_loc__.first_line, *$1, u_integer);
+		$$ = new expr_const(d_loc__.first_line, *$1);
 		journal(journal::info, "parser") << "expression -> INTEGER" << journal::end;
 	}
 |
 	DOUBLE
 	{
-		//$$ = new expr_const(d_loc__.first_line, *$1, u_double);
+		$$ = new expr_const(d_loc__.first_line, *$1);
 		journal(journal::info, "parser") << "expression -> DOUBLE" << journal::end;
 	}
 |
 	SINGLEQUOTE
 	{
-		//$$ = new expr_const(d_loc__.first_line, *$1, u_string);
+		$$ = new expr_const(d_loc__.first_line, *$1);
 		journal(journal::info, "parser") << "expression -> SINGLEQUOTE" << journal::end;
 	}
 |
 	DOUBLEQUOTE
 	{
-		//$$ = new expr_const(d_loc__.first_line, *$1, u_string);
+		$$ = new expr_const(d_loc__.first_line, *$1);
 		journal(journal::info, "parser") << "expression -> DOUBLEQUOTE" << journal::end;
 	}
 |
@@ -341,20 +346,20 @@ expression:
 |
 	CONST_TRUE
 	{
-		$$ = new expr_const(d_loc__.first_line, 1, u_integer);
+		$$ = new expr_const(d_loc__.first_line, 1);
 		journal(journal::info, "parser") << "expression -> CONST_TRUE" << journal::end;
 	}
 |
 	CONST_FALSE
 	{
-		$$ = new expr_const(d_loc__.first_line, 0, u_integer);
+		$$ = new expr_const(d_loc__.first_line, 0);
 		journal(journal::info, "parser") << "expression -> CONST_FALSE" << journal::end;
 	}
 |
 	CONST_PI
 	{
 		constexpr double Pi = acos(-1);
-		$$ = new expr_const(d_loc__.first_line, Pi, u_double);
+		$$ = new expr_const(d_loc__.first_line, Pi);
 		journal(journal::info, "parser") << "expression -> CONST_Pi" << journal::end;
 
 	}

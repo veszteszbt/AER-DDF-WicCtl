@@ -16,6 +16,7 @@ WS [ \n\t\r]
 "do" return Parser::KEYWORD_DO; 
 "done" return Parser::KEYWORD_DONE; 
 "default" return Parser::KEYWORD_DEFAULT;
+"local" return Parser::KEYWORD_LOCAL;
 "{" return Parser::OCURLY; 
 "}" return Parser::CCURLY; 
 
