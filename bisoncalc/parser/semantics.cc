@@ -245,12 +245,12 @@ void expr_add::evaluate()
 	//std::cout << "add::evaluate()" << std::endl;
 	l->evaluate();
 	r->evaluate();
-	var_value lval = l->val;
-	var_value rval = r->val;
-	std::cout << "ADD lval " << lval << " rval " << rval << std::endl;
-	//val = l->val + r->val;
-	val = lval + rval;
-	std::cout << "val: " << val << std::endl;
+	//var_value lval = l->val;
+	//var_value rval = r->val;
+	//std::cout << "ADD lval " << lval << " rval " << rval << std::endl;
+	val = l->val + r->val;
+	//val = lval + rval;
+	//std::cout << "val: " << val << std::endl;
 	//std::cout << "add evaluated" << std::endl;
 }
 
@@ -378,8 +378,8 @@ void expr_mod::evaluate()
 					journal(journal::info, "semantics") << row << ": ERROR: modulo cannot be 0!" << journal::end;
 					std::terminate();
 					break;
-			case 2: std::cerr << row << ": ERROR: modulo operator only accepts integer type!" << std::endl;
-					journal(journal::info, "semantics") << row << ": ERROR: modulo operator only accepts integer type!" << journal::end;
+			case 2: std::cerr << row << ": ERROR: modulo operator can only be used with integer type!" << std::endl;
+					journal(journal::info, "semantics") << row << ": ERROR: modulo operator can only be used with integer type!" << journal::end;
 					std::terminate();
 					break;
 			default: std::cerr << row << ": ERROR: unknown error in modulo operator" << std::endl;

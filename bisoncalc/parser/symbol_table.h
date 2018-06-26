@@ -17,18 +17,18 @@ class var_value
 	union value{
 		int intval;
 		double doubleval;
-		std::string stringval;
+		std::string* stringval;
 
 
 		value(int i) : intval(i) {}
 		value(double d) : doubleval(d) {}
-		value(std::string s) : stringval(s) {}
+		value(std::string* s) : stringval(s) {}
 
 		value() : intval(0){}
 		~value(){}; //TODO ezt később fix
 
-		template<typename T>
-		void set_value(T);
+		/*template<typename T>
+		void set_value(T);*/
 		/*value& operator=(value right)
 		{
 			stringval = right.stringval;
@@ -42,12 +42,13 @@ class var_value
 public:
 	var_value(int i);
 	var_value(double d);
-	var_value(std::string s);
+	var_value(std::string* s);
 	var_value(const var_value& other);
 	var_value();
 	~var_value();
 
 	type get_type();
+	void set_type_noconvert(type t);
 	void set_value(int i);
 	void set_value(double d);
 	void set_value(std::string s);
@@ -57,8 +58,9 @@ public:
 	T value() const;
 
 	template<typename T>
-	void value(T);
+	void set_value(T);
 
+	void append(std::string s);
 	var_value& operator=(var_value right);
 	friend var_value operator+(var_value l, var_value r);
 	friend var_value operator-(var_value l, var_value r);

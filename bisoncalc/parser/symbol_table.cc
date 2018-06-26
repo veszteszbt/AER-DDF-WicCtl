@@ -10,9 +10,9 @@ var_value::var_value(int i) : var_type(u_integer), val(i) {}
 
 var_value::var_value(double d) : var_type(u_double), val(d) {}
 
-var_value::var_value(std::string s) : var_type(u_string), val(s) {}
+var_value::var_value(std::string* s) : var_type(u_string), val(s) {}
 
-template<>
+/*template<>
 void var_value::value::set_value(int i)
 {
 	intval = i;
@@ -27,8 +27,14 @@ void var_value::value::set_value(double d)
 template<>
 void var_value::value::set_value(std::string s)
 {
-	stringval = s;
+	*stringval = s;
 }
+
+template<>
+void var_value::value::set_value(std::string* s)
+{
+	stringval = s;
+}*/
 
 var_value::var_value() : var_type(u_integer), val(0)
 {
@@ -39,7 +45,8 @@ var_value::~var_value()
 {
 	if (var_type == u_string)
 	{
-		val.stringval.std::string::~string();
+		//std::cout << "destroying the string: " << *(val.stringval) << std::endl;
+		val.stringval->std::string::~string();
 	}
 }
 
@@ -61,38 +68,77 @@ template<>
 std::string var_value::value() const
 {
 	//std::cout << "template value = " << val.stringval << std::endl;
-	return val.stringval;
+	return *(val.stringval);
 }
 
 template<>
-void var_value::value(int i)
+void var_value::set_value(int i)
 {
 	val.intval = i;
+	//val.set_value<int>(i);
 }
 
 template<>
-void var_value::value(double d)
+void var_value::set_value(double d)
 {
 	val.doubleval = d;
+	//val.set_value<double>(d);
 }
 
 template<>
-void var_value::value(std::string s)
+void var_value::set_value(std::string s)
+{
+	*(val.stringval) = s;
+}
+
+template<>
+void var_value::set_value(std::string* s)
 {
 	val.stringval = s;
+	//val.set_value<std::string*>(s);
 }
 
 var_value::var_value(const var_value& other) : var_type(other.var_type)
 {
 	switch(other.var_type)
 	{
-		case u_integer: val.set_value(other.value<int>());
+		case u_integer:
+		set_value<int>(other.value<int>());
 		//std::cout << val.intval << " switch int " << other.value<int>() << std::endl;
 		break;
-		case u_double: val.set_value(other.value<double>());
+		case u_double:
+		set_value<double>(other.value<double>());
 		break;
-		case u_string: val.set_value(other.value<std::string>());
+		case u_string: 
+		std::string* temp = new std::string(other.value<std::string>());
+		set_value<std::string*>(temp);
 		break;
+	}
+}
+
+void var_value::append(std::string s)
+{
+	if (get_type() == u_string)
+	{
+		std::string* temp = new std::string(value<std::string>());
+		(*temp).append(s);
+		val.stringval->std::string::~string();
+		val.stringval = temp;
+		//std::cout << "val append" << *(val.stringval) << std::endl;
+	}
+	else if(get_type() == u_integer)
+	{
+		var_type = u_string;
+		std::string* temp = new std::string(std::to_string(value<int>()));
+		(*temp).append(s);
+		val.stringval = temp;
+	}
+	else if(get_type() == u_double)
+	{
+		var_type = u_string;
+		std::string* temp = new std::string(std::to_string(value<double>()));
+		(*temp).append(s);
+		val.stringval = temp;
 	}
 }
 
@@ -100,22 +146,36 @@ var_value& var_value::operator=(var_value right)
 {
 	if (right.get_type() == u_integer)
 	{
+		if (get_type() == u_string)
+		{
+			val.stringval->std::string::~string();
+		}
 		var_type = u_integer;
-		this->val.set_value(right.value<int>());
-		//std::cout << "right value int " << right.value<int>() << std::endl;
-		//std::cout << "var_value operator =, value " << val.intval << std::endl;
+		set_value<int>(right.value<int>());
 	}
 	else if (right.get_type() == u_double)
 	{
+		if (get_type() == u_string)
+		{
+			val.stringval->std::string::~string();
+		}
 		var_type = u_double;
-		this->val.set_value(right.value<double>());
-		//std::cout << "right value double " << right.value<double>() << std::endl;
-		//std::cout << "var_value operator =, value " << val.doubleval << std::endl;
+		set_value<double>(right.value<double>());
 	}
 	else 
 	{
-		var_type = u_string;
-		this->val.set_value(right.value<std::string>());
+		if (get_type() != u_string)
+		{
+			std::string* temp = new std::string(right.value<std::string>());
+			//sets pointer to temp (std::string* type)
+			set_value<std::string*>(temp);
+			var_type = u_string;
+		}
+		else
+		{
+			//sets the pointed string's value to the other string (std::string type)
+			set_value<std::string>(right.value<std::string>());
+		}
 		//std::cout << "right value string " << right.value<std::string>() << std::endl;
 		//std::cout << "var_value operator =, value " << val.stringval << std::endl;
 	}
@@ -137,31 +197,51 @@ var_value operator+(var_value l, var_value r)
 		}
 		else
 		{
-			ret = l.value<std::string>() + r.value<std::string>();
+			ret.set_type_noconvert(u_string);
+			std::string empty = "";
+			ret.set_value<std::string*>(&empty);
+			ret.append(l.value<std::string>());
+			ret.append(r.value<std::string>());
+			//std::cout << l.value<std::string>() << std::endl;
+			//std::cout << "ret: " << ret << std::endl;
 		}
 	}
 	else
 	{
 		if (l.get_type()==u_string)
 		{
+			std::string empty = "";
 			if (r.get_type() == u_integer)
 			{
-				ret = l.value<std::string>() + std::to_string(r.value<int>());
+				ret.set_type_noconvert(u_string);
+				ret.set_value<std::string*>(&empty);
+				ret.append(l.value<std::string>());
+				ret.append(std::to_string(r.value<int>()));
 			}
 			else if (r.get_type() == u_double)
 			{
-				ret = l.value<std::string>() + std::to_string(r.value<double>());
+				ret.set_type_noconvert(u_string);
+				ret.set_value<std::string*>(&empty);
+				ret.append(l.value<std::string>());
+				ret.append(std::to_string(r.value<double>()));
 			}
 		}
 		else if (r.get_type()==u_string)
 		{
-			if (r.get_type() == u_integer)
+			std::string empty = "";
+			if (l.get_type() == u_integer)
 			{
-				ret = std::to_string(l.value<int>()) + r.value<std::string>();
+				ret.set_type_noconvert(u_string);
+				ret.set_value<std::string*>(&empty);
+				ret.append(std::to_string(l.value<int>()));
+				ret.append(r.value<std::string>());
 			}
-			else if (r.get_type() == u_double)
+			else if (l.get_type() == u_double)
 			{
-				ret = std::to_string(l.value<double>()) + r.value<std::string>();
+				ret.set_type_noconvert(u_string);
+				ret.set_value<std::string*>(&empty);
+				ret.append(std::to_string(l.value<double>()));
+				ret.append(r.value<std::string>());
 			}
 		}
 		else
@@ -654,7 +734,7 @@ int operator<(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				if(r.value<std::string>() < std::to_string(l.value<int>()))
+				if(std::to_string(l.value<int>()) < r.value<std::string>())
 				{
 					return 1;
 				}
@@ -665,7 +745,7 @@ int operator<(var_value l, var_value r)
 			}
 			else if (l.get_type() == u_double)
 			{
-				if(r.value<std::string>() < std::to_string(l.value<double>()))
+				if(std::to_string(l.value<double>()) < r.value<std::string>())
 				{
 					return 1;
 				}
@@ -679,7 +759,7 @@ int operator<(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				if(r.value<double>() < static_cast<double>(l.value<int>()))
+				if(static_cast<double>(l.value<int>()) < r.value<double>())
 				{
 					return 1;
 				}
@@ -773,7 +853,7 @@ int operator>(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				if(r.value<std::string>() > std::to_string(l.value<int>()))
+				if(std::to_string(l.value<int>()) > r.value<std::string>())
 				{
 					return 1;
 				}
@@ -784,7 +864,7 @@ int operator>(var_value l, var_value r)
 			}
 			else if (l.get_type() == u_double)
 			{
-				if(r.value<std::string>() > std::to_string(l.value<double>()))
+				if(std::to_string(l.value<double>()) > r.value<std::string>())
 				{
 					return 1;
 				}
@@ -798,7 +878,7 @@ int operator>(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				if(r.value<double>() > static_cast<double>(l.value<int>()))
+				if(static_cast<double>(l.value<int>()) > r.value<double>())
 				{
 					return 1;
 				}
@@ -851,14 +931,17 @@ std::ostream& operator<<(std::ostream& out, var_value &v)
 {
 	if (v.get_type() == u_integer)
 	{
+		//std::cout << "writing int" << std::endl;
 		out << v.value<int>();
 	}
 	else if (v.get_type() == u_double)
 	{
+		//std::cout << "writing double" << std::endl;
 		out << v.value<double>();
 	}
 	else
 	{
+		//std::cout << "writing string" << std::endl;
 		out << v.value<std::string>();
 	}
 	return out;
@@ -874,6 +957,11 @@ std::ostream& operator<<(std::ostream& out, var_value &v)
 type var_value::get_type()
 {
 	return var_type;
+}
+
+void var_value::set_type_noconvert(type t)
+{
+	var_type = t;
 }
 
 variable_desc::variable_desc(const variable_desc& other) : decl_row(other.decl_row), value(other.value)
