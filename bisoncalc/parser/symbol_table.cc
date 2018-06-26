@@ -232,7 +232,7 @@ var_value operator-(var_value l, var_value r)
 			}
 			else if (r.get_type() == u_integer)
 			{
-				ret = static_cast<double>(r.value<int>()) - l.value<double>();
+				ret =  l.value<double>() - static_cast<double>(r.value<int>());
 			}
 		}
 	}
@@ -313,7 +313,7 @@ var_value operator/(var_value l, var_value r)
 	{
 		if (l.get_type() == u_integer)
 		{
-			ret = l.value<int>() / r.value<int>();
+			ret = static_cast<double>(l.value<int>()) / static_cast<double>(r.value<int>());
 		}
 		else if (l.get_type() == u_double)
 		{
@@ -359,7 +359,7 @@ var_value operator/(var_value l, var_value r)
 			}
 			else if (r.get_type() == u_integer)
 			{
-				ret = static_cast<double>(r.value<int>()) / l.value<double>();
+				ret = l.value<double>() / static_cast<double>(r.value<int>());
 			}
 		}
 	}
@@ -419,7 +419,7 @@ var_value operator^(var_value l, var_value r)
 			}
 			else if (r.get_type() == u_integer)
 			{
-				ret = pow(static_cast<double>(r.value<int>()), l.value<double>());
+				ret = pow(l.value<double>(), static_cast<double>(r.value<int>()));
 			}
 		}
 	}

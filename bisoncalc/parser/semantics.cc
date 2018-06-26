@@ -245,10 +245,12 @@ void expr_add::evaluate()
 	//std::cout << "add::evaluate()" << std::endl;
 	l->evaluate();
 	r->evaluate();
-	//var_value lval = l->val;
-	//var_value rval = r->val;
-	//std::cout << "ADD lval " << lval << " rval " << rval << std::endl;
-	val = l->val + r->val;
+	var_value lval = l->val;
+	var_value rval = r->val;
+	std::cout << "ADD lval " << lval << " rval " << rval << std::endl;
+	//val = l->val + r->val;
+	val = lval + rval;
+	std::cout << "val: " << val << std::endl;
 	//std::cout << "add evaluated" << std::endl;
 }
 
@@ -346,6 +348,8 @@ void expr_pow::evaluate()
 	l->evaluate();
 	r->evaluate();
 	val = l->val ^ r->val;
+	var_value lval = l->val;
+	var_value rval = r->val;
 }
 
 type expr_pow::get_type()
