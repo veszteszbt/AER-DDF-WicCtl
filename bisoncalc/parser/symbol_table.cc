@@ -1,11 +1,5 @@
 #include "symbol_table.h"
 
-/*value& var_value::value::operator=(value right)
-{
-	intval = right.intval;
-	return *this;
-}*/
-
 var_value::var_value(int i) : var_type(u_integer), val(i) {}
 
 var_value::var_value(double d) : var_type(u_double), val(d) {}
@@ -38,7 +32,6 @@ void var_value::value::set_value(std::string* s)
 
 var_value::var_value() : var_type(u_integer), val(0)
 {
-	//std::cout << "var_value default const" << std::endl;
 }
 
 var_value::~var_value()
@@ -974,19 +967,9 @@ variable_desc& variable_desc::operator=(variable_desc right)
 	return *this;
 }
 
-int variable_desc::return_intval()
+var_value variable_desc::return_value()
 {
-	return value.value<int>();
-}
-
-double variable_desc::return_doubleval()
-{
-	return value.value<double>();
-}
-
-std::string variable_desc::return_stringval()
-{
-	return value.value<std::string>();
+	return value;
 }
 
 Symbol_Table::Symbol_Table(){

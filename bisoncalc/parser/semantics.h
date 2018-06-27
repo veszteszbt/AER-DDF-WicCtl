@@ -12,56 +12,42 @@
 
 
 
-
+//generic expression class
 struct expression_desc
 {
 	expression_desc(int row_number, var_value v);
-	//expression_desc(int row_number, type data_type, int value) : row(row_number), expr_type(data_type), intval(value) {}
-	//expression_desc(expression_desc* other) : row(other->row), expr_type(other->expr_type) {}
-	//expression_desc(command_list_desc* cld) : row(cld->get_row()), intval(cld->get_value){}
 	expression_desc(){}
 
 	int row;
 	var_value val;
-	//value val;
-	//int intval;
-
-	
 
 	void set_row(int &r);
 	int get_row();
 	virtual void evaluate() = 0;
-	virtual type get_type() = 0;
+	type get_type();
 	
 };
 
 struct command_desc
 {
-
 	command_desc(int row_number) : row(row_number) {}
 	command_desc(){}
-	//command_desc(expression_desc* ex) : row(ex->get_row()), intval(ex->get_value()) {}
 
 	int row;
-	//int intval;
 
 	void set_row(int &r);
 	int get_row();
 	virtual void evaluate() = 0;
-	//int get_value();
 };
 
 struct command_list_desc
 {
 	command_list_desc(command_list_desc* other);
 	command_list_desc();
-	//command_list_desc(command_desc* c) : row(c->get_row()), intval(c->get_value()){}
 
 	std::vector<command_desc*> command_list;
 	int row;
-	//int intval;
 
-	//int get_value();
 	int get_row();
 	void add(command_desc* cd);
 	void add(command_list_desc* other);
@@ -89,19 +75,18 @@ struct expr_unary : public expression_desc
 	type expr_type;
 };
 
+//constant values
 struct expr_const : public expression_desc
 {
 	expr_const(int row_number, var_value v);
 
 	int row;
 	
-	
-	
 	void evaluate();
 	type get_type();
 };
 
-
+//variables
 struct expr_var : public expression_desc
 {
 	expr_var(int row_number, std::string var_name);
@@ -109,40 +94,35 @@ struct expr_var : public expression_desc
 	int row;
 	std::string name;
 	
-
-	
 	void evaluate();
 	type get_type();
 };
 
-struct expr_asg : public expression_desc
+//assignment
+struct assign : public command_desc
 {
-	expr_asg(int row_number, std::string* var_name, expression_desc* ex);
+	assign(int row_number, std::string* var_name, expression_desc* ex);
 	int row;
 	std::string* vname;
 	expression_desc* e;
 	
-
-	
 	std::string get_name();
 	void evaluate();
-	type get_type();
 };
 
-struct expr_local_asg : public expression_desc
+//assignment for local variables (shadowing)
+struct local_assign : public command_desc
 {
-	expr_local_asg(int row_number, std::string* var_name, expression_desc* ex);
+	local_assign(int row_number, std::string* var_name, expression_desc* ex);
 	int row;
 	std::string* vname;
 	expression_desc* e;
-	
-
-	
+		
 	std::string get_name();
 	void evaluate();
-	type get_type();
 };
 
+//expression list to store an array of expressions (for_in)
 struct c_expression_list
 {
 	c_expression_list(){}
@@ -154,20 +134,19 @@ struct c_expression_list
 	expression_desc* return_element(unsigned int i);
 };
 
+//paranthesis ()
 struct expr_par : public expr_unary
 {
 	expr_par(int row_number, expression_desc* nested);
 
-	
 	int row;
 	expression_desc* e;
-	
-
 	
 	void evaluate();
 	type get_type();
 };
 
+//operator +
 struct expr_add : public expr_binary
 {
 	expr_add(int row_number, expression_desc* left, expression_desc* right);
@@ -175,27 +154,25 @@ struct expr_add : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	
-
-	
 	void evaluate();
 	int get_row();
 	type get_type();
 };
 
+//operator -
 struct expr_dif : public expr_binary
 {
 	expr_dif(int row_number, expression_desc* left, expression_desc* right);
 
 	expression_desc* l;
 	expression_desc* r;
-	
-
-	
+		
 	void evaluate();
 	int get_row();
 	type get_type();
 };
 
+//operator *
 struct expr_mul : public expr_binary
 {
 	expr_mul(int row_number, expression_desc* left, expression_desc* right);
@@ -203,41 +180,38 @@ struct expr_mul : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	
-
-	
 	void evaluate();
 	int get_row();
 	type get_type();
 };
 
+//operator /
 struct expr_div : public expr_binary
 {
 	expr_div(int row_number, expression_desc* left, expression_desc* right);
 
-	int row;	
+	int row; //???? ez kell ide?	
 	expression_desc* l;
 	expression_desc* r;
-	
-
-	
+		
 	void evaluate();
 	int get_row();
 	type get_type();
 };
 
+//operator ^ (alternative **)
 struct expr_pow : public expr_binary
 {
 	expr_pow(int row_number, expression_desc* left, expression_desc* right);
 	expression_desc* l;
 	expression_desc* r;
 	
-
-	
 	void evaluate();
 	int get_row();
 	type get_type();
 };
 
+//operator %
 struct expr_mod : public expr_binary
 {
 	expr_mod(int row_number, expression_desc* left, expression_desc* right);
@@ -245,176 +219,157 @@ struct expr_mod : public expr_binary
 	int row;
 	expression_desc* l;
 	expression_desc* r;
-	
-
-	
+		
 	void evaluate();
 	int get_row();
 	type get_type();
 };
 
+//operator -o
 struct expr_or : public expr_binary
 {
 	expr_or(int row_number, expression_desc* left, expression_desc* right);
 
 	expression_desc* l;
 	expression_desc* r;
-	
-
-	
+		
 	void evaluate();
 	int get_row();
 	type get_type();
 };
 
+//operator -a
 struct expr_and : public expr_binary
 {
 	expr_and(int row_number, expression_desc* left, expression_desc* right);
 
 	expression_desc* l;
 	expression_desc* r;
-	int intval;
 	type expr_type;
-
 	
 	void evaluate();
 	int get_row();
 	type get_type();
 };
 
+//operator -eq (equals)
 struct expr_eq : public expr_binary
 {
 	expr_eq(int row_number, expression_desc* left, expression_desc* right);
 
 	expression_desc* l;
 	expression_desc* r;
-	int intval;
 	type expr_type;
 
-	
 	void evaluate();
 	int get_row();
 	type get_type();
 };
 
+//operator -neq (not equal)
 struct expr_neq : public expr_binary
 {
 	expr_neq(int row_number, expression_desc* left, expression_desc* right);
 
 	expression_desc* l;
 	expression_desc* r;
-	int intval;
 	type expr_type;
 
-	
-	void evaluate();
-	
+	void evaluate();	
 	int get_row();
 	type get_type();
 };
 
+//less or equal
 struct expr_leq : public expr_binary
 {
 	expr_leq(int row_number, expression_desc* left, expression_desc* right);
 
 	expression_desc* l;
 	expression_desc* r;
-	int intval;
 	type expr_type;
-
 	
-	void evaluate();
-	
+	void evaluate();	
 	int get_row();
 	type get_type();
 };
 
+//greater or equal
 struct expr_geq : public expr_binary
 {
 	expr_geq(int row_number, expression_desc* left, expression_desc* right);
 
 	expression_desc* l;
 	expression_desc* r;
-	int intval;
 	type expr_type;
 
-	
 	void evaluate();
-	
 	int get_row();
 	type get_type();
 };
 
+//less than
 struct expr_lt : public expr_binary
 {
 	expr_lt(int row_number, expression_desc* left, expression_desc* right);
 
 	expression_desc* l;
 	expression_desc* r;
-	int intval;
 	type expr_type;
 
-	
-	void evaluate();
-	
+	void evaluate();	
 	int get_row();
 	type get_type();
 };
 
+//greater than
 struct expr_gt : public expr_binary
 {
 	expr_gt(int row_number, expression_desc* left, expression_desc* right);
 
 	expression_desc* l;
 	expression_desc* r;
-	int intval;
 	type expr_type;
 
-	
-	void evaluate();
-	
+	void evaluate();	
 	int get_row();
 	type get_type();
 };
 
+//negation (!)
 struct expr_neg : public expr_unary
 {
 	expr_neg(int row_number, expression_desc* ex);
 
 	expression_desc* e;
-	int intval;
 	type expr_type;
 
-	
-	void evaluate();
-	
+	void evaluate();	
 	int get_row();
 	type get_type();
 };
 
+//unary minus
 struct expr_um : public expr_unary
 {
 	expr_um(int row_number, expression_desc* ex);
 
 	expression_desc* e;
-	int intval;
 	type expr_type;
 
-	
 	void evaluate();
-	
 	int get_row();
 	type get_type();
 };
 
 struct for_3_desc : public command_desc
 {
-	for_3_desc(int row_number, expression_desc* start_, expression_desc* condition_, expression_desc* iterate_, command_list_desc* commands_);
-	
+	for_3_desc(int row_number, command_desc* start_, expression_desc* condition_, command_desc* iterate_, command_list_desc* commands_);
+
 	int row;
-	expression_desc* start;
+	command_desc* start;
 	expression_desc* loop_condition;
-	expression_desc* iterate;
+	command_desc* iterate;
 	command_list_desc* commands;
 
 	void evaluate();
@@ -438,8 +393,8 @@ struct if_desc : public command_desc
 
 	int row;
 	expression_desc* condition;
-	command_list_desc* commands_pos;
-	command_list_desc* commands_neg;
+	command_list_desc* commands_pos;	//positive
+	command_list_desc* commands_neg; 	//negative
 
 	void evaluate();
 };
@@ -493,11 +448,10 @@ struct case_desc : public command_desc
 	std::vector<casepart*> case_parts;
 	command_list_desc* defaultcase;
 	
-	
-
 	void evaluate();
 };
 
+//a command which is an expression
 struct command_expr : public command_desc
 {
 	command_expr(expression_desc* ex);
@@ -506,10 +460,35 @@ struct command_expr : public command_desc
 	void evaluate();
 };
 
+struct argumentsvector
+{
+	argumentsvector();
+	std::vector<expression_desc*> arguments;
+	bool is_empty;
+
+	void add(expression_desc* e);
+	void add(argumentsvector* other);
+};
+
+//calls a command
+struct call : public command_desc
+{
+	call(std::string n, argumentsvector* a);
+
+	int row;
+	std::string name;
+	std::vector<expression_desc*> args;
+
+	void evaluate();
+};
+
+//the stack of symbol tables (for shadowing)
 struct sytable_stack : public command_desc
 {
 	sytable_stack(command_list_desc* cd);
+	
 	command_list_desc* c;
+
 	void evaluate();
 };
 

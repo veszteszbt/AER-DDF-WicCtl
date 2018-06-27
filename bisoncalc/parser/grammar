@@ -15,6 +15,7 @@
 	c_expression_list *cel;
 	casepart *cp;
 	casepartvector *cpv;
+	argumentsvector* av;
 }
 
 %token KEYWORD_IF
@@ -78,6 +79,7 @@
 %type <cel> expression_list
 %type <cp> case_part
 %type <cpv> caseparts
+%type <av> arguments
 
 
 %%
@@ -117,7 +119,6 @@ command_list:
 |
 	command COMMAND_SEPARATOR
 	{
-		//// $$ = new command_desc(d_loc__.first_line);
 		$$ = new command_list_desc();
 		$$->add($1);
 		journal(journal::info, "parser") << "command_list -> command COMMAND_SEPARATOR" << journal::end;
@@ -125,11 +126,22 @@ command_list:
 ;
 
 command:
-	expression
+	IDENTIFIER OPARENTHESIS arguments CPARENTHESIS
 	{
-		//std::cout << $1->get_value() << std::endl;
-		$$ = new command_expr($1);
-		journal(journal::info, "parser") << "command -> expression" << journal::end;
+		$$ = new call(*$1, $3);
+		journal(journal::info, "parser") << "command -> IDENTIFIER ( arguments )" << journal::end;
+	}
+|
+	IDENTIFIER OPERATOR_LET_BE expression
+	{
+		$$ = new assign(d_loc__.first_line, $1, $3);
+		journal(journal::info, "parser") << "command -> IDENTIFIER OPERATOR_LET_BE expression" << journal::end;
+	}
+|
+	KEYWORD_LOCAL IDENTIFIER OPERATOR_LET_BE expression
+	{
+		$$ = new local_assign(d_loc__.first_line, $2, $4);
+		journal(journal::info, "parser") << "expression -> KEYWORD_LOCAL IDENTIFIER OPERATOR_LET_BE expression" << journal::end;
 	}
 |
 	OCURLY command_list CCURLY
@@ -140,15 +152,7 @@ command:
 |
 	KEYWORD_FOR expression KEYWORD_DO command_list KEYWORD_DONE
 	{
-		/*if ($2->expr_type != u_integer) // az expression NAME (porkmail szerint)
-		{
-			std::cerr << "Incorrect condition in For loop" << journal::end;
-			exit(1);
-		}
-		else
-		{
-			// $$ = new command_desc($2->row);
-		}*/
+		//ez a for ciklus nem biztos hogy kell
 		journal(journal::info, "parser") << "command -> KEYWORD_FOR expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
@@ -158,7 +162,7 @@ command:
 		journal(journal::info, "parser") << "KEYWORD_FOR IDENTIFIER KEYWORD_IN expression_list KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
-	KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE
+	KEYWORD_FOR command COMMAND_SEPARATOR expression COMMAND_SEPARATOR command KEYWORD_DO command_list KEYWORD_DONE
 	{
 		$$ = new for_3_desc(d_loc__.first_line, $2, $4, $6, $8);
 		journal(journal::info, "parser") << "command -> KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
@@ -194,18 +198,6 @@ expression:
 	{
 		$$ = new expr_par(d_loc__.first_line, $2);
 		journal(journal::info, "parser") << "expression -> OPARENTHESIS expression CPARENTHESIS" << journal::end;
-	}
-|
-	IDENTIFIER OPERATOR_LET_BE expression
-	{
-		$$ = new expr_asg(d_loc__.first_line, $1, $3);
-		journal(journal::info, "parser") << "expression -> IDENTIFIER OPERATOR_LET_BE expression" << journal::end;
-	}
-|
-	KEYWORD_LOCAL IDENTIFIER OPERATOR_LET_BE expression
-	{
-		$$ = new expr_local_asg(d_loc__.first_line, $2, $4);
-		journal(journal::info, "parser") << "expression -> KEYWORD_LOCAL IDENTIFIER OPERATOR_LET_BE expression" << journal::end;
 	}
 |
 	NEGATE expression
@@ -318,6 +310,7 @@ expression:
 |
 	SINGLEQUOTE
 	{
+		//remove the quote characters
 		std::string* temp = new std::string((*$1).substr(1,(*$1).size()-2));
 		$$ = new expr_const(d_loc__.first_line, temp);
 		journal(journal::info, "parser") << "expression -> SINGLEQUOTE" << journal::end;
@@ -325,6 +318,7 @@ expression:
 |
 	DOUBLEQUOTE
 	{
+		//remove the quote characters
 		std::string* temp = new std::string((*$1).substr(1,(*$1).size()-2));
 		$$ = new expr_const(d_loc__.first_line,temp);
 		journal(journal::info, "parser") << "expression -> DOUBLEQUOTE" << journal::end;
@@ -332,6 +326,12 @@ expression:
 |
 	HEXADECIMAL
 	{
+		/*std::string* temp = new std::string($1);
+		int hex;
+		std::istringstream i;
+		i.str(*temp);
+		i >> std::dec >> hex;
+		$$ = new expr_const(d_loc__.first_line, hex);*/
 		journal(journal::info, "parser") << "expression -> HEXADECIMAL" << journal::end;
 	}
 |
@@ -363,7 +363,30 @@ expression:
 		constexpr double Pi = acos(-1);
 		$$ = new expr_const(d_loc__.first_line, Pi);
 		journal(journal::info, "parser") << "expression -> CONST_Pi" << journal::end;
+	}
+;
 
+arguments:
+	arguments ELEMENT_SEPARATOR expression
+	{
+		$$ = new argumentsvector();
+		$$->add($1);
+		$$->add($3);
+		//delete $3; //ez undefined behaviort okozna itt mert virtuális osztályt törölsz
+		journal(journal::info, "parser") << "arguments -> arguments ELEMENT_SEPARATOR expression" << journal::end;
+	}
+|
+	expression
+	{
+		$$ = new argumentsvector();
+		$$->add($1);
+		journal(journal::info, "parser") << "arguments -> expression" << journal::end;
+	}
+|
+	//empty
+	{
+		$$ = new argumentsvector();
+		journal(journal::info, "parser") << "arguments -> empty" << journal::end;
 	}
 ;
 
@@ -427,7 +450,6 @@ else_part:
 |
 	//empty
 	{
-		//// $$ = new command_desc(d_loc__.first_line);
 		journal(journal::info, "parser") << "else_part -> empty" << journal::end;
 	}
 ;

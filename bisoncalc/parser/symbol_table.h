@@ -6,7 +6,9 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-//#include <variant>
+#include <ios>
+#include <sstream>
+//#include <algorithm>
 
 enum type{ u_integer, u_double, u_string };
 
@@ -19,7 +21,6 @@ class var_value
 		double doubleval;
 		std::string* stringval;
 
-
 		value(int i) : intval(i) {}
 		value(double d) : doubleval(d) {}
 		value(std::string* s) : stringval(s) {}
@@ -29,16 +30,8 @@ class var_value
 
 		/*template<typename T>
 		void set_value(T);*/
-		/*value& operator=(value right)
-		{
-			stringval = right.stringval;
-			std::cout << "VALUE " << right.intval << std::endl;
-			return *this;
-		}*/
 	} val;
-	//std::variant<int, double, std::string> value;
-	
-	//value val;
+
 public:
 	var_value(int i);
 	var_value(double d);
@@ -52,7 +45,6 @@ public:
 	void set_value(int i);
 	void set_value(double d);
 	void set_value(std::string s);
-
 
 	template<typename T>
 	T value() const;
@@ -86,9 +78,8 @@ struct variable_desc
 
 	int decl_row;
 	var_value value;
-	int return_intval();
-	double return_doubleval();
-	std::string return_stringval();
+	
+	var_value return_value();
 
 	variable_desc& operator=(variable_desc right);
 };
