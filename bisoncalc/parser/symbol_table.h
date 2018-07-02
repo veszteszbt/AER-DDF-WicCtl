@@ -6,8 +6,8 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <ios>
-#include <sstream>
+//#include <ios>
+//#include <sstream>
 //#include <algorithm>
 
 enum type{ u_integer, u_double, u_string };
@@ -40,7 +40,7 @@ public:
 	var_value();
 	~var_value();
 
-	type get_type();
+	type get_type() const;
 	void set_type_noconvert(type t);
 	void set_value(int i);
 	void set_value(double d);

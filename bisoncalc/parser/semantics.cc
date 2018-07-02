@@ -3,6 +3,7 @@
 
 //the parser object created in main
 extern Parser* parser;
+extern wic::functions* fptr;
 
 expression_desc::expression_desc(int row_number, var_value v) : row(row_number), val(v) {}
 
@@ -112,7 +113,7 @@ void expr_var::evaluate()
 	int i = (*parser).symbol_table.find_variable(&name);
 	if (i == -1)
 	{
-		std::cerr << std::endl << row << ": ERROR: Variable " << name << " has no value yet!" << std::endl;
+		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m Variable " << name << " has no value yet!" << std::endl;
 		journal(journal::info, "semantics") << row << ": ERROR: Variable " << name << " has no value yet!" << journal::end;
 		std::terminate();
 	}
@@ -256,7 +257,7 @@ void expr_div::evaluate()
 	//if the r->val is an int with the value 0, it'll throw -1
 	catch (int)
 	{
-		std::cerr << std::endl << row << ": ERROR: division by 0" << std::endl;
+		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m division by 0" << std::endl;
 		journal(journal::info, "semantics") << row << ": ERROR: division by 0" << journal::end;
 		std::terminate();	
 	}
@@ -305,15 +306,15 @@ void expr_mod::evaluate()
 	{
 		switch(e)
 		{
-			case 1: std::cerr << std::endl << row << ": ERROR: modulo cannot be 0!" << std::endl;
+			case 1: std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m modulo cannot be 0!" << std::endl;
 					journal(journal::info, "semantics") << row << ": ERROR: modulo cannot be 0!" << journal::end;
 					std::terminate();
 					break;
-			case 2: std::cerr << std::endl << row << ": ERROR: modulo operator can only be used with integer type!" << std::endl;
+			case 2: std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m modulo operator can only be used with integer type!" << std::endl;
 					journal(journal::info, "semantics") << row << ": ERROR: modulo operator can only be used with integer type!" << journal::end;
 					std::terminate();
 					break;
-			default: std::cerr << std::endl << row << ": ERROR: unknown error in modulo operator" << std::endl;
+			default: std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m unknown error in modulo operator" << std::endl;
 					journal(journal::info, "semantics") << row << ": ERROR: unknown error in modulo operator" << journal::end;
 					std::terminate();
 		}
@@ -651,8 +652,8 @@ void for_3_desc::evaluate()
 		}
 		else
 		{
-			iterate->evaluate(); 
 			commands->evaluate();
+			iterate->evaluate(); 
 		}
 	}
 }
@@ -722,7 +723,7 @@ expression_desc* c_expression_list::return_element(unsigned int i)
 	else
 	{
 		//shouldn't happen though
-		std::cerr << std::endl << "ERROR: indexing error in expression_list" << std::endl;
+		std::cerr << std::endl << "\e[31;01mERROR:\e[0m indexing error in expression_list" << std::endl;
 		journal(journal::info, "semantics") << "ERROR: indexing error in expression_list" << journal::end;
 		std::terminate();
 	}
@@ -839,17 +840,19 @@ void casepartvector::add(casepartvector* other)
 	}
 }
 
-call::call(std::string n, argumentsvector* a) : name(n), args(a->arguments){}
+call::call(std::string n, argumentsvector* a, int row_number) : name(n), args(a->arguments), row(row_number){}
 
 void call::evaluate()
 {
-	std::cout << "call name: " << name << std::endl << "args:";
+	//std::cout << "call name: " << name << std::endl << "args:";
 	for(unsigned int i=0;i<args.size();i++)
 	{
 		args[i]->evaluate(); //evaluate each argument's value (important)
-		std::cout << " " << args[i]->val;
+		//std::cout << " " << args[i]->val;
 	}
-	std::cout << std::endl;
+	//std::cout << std::endl;
+	//fptr->run(this, row);
+	fptr->run(this);
 }
 
 argumentsvector::argumentsvector() : is_empty(true){}

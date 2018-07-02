@@ -1,4 +1,4 @@
-%baseclass-preinclude "semantics.h"
+%baseclass-preinclude "../functions.h"
 %lsp-needed
 
 %scanner ../scanner/Scanner.h
@@ -128,8 +128,13 @@ command_list:
 command:
 	IDENTIFIER OPARENTHESIS arguments CPARENTHESIS
 	{
-		$$ = new call(*$1, $3);
+		//call* thiscall = new call(*$1, $3);
+		//extern wic::functions* fptr;
+		//fptr->run(thiscall);
+		//$$ = thiscall;
+		$$ = new call(*$1, $3, d_loc__.first_line);
 		journal(journal::info, "parser") << "command -> IDENTIFIER ( arguments )" << journal::end;
+
 	}
 |
 	IDENTIFIER OPERATOR_LET_BE expression

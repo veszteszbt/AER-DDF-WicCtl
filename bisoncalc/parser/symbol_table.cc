@@ -195,8 +195,6 @@ var_value operator+(var_value l, var_value r)
 			ret.set_value<std::string*>(&empty);
 			ret.append(l.value<std::string>());
 			ret.append(r.value<std::string>());
-			//std::cout << l.value<std::string>() << std::endl;
-			//std::cout << "ret: " << ret << std::endl;
 		}
 	}
 	else
@@ -947,7 +945,7 @@ std::ostream& operator<<(std::ostream& out, var_value &v)
 }*/
 
 
-type var_value::get_type()
+type var_value::get_type() const
 {
 	return var_type;
 }

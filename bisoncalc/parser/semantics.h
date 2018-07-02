@@ -9,6 +9,7 @@
 #include <cmath>
 #include <journal/journal.h>
 #include "symbol_table.h"
+//#include "../functions.h"
 
 
 
@@ -473,11 +474,12 @@ struct argumentsvector
 //calls a command
 struct call : public command_desc
 {
-	call(std::string n, argumentsvector* a);
+	call(std::string n, argumentsvector* a, int row_number);
 
-	int row;
+
 	std::string name;
 	std::vector<expression_desc*> args;
+	int row;
 
 	void evaluate();
 };

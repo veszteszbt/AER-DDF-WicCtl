@@ -1,7 +1,9 @@
 #include "parser/Parser.ih"
 #include "journal/journal.h"
+#include "functions.h"
 
 Parser* parser;
+wic::functions* fptr;
 
 int main(int argc, char* argv[])
 {
@@ -9,21 +11,22 @@ int main(int argc, char* argv[])
 	journal(journal::info,"main") << "program started" << journal::end;
 	
 	std::map<std::string, variable_desc> default_symtable;
-	
+	fptr = new wic::functions;
+
 	if (argc < 2)
 	{
+		//new object, so it can be accessed in grammar
 		parser = new Parser;
-		//(*parser).symbol_table.emplace_back(default_symtable);
 		(*parser).parse();
 	}
 	else
 	{
 		std::string filename = argv[1];
 		parser = new Parser(filename);
-		//(*parser).symbol_table.emplace_back(default_symtable);
 		(*parser).parse();
 	}
 	delete parser;
+	delete fptr;
 	journal(journal::info,"main") << "program finished" << journal::end;
 	journal::uninit();
 	return 0;
