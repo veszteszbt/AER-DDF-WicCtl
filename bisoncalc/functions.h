@@ -50,25 +50,21 @@ class functions
 
         template<int index = sizeof...(Targ)-1>
         std::enable_if_t<index>
-        create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv, std::vector<std::string> &argv)
+        create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
         {
             //if(!convert(args[index],std::get<index>(t)))
             if(args[index].get_type() == u_integer && typeid(std::get<index>(t)).name() == typeid(0).name())
             {
-                argv.push_back(std::to_string(types::type::name(std::get<index>(t))));
             }
             else if(args[index].get_type() == u_double && typeid(std::get<index>(t)).name() == typeid(0.0).name())
             {
-                argv.push_back(std::to_string(types::type::name(std::get<index>(t))));
             }
             else if(args[index].get_type() == u_string && typeid(std::get<index>(t)).name() == typeid("0").name())
             {
-                argv.push_back(std::to_string(types::type::name(std::get<index>(t))));
             }
             else
             {
                 errv.push_back(std::to_string(index+1)+" ("+types::type::name(std::get<index>(t)) +")");
-                argv.push_back(std::to_string(types::type::name(std::get<index>(t))));
             }
             create_tuple<index-1>(t,args);
         }
@@ -76,7 +72,7 @@ class functions
         
         template<int index = sizeof...(Targ)-1>
         std::enable_if_t<!index>
-        create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv, std::vector<std::string> &argv)
+        create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
         {
             if (!convert(args[0],std::get<0>(t)))
                 errv.push_back(std::to_string(index+1)+" ("+types::type::name(std::get<0>(t))+")");
@@ -88,9 +84,7 @@ class functions
         void operator()(const std::vector<var_value> &args)
         {
             std::vector<std::string> errorvect;
-            std::vector<std::string> argumentsvect;
             errorvect.reserve(sizeof...(Targ));
-            argumentsvect.reserve(sizeof...(Targ));
             if(args.size()!=sizeof...(Targ))
             {
                 std::cerr << "\e[31;01mERROR:\e[0m expected " << sizeof...(Targ) << " arguments, received " << args.size() << std::endl;
@@ -100,7 +94,7 @@ class functions
             else
             {
                 arg_tuple_t fnargs;
-                create_tuple(fnargs, args, errorvect, argumentsvect);
+                create_tuple(fnargs, args, errorvect);
                 int rv = errorvect.size();
                 if(rv==0)
                 {
