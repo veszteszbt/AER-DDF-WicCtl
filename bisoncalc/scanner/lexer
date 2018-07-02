@@ -76,7 +76,7 @@ WS [ \n\t\r]
 {WS}+
 
 .           {
-                std::cerr << lineNr() << ": Lexical error." << std::endl;
+                std::cerr << lineNr() << ": \e[31;01mLexical error\e[0m" << std::endl;
                 std::terminate();
             }
 
