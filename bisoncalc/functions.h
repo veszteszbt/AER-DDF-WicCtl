@@ -48,34 +48,27 @@ class functions
         
         std::function<void(Targ...)> command;
 
-        template<int index = sizeof...(Targ)-1>
-        std::enable_if_t<index>
+
+        template<int index = sizeof...(Targ)>
+        std::enable_if_t<!(index <= 0)>
         create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
         {
-            //if(!convert(args[index],std::get<index>(t)))
-            if(args[index].get_type() == u_integer && typeid(std::get<index>(t)).name() == typeid(0).name())
-            {
-            }
-            else if(args[index].get_type() == u_double && typeid(std::get<index>(t)).name() == typeid(0.0).name())
-            {
-            }
-            else if(args[index].get_type() == u_string && typeid(std::get<index>(t)).name() == typeid("0").name())
-            {
-            }
-            else
-            {
-                errv.push_back(std::to_string(index+1)+" ("+types::type::name(std::get<index>(t)) +")");
-            }
-            create_tuple<index-1>(t,args);
+            //std::cout << "indukcio" << std::endl;
+
+            if(!convert(args[index-1],std::get<index-1>(t)))
+				errv.push_back(std::to_string(index)+" ("+types::type::name(std::get<index-1>(t))+")");
+            create_tuple<index-1>(t,args,errv);
         }
 
         
-        template<int index = sizeof...(Targ)-1>
-        std::enable_if_t<!index>
+        template<int index = sizeof...(Targ)>
+        std::enable_if_t<index <= 0>
         create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
         {
-            if (!convert(args[0],std::get<0>(t)))
-                errv.push_back(std::to_string(index+1)+" ("+types::type::name(std::get<0>(t))+")");
+            //std::cout << "alapeset" << std::endl;
+            //if (!convert(args[0],std::get<0>(t)))
+            //    errv.push_back(std::to_string(index+1)+" ("+types::type::name(std::get<0>(t))+")");
+               
         }
  
     public:
@@ -108,9 +101,9 @@ class functions
                 }
                 else
                 {
-                    std::cerr << "\e[31;01mERROR:\e[0m arguments " << errorvect[0];
-                    journal(journal::info, "functions") << "arguments " << errorvect[0];
-                    for (int i=1;i<rv;i++)
+                    std::cerr << "\e[31;01mERROR:\e[0m arguments " << errorvect[rv-1];
+                    journal(journal::info, "functions") << "arguments " << errorvect[rv-1];
+                    for (int i=rv-2;i>=0;i--)
                     {
                         std::cerr << ", " << errorvect[i];
                         journal(journal::info, "functions") << ", " << errorvect[i];

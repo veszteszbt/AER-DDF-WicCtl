@@ -40,6 +40,21 @@ static void write_reverse(std::string s)
 	std::reverse(s.begin(), s.end());
 }
 
+static void echo_c(std::string s, int i)
+{
+	//std::cout << "writing " << s << " " << i << "times" << std::endl;
+	for (int j=0;j<i;j++)
+	{
+		std::cout << s;
+	}
+	//std::cout << std::endl;
+}
+
+static void echo_end()
+{
+	std::cout << std::endl;
+}
+
 template<typename T>
 static void echo(T t)
 {
@@ -88,7 +103,10 @@ functions::functions()
     add_command("gamestate",gamestate);
 	add_command("echo", echo<int>);
 	add_command("echo", echo<double>);
+	add_command("echo", echo<std::string>);
 	add_command("write_reverse", write_reverse);
+	add_command("echo_c", echo_c);
+	add_command("echo_end", echo_end);
 }
 	
 void functions::run(call* c)
