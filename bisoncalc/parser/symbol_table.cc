@@ -190,7 +190,7 @@ void var_value::append(std::string s)
 	if (get_type() == u_string)
 	{
 		std::string* temp = new std::string;
-		if(value<std::string*>(temp))
+		if(value<std::string>(*temp))
 		{
 			(*temp).append(s);
 		}
@@ -323,6 +323,7 @@ var_value operator+(var_value l, var_value r)
 			ret.set_type_noconvert(u_string);
 			std::string empty = "";
 			ret.set_value<std::string*>(&empty);
+
 			std::string s1, s2;
 			if(l.value<std::string>(s1)){}
 
@@ -440,36 +441,105 @@ var_value operator-(var_value l, var_value r)
 		}
 		else
 		{
+			ret.set_type_noconvert(u_string);
+			std::string empty = "";
+			ret.set_value<std::string*>(&empty);
 			std::string s1, s2;
 			if(l.value<std::string>(s1)){}
-			//ret.value<std::string> += l.value<std::string>();
-			//ret.value<std::string> += r.value<std::string>();
+
+			if(r.value<std::string>(s2)){}
+
+			std::size_t found = s1.find(s2);
+			if (found != std::string::npos)
+			{
+				ret.append(s1.erase(found, s2.length()));
+			}
+			else
+			{
+				ret.append(s1);
+			}
 		}
 	}
 	else
 	{
 		if (l.get_type()==u_string)
 		{
-			//ret.value<std::string> +=l.value<std::string>();
+			ret.set_type_noconvert(u_string);
+			std::string empty = "";
+			ret.set_value<std::string*>(&empty);
 			if (r.get_type() == u_integer)
-			{
-				//ret.value<std::string> +=std::to_string(r.value<int>());
+			{	
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				std::size_t found = s1.find(s2);
+				if (found != std::string::npos)
+				{	
+					ret.append(s1.erase(found, s2.length()));
+				}
+				else
+				{
+					ret.append(s1);
+				}
 			}
 			else if (r.get_type() == u_double)
 			{
-				//ret.value<std::string> +=std::to_string(r.value<double>());
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				std::size_t found = s1.find(s2);
+				if (found != std::string::npos)
+				{	
+					ret.append(s1.erase(found, s2.length()));
+				}
+				else
+				{
+					ret.append(s1);
+				}
 			}
 		}
 		else if (r.get_type()==u_string)
 		{
-			//ret.value<std::string> +=l.value<std::string>();
+			ret.set_type_noconvert(u_string);
+			std::string empty = "";
+			ret.set_value<std::string*>(&empty);
 			if (l.get_type() == u_integer)
 			{
-				//ret.value<std::string> +=std::to_string(l.value<int>());
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				std::size_t found = s1.find(s2);
+				if (found != std::string::npos)
+				{	
+					ret.append(s1.erase(found, s2.length()));
+				}
+				else
+				{
+					ret.append(s1);
+				}
 			}
 			else if (l.get_type() == u_double)
 			{
-				//ret.value<std::string> +=std::to_string(l.value<double>());
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				std::size_t found = s1.find(s2);
+				if (found != std::string::npos)
+				{	
+					ret.append(s1.erase(found, s2.length()));
+				}
+				else
+				{
+					ret.append(s1);
+				}
 			}
 		}
 		else
@@ -610,34 +680,95 @@ var_value operator/(var_value l, var_value r)
 		}
 		else
 		{
-			//ret.value<std::string> += l.value<std::string>();
-			//ret.value<std::string> += r.value<std::string>();
+			ret.set_type_noconvert(u_string);
+			std::string empty = "";
+			ret.set_value<std::string*>(&empty);
+			std::string s1, s2;
+			if(l.value<std::string>(s1)){}
+
+			if(r.value<std::string>(s2)){}
+
+			std::size_t found = s1.find(s2);
+			while (found != std::string::npos)
+			{
+				s1 = (s1.erase(found, s2.length()));
+				found = s1.find(s2);
+			}
+			ret.append(s1);
 		}
 	}
 	else
 	{
 		if (l.get_type()==u_string)
 		{
-			//ret.value<std::string> +=l.value<std::string>();
+			ret.set_type_noconvert(u_string);
+			std::string empty = "";
+			ret.set_value<std::string*>(&empty);
 			if (r.get_type() == u_integer)
 			{
-				//ret.value<std::string> +=std::to_string(r.value<int>());
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				std::size_t found = s1.find(s2);
+				while (found != std::string::npos)
+				{
+					s1 = (s1.erase(found, s2.length()));
+					found = s1.find(s2);
+				}
+				ret.append(s1);
 			}
 			else if (r.get_type() == u_double)
 			{
-				//ret.value<std::string> +=std::to_string(r.value<double>());
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				std::size_t found = s1.find(s2);
+				while (found != std::string::npos)
+				{
+					s1 = (s1.erase(found, s2.length()));
+					found = s1.find(s2);
+				}
+				ret.append(s1);
 			}
 		}
 		else if (r.get_type()==u_string)
 		{
-			//ret.value<std::string> +=l.value<std::string>();
+			ret.set_type_noconvert(u_string);
+			std::string empty = "";
+			ret.set_value<std::string*>(&empty);
 			if (l.get_type() == u_integer)
 			{
-				//ret.value<std::string> +=std::to_string(l.value<int>());
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				std::size_t found = s1.find(s2);
+				while (found != std::string::npos)
+				{
+					s1 = (s1.erase(found, s2.length()));
+					found = s1.find(s2);
+				}
+				ret.append(s1);
 			}
 			else if (l.get_type() == u_double)
 			{
-				//ret.value<std::string> +=std::to_string(l.value<double>());
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				std::size_t found = s1.find(s2);
+				while (found != std::string::npos)
+				{
+					s1 = (s1.erase(found, s2.length()));
+					found = s1.find(s2);
+				}
+				ret.append(s1);
 			}
 		}
 		else

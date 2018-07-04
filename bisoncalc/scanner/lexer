@@ -56,8 +56,6 @@ WS [ \n\t\r]
 "or" return Parser::OPERATOR_OR;
 "AND" return Parser::OPERATOR_AND;
 "OR" return Parser::OPERATOR_OR;
-"exit" return Parser::EXIT_CALL;
-"EXIT" return Parser::EXIT_CALL;
 
 "TRUE" return Parser::CONST_TRUE;
 "true" return Parser::CONST_TRUE;

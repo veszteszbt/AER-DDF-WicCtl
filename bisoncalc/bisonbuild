@@ -23,8 +23,10 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		echo "inserting into parse.cc"
 		sed -i 's/while (true)/while (!finished)/' parse.cc
 		#to remove warning
-		#(sed cant do this) insert return returnState; before } catch (Return__ retValue)
-		sed -i 's/\/\/ derived\/tail/void Parser::finish(int i)\n{\n\tfinished = true;\n\treturnState=i;\n}\n\/\/ derived\/tail' parse.cc
+		#(sed cant do this) insert into parse.cc:
+		# return returnState;
+		# before } catch (Return__ retValue)
+		sed -i 's/\/\/ derived\/tail/void Parser::finish(int i)\n{\n\tfinished = true;\n\treturnState=i;\n}\n\/\/ derived\/tail/' parse.cc
 
 
 		cd ..

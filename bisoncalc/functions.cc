@@ -122,7 +122,7 @@ functions::functions()
 	add_command("echo_c", echo_c);
 	add_command("echo_end", echo_end);
 	add_command("sin", sin);
-	add_command("exit_program",exit);
+	add_command("exit",exit);
 }
 	
 var_value functions::run(call* c)

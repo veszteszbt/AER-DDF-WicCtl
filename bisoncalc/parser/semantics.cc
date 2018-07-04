@@ -68,6 +68,7 @@ int command_list_desc::get_row()
 void command_list_desc::add(command_desc* cd)
 {
 	command_list.push_back(cd);
+	(*cd).evaluate();
 }
 
 void command_list_desc::add(command_list_desc* other)

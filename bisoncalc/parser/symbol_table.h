@@ -54,6 +54,7 @@ public:
 
 	void append(std::string s);
 	var_value& operator=(var_value right);
+
 	friend var_value operator+(var_value l, var_value r);
 	friend var_value operator-(var_value l, var_value r);
 	friend var_value operator*(var_value l, var_value r);

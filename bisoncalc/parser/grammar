@@ -61,8 +61,6 @@
 %token CONST_FALSE
 %token CONST_PI
 
-%token EXIT_CALL;
-
 %right OPERATOR_LET_BE
 %left OPERATOR_AND OPERATOR_OR
 %left OPERATOR_EQUAL OPERATOR_GREATER_THAN OPERATOR_LESS_THAN OPERATOR_GREATER_EQUAL OPERATOR_LESS_EQUAL OPERATOR_NOT_EQUAL
@@ -87,25 +85,11 @@
 
 
 start:
-	command_list end
+	command_list
 	{
 		$$ = new command_list_desc($1);
-		$$->evaluate();
-		journal(journal::info, "parser") << "start -> command_list end" << journal::end;
-	}
-|
-	end
-	{
-		$$ = new command_list_desc();
-		journal(journal::info, "parser") << "start -> end" << journal::end;
-	}
-;
-
-end:
-	EXIT_CALL
-	{
-		std::cout << "Exit call" << std::endl;
-		journal(journal::info, "parser") << "Exit call" << journal::end;
+		//$$->evaluate();
+		journal(journal::info, "parser") << "start -> command_list" << journal::end;
 	}
 ;
 
