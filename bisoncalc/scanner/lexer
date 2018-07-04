@@ -43,6 +43,7 @@ WS [ \n\t\r]
 "**" return Parser::OPERATOR_POWER;
 "^" return Parser::OPERATOR_POWER;
 "=" return Parser::OPERATOR_LET_BE;
+"$" return Parser::COMMAND_RETURNER;
 "-eq" return Parser::OPERATOR_EQUAL;
 "-gt" return Parser::OPERATOR_GREATER_THAN;
 "-lt" return Parser::OPERATOR_LESS_THAN;

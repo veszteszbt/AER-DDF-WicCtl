@@ -55,6 +55,7 @@
 %token <str> IDENTIFIER
 %token NEGATE
 %token HEXADECIMAL
+%token COMMAND_RETURNER
 
 %token CONST_TRUE
 %token CONST_FALSE
@@ -95,6 +96,7 @@ start:
 |
 	end
 	{
+		$$ = new command_list_desc();
 		journal(journal::info, "parser") << "start -> end" << journal::end;
 	}
 ;
@@ -153,12 +155,6 @@ command:
 	{
 		$$ = new sytable_stack($2);
 		journal(journal::info, "parser") << "command -> OCURLY command_list CCURLY" << journal::end;
-	}
-|
-	KEYWORD_FOR expression KEYWORD_DO command_list KEYWORD_DONE
-	{
-		//ez a for ciklus nem biztos hogy kell
-		journal(journal::info, "parser") << "command -> KEYWORD_FOR expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
 	KEYWORD_FOR IDENTIFIER KEYWORD_IN expression_list KEYWORD_DO command_list KEYWORD_DONE
@@ -369,6 +365,12 @@ expression:
 		$$ = new expr_const(d_loc__.first_line, Pi);
 		journal(journal::info, "parser") << "expression -> CONST_Pi" << journal::end;
 	}
+|
+	COMMAND_RETURNER OCURLY command CCURLY
+	{
+		$$ = new expr_const(d_loc__.first_line, $3->get_return_value());
+		journal(journal::info, "parser") << "expression -> COMMAND_RETURNER OCURLY command CCURLY" << journal::end;
+	}
 ;
 
 arguments:
@@ -455,6 +457,7 @@ else_part:
 |
 	//empty
 	{
+		$$ = new command_list_desc();
 		journal(journal::info, "parser") << "else_part -> empty" << journal::end;
 	}
 ;

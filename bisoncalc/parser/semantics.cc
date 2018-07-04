@@ -134,6 +134,15 @@ assign::assign(int row_number, std::string* var_name, expression_desc* ex) : row
 {
 }
 
+var_value assign::get_return_value()
+{
+	var_value v = 0;
+	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (assignment)!" << std::endl;
+	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (assignment)!" << journal::end;
+	std::terminate();
+	return v;
+}
+
 std::string assign::get_name()
 {
 	return *vname;
@@ -151,6 +160,15 @@ void assign::evaluate()
 
 local_assign::local_assign(int row_number, std::string* var_name, expression_desc* ex) : row(row_number), vname(var_name), e(ex)
 {
+}
+
+var_value local_assign::get_return_value()
+{
+	var_value v = 0;
+	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (local assignment)!" << std::endl;
+	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function! (local assignment)!" << journal::end;
+	std::terminate();
+	return v;
 }
 
 std::string local_assign::get_name()
@@ -632,9 +650,71 @@ int expr_um::get_row()
 	return val.get_type();
 }*/
 
+/*expr_incr::expr_incr(int row_number, expr_var* ex) : e(ex)
+{
+
+}
+
+void expr_incr::evaluate()
+{
+	e->evaluate();
+	expr_type = e->get_type();
+	try
+	{
+		val = ++(e->val);
+	}
+	catch (int)
+	{
+		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m operator ++ can only be used with integer type" << std::endl;
+		journal(journal::info, "semantics") << row << ": ERROR: operator ++ can only be used with integer type" << journal::end;
+		std::terminate();	
+	}
+}
+
+int expr_incr::get_row()
+{
+	return row;
+}
+
+expr_decr::expr_decr(int row_number, expression_desc* ex) : e(ex)
+{
+
+}
+
+void expr_decr::evaluate()
+{
+	e->evaluate();
+	expr_type = e->get_type();
+	try
+	{
+		val = --(e->val);
+	}
+	catch (int)
+	{
+		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m operator ++ can only be used with integer type" << std::endl;
+		journal(journal::info, "semantics") << row << ": ERROR: operator ++ can only be used with integer type" << journal::end;
+		std::terminate();	
+	}
+}
+
+int expr_decr::get_row()
+{
+	return row;
+}*/
+
+
 for_3_desc::for_3_desc(int row_number, command_desc* start_, expression_desc* condition_, command_desc* iterate_, command_list_desc* commands_): 
 row(row_number), start(start_), loop_condition(condition_), iterate(iterate_), commands(commands_) 
 {
+}
+
+var_value for_3_desc::get_return_value()
+{
+	var_value v = 0;
+	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (for loop)!" << std::endl;
+	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (for loop)!" << journal::end;
+	std::terminate();
+	return v;
 }
 
 
@@ -662,6 +742,15 @@ for_in_desc::for_in_desc(int row_number, std::string* variable_, c_expression_li
 {
 }
 
+var_value for_in_desc::get_return_value()
+{
+	var_value v = 0;
+	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (for loop)!" << std::endl;
+	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (for loop)!" << journal::end;
+	std::terminate();
+	return v;
+}
+
 void for_in_desc::evaluate()
 {
 	for(int i=0;i<elements->get_size();i++)
@@ -673,14 +762,19 @@ void for_in_desc::evaluate()
 	}
 }
 
-command_expr::command_expr(expression_desc* ex) : e(ex)
+command_expr::command_expr(expression_desc* ex) : e(ex), result(0)
 {
+}
+
+var_value command_expr::get_return_value()
+{
+	return result;
 }
 
 void command_expr::evaluate()
 {
 	e->evaluate();
-	var_value result = e->val;
+	result = e->val;
 	//this is where the program writes the actual result you see when you run it
 	std::cout << result << std::endl;
 }
@@ -734,6 +828,15 @@ row(row_number), condition(condition_), commands_pos(commands_pos_), commands_ne
 {	
 }
 
+var_value if_desc::get_return_value()
+{
+	var_value v = 0;
+	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (if statement)!" << std::endl;
+	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (if statement)!" << journal::end;
+	std::terminate();
+	return v;
+}
+
 void if_desc::evaluate()
 {
 	condition->evaluate();
@@ -752,6 +855,15 @@ void if_desc::evaluate()
 while_desc::while_desc(int row_number, expression_desc* condition_, command_list_desc* commands_) :
 row(row_number), loop_condition(condition_), commands(commands_) 
 {}
+
+var_value while_desc::get_return_value()
+{
+	var_value v = 0;
+	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (while loop)!" << std::endl;
+	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (while loop)!" << journal::end;
+	std::terminate();
+	return v;
+}
 
 void while_desc::evaluate()
 {
@@ -772,6 +884,16 @@ void while_desc::evaluate()
 until_desc::until_desc(int row_number, expression_desc* condition_, command_list_desc* commands_) : 
 row(row_number), loop_condition(condition_), commands(commands_) 
 {}
+
+
+var_value until_desc::get_return_value()
+{
+	var_value v = 0;
+	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (until loop)!" << std::endl;
+	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (until loop)!" << journal::end;
+	std::terminate();
+	return v;
+}
 
 void until_desc::evaluate()
 {
@@ -802,6 +924,15 @@ void casepart::evaluate()
 case_desc::case_desc(int row_number, expression_desc* case_expr_, casepartvector* caseparts_, command_list_desc* dcase) :
 row(row_number), case_expr(case_expr_), case_parts(caseparts_->case_parts), defaultcase(dcase)
 {}
+
+var_value case_desc::get_return_value()
+{
+	var_value v = 0;
+	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (case statement)!" << std::endl;
+	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (case statement)!" << journal::end;
+	std::terminate();
+	return v;
+}
 
 
 void case_desc::evaluate()
@@ -840,7 +971,13 @@ void casepartvector::add(casepartvector* other)
 	}
 }
 
-call::call(std::string n, argumentsvector* a, int row_number) : name(n), args(a->arguments), row(row_number){}
+call::call(std::string n, argumentsvector* a, int row_number) : name(n), args(a->arguments), row(row_number), returnval(0){}
+
+var_value call::get_return_value()
+{
+	evaluate();
+	return returnval;
+}
 
 void call::evaluate()
 {
@@ -852,7 +989,7 @@ void call::evaluate()
 	}
 	//std::cout << std::endl;
 	//fptr->run(this, row);
-	fptr->run(this);
+	returnval = fptr->run(this);
 }
 
 argumentsvector::argumentsvector() : is_empty(true){}
@@ -883,6 +1020,15 @@ void argumentsvector::add(argumentsvector* other)
 
 sytable_stack::sytable_stack(command_list_desc* cd) : c(cd)
 {}
+
+var_value sytable_stack::get_return_value()
+{
+	var_value v = 0;
+	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function ( {} aka symbol table stack)!" << std::endl;
+	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function ( {} aka symbol table stack)!" << journal::end;
+	std::terminate();
+	return v;
+}
 
 void sytable_stack::evaluate()
 {

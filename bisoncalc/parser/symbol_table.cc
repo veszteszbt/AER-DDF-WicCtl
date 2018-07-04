@@ -43,25 +43,76 @@ var_value::~var_value()
 	}
 }
 
+
+template<typename T>
+bool var_value::value(T &t) const
+{
+	return false;
+}
+
 template<>
-int var_value::value() const
+bool var_value::value(int &i) const
 {
 	//std::cout << "template value = " << val.intval << std::endl;
-	return val.intval;
+	if (var_type == u_double)
+	{
+		i = static_cast<int>(val.doubleval);
+	}
+	else if(var_type == u_string)
+	{
+		std::stringstream ss;
+		ss << val.stringval;
+		ss >> i;
+		if(!ss)
+			return false;
+	}
+	else
+	{
+		i = val.intval;
+	}
+	return true;
 }
 
 template<>
-double var_value::value() const
+bool var_value::value(double &d) const
 {
-	//std::cout << "template value = " << val.doubleval << std::endl;
-	return val.doubleval;
+	//std::cout << "template value = " << val.intval << std::endl;
+	if (var_type == u_integer)
+	{
+		d = static_cast<double>(val.intval);
+	}
+	else if(var_type == u_string)
+	{
+		std::stringstream ss;
+		ss << val.stringval;
+		ss >> d;
+		if(!ss)
+			return false;
+	}
+	else
+	{
+		d = val.doubleval;
+	}
+	return true;
 }
 
 template<>
-std::string var_value::value() const
+bool var_value::value(std::string &s) const
 {
-	//std::cout << "template value = " << val.stringval << std::endl;
-	return *(val.stringval);
+	//std::cout << "template value = " << val.intval << std::endl;
+	if (var_type == u_integer)
+	{
+		s = std::to_string(val.intval);
+	}
+	else if(var_type == u_double)
+	{
+		s = std::to_string(val.doubleval);
+	}
+	else
+	{
+		s = *val.stringval;
+	}
+	return true;
 }
 
 template<>
@@ -96,15 +147,40 @@ var_value::var_value(const var_value& other) : var_type(other.var_type)
 	switch(other.var_type)
 	{
 		case u_integer:
-		set_value<int>(other.value<int>());
+		int i;
+		if(other.value<int>(i))
+		{
+			set_value<int>(i);
+		}
+		else
+		{
+			std::cerr << "cannot convert to int" << std::endl;
+		}
+		//set_value<int>(other.value<int>());
 		//std::cout << val.intval << " switch int " << other.value<int>() << std::endl;
 		break;
 		case u_double:
-		set_value<double>(other.value<double>());
+		double d;
+		if(other.value<double>(d))
+		{
+			set_value<double>(d);
+		}
+		else
+		{
+			std::cerr << "cannot convert to double" << std::endl;
+		}
+		//set_value<double>(other.value<double>());
 		break;
 		case u_string: 
-		std::string* temp = new std::string(other.value<std::string>());
-		set_value<std::string*>(temp);
+		std::string* temp = new std::string;
+		if(other.value<std::string>(*temp))
+		{
+			set_value<std::string*>(temp);
+		}
+		else
+		{
+			std::cerr << "cannot convert to string" << std::endl;
+		}
 		break;
 	}
 }
@@ -113,8 +189,15 @@ void var_value::append(std::string s)
 {
 	if (get_type() == u_string)
 	{
-		std::string* temp = new std::string(value<std::string>());
-		(*temp).append(s);
+		std::string* temp = new std::string;
+		if(value<std::string*>(temp))
+		{
+			(*temp).append(s);
+		}
+		else
+		{
+			std::cerr << "cannot allocate string" << std::endl;
+		}
 		val.stringval->std::string::~string();
 		val.stringval = temp;
 		//std::cout << "val append" << *(val.stringval) << std::endl;
@@ -122,14 +205,32 @@ void var_value::append(std::string s)
 	else if(get_type() == u_integer)
 	{
 		var_type = u_string;
-		std::string* temp = new std::string(std::to_string(value<int>()));
+		std::string* temp = new std::string;
+		int i;
+		if(value<int>(i))
+		{
+			*temp = std::to_string(i);
+		}
+		else
+		{
+			std::cerr << "cannot convert to string" << std::endl;
+		}
 		(*temp).append(s);
 		val.stringval = temp;
 	}
 	else if(get_type() == u_double)
 	{
 		var_type = u_string;
-		std::string* temp = new std::string(std::to_string(value<double>()));
+		std::string* temp = new std::string;
+		double d;
+		if(value<double>(d))
+		{
+			*temp = std::to_string(d);
+		}
+		else
+		{
+			std::cerr << "cannot convert to string" << std::endl;
+		}
 		(*temp).append(s);
 		val.stringval = temp;
 	}
@@ -144,7 +245,15 @@ var_value& var_value::operator=(var_value right)
 			val.stringval->std::string::~string();
 		}
 		var_type = u_integer;
-		set_value<int>(right.value<int>());
+		int i;
+		if (right.value<int>(i))
+		{
+			set_value<int>(i);
+		}
+		else
+		{
+			std::cerr << "cannot convert to int" << std::endl;
+		}
 	}
 	else if (right.get_type() == u_double)
 	{
@@ -153,13 +262,22 @@ var_value& var_value::operator=(var_value right)
 			val.stringval->std::string::~string();
 		}
 		var_type = u_double;
-		set_value<double>(right.value<double>());
+		double d;
+		if (right.value<double>(d))
+		{
+			set_value<double>(d);
+		}
+		else
+		{
+			std::cerr << "cannot convert to double" << std::endl;
+		}
 	}
 	else 
 	{
 		if (get_type() != u_string)
 		{
-			std::string* temp = new std::string(right.value<std::string>());
+			std::string* temp = new std::string;
+			if (right.value<std::string>(*temp)){}
 			//sets pointer to temp (std::string* type)
 			set_value<std::string*>(temp);
 			var_type = u_string;
@@ -167,7 +285,9 @@ var_value& var_value::operator=(var_value right)
 		else
 		{
 			//sets the pointed string's value to the other string (std::string type)
-			set_value<std::string>(right.value<std::string>());
+			std::string s;
+			if (right.value<std::string>(s)){}
+			set_value<std::string>(s);
 		}
 		//std::cout << "right value string " << right.value<std::string>() << std::endl;
 		//std::cout << "var_value operator =, value " << val.stringval << std::endl;
@@ -182,19 +302,34 @@ var_value operator+(var_value l, var_value r)
 	{
 		if (l.get_type() == u_integer)
 		{
-			ret = l.value<int>() + r.value<int>();
+			int i1, i2;
+			if(l.value<int>(i1)){}
+
+			if(r.value<int>(i2)){}
+
+			ret = i1 + i2;
 		}
 		else if (l.get_type() == u_double)
 		{
-			ret = l.value<double>() + r.value<double>();
+			double d1, d2;
+			if(l.value<double>(d1)){}
+
+			if(r.value<double>(d2)){}
+
+			ret = d1 + d2;
 		}
 		else
 		{
 			ret.set_type_noconvert(u_string);
 			std::string empty = "";
 			ret.set_value<std::string*>(&empty);
-			ret.append(l.value<std::string>());
-			ret.append(r.value<std::string>());
+			std::string s1, s2;
+			if(l.value<std::string>(s1)){}
+
+			if(r.value<std::string>(s2)){}
+
+			ret.append(s1);
+			ret.append(s2);
 		}
 	}
 	else
@@ -206,15 +341,25 @@ var_value operator+(var_value l, var_value r)
 			{
 				ret.set_type_noconvert(u_string);
 				ret.set_value<std::string*>(&empty);
-				ret.append(l.value<std::string>());
-				ret.append(std::to_string(r.value<int>()));
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				ret.append(s1);
+				ret.append(s2);
 			}
 			else if (r.get_type() == u_double)
 			{
 				ret.set_type_noconvert(u_string);
 				ret.set_value<std::string*>(&empty);
-				ret.append(l.value<std::string>());
-				ret.append(std::to_string(r.value<double>()));
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				ret.append(s1);
+				ret.append(s2);
 			}
 		}
 		else if (r.get_type()==u_string)
@@ -224,26 +369,46 @@ var_value operator+(var_value l, var_value r)
 			{
 				ret.set_type_noconvert(u_string);
 				ret.set_value<std::string*>(&empty);
-				ret.append(std::to_string(l.value<int>()));
-				ret.append(r.value<std::string>());
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				ret.append(s1);
+				ret.append(s2);
 			}
 			else if (l.get_type() == u_double)
 			{
 				ret.set_type_noconvert(u_string);
 				ret.set_value<std::string*>(&empty);
-				ret.append(std::to_string(l.value<double>()));
-				ret.append(r.value<std::string>());
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				ret.append(s1);
+				ret.append(s2);
 			}
 		}
 		else
 		{
 			if (l.get_type() == u_integer)
 			{
-				ret = static_cast<double>(l.value<int>()) + r.value<double>();
+				double d1, d2;
+				if(l.value<double>(d1)){}
+
+				if(r.value<double>(d2)){}
+
+				ret = d1 + d2;
 			}
 			else if (r.get_type() == u_integer)
 			{
-				ret = static_cast<double>(r.value<int>()) + l.value<double>();
+				double d1, d2;
+				if(l.value<double>(d1)){}
+
+				if(r.value<double>(d2)){}
+
+				ret = d1 + d2;
 			}
 		}
 	}
@@ -257,14 +422,26 @@ var_value operator-(var_value l, var_value r)
 	{
 		if (l.get_type() == u_integer)
 		{
-			ret = l.value<int>() - r.value<int>();
+			int i1, i2;
+			if(l.value<int>(i1)){}
+
+			if(r.value<int>(i2)){}
+
+			ret = i1 - i2;
 		}
 		else if (l.get_type() == u_double)
 		{
-			ret = l.value<double>() - r.value<double>();
+			double d1, d2;
+			if(l.value<double>(d1)){}
+
+			if(r.value<double>(d2)){}
+
+			ret = d1 - d2;
 		}
 		else
 		{
+			std::string s1, s2;
+			if(l.value<std::string>(s1)){}
 			//ret.value<std::string> += l.value<std::string>();
 			//ret.value<std::string> += r.value<std::string>();
 		}
@@ -299,11 +476,21 @@ var_value operator-(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				ret = static_cast<double>(l.value<int>()) - r.value<double>();
+				double d1, d2;
+				if(l.value<double>(d1)){}
+
+				if(r.value<double>(d2)){}
+
+				ret = d1 - d2;
 			}
 			else if (r.get_type() == u_integer)
 			{
-				ret =  l.value<double>() - static_cast<double>(r.value<int>());
+				double d1, d2;
+				if(l.value<double>(d1)){}
+
+				if(r.value<double>(d2)){}
+
+				ret = d1 - d2;
 			}
 		}
 	}
@@ -317,11 +504,21 @@ var_value operator*(var_value l, var_value r)
 	{
 		if (l.get_type() == u_integer)
 		{
-			ret = l.value<int>() * r.value<int>();
+			int i1, i2;
+			if(l.value<int>(i1)){}
+
+			if(r.value<int>(i2)){}
+
+			ret = i1 * i2;
 		}
 		else if (l.get_type() == u_double)
 		{
-			ret = l.value<double>() * r.value<double>();
+			double d1, d2;
+			if(l.value<double>(d1)){}
+
+			if(r.value<double>(d2)){}
+
+			ret = d1 * d2;
 		}
 		else
 		{
@@ -359,11 +556,21 @@ var_value operator*(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				ret = static_cast<double>(l.value<int>()) * r.value<double>();
+				double d1, d2;
+				if(l.value<double>(d1)){}
+
+				if(r.value<double>(d2)){}
+
+				ret = d1 * d2;
 			}
 			else if (r.get_type() == u_integer)
 			{
-				ret = static_cast<double>(r.value<int>()) * l.value<double>();
+				double d1, d2;
+				if(l.value<double>(d1)){}
+
+				if(r.value<double>(d2)){}
+
+				ret = d1 * d2;
 			}
 		}
 	}
@@ -374,21 +581,32 @@ var_value operator/(var_value l, var_value r)
 {
 	if (r.get_type() == u_integer)
 	{
-		if (r.value<int>() == 0)
-		{
-			throw -1;
-		}
+		int i;
+		if (r.value<int>(i))
+			if (i == 0)
+				throw -1;
+
 	}
 	var_value ret;
 	if (l.get_type() == r.get_type())
 	{
 		if (l.get_type() == u_integer)
 		{
-			ret = static_cast<double>(l.value<int>()) / static_cast<double>(r.value<int>());
+			int i1, i2;
+			if(l.value<int>(i1)){}
+
+			if(r.value<int>(i2)){}
+
+			ret = i1 / i2;
 		}
 		else if (l.get_type() == u_double)
 		{
-			ret = l.value<double>() / r.value<double>();
+			double d1, d2;
+			if(l.value<double>(d1)){}
+
+			if(r.value<double>(d2)){}
+
+			ret = d1 / d2;
 		}
 		else
 		{
@@ -426,11 +644,21 @@ var_value operator/(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				ret = static_cast<double>(l.value<int>()) / r.value<double>();
+				double d1, d2;
+				if(l.value<double>(d1)){}
+
+				if(r.value<double>(d2)){}
+
+				ret = d1 / d2;
 			}
 			else if (r.get_type() == u_integer)
 			{
-				ret = l.value<double>() / static_cast<double>(r.value<int>());
+				double d1, d2;
+				if(l.value<double>(d1)){}
+
+				if(r.value<double>(d2)){}
+
+				ret = d1 / d2;
 			}
 		}
 	}
@@ -444,11 +672,21 @@ var_value operator^(var_value l, var_value r)
 	{
 		if (l.get_type() == u_integer)
 		{
-			ret = pow(l.value<int>(), r.value<int>());
+			int i1, i2;
+			if(l.value<int>(i1)){}
+
+			if(r.value<int>(i2)){}
+
+			ret = pow(i1, i2);
 		}
 		else if (l.get_type() == u_double)
 		{
-			ret = pow(l.value<double>(), r.value<double>());
+			double d1, d2;
+			if(l.value<double>(d1)){}
+
+			if(r.value<double>(d2)){}
+
+			ret = pow(d1, d2);
 		}
 		else
 		{
@@ -486,11 +724,21 @@ var_value operator^(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				ret = pow(static_cast<double>(l.value<int>()), r.value<double>());
+				double d1, d2;
+				if(l.value<double>(d1)){}
+
+				if(r.value<double>(d2)){}
+
+				ret = pow(d1, d2);
 			}
 			else if (r.get_type() == u_integer)
 			{
-				ret = pow(l.value<double>(), static_cast<double>(r.value<int>()));
+				double d1, d2;
+				if(l.value<double>(d1)){}
+
+				if(r.value<double>(d2)){}
+
+				ret = pow(d1, d2);
 			}
 		}
 	}
@@ -504,13 +752,18 @@ var_value operator%(var_value l, var_value r)
 	{
 		if (l.get_type() == u_integer)
 		{
-			if (r.value<int>() == 0)
+			int i1, i2;
+			if (l.value<int>(i1)){}
+
+			if (r.value<int>(i2)){}
+
+			if(i2 == 0)
 			{
 				throw 1;
 			}
 			else
 			{
-				ret = l.value<int>() % r.value<int>();
+				ret = i1 % i2;
 			}
 		}
 		else
@@ -525,13 +778,32 @@ var_value operator%(var_value l, var_value r)
 	return ret;
 }
 
+/*var_value operator++(var_value o)
+{
+	var_value ret;
+	if (o.get_type() == u_integer)
+	{
+		ret = o.value<int>() + 1;
+	}
+	else
+	{
+		throw 1;
+	}
+	return ret;
+}*/
+
 int operator==(var_value l, var_value r)
 {
 	if (l.get_type() == r.get_type())
 	{
 		if (l.get_type() == u_integer)
 		{
-			if(l.value<int>() == r.value<int>())
+			int i1, i2;
+			if(l.value<int>(i1)){}
+
+			if(r.value<int>(i2)){}
+			
+			if(i1 == i2)
 			{
 				return 1;
 			}
@@ -542,7 +814,11 @@ int operator==(var_value l, var_value r)
 		}
 		else if (l.get_type() == u_double)
 		{
-			if(l.value<double>() == r.value<double>())
+			double d1, d2;
+			if(l.value<double>(d1)){}
+			if(r.value<double>(d2)){}
+
+			if (d1 == d2)
 			{
 				return 1;
 			}
@@ -553,7 +829,11 @@ int operator==(var_value l, var_value r)
 		}
 		else
 		{
-			if(l.value<std::string>() == r.value<std::string>())
+			std::string s1, s2;
+			if(l.value<std::string>(s1)){}
+			if(r.value<std::string>(s2)){}
+
+			if(s1 == s2)
 			{
 				return 1;
 			}
@@ -569,7 +849,12 @@ int operator==(var_value l, var_value r)
 		{
 			if (r.get_type() == u_integer)
 			{
-				if(l.value<std::string>() == std::to_string(r.value<int>()))
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				if(s1 == s2)
 				{
 					return 1;
 				}
@@ -580,7 +865,12 @@ int operator==(var_value l, var_value r)
 			}
 			else if (r.get_type() == u_double)
 			{
-				if(l.value<std::string>() == std::to_string(r.value<double>()))
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+				
+				if(r.value<std::string>(s2)){}
+
+				if(s1 == s2)
 				{
 					return 1;
 				}
@@ -594,7 +884,12 @@ int operator==(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				if(r.value<std::string>() == std::to_string(l.value<int>()))
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+				
+				if(r.value<std::string>(s2)){}
+
+				if(s1 == s2)
 				{
 					return 1;
 				}
@@ -605,7 +900,12 @@ int operator==(var_value l, var_value r)
 			}
 			else if (l.get_type() == u_double)
 			{
-				if(r.value<std::string>() == std::to_string(l.value<double>()))
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+				
+				if(r.value<std::string>(s2)){}
+
+				if(s1 == s2)
 				{
 					return 1;
 				}
@@ -619,7 +919,12 @@ int operator==(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				if(r.value<double>() == static_cast<double>(l.value<int>()))
+				double d1, d2;
+				if(l.value<double>(d1)){}
+				
+				if(r.value<double>(d2)){}
+
+				if(d1 == d2)
 				{
 					return 1;
 				}
@@ -630,7 +935,12 @@ int operator==(var_value l, var_value r)
 			}
 			else if (r.get_type() == u_integer)
 			{
-				if(l.value<double>() == static_cast<double>(r.value<int>()))
+				double d1, d2;
+				if(l.value<double>(d1)){}
+				
+				if(r.value<double>(d2)){}
+
+				if(d1 == d2)
 				{
 					return 1;
 				}
@@ -662,7 +972,12 @@ int operator<(var_value l, var_value r)
 	{
 		if (l.get_type() == u_integer)
 		{
-			if(l.value<int>() < r.value<int>())
+			int i1, i2;
+			if(l.value<int>(i1)){}
+
+			if(r.value<int>(i2)){}
+			
+			if(i1 < i2)
 			{
 				return 1;
 			}
@@ -673,7 +988,11 @@ int operator<(var_value l, var_value r)
 		}
 		else if (l.get_type() == u_double)
 		{
-			if(l.value<double>() < r.value<double>())
+			double d1, d2;
+			if(l.value<double>(d1)){}
+			if(r.value<double>(d2)){}
+
+			if (d1 < d2)
 			{
 				return 1;
 			}
@@ -684,7 +1003,11 @@ int operator<(var_value l, var_value r)
 		}
 		else
 		{
-			if(l.value<std::string>() < r.value<std::string>())
+			std::string s1, s2;
+			if(l.value<std::string>(s1)){}
+			if(r.value<std::string>(s2)){}
+
+			if(s1 < s2)
 			{
 				return 1;
 			}
@@ -700,7 +1023,12 @@ int operator<(var_value l, var_value r)
 		{
 			if (r.get_type() == u_integer)
 			{
-				if(l.value<std::string>() < std::to_string(r.value<int>()))
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				if(s1 < s2)
 				{
 					return 1;
 				}
@@ -711,7 +1039,12 @@ int operator<(var_value l, var_value r)
 			}
 			else if (r.get_type() == u_double)
 			{
-				if(l.value<std::string>() < std::to_string(r.value<double>()))
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+				
+				if(r.value<std::string>(s2)){}
+
+				if(s1 < s2)
 				{
 					return 1;
 				}
@@ -725,7 +1058,12 @@ int operator<(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				if(std::to_string(l.value<int>()) < r.value<std::string>())
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+				
+				if(r.value<std::string>(s2)){}
+
+				if(s1 < s2)
 				{
 					return 1;
 				}
@@ -736,7 +1074,12 @@ int operator<(var_value l, var_value r)
 			}
 			else if (l.get_type() == u_double)
 			{
-				if(std::to_string(l.value<double>()) < r.value<std::string>())
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+				
+				if(r.value<std::string>(s2)){}
+
+				if(s1 < s2)
 				{
 					return 1;
 				}
@@ -750,7 +1093,12 @@ int operator<(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				if(static_cast<double>(l.value<int>()) < r.value<double>())
+				double d1, d2;
+				if(l.value<double>(d1)){}
+				
+				if(r.value<double>(d2)){}
+
+				if(d1 < d2)
 				{
 					return 1;
 				}
@@ -761,7 +1109,12 @@ int operator<(var_value l, var_value r)
 			}
 			else if (r.get_type() == u_integer)
 			{
-				if(l.value<double>() < static_cast<double>(r.value<int>()))
+				double d1, d2;
+				if(l.value<double>(d1)){}
+				
+				if(r.value<double>(d2)){}
+
+				if(d1 < d2)
 				{
 					return 1;
 				}
@@ -781,7 +1134,12 @@ int operator>(var_value l, var_value r)
 	{
 		if (l.get_type() == u_integer)
 		{
-			if(l.value<int>() > r.value<int>())
+			int i1, i2;
+			if(l.value<int>(i1)){}
+
+			if(r.value<int>(i2)){}
+			
+			if(i1 > i2)
 			{
 				return 1;
 			}
@@ -792,7 +1150,11 @@ int operator>(var_value l, var_value r)
 		}
 		else if (l.get_type() == u_double)
 		{
-			if(l.value<double>() > r.value<double>())
+			double d1, d2;
+			if(l.value<double>(d1)){}
+			if(r.value<double>(d2)){}
+
+			if (d1 > d2)
 			{
 				return 1;
 			}
@@ -803,7 +1165,11 @@ int operator>(var_value l, var_value r)
 		}
 		else
 		{
-			if(l.value<std::string>() > r.value<std::string>())
+			std::string s1, s2;
+			if(l.value<std::string>(s1)){}
+			if(r.value<std::string>(s2)){}
+
+			if(s1 > s2)
 			{
 				return 1;
 			}
@@ -819,7 +1185,12 @@ int operator>(var_value l, var_value r)
 		{
 			if (r.get_type() == u_integer)
 			{
-				if(l.value<std::string>() > std::to_string(r.value<int>()))
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+
+				if(r.value<std::string>(s2)){}
+
+				if(s1 > s2)
 				{
 					return 1;
 				}
@@ -830,7 +1201,12 @@ int operator>(var_value l, var_value r)
 			}
 			else if (r.get_type() == u_double)
 			{
-				if(l.value<std::string>() > std::to_string(r.value<double>()))
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+				
+				if(r.value<std::string>(s2)){}
+
+				if(s1 > s2)
 				{
 					return 1;
 				}
@@ -844,7 +1220,12 @@ int operator>(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				if(std::to_string(l.value<int>()) > r.value<std::string>())
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+				
+				if(r.value<std::string>(s2)){}
+
+				if(s1 > s2)
 				{
 					return 1;
 				}
@@ -855,7 +1236,12 @@ int operator>(var_value l, var_value r)
 			}
 			else if (l.get_type() == u_double)
 			{
-				if(std::to_string(l.value<double>()) > r.value<std::string>())
+				std::string s1, s2;
+				if(l.value<std::string>(s1)){}
+				
+				if(r.value<std::string>(s2)){}
+
+				if(s1 > s2)
 				{
 					return 1;
 				}
@@ -869,7 +1255,12 @@ int operator>(var_value l, var_value r)
 		{
 			if (l.get_type() == u_integer)
 			{
-				if(static_cast<double>(l.value<int>()) > r.value<double>())
+				double d1, d2;
+				if(l.value<double>(d1)){}
+				
+				if(r.value<double>(d2)){}
+
+				if(d1 > d2)
 				{
 					return 1;
 				}
@@ -880,7 +1271,12 @@ int operator>(var_value l, var_value r)
 			}
 			else if (r.get_type() == u_integer)
 			{
-				if(l.value<double>() > static_cast<double>(r.value<int>()))
+				double d1, d2;
+				if(l.value<double>(d1)){}
+				
+				if(r.value<double>(d2)){}
+
+				if(d1 > d2)
 				{
 					return 1;
 				}
@@ -923,17 +1319,26 @@ std::ostream& operator<<(std::ostream& out, var_value &v)
 	if (v.get_type() == u_integer)
 	{
 		//std::cout << "writing int" << std::endl;
-		out << v.value<int>();
+		int i;
+		if (v.value<int>(i))
+
+		out << i;
 	}
 	else if (v.get_type() == u_double)
 	{
 		//std::cout << "writing double" << std::endl;
-		out << v.value<double>();
+		double d;
+		if (v.value<double>(d))
+
+		out << d;
 	}
 	else
 	{
 		//std::cout << "writing string" << std::endl;
-		out << v.value<std::string>();
+		std::string s;
+		if (v.value<std::string>(s))
+
+		out << s;
 	}
 	return out;
 }

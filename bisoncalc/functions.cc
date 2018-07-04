@@ -1,4 +1,7 @@
 #include "functions.h"
+#include "parser/Parser.ih"
+
+extern Parser* parser;
 
 namespace wic{
 
@@ -8,12 +11,12 @@ namespace wic{
 	std::cout << "delay" << std::endl;
 }*/
 
-static void gamestate(const std::vector<std::string> &args)
+/*static void gamestate(const std::vector<std::string> &args)
 {
 	
 	std::cout << "gamestate" << std::endl;
 
-}
+}*/
 
 static void write_int(int i)
 {
@@ -53,6 +56,17 @@ static void echo_c(std::string s, int i)
 static void echo_end()
 {
 	std::cout << std::endl;
+}
+
+/*static double sinus(double x)
+{
+	return sin(x);
+}*/
+
+static void exit(int i)
+{
+	std::cout << "exiting program with code " << i << std::endl;
+	(*parser).finish(i);
 }
 
 template<typename T>
@@ -100,59 +114,61 @@ functions::functions()
 	add_command("writeint",write_int);
 	add_command("writedouble",write_double);
 	add_command("writestring",write_string);
-    add_command("gamestate",gamestate);
+    //add_command("gamestate",gamestate);
 	add_command("echo", echo<int>);
 	add_command("echo", echo<double>);
 	add_command("echo", echo<std::string>);
 	add_command("write_reverse", write_reverse);
 	add_command("echo_c", echo_c);
 	add_command("echo_end", echo_end);
+	add_command("sin", sin);
+	add_command("exit_program",exit);
 }
 	
-void functions::run(call* c)
+var_value functions::run(call* c)
 {
-	//while(/*active*/true) //végtelenciklus
-	//{ 
-		//int row = row_number;
-		arguments.clear();
-		arguments.resize(0);
-		std::string command_name;
-		//std::getline(std::cin,asd);
-		//std::stringstream x(asd);
-		command_name = c->name;
-		std::vector<expression_desc*> args = c->args;
-		//std::string _command;
-		//std::string tempstring;
-		//x >> _command;
-		//if (!x.fail())
-		//{
-			auto runcommand = commands.find(command_name);
-			if (runcommand!=commands.end())
-			{
-				//while (x >> tempstring)
-				for (unsigned int i=0;i<args.size();i++)
-				{
-					arguments.push_back(args[i]->val);
-				}
-				runcommand->second(arguments);
-			}
-			else
-			{
-				std::cerr << "\e[31;01mERROR:\e[0m Unknown command!" << std::endl;
-				journal(journal::info, "functions") << "ERROR: Unknown command!" << journal::end;
-		        std::terminate();
-				//unknown command
-			}
-		//}
-		//else{
-		//		std::cout << "Cannot read command" << std::endl;
-				//in.setstate(std::ios::failbit);
-		//	}
+	var_value v = 0;
+	arguments.clear();
+	arguments.resize(0);
+	std::string command_name;
+	command_name = c->name;
+	std::vector<expression_desc*> args = c->args;
+	auto runcommand = commands.find(command_name);
+	if (runcommand!=commands.end())
+	{
+		for (unsigned int i=0;i<args.size();i++)
+		{
+			arguments.push_back(args[i]->val);
+		}
 
-	//}
+		//template<class T>
+		//typename std::result_of<T(void)>
+		//v lehet void is!! 
+		//v = std::result_of<runcommand->second(arguments)>;
+		v = runcommand->second(arguments);
+	}
+	else
+	{
+		std::cerr << "\e[31;01mERROR:\e[0m Unknown command!" << std::endl;
+		journal(journal::info, "functions") << "ERROR: Unknown command!" << journal::end;
+		std::terminate();
+		//unknown command
+	}
 
-	//gmclient_test::test_room_1::init();
+	//itt v lehet void is, ne ezeket compareld!
+	/*if (std::is_same<decltype(std::result_of<runcommand->second()>) ,int>)
+	{
 
+	}
+	else if(std::is_same<v, double>)
+	{
+
+	}
+	else if(std::is_same<v, std::string>)
+	{
+
+	}*/
+	return v;
 }
 
 
@@ -175,7 +191,7 @@ bool convert(const std::string &input, int &output)
 	return true;
 }*/
 
-template<>
+/*template<>
 bool convert(const var_value &v, int &output)
 {
 	if (v.get_type() == u_integer)
@@ -215,7 +231,7 @@ bool convert(const var_value &v, std::string &output)
 	{
 		return false;
 	}
-}
+}*/
 
 /*template<>
 bool convert(const std::string &input, std::string &output)

@@ -36,6 +36,7 @@ struct command_desc
 
 	int row;
 
+	virtual var_value get_return_value() = 0;
 	void set_row(int &r);
 	int get_row();
 	virtual void evaluate() = 0;
@@ -107,6 +108,7 @@ struct assign : public command_desc
 	std::string* vname;
 	expression_desc* e;
 	
+	var_value get_return_value();
 	std::string get_name();
 	void evaluate();
 };
@@ -118,7 +120,8 @@ struct local_assign : public command_desc
 	int row;
 	std::string* vname;
 	expression_desc* e;
-		
+	
+	var_value get_return_value();
 	std::string get_name();
 	void evaluate();
 };
@@ -363,6 +366,30 @@ struct expr_um : public expr_unary
 	type get_type();
 };
 
+/*struct expr_incr : public command_desc
+{
+	expr_incr(int row_number, expr_var* ex);
+	
+	expression_desc* e;
+	type expr_type;
+
+	void evaluate();
+	int get_row();
+	type get_type();
+};
+
+struct expr_decr : public command_desc
+{
+	expr_decr(int row_number, expression_desc* ex);
+	
+	expression_desc* e;
+	type expr_type;
+
+	void evaluate();
+	int get_row();
+	type get_type();
+};*/
+
 struct for_3_desc : public command_desc
 {
 	for_3_desc(int row_number, command_desc* start_, expression_desc* condition_, command_desc* iterate_, command_list_desc* commands_);
@@ -373,6 +400,7 @@ struct for_3_desc : public command_desc
 	command_desc* iterate;
 	command_list_desc* commands;
 
+	var_value get_return_value();
 	void evaluate();
 };
 
@@ -385,6 +413,7 @@ struct for_in_desc : public command_desc
 	c_expression_list* elements;
 	command_list_desc* commands;
 	
+	var_value get_return_value();
 	void evaluate();
 };
 
@@ -397,6 +426,7 @@ struct if_desc : public command_desc
 	command_list_desc* commands_pos;	//positive
 	command_list_desc* commands_neg; 	//negative
 
+	var_value get_return_value();
 	void evaluate();
 };
 
@@ -408,6 +438,7 @@ struct while_desc : public command_desc
 	expression_desc* loop_condition;
 	command_list_desc* commands;
 
+	var_value get_return_value();
 	void evaluate();
 };
 
@@ -419,6 +450,7 @@ struct until_desc : public command_desc
 	expression_desc* loop_condition;
 	command_list_desc* commands;
 
+	var_value get_return_value();
 	void evaluate();
 };
 
@@ -449,6 +481,7 @@ struct case_desc : public command_desc
 	std::vector<casepart*> case_parts;
 	command_list_desc* defaultcase;
 	
+	var_value get_return_value();
 	void evaluate();
 };
 
@@ -457,7 +490,9 @@ struct command_expr : public command_desc
 {
 	command_expr(expression_desc* ex);
 	expression_desc* e;
+	var_value result;
 
+	var_value get_return_value();
 	void evaluate();
 };
 
@@ -480,7 +515,9 @@ struct call : public command_desc
 	std::string name;
 	std::vector<expression_desc*> args;
 	int row;
+	var_value returnval;
 
+	var_value get_return_value();
 	void evaluate();
 };
 
@@ -491,6 +528,7 @@ struct sytable_stack : public command_desc
 	
 	command_list_desc* c;
 
+	var_value get_return_value();
 	void evaluate();
 };
 

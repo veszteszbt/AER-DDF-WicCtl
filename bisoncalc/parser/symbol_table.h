@@ -47,7 +47,7 @@ public:
 	void set_value(std::string s);
 
 	template<typename T>
-	T value() const;
+	bool value(T &t) const;
 
 	template<typename T>
 	void set_value(T);
@@ -60,6 +60,7 @@ public:
 	friend var_value operator/(var_value l, var_value r);
 	friend var_value operator^(var_value l, var_value r);
 	friend var_value operator%(var_value l, var_value r);
+	//friend var_value operator++(var_value o);
 	friend int operator==(var_value l, var_value r);
 	friend int operator!=(var_value l, var_value r);
 	friend int operator<(var_value l, var_value r);
