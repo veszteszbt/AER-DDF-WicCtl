@@ -10,13 +10,13 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		echo "bisonc++ grammar"
 		bisonc++ grammar
 
-		echo "insering into Parser.h"
+		echo "inserting into Parser.h"
 		sed -i 's/lines./lines.\n#include "symbol_table.h"/' Parser.h
 		sed -i 's/Parser() = default;/Parser() = default;\n\t\tParser(std::string inFile) : d_scanner(inFile, std::cout){}/' Parser.h
 		sed -i 's/int parse();/int parse();\n\t\tvoid finish(int i);/' Parser.h
 		sed -i 's/private:/\tSymbol_Table symbol_table;\n\nprivate:\n\t\tbool finished;\n\t\tint returnState;/' Parser.h
 
-		echo "insering into Parser.ih"
+		echo "inserting into Parser.ih"
 		sed -i 's/std::cerr << "Syntax error\\n";/std::cerr << d_loc__.first_line << ": \\e[31;01mSyntax error\\e[0m\\n";\n\tstd::terminate();/' Parser.ih
 		sed -i 's/return d_scanner.lex();/int ret = d_scanner.lex();\n\td_loc__.first_line = d_scanner.lineNr();\n\tif( ret == IDENTIFIER || ret == SINGLEQUOTE || ret == DOUBLEQUOTE )\n\t{\n\t\td_val__.str = new std::string(d_scanner.matched());\n\t}\n\telse if( ret == INTEGER )\n\t{\n\t\td_val__.integ = new int(stoi(d_scanner.matched()));\n\t}\n\telse if( ret == DOUBLE )\n\t{\n\t\td_val__.dbl = new double(stod(d_scanner.matched()));\n\t}\n\treturn ret;/' Parser.ih
 		
@@ -28,6 +28,7 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		# before } catch (Return__ retValue)
 		sed -i 's/\/\/ derived\/tail/void Parser::finish(int i)\n{\n\tfinished = true;\n\treturnState=i;\n}\n\/\/ derived\/tail/' parse.cc
 
+		echo "please paste \"return returnState\" into parse.cc for the parse() function"
 
 		cd ..
 	;;

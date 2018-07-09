@@ -5,6 +5,8 @@
 Parser* parser;
 wic::functions* fptr;
 
+int scanDepth = 0;
+
 int main(int argc, char* argv[])
 {
 	journal::init("journal/journal.txt");

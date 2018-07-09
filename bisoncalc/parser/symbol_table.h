@@ -7,7 +7,7 @@
 #include <string>
 #include <cmath>
 //#include <ios>
-//#include <sstream>
+#include <sstream>
 //#include <algorithm>
 
 enum type{ u_integer, u_double, u_string };

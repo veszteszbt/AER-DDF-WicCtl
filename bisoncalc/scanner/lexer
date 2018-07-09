@@ -3,18 +3,34 @@ WS [ \n\t\r]
 %%
 
 "if" return Parser::KEYWORD_IF; 
-"then" return Parser::KEYWORD_THEN; 
+"then" {
+		extern int scanDepth;
+		scanDepth++;
+		return Parser::KEYWORD_THEN;
+	} 
 "else" return Parser::KEYWORD_ELSE; 
 "elif" return Parser::KEYWORD_ELIF; 
-"fi" return Parser::KEYWORD_FI; 
+"fi" {
+		extern int scanDepth;
+		scanDepth--;
+		return Parser::KEYWORD_FI;
+	}
 "case" return Parser::KEYWORD_CASE; 
 "in" return Parser::KEYWORD_IN; 
 "esac" return Parser::KEYWORD_ESAC; 
 "for" return Parser::KEYWORD_FOR; 
 "while" return Parser::KEYWORD_WHILE; 
 "until" return Parser::KEYWORD_UNTIL; 
-"do" return Parser::KEYWORD_DO; 
-"done" return Parser::KEYWORD_DONE; 
+"do" {
+		extern int scanDepth;
+		scanDepth++;
+		return Parser::KEYWORD_DO;
+	}
+"done" {
+		extern int scanDepth;
+		scanDepth--;
+		return Parser::KEYWORD_DONE;
+	}
 "default" return Parser::KEYWORD_DEFAULT;
 "local" return Parser::KEYWORD_LOCAL;
 "{" return Parser::OCURLY; 
@@ -75,8 +91,8 @@ WS [ \n\t\r]
 {WS}+
 
 .           {
-                std::cerr << lineNr() << ": \e[31;01mLexical error\e[0m" << std::endl;
-                std::terminate();
-            }
+				std::cerr << lineNr() << ": \e[31;01mLexical error\e[0m" << std::endl;
+				std::terminate();
+			}
 
 %%

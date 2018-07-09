@@ -165,7 +165,7 @@ command:
 		journal(journal::info, "parser") << "command -> KEYWORD_UNTIL expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
 	}
 |
-	KEYWORD_CASE expression KEYWORD_IN caseparts KEYWORD_DEFAULT CPARENTHESIS command_list CASE_DELIMITER KEYWORD_ESAC
+	KEYWORD_CASE expression KEYWORD_DO caseparts KEYWORD_DEFAULT CPARENTHESIS command_list CASE_DELIMITER KEYWORD_ESAC
 	{
 		$$ = new case_desc(d_loc__.first_line, $2, $4, $7);
 		journal(journal::info, "parser") << "command -> KEYWORD_CASE expression KEYWORD_IN caseparts KEYWORD_DEFAULT CPARENTHESIS command_list CASE_DELIMITER KEYWORD_ESAC" << journal::end;
@@ -345,7 +345,7 @@ expression:
 |
 	CONST_PI
 	{
-		constexpr double Pi = acos(-1);
+		double Pi = acos(-1);
 		$$ = new expr_const(d_loc__.first_line, Pi);
 		journal(journal::info, "parser") << "expression -> CONST_Pi" << journal::end;
 	}

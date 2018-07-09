@@ -4,6 +4,7 @@
 //the parser object created in main
 extern Parser* parser;
 extern wic::functions* fptr;
+extern int scanDepth;
 
 expression_desc::expression_desc(int row_number, var_value v) : row(row_number), val(v) {}
 
@@ -68,7 +69,10 @@ int command_list_desc::get_row()
 void command_list_desc::add(command_desc* cd)
 {
 	command_list.push_back(cd);
-	(*cd).evaluate();
+	if (scanDepth == 0)
+	{
+		(*cd).evaluate();
+	}
 }
 
 void command_list_desc::add(command_list_desc* other)
