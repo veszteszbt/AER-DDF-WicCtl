@@ -36,6 +36,14 @@ static void write_string(std::string s)
 	//active=false;
 }
 
+static void write_array(std::unordered_map<std::string, var_value> m)
+{
+	for(auto it = m.begin(); it!=m.end();it++)
+	{
+		std::cout << "writing array: {key:" << it->first << ", value:" << it->second << "}" << std::endl;
+	}
+}
+
 static void write_reverse(std::string s)
 {
 	std::reverse(s.begin(), s.end());
@@ -56,6 +64,18 @@ static void echo_c(std::string s, int i)
 static void echo_end()
 {
 	std::cout << std::endl;
+}
+
+static void is_true(int b)
+{
+	if(b)
+	{
+		std::cout << "TRUE" << std::endl;
+	}
+	else
+	{
+		std::cout << "FALSE" << std::endl;
+	}
 }
 
 /*static double sinus(double x)
@@ -114,6 +134,7 @@ functions::functions()
 	add_command("writeint",write_int);
 	add_command("writedouble",write_double);
 	add_command("writestring",write_string);
+	add_command("writearray", write_array);
     //add_command("gamestate",gamestate);
 	add_command("echo", echo<int>);
 	add_command("echo", echo<double>);
@@ -122,6 +143,7 @@ functions::functions()
 	add_command("echo_c", echo_c);
 	add_command("echo_end", echo_end);
 	add_command("sin", sin);
+	add_command("is_true", is_true);
 	add_command("exit",exit);
 }
 	

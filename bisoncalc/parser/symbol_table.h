@@ -2,6 +2,7 @@
 #define SYMBOL_TABLE_H
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <journal/journal.h>
 #include <iostream>
 #include <string>
@@ -10,7 +11,7 @@
 #include <sstream>
 //#include <algorithm>
 
-enum type{ u_integer, u_double, u_string };
+enum type{ u_integer, u_double, u_string, u_array };
 
 class var_value
 {
@@ -20,10 +21,12 @@ class var_value
 		int intval;
 		double doubleval;
 		std::string* stringval;
+		std::unordered_map<std::string, var_value>* array;
 
 		value(int i) : intval(i) {}
 		value(double d) : doubleval(d) {}
 		value(std::string* s) : stringval(s) {}
+		value(std::unordered_map<std::string, var_value>* a) : array(a) {}
 
 		value() : intval(0){}
 		~value(){}; //TODO ezt később fix
@@ -36,6 +39,7 @@ public:
 	var_value(int i);
 	var_value(double d);
 	var_value(std::string* s);
+	var_value(std::unordered_map<std::string, var_value>* a);
 	var_value(const var_value& other);
 	var_value();
 	~var_value();
@@ -45,6 +49,16 @@ public:
 	void set_value(int i);
 	void set_value(double d);
 	void set_value(std::string s);
+	bool find(std::string s);
+	std::string find_first_element_having_value(var_value v);
+	std::vector<std::string> find_elements_having_value(var_value v);
+	std::vector<var_value> return_array_elements();
+	//void delete_element_with_key(std::string key);
+	//void delete_elements_with_key(std::vector<std::string> vec);
+	int get_size();
+	void insert(std::string s, var_value a);
+	var_value return_element_with_key(var_value v);
+	//void set_value(std::unordered_map<std::string, var_value> a);
 
 	template<typename T>
 	bool value(T &t) const;
@@ -53,6 +67,7 @@ public:
 	void set_value(T);
 
 	void append(std::string s);
+	//void add(var_value v);
 	var_value& operator=(var_value right);
 
 	friend var_value operator+(var_value l, var_value r);
@@ -68,6 +83,7 @@ public:
 	friend int operator>(var_value l, var_value r);
 	friend int operator>=(var_value l, var_value r);
 	friend int operator<=(var_value l, var_value r);
+	//friend int* operator*()(var_value v);
 	friend std::ostream& operator<<(std::ostream& out, var_value &v);
 	//friend std::istream& operator>>(std::istream& in, var_value &v);
 };
@@ -99,7 +115,7 @@ class Symbol_Table
 	void decrease_stack();
 
 	private:
-		std::vector<std::map<std::string, variable_desc> > symbol_table;
+		std::vector<std::unordered_map<std::string, variable_desc> > symbol_table;
 };
 
 #endif

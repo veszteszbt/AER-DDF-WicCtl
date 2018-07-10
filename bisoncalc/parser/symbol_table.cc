@@ -6,6 +6,7 @@ var_value::var_value(double d) : var_type(u_double), val(d) {}
 
 var_value::var_value(std::string* s) : var_type(u_string), val(s) {}
 
+var_value::var_value(std::unordered_map<std::string, var_value>* a) : var_type(u_array), val(a) {}
 /*template<>
 void var_value::value::set_value(int i)
 {
@@ -41,6 +42,10 @@ var_value::~var_value()
 		//std::cout << "destroying the string: " << *(val.stringval) << std::endl;
 		val.stringval->std::string::~string();
 	}
+	else if (var_type == u_array)
+	{
+		val.array->std::unordered_map<std::string, var_value>::~unordered_map();
+	}
 }
 
 
@@ -66,9 +71,13 @@ bool var_value::value(int &i) const
 		if(!ss)
 			return false;
 	}
-	else
+	else if(var_type == u_integer)
 	{
 		i = val.intval;
+	}
+	else if(var_type == u_array)
+	{
+		return false;
 	}
 	return true;
 }
@@ -89,9 +98,13 @@ bool var_value::value(double &d) const
 		if(!ss)
 			return false;
 	}
-	else
+	else if (var_type == u_double)
 	{
 		d = val.doubleval;
+	}
+	else if(var_type == u_array)
+	{
+		return false;
 	}
 	return true;
 }
@@ -108,9 +121,27 @@ bool var_value::value(std::string &s) const
 	{
 		s = std::to_string(val.doubleval);
 	}
-	else
+	else if(var_type == u_string)
 	{
 		s = *val.stringval;
+	}
+	else if(var_type == u_array)
+	{
+		return false;
+	}
+	return true;
+}
+
+template<>
+bool var_value::value(std::unordered_map<std::string, var_value> &a) const
+{
+	if (var_type == u_array)
+	{
+		a = *val.array;
+	}
+	else
+	{
+		return false;
 	}
 	return true;
 }
@@ -142,6 +173,12 @@ void var_value::set_value(std::string* s)
 	//val.set_value<std::string*>(s);
 }
 
+template<>
+void var_value::set_value(std::unordered_map<std::string, var_value>* a)
+{
+	val.array = a;
+}
+
 var_value::var_value(const var_value& other) : var_type(other.var_type)
 {
 	switch(other.var_type)
@@ -171,17 +208,32 @@ var_value::var_value(const var_value& other) : var_type(other.var_type)
 		}
 		//set_value<double>(other.value<double>());
 		break;
-		case u_string: 
-		std::string* temp = new std::string;
-		if(other.value<std::string>(*temp))
-		{
-			set_value<std::string*>(temp);
+		case u_string:
+		{ 
+			std::string* temp = new std::string;
+			if(other.value<std::string>(*temp))
+			{
+				set_value<std::string*>(temp);
+			}
+			else
+			{
+				std::cerr << "cannot convert to string" << std::endl;
+			}
+			break;
 		}
-		else
+		case u_array:
 		{
-			std::cerr << "cannot convert to string" << std::endl;
+			std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
+			if(other.value<std::unordered_map<std::string, var_value> >(*tempmap))
+			{
+				set_value<std::unordered_map<std::string, var_value>*>(tempmap);
+			}
+			else
+			{
+				std::cerr << "cannot convert to array" << std::endl;
+			}
+			break;
 		}
-		break;
 	}
 }
 
@@ -234,10 +286,212 @@ void var_value::append(std::string s)
 		(*temp).append(s);
 		val.stringval = temp;
 	}
+	else if(get_type() == u_array)
+	{
+		std::cerr << "cannot convert array to string" << std::endl;
+	}
 }
+
+bool var_value::find(std::string s)
+{
+	if (var_type != u_array)
+	{
+		std::cerr << "can't use find method since its not an array!" << std::endl;
+	}
+	else
+	{
+		auto it = val.array->find(s);
+		//std::cout << "find key " << s ;
+		//if (it == val.array->end())
+		//{
+		//	std::cout <<  " :not found" << std::endl;
+		//}
+		//else
+		//{
+		//	std::cout << " :" << it->first << ", " << it->second << std::endl;
+		//}
+		return (it != val.array->end());
+	}
+	return false;
+}
+
+std::string var_value::find_first_element_having_value(var_value v)
+{
+	std::string keyname;
+	if (var_type != u_array)
+	{
+		std::cerr << "cant search for elements in a non array" << std::endl;
+	}
+	else
+	{
+		bool found = false;
+		auto it = val.array->begin();
+		while (it!=val.array->end() && !found)
+		{
+			if(it->second == v)
+			{
+				found = true;
+				//std::cout << "find_first_element_having (-) : " << (it->first) << std::endl;
+				keyname = it->first;
+			}
+			it++;
+		}
+	}
+	return keyname;
+}
+
+std::vector<std::string> var_value::find_elements_having_value(var_value v)
+{
+	std::vector<std::string> vec;
+	if (var_type != u_array)
+	{
+		std::cerr << "cant search for elements in a non array" << std::endl;
+	}
+	else
+	{
+		for(auto it = val.array->begin(); it != val.array->end();it++)
+		{
+			if (it->second == v)
+			{
+				//std::cout << "find_elements_having_value (/) : " << (it->first) << std::endl;
+				vec.push_back(it->first);
+			}
+		}
+	}
+	return vec;
+}
+
+int var_value::get_size()
+{
+	if (var_type != u_array)
+	{
+		std::cerr << "can't get the size since its not an array!" << std::endl;
+	}
+	else
+	{
+		return val.array->size();
+	}
+	return 0;
+}
+
+void var_value::insert(std::string s, var_value a)
+{
+	if (var_type != u_array)
+	{
+		std::cerr << "can't insert since its not an array!" << std::endl;
+	}
+	else
+	{
+		int i = get_size();
+		//std::cout << "looking up " << s << " in the map" << std::endl;
+		while(find(s))
+		{
+			//std::cout << s << " is already an index" << std::endl;
+			s = std::to_string(i);
+			i++;
+		}
+		//std::cout << "insert function on " << s << ", " << a << std::endl;
+		val.array->insert(std::pair<std::string, var_value>(s,a));
+	}
+}
+
+var_value var_value::return_element_with_key(var_value v)
+{
+	if (var_type != u_array)
+	{
+		std::cerr << "can't return an element since its not an array!" << std::endl;
+	}
+	else
+	{
+		std::string s;
+		if (v.get_type() == u_array)
+		{
+			std::cerr << "cannot use array as a key" << std::endl;
+			return 0;
+		}
+		if(v.value<std::string>(s)){}else{std::cerr<<"cannot convert to string"<<std::endl;}
+
+		auto it = val.array->find(s);
+		if (it == val.array->end())
+		{
+			std::cerr << "no element found with key: " << s << std::endl;
+		}
+		else
+		{
+			return it->second;
+		}
+	}
+	return 0;
+}
+
+std::vector<var_value> var_value::return_array_elements()
+{
+	std::vector<var_value> vec;
+	if (var_type != u_array)
+	{
+		std::cerr << "can't return an element since its not an array!" << std::endl;
+	}
+	else
+	{
+		for(auto it = val.array->begin();it!=val.array->end();it++)
+		{
+			vec.push_back(it->second);
+		}
+	}
+	return vec;
+}
+
+/*void var_value::delete_element_with_key(std::string key)
+{
+	if (get_type() != u_array)
+	{
+		std::cerr << "cant delete element from a non array" << std::endl;
+	}
+	else
+	{
+		if (!key.empty())
+		{
+			val.array->erase(key);
+		}
+	}
+}
+
+void var_value::delete_elements_with_key(std::vector<std::string> vec)
+{
+	if (get_type() != u_array)
+	{
+		std::cerr << "cant delete elements from a non array" << std::endl;
+	}
+	else
+	{
+		for (auto it = vec.begin();it!=vec.end();it++)
+		{
+			val.array->erase(it->first);
+		}
+	}
+}*/
 
 var_value& var_value::operator=(var_value right)
 {
+if (get_type() == u_array)
+{
+	if (right.get_type() != u_array)
+	{
+		std::cerr << "cant assign variable to an array" << std::endl;
+	}
+	else
+	{
+		val.array->clear();
+		auto it = right.val.array->begin();
+		while (it != right.val.array->end())
+		{
+			insert(it->first, it->second);
+			it++;
+		}
+	}
+}
+else
+	{
 	if (right.get_type() == u_integer)
 	{
 		if (get_type() == u_string)
@@ -272,7 +526,7 @@ var_value& var_value::operator=(var_value right)
 			std::cerr << "cannot convert to double" << std::endl;
 		}
 	}
-	else 
+	else if (right.get_type() == u_string)
 	{
 		if (get_type() != u_string)
 		{
@@ -292,42 +546,106 @@ var_value& var_value::operator=(var_value right)
 		//std::cout << "right value string " << right.value<std::string>() << std::endl;
 		//std::cout << "var_value operator =, value " << val.stringval << std::endl;
 	}
+	else if (right.get_type() == u_array)
+	{
+		if (get_type() == u_string)
+		{
+			val.stringval->std::string::~string();
+		}
+		var_type = u_array;
+		std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
+		if (right.value<std::unordered_map<std::string, var_value> >(*tempmap)){}
+		
+		set_value<std::unordered_map<std::string, var_value>*>(tempmap);
+
+	}
+}
 	return *this;
 }
+
 
 var_value operator+(var_value l, var_value r)
 {
 	var_value ret;
+	if (l.get_type() == u_array || r.get_type() == u_array)
+	{
+		//std::cout << "array" << std::endl;
+		ret.set_type_noconvert(u_array);
+		std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
+		ret.set_value<std::unordered_map<std::string,var_value>*>(tempmap);
+		if (l.get_type() == u_array)
+		{
+			//std::cout << "a" << std::endl;
+			std::unordered_map<std::string, var_value> m1;
+			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			//std::cout << "b" << std::endl;
+			for(auto it = m1.begin();it!=m1.end();it++)
+			{
+				ret.insert(it->first,it->second);
+			}
+			//std::cout << "c" << std::endl;
+		}
+		else
+		{
+			int i = ret.get_size();
+			std::string s = std::to_string(i);
+			ret.insert(s, l);
+		}
+		if (r.get_type() == u_array)
+		{
+			//std::cout << "d" << std::endl;
+			std::unordered_map<std::string, var_value> m2;
+			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+
+			for(auto it = m2.begin();it!=m2.end();it++)
+			{
+				ret.insert(it->first,it->second);
+			}
+		}
+		else
+		{
+			//std::cout << "e" << std::endl;
+			int i = ret.get_size();
+			std::string s = std::to_string(i);
+			ret.insert(s, r);
+			//std::cout << "f" << std::endl;
+		}
+		//ret.set_value<std::unordered_map<std::string,var_value>*>(tempmap);
+		//std::cout << "g" << std::endl;
+	}
+	else
+	{
+		std::cout << "not array" << std::endl;
 	if (l.get_type() == r.get_type())
 	{
 		if (l.get_type() == u_integer)
 		{
 			int i1, i2;
-			if(l.value<int>(i1)){}
+			if(l.value<int>(i1)){}else{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<int>(i2)){}
+			if(r.value<int>(i2)){}else{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret = i1 + i2;
 		}
 		else if (l.get_type() == u_double)
 		{
 			double d1, d2;
-			if(l.value<double>(d1)){}
+			if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<double>(d2)){}
+			if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret = d1 + d2;
 		}
-		else
+		else if (l.get_type() == u_string)
 		{
 			ret.set_type_noconvert(u_string);
 			std::string empty = "";
 			ret.set_value<std::string*>(&empty);
 
 			std::string s1, s2;
-			if(l.value<std::string>(s1)){}
+			if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<std::string>(s2)){}
+			if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret.append(s1);
 			ret.append(s2);
@@ -343,9 +661,9 @@ var_value operator+(var_value l, var_value r)
 				ret.set_type_noconvert(u_string);
 				ret.set_value<std::string*>(&empty);
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret.append(s1);
 				ret.append(s2);
@@ -355,9 +673,9 @@ var_value operator+(var_value l, var_value r)
 				ret.set_type_noconvert(u_string);
 				ret.set_value<std::string*>(&empty);
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret.append(s1);
 				ret.append(s2);
@@ -371,9 +689,9 @@ var_value operator+(var_value l, var_value r)
 				ret.set_type_noconvert(u_string);
 				ret.set_value<std::string*>(&empty);
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret.append(s1);
 				ret.append(s2);
@@ -383,9 +701,9 @@ var_value operator+(var_value l, var_value r)
 				ret.set_type_noconvert(u_string);
 				ret.set_value<std::string*>(&empty);
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret.append(s1);
 				ret.append(s2);
@@ -396,22 +714,23 @@ var_value operator+(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret = d1 + d2;
 			}
 			else if (r.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret = d1 + d2;
 			}
 		}
+	}
 	}
 	return ret;
 }
@@ -419,23 +738,79 @@ var_value operator+(var_value l, var_value r)
 var_value operator-(var_value l, var_value r)
 {
 	var_value ret;
+	if (l.get_type() == u_array || r.get_type() == u_array)
+	{
+		ret.set_type_noconvert(u_array);
+		std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
+		ret.set_value<std::unordered_map<std::string,var_value>*>(tempmap);
+		if (l.get_type() == u_array)
+		{
+			std::unordered_map<std::string, var_value> m1;
+			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+
+			if (r.get_type() == u_array)
+			{
+				std::unordered_map<std::string, var_value> m2;
+				if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+
+				for(auto it = m2.begin();it!=m2.end();it++)
+				{
+					std::string keyname = l.find_first_element_having_value(it->second);
+					m1.erase(keyname);
+				}
+			}
+			else
+			{
+				std::string keyname = l.find_first_element_having_value(r);
+				m1.erase(keyname);
+			}
+
+			for(auto it = m1.begin();it!=m1.end();it++)
+			{
+				ret.insert(it->first,it->second);
+			}
+		}
+		else
+		{
+			bool found = false;
+			std::unordered_map<std::string, var_value> m2;
+			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}
+
+			for(auto it = m2.begin();it!=m2.end();it++)
+			{
+				if (it->second == l)
+				{
+					found = true;
+				}
+			}
+			
+			if (!found)
+			{
+				int i = ret.get_size();
+				std::string s = std::to_string(i);
+				ret.insert(s, l);
+			}
+		}
+	}
+	else
+	{
 	if (l.get_type() == r.get_type())
 	{
 		if (l.get_type() == u_integer)
 		{
 			int i1, i2;
-			if(l.value<int>(i1)){}
+			if(l.value<int>(i1)){}else{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<int>(i2)){}
+			if(r.value<int>(i2)){}else{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret = i1 - i2;
 		}
 		else if (l.get_type() == u_double)
 		{
 			double d1, d2;
-			if(l.value<double>(d1)){}
+			if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<double>(d2)){}
+			if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret = d1 - d2;
 		}
@@ -445,9 +820,9 @@ var_value operator-(var_value l, var_value r)
 			std::string empty = "";
 			ret.set_value<std::string*>(&empty);
 			std::string s1, s2;
-			if(l.value<std::string>(s1)){}
+			if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<std::string>(s2)){}
+			if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 			std::size_t found = s1.find(s2);
 			if (found != std::string::npos)
@@ -470,9 +845,9 @@ var_value operator-(var_value l, var_value r)
 			if (r.get_type() == u_integer)
 			{	
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				std::size_t found = s1.find(s2);
 				if (found != std::string::npos)
@@ -487,9 +862,9 @@ var_value operator-(var_value l, var_value r)
 			else if (r.get_type() == u_double)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				std::size_t found = s1.find(s2);
 				if (found != std::string::npos)
@@ -510,9 +885,9 @@ var_value operator-(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				std::size_t found = s1.find(s2);
 				if (found != std::string::npos)
@@ -527,9 +902,9 @@ var_value operator-(var_value l, var_value r)
 			else if (l.get_type() == u_double)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				std::size_t found = s1.find(s2);
 				if (found != std::string::npos)
@@ -547,22 +922,23 @@ var_value operator-(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret = d1 - d2;
 			}
 			else if (r.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret = d1 - d2;
 			}
 		}
+	}
 	}
 	return ret;
 }
@@ -570,23 +946,31 @@ var_value operator-(var_value l, var_value r)
 var_value operator*(var_value l, var_value r)
 {
 	var_value ret;
+	if(l.get_type() == u_array || r.get_type() == u_array)
+	{
+		ret.set_type_noconvert(u_array);
+		std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
+		ret.set_value<std::unordered_map<std::string,var_value>*>(tempmap);
+
+		std::cerr << "no operator * exists for arrays" << std::endl;
+	}
 	if (l.get_type() == r.get_type())
 	{
 		if (l.get_type() == u_integer)
 		{
 			int i1, i2;
-			if(l.value<int>(i1)){}
+			if(l.value<int>(i1)){}else{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<int>(i2)){}
+			if(r.value<int>(i2)){}else{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret = i1 * i2;
 		}
 		else if (l.get_type() == u_double)
 		{
 			double d1, d2;
-			if(l.value<double>(d1)){}
+			if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<double>(d2)){}
+			if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret = d1 * d2;
 		}
@@ -627,18 +1011,18 @@ var_value operator*(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret = d1 * d2;
 			}
 			else if (r.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret = d1 * d2;
 			}
@@ -649,6 +1033,69 @@ var_value operator*(var_value l, var_value r)
 
 var_value operator/(var_value l, var_value r)
 {
+	var_value ret;
+	if (l.get_type() == u_array || r.get_type() == u_array)
+	{
+		ret.set_type_noconvert(u_array);
+		std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
+		ret.set_value<std::unordered_map<std::string,var_value>*>(tempmap);
+		if (l.get_type() == u_array)
+		{
+			std::unordered_map<std::string, var_value> m1;
+			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+
+			if (r.get_type() == u_array)
+			{
+				std::unordered_map<std::string, var_value> m2;
+				if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+
+				for(auto it = m2.begin();it!=m2.end();it++)
+				{
+					std::vector<std::string> vec = l.find_elements_having_value(it->second);
+					for(auto it2 = vec.begin();it2!=vec.end();it2++)
+					{
+						m1.erase(*it2);
+					}
+				}
+			}
+			else
+			{
+				std::vector<std::string> vec = l.find_elements_having_value(r);
+				for(auto it2 = vec.begin();it2!=vec.end();it2++)
+				{
+					m1.erase(*it2);
+				}
+			}
+
+			for(auto it = m1.begin();it!=m1.end();it++)
+			{
+				ret.insert(it->first,it->second);
+			}
+		}
+		else
+		{
+			bool found = false;
+			std::unordered_map<std::string, var_value> m2;
+			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}
+
+			for(auto it = m2.begin();it!=m2.end();it++)
+			{
+				if (it->second == l)
+				{
+					found = true;
+				}
+			}
+			
+			if (!found)
+			{
+				int i = ret.get_size();
+				std::string s = std::to_string(i);
+				ret.insert(s, l);
+			}
+		}
+	}
+	else
+	{
 	if (r.get_type() == u_integer)
 	{
 		int i;
@@ -657,24 +1104,23 @@ var_value operator/(var_value l, var_value r)
 				throw -1;
 
 	}
-	var_value ret;
 	if (l.get_type() == r.get_type())
 	{
 		if (l.get_type() == u_integer)
 		{
 			int i1, i2;
-			if(l.value<int>(i1)){}
+			if(l.value<int>(i1)){}else{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<int>(i2)){}
+			if(r.value<int>(i2)){}else{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret = i1 / i2;
 		}
 		else if (l.get_type() == u_double)
 		{
 			double d1, d2;
-			if(l.value<double>(d1)){}
+			if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<double>(d2)){}
+			if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret = d1 / d2;
 		}
@@ -684,9 +1130,9 @@ var_value operator/(var_value l, var_value r)
 			std::string empty = "";
 			ret.set_value<std::string*>(&empty);
 			std::string s1, s2;
-			if(l.value<std::string>(s1)){}
+			if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<std::string>(s2)){}
+			if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 			std::size_t found = s1.find(s2);
 			while (found != std::string::npos)
@@ -707,9 +1153,9 @@ var_value operator/(var_value l, var_value r)
 			if (r.get_type() == u_integer)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				std::size_t found = s1.find(s2);
 				while (found != std::string::npos)
@@ -722,9 +1168,9 @@ var_value operator/(var_value l, var_value r)
 			else if (r.get_type() == u_double)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				std::size_t found = s1.find(s2);
 				while (found != std::string::npos)
@@ -743,9 +1189,9 @@ var_value operator/(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				std::size_t found = s1.find(s2);
 				while (found != std::string::npos)
@@ -758,9 +1204,9 @@ var_value operator/(var_value l, var_value r)
 			else if (l.get_type() == u_double)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				std::size_t found = s1.find(s2);
 				while (found != std::string::npos)
@@ -776,22 +1222,23 @@ var_value operator/(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret = d1 / d2;
 			}
 			else if (r.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret = d1 / d2;
 			}
 		}
+	}
 	}
 	return ret;
 }
@@ -804,70 +1251,51 @@ var_value operator^(var_value l, var_value r)
 		if (l.get_type() == u_integer)
 		{
 			int i1, i2;
-			if(l.value<int>(i1)){}
+			if(l.value<int>(i1)){}else{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<int>(i2)){}
+			if(r.value<int>(i2)){}else{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret = pow(i1, i2);
 		}
 		else if (l.get_type() == u_double)
 		{
 			double d1, d2;
-			if(l.value<double>(d1)){}
+			if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<double>(d2)){}
+			if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			ret = pow(d1, d2);
 		}
-		else
+		else //u_string, u_array
 		{
-			//ret.value<std::string> += l.value<std::string>();
-			//ret.value<std::string> += r.value<std::string>();
+			//lehet hogy meg kéne próbálni konvertálni?
+			std::cerr << "operator power only takes int or double" << std::endl;
 		}
 	}
 	else
 	{
-		if (l.get_type()==u_string)
+		if (l.get_type()!=u_integer || l.get_type()!=u_double
+		 || r.get_type()!=u_integer || r.get_type()!=u_double)
 		{
-			//ret.value<std::string> +=l.value<std::string>();
-			if (r.get_type() == u_integer)
-			{
-				//ret.value<std::string> +=std::to_string(r.value<int>());
-			}
-			else if (r.get_type() == u_double)
-			{
-				//ret.value<std::string> +=std::to_string(r.value<double>());
-			}
-		}
-		else if (r.get_type()==u_string)
-		{
-			//ret.value<std::string> +=l.value<std::string>();
-			if (l.get_type() == u_integer)
-			{
-				//ret.value<std::string> +=std::to_string(l.value<int>());
-			}
-			else if (l.get_type() == u_double)
-			{
-				//ret.value<std::string> +=std::to_string(l.value<double>());
-			}
+			std::cerr << "operator power only takes int or double" << std::endl;
 		}
 		else
 		{
 			if (l.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret = pow(d1, d2);
 			}
 			else if (r.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				ret = pow(d1, d2);
 			}
@@ -884,9 +1312,9 @@ var_value operator%(var_value l, var_value r)
 		if (l.get_type() == u_integer)
 		{
 			int i1, i2;
-			if (l.value<int>(i1)){}
+			if (l.value<int>(i1)){}else{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if (r.value<int>(i2)){}
+			if (r.value<int>(i2)){}else{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			if(i2 == 0)
 			{
@@ -930,9 +1358,9 @@ int operator==(var_value l, var_value r)
 		if (l.get_type() == u_integer)
 		{
 			int i1, i2;
-			if(l.value<int>(i1)){}
+			if(l.value<int>(i1)){}else{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<int>(i2)){}
+			if(r.value<int>(i2)){}else{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 			
 			if(i1 == i2)
 			{
@@ -946,8 +1374,8 @@ int operator==(var_value l, var_value r)
 		else if (l.get_type() == u_double)
 		{
 			double d1, d2;
-			if(l.value<double>(d1)){}
-			if(r.value<double>(d2)){}
+			if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
+			if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			if (d1 == d2)
 			{
@@ -958,13 +1386,29 @@ int operator==(var_value l, var_value r)
 				return 0;
 			}
 		}
-		else
+		else if (l.get_type() == u_string)
 		{
 			std::string s1, s2;
-			if(l.value<std::string>(s1)){}
-			if(r.value<std::string>(s2)){}
+			if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
+			if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 			if(s1 == s2)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else if (l.get_type() == u_array)
+		{
+			std::unordered_map<std::string, var_value> m1, m2;
+			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			
+			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+
+			if(m1 == m2)
 			{
 				return 1;
 			}
@@ -976,14 +1420,19 @@ int operator==(var_value l, var_value r)
 	}
 	else
 	{
-		if (l.get_type()==u_string)
+		if(l.get_type()==u_array || r.get_type() == u_array)
+		{
+			//TODO
+			return 0;
+		}
+		else if (l.get_type()==u_string)
 		{
 			if (r.get_type() == u_integer)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ std::cerr<<"conversion failed"<<std::endl; return 0;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ std::cerr<<"conversion failed"<<std::endl; return 0;}
 
 				if(s1 == s2)
 				{
@@ -997,9 +1446,9 @@ int operator==(var_value l, var_value r)
 			else if (r.get_type() == u_double)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ std::cerr<<"conversion failed"<<std::endl; return 0;}
 				
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ std::cerr<<"conversion failed"<<std::endl; return 0;}
 
 				if(s1 == s2)
 				{
@@ -1016,9 +1465,9 @@ int operator==(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ std::cerr<<"conversion failed"<<std::endl; return 0;}
 				
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ std::cerr<<"conversion failed"<<std::endl; return 0;}
 
 				if(s1 == s2)
 				{
@@ -1032,9 +1481,9 @@ int operator==(var_value l, var_value r)
 			else if (l.get_type() == u_double)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ std::cerr<<"conversion failed"<<std::endl; return 0;}
 				
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ std::cerr<<"conversion failed"<<std::endl; return 0;}
 
 				if(s1 == s2)
 				{
@@ -1051,9 +1500,9 @@ int operator==(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(d1 == d2)
 				{
@@ -1067,9 +1516,9 @@ int operator==(var_value l, var_value r)
 			else if (r.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(d1 == d2)
 				{
@@ -1104,9 +1553,9 @@ int operator<(var_value l, var_value r)
 		if (l.get_type() == u_integer)
 		{
 			int i1, i2;
-			if(l.value<int>(i1)){}
+			if(l.value<int>(i1)){}else{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<int>(i2)){}
+			if(r.value<int>(i2)){}else{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 			
 			if(i1 < i2)
 			{
@@ -1120,8 +1569,8 @@ int operator<(var_value l, var_value r)
 		else if (l.get_type() == u_double)
 		{
 			double d1, d2;
-			if(l.value<double>(d1)){}
-			if(r.value<double>(d2)){}
+			if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
+			if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			if (d1 < d2)
 			{
@@ -1132,11 +1581,11 @@ int operator<(var_value l, var_value r)
 				return 0;
 			}
 		}
-		else
+		else if (l.get_type() == u_string)
 		{
 			std::string s1, s2;
-			if(l.value<std::string>(s1)){}
-			if(r.value<std::string>(s2)){}
+			if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
+			if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 			if(s1 < s2)
 			{
@@ -1147,17 +1596,38 @@ int operator<(var_value l, var_value r)
 				return 0;
 			}
 		}
+		else if (l.get_type() == u_array)
+		{
+			std::unordered_map<std::string, var_value> m1, m2;
+			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			
+			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+
+			if(m1.size() < m2.size())
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}	
+		}
 	}
 	else
 	{
-		if (l.get_type()==u_string)
+		if(l.get_type()==u_array || r.get_type() == u_array)
+		{
+			//TODO
+			return 0;
+		}	
+		else if (l.get_type()==u_string)
 		{
 			if (r.get_type() == u_integer)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(s1 < s2)
 				{
@@ -1171,9 +1641,9 @@ int operator<(var_value l, var_value r)
 			else if (r.get_type() == u_double)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(s1 < s2)
 				{
@@ -1190,9 +1660,9 @@ int operator<(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(s1 < s2)
 				{
@@ -1206,9 +1676,9 @@ int operator<(var_value l, var_value r)
 			else if (l.get_type() == u_double)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(s1 < s2)
 				{
@@ -1225,9 +1695,9 @@ int operator<(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(d1 < d2)
 				{
@@ -1241,9 +1711,9 @@ int operator<(var_value l, var_value r)
 			else if (r.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(d1 < d2)
 				{
@@ -1266,9 +1736,9 @@ int operator>(var_value l, var_value r)
 		if (l.get_type() == u_integer)
 		{
 			int i1, i2;
-			if(l.value<int>(i1)){}
+			if(l.value<int>(i1)){}else{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
-			if(r.value<int>(i2)){}
+			if(r.value<int>(i2)){}else{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 			
 			if(i1 > i2)
 			{
@@ -1282,8 +1752,8 @@ int operator>(var_value l, var_value r)
 		else if (l.get_type() == u_double)
 		{
 			double d1, d2;
-			if(l.value<double>(d1)){}
-			if(r.value<double>(d2)){}
+			if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
+			if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 			if (d1 > d2)
 			{
@@ -1294,13 +1764,29 @@ int operator>(var_value l, var_value r)
 				return 0;
 			}
 		}
-		else
+		else if (l.get_type() == u_string)
 		{
 			std::string s1, s2;
-			if(l.value<std::string>(s1)){}
-			if(r.value<std::string>(s2)){}
+			if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
+			if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 			if(s1 > s2)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else if (l.get_type() == u_array)
+		{
+			std::unordered_map<std::string, var_value> m1, m2;
+			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			
+			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+
+			if(m1.size() > m2.size())
 			{
 				return 1;
 			}
@@ -1312,14 +1798,19 @@ int operator>(var_value l, var_value r)
 	}
 	else
 	{
-		if (l.get_type()==u_string)
+		if(l.get_type()==u_array || r.get_type() == u_array)
+		{
+			//TODO
+			return 0;
+		}	
+		else if (l.get_type()==u_string)
 		{
 			if (r.get_type() == u_integer)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(s1 > s2)
 				{
@@ -1333,9 +1824,9 @@ int operator>(var_value l, var_value r)
 			else if (r.get_type() == u_double)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(s1 > s2)
 				{
@@ -1352,9 +1843,9 @@ int operator>(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(s1 > s2)
 				{
@@ -1368,9 +1859,9 @@ int operator>(var_value l, var_value r)
 			else if (l.get_type() == u_double)
 			{
 				std::string s1, s2;
-				if(l.value<std::string>(s1)){}
+				if(l.value<std::string>(s1)){}else{ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<std::string>(s2)){}
+				if(r.value<std::string>(s2)){}else{ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(s1 > s2)
 				{
@@ -1387,9 +1878,9 @@ int operator>(var_value l, var_value r)
 			if (l.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(d1 > d2)
 				{
@@ -1403,9 +1894,9 @@ int operator>(var_value l, var_value r)
 			else if (r.get_type() == u_integer)
 			{
 				double d1, d2;
-				if(l.value<double>(d1)){}
+				if(l.value<double>(d1)){}else{ d1 = 0; std::cerr<<"conversion failed"<<std::endl;}
 				
-				if(r.value<double>(d2)){}
+				if(r.value<double>(d2)){}else{ d2 = 0; std::cerr<<"conversion failed"<<std::endl;}
 
 				if(d1 > d2)
 				{
@@ -1463,13 +1954,31 @@ std::ostream& operator<<(std::ostream& out, var_value &v)
 
 		out << d;
 	}
-	else
+	else if (v.get_type() == u_string)
 	{
 		//std::cout << "writing string" << std::endl;
 		std::string s;
 		if (v.value<std::string>(s))
 
 		out << s;
+	}
+	else if (v.get_type() == u_array)
+	{
+		//TODO
+		std::vector<var_value> vec = v.return_array_elements();
+		auto it = vec.begin();
+		out << "[ ";
+		if (vec.size()!=0)
+		{
+			out << *it;
+			it++;
+			while (it!=vec.end())
+			{
+				out << ", " << *it;
+				it++;
+			}
+		}
+		out << " ]";
 	}
 	return out;
 }
@@ -1508,7 +2017,7 @@ var_value variable_desc::return_value()
 
 Symbol_Table::Symbol_Table(){
 	journal(journal::info, "symbol_table") << "creating symbol table" << journal::end;
-	std::map<std::string, variable_desc> defaultmap;
+	std::unordered_map<std::string, variable_desc> defaultmap;
 	symbol_table.push_back(defaultmap);
 }
 
@@ -1561,6 +2070,12 @@ variable_desc Symbol_Table::get_value(std::string* name)
 	journal(journal::info, "symbol_table") << "get value of " << *name << journal::end;
 	int i = find_variable(name);
 	//itt 2x findol, optimalizalhato
+	if (i == -1)
+	{
+		std::cerr << "variable " << name << "cannot be found" << std::endl;
+		variable_desc vd(-1, var_value(0));
+		return vd;
+	}
 	auto it = symbol_table[i].find(*name);
 	return it->second;
 }
@@ -1568,7 +2083,7 @@ variable_desc Symbol_Table::get_value(std::string* name)
 void Symbol_Table::increase_stack()
 {
 	journal(journal::info, "symbol_table") << "increasing stack" << journal::end;
-	std::map<std::string, variable_desc> pushedMap;
+	std::unordered_map<std::string, variable_desc> pushedMap;
 	symbol_table.push_back(pushedMap);
 }
 

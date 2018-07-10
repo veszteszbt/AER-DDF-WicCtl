@@ -10,6 +10,7 @@
 	int *integ;
 	double *dbl;
 	expression_desc *exd;
+	expr_arr *ar;
 	command_list_desc *cld;
 	command_desc *cd;
 	c_expression_list *cel;
@@ -56,6 +57,8 @@
 %token NEGATE
 %token HEXADECIMAL
 %token COMMAND_RETURNER
+%token OSBRACKET;
+%token CSBRACKET;
 
 %token CONST_TRUE
 %token CONST_FALSE
@@ -79,6 +82,7 @@
 %type <cp> case_part
 %type <cpv> caseparts
 %type <av> arguments
+%type <ar> arraypart
 
 
 %%
@@ -281,6 +285,14 @@ expression:
 		journal(journal::info, "parser") << "expression -> OPERATOR_MINUS expression %prec UNARY_MINUS" << journal::end;
 	}
 |
+	IDENTIFIER OSBRACKET expression CSBRACKET
+	{
+		//variable_desc vd = symbol_table.get_value($1);
+		//var_value v = vd.return_value();
+		$$ = new expr_ael(d_loc__.first_line, *$1, $3);
+		$$->evaluate();
+	}
+|
 	INTEGER
 	{
 		$$ = new expr_const(d_loc__.first_line, *$1);
@@ -331,6 +343,11 @@ expression:
 		journal(journal::info, "parser") << "expression -> IDENTIFIER" << journal::end;
 	}
 |
+	OSBRACKET arraypart CSBRACKET
+	{
+		$$ = new expr_arr(d_loc__.first_line, $2);
+	}
+|
 	CONST_TRUE
 	{
 		$$ = new expr_const(d_loc__.first_line, 1);
@@ -356,6 +373,30 @@ expression:
 		journal(journal::info, "parser") << "expression -> COMMAND_RETURNER OCURLY command CCURLY" << journal::end;
 	}
 ;
+
+arraypart:
+	arraypart ELEMENT_SEPARATOR expression
+	{
+		//std::cout << "___________arraypart_________________" << std::endl;
+		$$ = new expr_arr(d_loc__.first_line,$1);
+		$$->add($3);
+		$1->deleteBecauseGccPolymorphicSucks();
+		journal(journal::info, "parser") << "arraypart -> arraypart ELEMENT_SEPARATOR expression" << journal::end;
+	}
+|
+	expression
+	{
+		$$ = new expr_arr(d_loc__.first_line);
+		$$->add($1);
+	}
+|
+	//empty
+	{
+		$$ = new expr_arr(d_loc__.first_line);
+		journal(journal::info, "parser") << "arraypart -> empty" << journal::end;
+	}
+;
+
 
 arguments:
 	arguments ELEMENT_SEPARATOR expression

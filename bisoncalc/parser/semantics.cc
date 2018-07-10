@@ -37,6 +37,11 @@ type expression_desc::get_type()
 	return val.get_type();
 }
 
+expression_desc::~expression_desc()
+{
+	val.~var_value();
+}
+
 void command_desc::set_row(int &r)
 {
 	row = r;
@@ -103,6 +108,11 @@ void expr_const::evaluate()
 {
 }
 
+var_value expr_const::get_val()
+{
+	return val;
+}
+
 /*type expr_const::get_type()
 {
 	return val.get_type();
@@ -130,6 +140,63 @@ void expr_var::evaluate()
 	}
 }
 
+var_value expr_var::get_val()
+{
+	return val;
+}
+
+
+expr_arr::expr_arr(int row_number,expr_arr* a) : row(row_number), val(a->get_val())
+{
+	//std::cout << "array init1" << std::endl;
+	val = a->get_val();
+}
+
+expr_arr::expr_arr(int row_number) : row(row_number)
+{
+	//std::cout << "array init2" << std::endl;
+	val = new std::unordered_map<std::string, var_value>;
+}
+
+//TODO ITT BIZTOS MEMÓRIASZIVÁRGÁS LESZ
+void expr_arr::deleteBecauseGccPolymorphicSucks()
+{
+	//std::cout << "array delete" << std::endl;
+	if (val.get_type() == u_array)
+	{
+		val.~var_value();
+	}
+}
+
+var_value expr_arr::get_val()
+{
+	return val;
+}
+
+void expr_arr::add(expression_desc* e)
+{
+	//std::cout << "array add" << std::endl;
+	if (val.get_type() == u_array)
+	{
+		//ez lehet overflowol
+		int i = val.get_size();
+		std::string s = std::to_string(i);
+		/*while(val.find(s))
+		{
+			i = i+1;
+			s = std::to_string(i);
+		}*/
+		e->evaluate();
+		//std::cout << "inserting " << e->get_val() << " with index " << s << std::endl;
+		val.insert(s, e->get_val());
+		//std::cout << "val is now " << val << std::endl;
+	}
+}
+
+void expr_arr::evaluate()
+{
+	//std::cout << "array evaluate" << std::endl;
+}
 /*type expr_var::get_type()
 {
 	return val.get_type();
@@ -156,8 +223,9 @@ std::string assign::get_name()
 void assign::evaluate()
 {
 	e->evaluate();
-	//val = e->val;
-	variable_desc v(row, e->val);
+	//var_value vv = e->get_val();
+	//std::cout << "e->get_val() " << vv << std::endl;
+	variable_desc v(row, e->get_val());
 	//sets the variable named <vname> in the symbol table, if it doesn't exist, it's created
 	(*parser).symbol_table.set_value(vname, v);
 	journal(journal::info, "semantics") << "Assigned " << v.return_value() << " to variable name " << (*vname) << journal::end;
@@ -184,8 +252,8 @@ std::string local_assign::get_name()
 void local_assign::evaluate()
 {
 	e->evaluate();
-	//val = e->val;
-	variable_desc v(row, e->val);
+	//val = e->get_val();
+	variable_desc v(row, e->get_val());
 	//same as expr_asg
 	(*parser).symbol_table.set_local_value(vname, v);
 	journal(journal::info, "semantics") << "Assigned " << v.return_value() << " to local variable name " << (*vname) << journal::end;
@@ -198,13 +266,47 @@ expr_par::expr_par(int row_number, expression_desc* nested) : row(row_number), e
 void expr_par::evaluate()
 {
 	e->evaluate();
-	val = e->val;
+	val = e->get_val();
 }
 
 /*type expr_par::get_type()
 {
 	return val.get_type();
 }*/
+
+var_value expr_par::get_val()
+{
+	return val;
+}
+
+expr_ael::expr_ael(int row_number, std::string var_name, expression_desc* n) : row(row_number), name(var_name), nth(n)
+{
+}
+
+void expr_ael::evaluate()
+{
+	//looks up the variable in the symbol table
+	int i = (*parser).symbol_table.find_variable(&name);
+	if (i == -1)
+	{
+		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m Variable " << name << " has no value yet!" << std::endl;
+		journal(journal::info, "semantics") << row << ": ERROR: Variable " << name << " has no value yet!" << journal::end;
+		std::terminate();
+	}
+	else
+	{
+		variable_desc v = (*parser).symbol_table.get_value(&name);
+		var_value m = v.value;
+		val = m.return_element_with_key(nth->get_val());
+		
+		row = v.decl_row;
+	}
+}
+
+var_value expr_ael::get_val()
+{
+	return val;
+}
 
 expr_add::expr_add(int row_number, expression_desc* left, expression_desc* right) : l(left), r(right)
 {
@@ -215,12 +317,17 @@ void expr_add::evaluate()
 	l->evaluate();
 	r->evaluate();
 	//adds the values of the left and right side
-	val = l->val + r->val;
+	val = l->get_val() + r->get_val();
 }
 
 int expr_add::get_row()
 {
 	return row;
+}
+
+var_value expr_add::get_val()
+{
+	return val;
 }
 
 /*type expr_add::get_type()
@@ -236,12 +343,17 @@ void expr_dif::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	val = l->val - r->val;
+	val = l->get_val() - r->get_val();
 }
 
 int expr_dif::get_row()
 {
 	return row;
+}
+
+var_value expr_dif::get_val()
+{
+	return val;
 }
 
 /*type expr_dif::get_type()
@@ -257,7 +369,12 @@ void expr_mul::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	val = l->val * r->val;
+	val = l->get_val() * r->get_val();
+}
+
+var_value expr_mul::get_val()
+{
+	return val;
 }
 
 /*type expr_mul::get_type()
@@ -275,9 +392,9 @@ void expr_div::evaluate()
 	r->evaluate();
 	try
 	{
-		val = l->val / r->val;
+		val = l->get_val() / r->get_val();
 	}
-	//if the r->val is an int with the value 0, it'll throw -1
+	//if the r->get_val() is an int with the value 0, it'll throw -1
 	catch (int)
 	{
 		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m division by 0" << std::endl;
@@ -289,6 +406,11 @@ void expr_div::evaluate()
 int expr_div::get_row()
 {
 	return row;
+}
+
+var_value expr_div::get_val()
+{
+	return val;
 }
 
 /*type expr_div::get_type()
@@ -304,7 +426,12 @@ void expr_pow::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	val = l->val ^ r->val;
+	val = l->get_val() ^ r->get_val();
+}
+
+var_value expr_pow::get_val()
+{
+	return val;
 }
 
 /*type expr_pow::get_type()
@@ -322,7 +449,7 @@ void expr_mod::evaluate()
 	r->evaluate();
 	try
 	{
-		val = l->val % r->val;
+		val = l->get_val() % r->get_val();
 	}
 	//both values must be a non-zero integer type, otherwise 1 or 2 gets thrown
 	catch (int e)
@@ -349,6 +476,11 @@ int expr_mod::get_row()
 	return row;
 }
 
+var_value expr_mod::get_val()
+{
+	return val;
+}
+
 /*type expr_mod::get_type()
 {
 	return val.get_type();
@@ -365,7 +497,7 @@ void expr_or::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	if (l->val != 0 || r->val != 0)
+	if (l->get_val() != 0 || r->get_val() != 0)
 	{
 		val = 1;
 		//std::cout << "TRUE" << std::endl;
@@ -382,6 +514,11 @@ int expr_or::get_row()
 	return row;
 }
 
+var_value expr_or::get_val()
+{
+	return val;
+}
+
 /*type expr_or::get_type()
 {
 	return val.get_type();
@@ -396,7 +533,7 @@ void expr_and::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	if (l->val != 0 && r->val != 0)
+	if (l->get_val() != 0 && r->get_val() != 0)
 	{
 		val = 1;
 		//std::cout << "TRUE" << std::endl;
@@ -413,6 +550,11 @@ int expr_and::get_row()
 	return row;
 }
 
+var_value expr_and::get_val()
+{
+	return val;
+}
+
 /*type expr_and::get_type()
 {
 	return val.get_type();
@@ -427,7 +569,7 @@ void expr_eq::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	if (l->val == r->val)
+	if (l->get_val() == r->get_val())
 	{
 		val = 1;
 		//std::cout << "TRUE" << std::endl;
@@ -444,6 +586,11 @@ int expr_eq::get_row()
 	return row;
 }
 
+var_value expr_eq::get_val()
+{
+	return val;
+}
+
 /*type expr_eq::get_type()
 {
 	return val.get_type();
@@ -458,7 +605,7 @@ void expr_neq::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	if (l->val != r->val)
+	if (l->get_val() != r->get_val())
 	{
 		val = 1;
 		//std::cout << "TRUE" << std::endl;
@@ -475,6 +622,11 @@ int expr_neq::get_row()
 	return row;
 }
 
+var_value expr_neq::get_val()
+{
+	return val;
+}
+
 /*type expr_neq::get_type()
 {
 	return val.get_type();
@@ -489,7 +641,7 @@ void expr_leq::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	if (l->val > r->val)
+	if (l->get_val() > r->get_val())
 	{
 		val = 0;
 		//std::cout << "FALSE" << std::endl;
@@ -506,6 +658,11 @@ int expr_leq::get_row()
 	return row;
 }
 
+var_value expr_leq::get_val()
+{
+	return val;
+}
+
 /*type expr_leq::get_type()
 {
 	return val.get_type();
@@ -520,7 +677,7 @@ void expr_geq::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	if (l->val < r->val)
+	if (l->get_val() < r->get_val())
 	{
 		val = 0;
 		//std::cout << "FALSE" << std::endl;
@@ -537,6 +694,11 @@ int expr_geq::get_row()
 	return row;
 }
 
+var_value expr_geq::get_val()
+{
+	return val;
+}
+
 /*type expr_geq::get_type()
 {
 	return val.get_type();
@@ -551,7 +713,7 @@ void expr_lt::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	if (l->val < r->val)
+	if (l->get_val() < r->get_val())
 	{
 		val = 1;
 		//std::cout << "TRUE" << std::endl;
@@ -568,6 +730,11 @@ int expr_lt::get_row()
 	return row;
 }
 
+var_value expr_lt::get_val()
+{
+	return val;
+}
+
 /*type expr_lt::get_type()
 {
 	return val.get_type();
@@ -582,7 +749,7 @@ void expr_gt::evaluate()
 {
 	l->evaluate();
 	r->evaluate();
-	if (l->val > r->val)
+	if (l->get_val() > r->get_val())
 	{
 		val = 1;
 		//std::cout << "TRUE" << std::endl;
@@ -599,6 +766,11 @@ int expr_gt::get_row()
 	return row;
 }
 
+var_value expr_gt::get_val()
+{
+	return val;
+}
+
 /*type expr_gt::get_type()
 {
 	return val.get_type();
@@ -612,7 +784,7 @@ expr_neg::expr_neg(int row_number, expression_desc* ex) : e(ex)
 void expr_neg::evaluate()
 {
 	e->evaluate();
-	if (e->val != 0)
+	if (e->get_val() != 0)
 	{
 		val = 0;
 		//std::cout << "FALSE" << std::endl;
@@ -629,6 +801,11 @@ int expr_neg::get_row()
 	return row;
 }
 
+var_value expr_neg::get_val()
+{
+	return val;
+}
+
 /*type expr_neg::get_type()
 {
 	return val.get_type();
@@ -642,12 +819,17 @@ void expr_um::evaluate()
 {
 	e->evaluate();
 	expr_type = e->get_type();
-	val = -1 * e->val; //what happens if we unary minus a string?
+	val = -1 * e->get_val(); //what happens if we unary minus a string?
 }
 
 int expr_um::get_row()
 {
 	return row;
+}
+
+var_value expr_um::get_val()
+{
+	return val;
 }
 
 /*type expr_um::get_type()
@@ -666,7 +848,7 @@ void expr_incr::evaluate()
 	expr_type = e->get_type();
 	try
 	{
-		val = ++(e->val);
+		val = ++(e->get_val());
 	}
 	catch (int)
 	{
@@ -692,7 +874,7 @@ void expr_decr::evaluate()
 	expr_type = e->get_type();
 	try
 	{
-		val = --(e->val);
+		val = --(e->get_val());
 	}
 	catch (int)
 	{
@@ -731,7 +913,7 @@ void for_3_desc::evaluate()
 	{
 		//every loop it evaluates the condition and checks if its true
 		loop_condition->evaluate();
-		if (loop_condition->val == 0)
+		if (loop_condition->get_val() == 0)
 		{
 			break;
 		}
@@ -779,7 +961,7 @@ var_value command_expr::get_return_value()
 void command_expr::evaluate()
 {
 	e->evaluate();
-	result = e->val;
+	result = e->get_val();
 	//this is where the program writes the actual result you see when you run it
 	std::cout << result << std::endl;
 }
@@ -845,7 +1027,7 @@ var_value if_desc::get_return_value()
 void if_desc::evaluate()
 {
 	condition->evaluate();
-	if(condition->val == 0)
+	if(condition->get_val() == 0)
 	{
 		//if false
 		commands_neg->evaluate();
@@ -875,7 +1057,7 @@ void while_desc::evaluate()
 	while(true)
 	{
 		loop_condition->evaluate();
-		if (loop_condition->val == 0)
+		if (loop_condition->get_val() == 0)
 		{
 			break;
 		}
@@ -905,7 +1087,7 @@ void until_desc::evaluate()
 	while(true)
 	{
 		loop_condition->evaluate();
-		if (loop_condition->val == 1)
+		if (loop_condition->get_val() == 1)
 		{
 			break;
 		}
@@ -948,7 +1130,7 @@ void case_desc::evaluate()
 	while (it!=case_parts.end() && found == false)
 	{
 		(*it)->condition->evaluate();
-		if (case_expr->val == ((*it)->condition->val))
+		if (case_expr->get_val() == ((*it)->condition->get_val()))
 		{
 			found = true;
 			(*it)->evaluate();
@@ -990,7 +1172,7 @@ void call::evaluate()
 	for(unsigned int i=0;i<args.size();i++)
 	{
 		args[i]->evaluate(); //evaluate each argument's value (important)
-		//std::cout << " " << args[i]->val;
+		//std::cout << " " << args[i]->get_val();
 	}
 	//std::cout << std::endl;
 	//fptr->run(this, row);

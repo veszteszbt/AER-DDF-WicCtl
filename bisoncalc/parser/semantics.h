@@ -18,12 +18,14 @@ struct expression_desc
 {
 	expression_desc(int row_number, var_value v);
 	expression_desc(){}
+	virtual ~expression_desc();
 
 	int row;
 	var_value val;
 
 	void set_row(int &r);
 	int get_row();
+	virtual var_value get_val() = 0;
 	virtual void evaluate() = 0;
 	type get_type();
 	
@@ -65,6 +67,7 @@ struct expr_binary : public expression_desc
 	expression_desc* l;
 	expression_desc* r;
 	type expr_type;
+	virtual var_value get_val() = 0;
 };
 
 struct expr_unary : public expression_desc
@@ -75,6 +78,7 @@ struct expr_unary : public expression_desc
 	int row;
 	expression_desc* e;
 	type expr_type;
+	virtual var_value get_val() = 0;
 };
 
 //constant values
@@ -84,6 +88,7 @@ struct expr_const : public expression_desc
 
 	int row;
 	
+	var_value get_val();
 	void evaluate();
 	type get_type();
 };
@@ -96,8 +101,26 @@ struct expr_var : public expression_desc
 	int row;
 	std::string name;
 	
+	var_value get_val();
 	void evaluate();
 	type get_type();
+};
+
+struct expr_arr : public expression_desc
+{
+	expr_arr(int row_number, expr_arr* a);
+	expr_arr(int row_number);
+
+	int row;
+	int size;
+	var_value val;
+
+	var_value get_val();
+	void deleteBecauseGccPolymorphicSucks();
+	void add(expression_desc* e);
+	void evaluate();
+	type get_type();
+	int get_size();
 };
 
 //assignment
@@ -146,6 +169,21 @@ struct expr_par : public expr_unary
 	int row;
 	expression_desc* e;
 	
+	var_value get_val();
+	void evaluate();
+	type get_type();
+};
+
+//array element []
+struct expr_ael : public expression_desc
+{
+	expr_ael(int row_number, std::string var_name, expression_desc* n);
+
+	int row;
+	std::string name;
+	expression_desc* nth;
+	
+	var_value get_val();
 	void evaluate();
 	type get_type();
 };
@@ -158,6 +196,7 @@ struct expr_add : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	
+	var_value get_val();
 	void evaluate();
 	int get_row();
 	type get_type();
@@ -170,7 +209,8 @@ struct expr_dif : public expr_binary
 
 	expression_desc* l;
 	expression_desc* r;
-		
+
+	var_value get_val();	
 	void evaluate();
 	int get_row();
 	type get_type();
@@ -184,6 +224,7 @@ struct expr_mul : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	
+	var_value get_val();
 	void evaluate();
 	int get_row();
 	type get_type();
@@ -197,7 +238,8 @@ struct expr_div : public expr_binary
 	int row; //???? ez kell ide?	
 	expression_desc* l;
 	expression_desc* r;
-		
+
+	var_value get_val();	
 	void evaluate();
 	int get_row();
 	type get_type();
@@ -210,6 +252,7 @@ struct expr_pow : public expr_binary
 	expression_desc* l;
 	expression_desc* r;
 	
+	var_value get_val();
 	void evaluate();
 	int get_row();
 	type get_type();
@@ -223,7 +266,8 @@ struct expr_mod : public expr_binary
 	int row;
 	expression_desc* l;
 	expression_desc* r;
-		
+	
+	var_value get_val();
 	void evaluate();
 	int get_row();
 	type get_type();
@@ -236,7 +280,8 @@ struct expr_or : public expr_binary
 
 	expression_desc* l;
 	expression_desc* r;
-		
+	
+	var_value get_val();
 	void evaluate();
 	int get_row();
 	type get_type();
@@ -251,6 +296,7 @@ struct expr_and : public expr_binary
 	expression_desc* r;
 	type expr_type;
 	
+	var_value get_val();
 	void evaluate();
 	int get_row();
 	type get_type();
@@ -265,6 +311,7 @@ struct expr_eq : public expr_binary
 	expression_desc* r;
 	type expr_type;
 
+	var_value get_val();
 	void evaluate();
 	int get_row();
 	type get_type();
@@ -279,6 +326,7 @@ struct expr_neq : public expr_binary
 	expression_desc* r;
 	type expr_type;
 
+	var_value get_val();
 	void evaluate();	
 	int get_row();
 	type get_type();
@@ -293,6 +341,7 @@ struct expr_leq : public expr_binary
 	expression_desc* r;
 	type expr_type;
 	
+	var_value get_val();
 	void evaluate();	
 	int get_row();
 	type get_type();
@@ -307,6 +356,7 @@ struct expr_geq : public expr_binary
 	expression_desc* r;
 	type expr_type;
 
+	var_value get_val();
 	void evaluate();
 	int get_row();
 	type get_type();
@@ -321,6 +371,7 @@ struct expr_lt : public expr_binary
 	expression_desc* r;
 	type expr_type;
 
+	var_value get_val();
 	void evaluate();	
 	int get_row();
 	type get_type();
@@ -335,6 +386,7 @@ struct expr_gt : public expr_binary
 	expression_desc* r;
 	type expr_type;
 
+	var_value get_val();
 	void evaluate();	
 	int get_row();
 	type get_type();
@@ -348,6 +400,7 @@ struct expr_neg : public expr_unary
 	expression_desc* e;
 	type expr_type;
 
+	var_value get_val();
 	void evaluate();	
 	int get_row();
 	type get_type();
@@ -361,6 +414,7 @@ struct expr_um : public expr_unary
 	expression_desc* e;
 	type expr_type;
 
+	var_value get_val();
 	void evaluate();
 	int get_row();
 	type get_type();

@@ -35,6 +35,8 @@ WS [ \n\t\r]
 "local" return Parser::KEYWORD_LOCAL;
 "{" return Parser::OCURLY; 
 "}" return Parser::CCURLY; 
+"[" return Parser::OSBRACKET;
+"]" return Parser::CSBRACKET;
 
 "|" return Parser::PIPE_SYMBOL; 
 "&&" return Parser::ANDF_SYMBOL; 
