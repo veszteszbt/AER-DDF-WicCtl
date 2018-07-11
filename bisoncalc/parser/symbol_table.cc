@@ -6,7 +6,7 @@ var_value::var_value(double d) : var_type(u_double), val(d) {}
 
 var_value::var_value(std::string* s) : var_type(u_string), val(s) {}
 
-var_value::var_value(std::unordered_map<std::string, var_value>* a) : var_type(u_array), val(a) {}
+var_value::var_value(arraypair* a) : var_type(u_array), val(a) {}
 /*template<>
 void var_value::value::set_value(int i)
 {
@@ -44,7 +44,7 @@ var_value::~var_value()
 	}
 	else if (var_type == u_array)
 	{
-		val.array->std::unordered_map<std::string, var_value>::~unordered_map();
+		val.array->arraypair::~pair();
 	}
 }
 
@@ -133,7 +133,7 @@ bool var_value::value(std::string &s) const
 }
 
 template<>
-bool var_value::value(std::unordered_map<std::string, var_value> &a) const
+bool var_value::value(arraypair &a) const
 {
 	if (var_type == u_array)
 	{
@@ -174,7 +174,7 @@ void var_value::set_value(std::string* s)
 }
 
 template<>
-void var_value::set_value(std::unordered_map<std::string, var_value>* a)
+void var_value::set_value(arraypair* a)
 {
 	val.array = a;
 }
@@ -188,6 +188,7 @@ var_value::var_value(const var_value& other) : var_type(other.var_type)
 		if(other.value<int>(i))
 		{
 			set_value<int>(i);
+			var_type = u_integer;
 		}
 		else
 		{
@@ -201,6 +202,7 @@ var_value::var_value(const var_value& other) : var_type(other.var_type)
 		if(other.value<double>(d))
 		{
 			set_value<double>(d);
+			var_type = u_double;
 		}
 		else
 		{
@@ -214,6 +216,7 @@ var_value::var_value(const var_value& other) : var_type(other.var_type)
 			if(other.value<std::string>(*temp))
 			{
 				set_value<std::string*>(temp);
+				var_type = u_string;
 			}
 			else
 			{
@@ -223,16 +226,21 @@ var_value::var_value(const var_value& other) : var_type(other.var_type)
 		}
 		case u_array:
 		{
-			std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
-			if(other.value<std::unordered_map<std::string, var_value> >(*tempmap))
+			arraypair* tempmap = new arraypair;
+			if(other.value<arraypair >(*tempmap))
 			{
-				set_value<std::unordered_map<std::string, var_value>*>(tempmap);
+				set_value<arraypair*>(tempmap);
+				var_type = u_array;
 			}
 			else
 			{
 				std::cerr << "cannot convert to array" << std::endl;
 			}
 			break;
+		}
+		case u_null:
+		{
+			var_type = u_null;
 		}
 	}
 }
@@ -292,15 +300,15 @@ void var_value::append(std::string s)
 	}
 }
 
-bool var_value::find(std::string s)
+bool var_value::exists_in_array(std::string s)
 {
 	if (var_type != u_array)
 	{
-		std::cerr << "can't use find method since its not an array!" << std::endl;
+		std::cerr << "can't use exists_in_array method since its not an array!" << std::endl;
 	}
 	else
 	{
-		auto it = val.array->find(s);
+		auto it = val.array->first.find(s);
 		//std::cout << "find key " << s ;
 		//if (it == val.array->end())
 		//{
@@ -310,10 +318,24 @@ bool var_value::find(std::string s)
 		//{
 		//	std::cout << " :" << it->first << ", " << it->second << std::endl;
 		//}
-		return (it != val.array->end());
+		return (it != val.array->first.end());
 	}
 	return false;
 }
+
+/*std::unordered_map<std::string, var_value>::iterator var_value::find(std::string s)
+{
+	if (var_type != u_array)
+	{
+		std::cerr << "can't use find method since its not an array!" << std::endl;
+	}
+	else
+	{
+		auto it = val.array->first.find(s);
+		return it;
+	}
+	return nullptr;
+}*/
 
 std::string var_value::find_first_element_having_value(var_value v)
 {
@@ -325,8 +347,8 @@ std::string var_value::find_first_element_having_value(var_value v)
 	else
 	{
 		bool found = false;
-		auto it = val.array->begin();
-		while (it!=val.array->end() && !found)
+		auto it = val.array->first.begin();
+		while (it!=val.array->first.end() && !found)
 		{
 			if(it->second == v)
 			{
@@ -349,7 +371,7 @@ std::vector<std::string> var_value::find_elements_having_value(var_value v)
 	}
 	else
 	{
-		for(auto it = val.array->begin(); it != val.array->end();it++)
+		for(auto it = val.array->first.begin(); it != val.array->first.end();it++)
 		{
 			if (it->second == v)
 			{
@@ -369,7 +391,7 @@ int var_value::get_size()
 	}
 	else
 	{
-		return val.array->size();
+		return val.array->first.size();
 	}
 	return 0;
 }
@@ -382,16 +404,36 @@ void var_value::insert(std::string s, var_value a)
 	}
 	else
 	{
-		int i = get_size();
+		int i = 0; //get_size();
 		//std::cout << "looking up " << s << " in the map" << std::endl;
-		while(find(s))
+		while(exists_in_array(s))
 		{
 			//std::cout << s << " is already an index" << std::endl;
 			s = std::to_string(i);
 			i++;
 		}
 		//std::cout << "insert function on " << s << ", " << a << std::endl;
-		val.array->insert(std::pair<std::string, var_value>(s,a));
+		val.array->first.insert(std::pair<std::string, var_value>(s,a));
+		val.array->second.push_back(s);
+	}
+}
+
+void var_value::insert_with_add(std::string s, var_value a)
+{
+	if (var_type != u_array)
+	{
+		std::cerr << "can't insert since its not an array!" << std::endl;
+	}
+	else
+	{
+		if (exists_in_array(s))
+		{
+			(*(val.array->first.find(s))).second = (*(val.array->first.find(s))).second + a;
+		}
+		else
+		{
+			insert(s, a);
+		}
 	}
 }
 
@@ -411,8 +453,8 @@ var_value var_value::return_element_with_key(var_value v)
 		}
 		if(v.value<std::string>(s)){}else{std::cerr<<"cannot convert to string"<<std::endl;}
 
-		auto it = val.array->find(s);
-		if (it == val.array->end())
+		auto it = val.array->first.find(s);
+		if (it == val.array->first.end())
 		{
 			std::cerr << "no element found with key: " << s << std::endl;
 		}
@@ -433,12 +475,32 @@ std::vector<var_value> var_value::return_array_elements()
 	}
 	else
 	{
-		for(auto it = val.array->begin();it!=val.array->end();it++)
+		for(auto it = val.array->first.begin();it!=val.array->first.end();it++)
 		{
 			vec.push_back(it->second);
 		}
 	}
 	return vec;
+}
+
+void delete_from_arraypair(arraypair &a, std::string k)
+{
+	a.first.erase(k);
+	auto it = a.second.begin();
+	bool found;
+	while(!found && it != a.second.end())
+	{
+		if(*it == k)
+		{
+			found = true;
+			a.second.erase(it);
+		}
+		it++;
+	}
+	if(!found)
+	{
+		std::cerr << "warning couldn't find key in the list" << std::endl;
+	}
 }
 
 /*void var_value::delete_element_with_key(std::string key)
@@ -481,9 +543,10 @@ if (get_type() == u_array)
 	}
 	else
 	{
-		val.array->clear();
-		auto it = right.val.array->begin();
-		while (it != right.val.array->end())
+		val.array->first.clear();
+		val.array->second.clear();
+		auto it = right.val.array->first.begin();
+		while (it != right.val.array->first.end())
 		{
 			insert(it->first, it->second);
 			it++;
@@ -553,10 +616,10 @@ else
 			val.stringval->std::string::~string();
 		}
 		var_type = u_array;
-		std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
-		if (right.value<std::unordered_map<std::string, var_value> >(*tempmap)){}
+		arraypair* tempmap = new arraypair;
+		if (right.value<arraypair >(*tempmap)){}
 		
-		set_value<std::unordered_map<std::string, var_value>*>(tempmap);
+		set_value<arraypair*>(tempmap);
 
 	}
 }
@@ -571,51 +634,52 @@ var_value operator+(var_value l, var_value r)
 	{
 		//std::cout << "array" << std::endl;
 		ret.set_type_noconvert(u_array);
-		std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
-		ret.set_value<std::unordered_map<std::string,var_value>*>(tempmap);
+		arraypair* tempmap = new arraypair;
+		ret.set_value<arraypair*>(tempmap);
 		if (l.get_type() == u_array)
 		{
 			//std::cout << "a" << std::endl;
-			std::unordered_map<std::string, var_value> m1;
-			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			arraypair m1;
+			if(l.value<arraypair>(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
 			//std::cout << "b" << std::endl;
-			for(auto it = m1.begin();it!=m1.end();it++)
+			for(auto it = m1.first.begin();it!=m1.first.end();it++)
 			{
 				ret.insert(it->first,it->second);
 			}
 			//std::cout << "c" << std::endl;
 		}
-		else
-		{
-			int i = ret.get_size();
-			std::string s = std::to_string(i);
-			ret.insert(s, l);
-		}
+
 		if (r.get_type() == u_array)
 		{
 			//std::cout << "d" << std::endl;
-			std::unordered_map<std::string, var_value> m2;
-			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			arraypair m2;
+			if(r.value<arraypair >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
 
-			for(auto it = m2.begin();it!=m2.end();it++)
+			for(auto it = m2.first.begin();it!=m2.first.end();it++)
 			{
-				ret.insert(it->first,it->second);
+				ret.insert_with_add(it->first,it->second);
 			}
 		}
 		else
 		{
 			//std::cout << "e" << std::endl;
-			int i = ret.get_size();
+			int i = 0; //ret.get_size();
 			std::string s = std::to_string(i);
 			ret.insert(s, r);
 			//std::cout << "f" << std::endl;
+		}
+		if (l.get_type() != u_array)
+		{
+			int i = 0; //ret.get_size();
+			std::string s = std::to_string(i);
+			ret.insert(s, l);
 		}
 		//ret.set_value<std::unordered_map<std::string,var_value>*>(tempmap);
 		//std::cout << "g" << std::endl;
 	}
 	else
 	{
-		std::cout << "not array" << std::endl;
+		//std::cout << "not array" << std::endl;
 	if (l.get_type() == r.get_type())
 	{
 		if (l.get_type() == u_integer)
@@ -741,31 +805,31 @@ var_value operator-(var_value l, var_value r)
 	if (l.get_type() == u_array || r.get_type() == u_array)
 	{
 		ret.set_type_noconvert(u_array);
-		std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
-		ret.set_value<std::unordered_map<std::string,var_value>*>(tempmap);
+		arraypair* tempmap = new arraypair;
+		ret.set_value<arraypair*>(tempmap);
 		if (l.get_type() == u_array)
 		{
-			std::unordered_map<std::string, var_value> m1;
-			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			arraypair m1;
+			if(l.value<arraypair >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
 
 			if (r.get_type() == u_array)
 			{
-				std::unordered_map<std::string, var_value> m2;
-				if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+				arraypair m2;
+				if(r.value<arraypair >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
 
-				for(auto it = m2.begin();it!=m2.end();it++)
+				for(auto it = m2.first.begin();it!=m2.first.end();it++)
 				{
 					std::string keyname = l.find_first_element_having_value(it->second);
-					m1.erase(keyname);
+					delete_from_arraypair(m1, keyname);
 				}
 			}
 			else
 			{
 				std::string keyname = l.find_first_element_having_value(r);
-				m1.erase(keyname);
+				delete_from_arraypair(m1, keyname);
 			}
 
-			for(auto it = m1.begin();it!=m1.end();it++)
+			for(auto it = m1.first.begin();it!=m1.first.end();it++)
 			{
 				ret.insert(it->first,it->second);
 			}
@@ -773,10 +837,10 @@ var_value operator-(var_value l, var_value r)
 		else
 		{
 			bool found = false;
-			std::unordered_map<std::string, var_value> m2;
-			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}
+			arraypair m2;
+			if(r.value<arraypair >(m2)){}
 
-			for(auto it = m2.begin();it!=m2.end();it++)
+			for(auto it = m2.first.begin();it!=m2.first.end();it++)
 			{
 				if (it->second == l)
 				{
@@ -786,7 +850,7 @@ var_value operator-(var_value l, var_value r)
 			
 			if (!found)
 			{
-				int i = ret.get_size();
+				int i = 0; //ret.get_size();
 				std::string s = std::to_string(i);
 				ret.insert(s, l);
 			}
@@ -949,8 +1013,8 @@ var_value operator*(var_value l, var_value r)
 	if(l.get_type() == u_array || r.get_type() == u_array)
 	{
 		ret.set_type_noconvert(u_array);
-		std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
-		ret.set_value<std::unordered_map<std::string,var_value>*>(tempmap);
+		arraypair* tempmap = new arraypair;
+		ret.set_value<std::pair<std::unordered_map<std::string,var_value>, std::list<std::string> >*>(tempmap);
 
 		std::cerr << "no operator * exists for arrays" << std::endl;
 	}
@@ -1037,24 +1101,25 @@ var_value operator/(var_value l, var_value r)
 	if (l.get_type() == u_array || r.get_type() == u_array)
 	{
 		ret.set_type_noconvert(u_array);
-		std::unordered_map<std::string, var_value>* tempmap = new std::unordered_map<std::string, var_value>;
-		ret.set_value<std::unordered_map<std::string,var_value>*>(tempmap);
+		arraypair* tempmap = new arraypair;
+		ret.set_value<std::pair<std::unordered_map<std::string,var_value>, std::list<std::string> >*>(tempmap);
 		if (l.get_type() == u_array)
 		{
-			std::unordered_map<std::string, var_value> m1;
-			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			arraypair m1;
+			if(l.value<arraypair >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
 
 			if (r.get_type() == u_array)
 			{
-				std::unordered_map<std::string, var_value> m2;
-				if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+				arraypair m2;
+				if(r.value<arraypair >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
 
-				for(auto it = m2.begin();it!=m2.end();it++)
+				for(auto it = m2.first.begin();it!=m2.first.end();it++)
 				{
 					std::vector<std::string> vec = l.find_elements_having_value(it->second);
 					for(auto it2 = vec.begin();it2!=vec.end();it2++)
 					{
-						m1.erase(*it2);
+						//m1.erase(*it2);
+						delete_from_arraypair(m1, *it2);
 					}
 				}
 			}
@@ -1063,11 +1128,12 @@ var_value operator/(var_value l, var_value r)
 				std::vector<std::string> vec = l.find_elements_having_value(r);
 				for(auto it2 = vec.begin();it2!=vec.end();it2++)
 				{
-					m1.erase(*it2);
+					//m1.erase(*it2);
+					delete_from_arraypair(m1, *it2);
 				}
 			}
 
-			for(auto it = m1.begin();it!=m1.end();it++)
+			for(auto it = m1.first.begin();it!=m1.first.end();it++)
 			{
 				ret.insert(it->first,it->second);
 			}
@@ -1075,10 +1141,10 @@ var_value operator/(var_value l, var_value r)
 		else
 		{
 			bool found = false;
-			std::unordered_map<std::string, var_value> m2;
-			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}
+			arraypair m2;
+			if(r.value<arraypair >(m2)){}
 
-			for(auto it = m2.begin();it!=m2.end();it++)
+			for(auto it = m2.first.begin();it!=m2.first.end();it++)
 			{
 				if (it->second == l)
 				{
@@ -1403,10 +1469,10 @@ int operator==(var_value l, var_value r)
 		}
 		else if (l.get_type() == u_array)
 		{
-			std::unordered_map<std::string, var_value> m1, m2;
-			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			arraypair m1, m2;
+			if(l.value<arraypair >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
 			
-			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			if(r.value<arraypair >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
 
 			if(m1 == m2)
 			{
@@ -1598,12 +1664,12 @@ int operator<(var_value l, var_value r)
 		}
 		else if (l.get_type() == u_array)
 		{
-			std::unordered_map<std::string, var_value> m1, m2;
-			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			arraypair m1, m2;
+			if(l.value<arraypair >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
 			
-			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			if(r.value<arraypair >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
 
-			if(m1.size() < m2.size())
+			if(m1.first.size() < m2.first.size())
 			{
 				return 1;
 			}
@@ -1781,12 +1847,12 @@ int operator>(var_value l, var_value r)
 		}
 		else if (l.get_type() == u_array)
 		{
-			std::unordered_map<std::string, var_value> m1, m2;
-			if(l.value<std::unordered_map<std::string, var_value> >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			arraypair m1, m2;
+			if(l.value<arraypair >(m1)){}else{std::cerr<<"conversion failed"<<std::endl;}
 			
-			if(r.value<std::unordered_map<std::string, var_value> >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
+			if(r.value<arraypair >(m2)){}else{std::cerr<<"conversion failed"<<std::endl;}
 
-			if(m1.size() > m2.size())
+			if(m1.first.size() > m2.first.size())
 			{
 				return 1;
 			}
@@ -2056,6 +2122,13 @@ void Symbol_Table::set_value(std::string* name, variable_desc v)
 		int j = symbol_table.size();
 		symbol_table[j-1][*name] = v;
 	}
+}
+
+void Symbol_Table::set_default_value(std::string name, var_value vv)
+{
+	journal(journal::info, "symbol_table") << "set value of " << name << journal::end;
+	variable_desc v(-1, vv);
+	symbol_table[0][name]= v;
 }
 
 void Symbol_Table::set_local_value(std::string* name, variable_desc v)

@@ -13,18 +13,20 @@ int main(int argc, char* argv[])
 	journal(journal::info,"main") << "program started" << journal::end;
 	
 	std::map<std::string, variable_desc> default_symtable;
-	fptr = new wic::functions;
+	
 
 	if (argc < 2)
 	{
 		//new object, so it can be accessed in grammar
 		parser = new Parser;
+		fptr = new wic::functions;
 		(*parser).parse();
 	}
 	else
 	{
 		std::string filename = argv[1];
 		parser = new Parser(filename);
+		fptr = new wic::functions;
 		(*parser).parse();
 	}
 	delete parser;

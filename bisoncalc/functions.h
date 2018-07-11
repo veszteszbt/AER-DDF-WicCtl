@@ -18,8 +18,6 @@
 #include <iterator>
 #include <type_traits>
 
-
-
 namespace wic{
 
 /*template<typename V, typename T>
@@ -148,6 +146,8 @@ public:
 		//std::cout << "added command" << std::endl;
 		commands[name] = command_wrapper<Tret,Targ...>(cmd);
 	}
+
+	void add_variable(std::string name, var_value value);
 
 	var_value run(call* c);
 

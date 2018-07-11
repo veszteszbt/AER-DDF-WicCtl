@@ -53,6 +53,8 @@ WS [ \n\t\r]
 ">>" return Parser::OUTPUT_APPEND;
 "!" return Parser::NEGATE;
 
+"=>" return Parser::ARROW;
+
 "+" return Parser::OPERATOR_PLUS;
 "-" return Parser::OPERATOR_MINUS;
 "/" return Parser::OPERATOR_DIVISION;
@@ -81,6 +83,8 @@ WS [ \n\t\r]
 "false" return Parser::CONST_FALSE;
 "PI" return Parser::CONST_PI;
 "pi" return Parser::CONST_PI;
+"NULL" return Parser::CONST_NULL;
+"null" return Parser::CONST_NULL;
 
 
 ['][^']*['] return Parser::SINGLEQUOTE; 

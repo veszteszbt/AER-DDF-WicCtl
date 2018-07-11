@@ -9,9 +9,23 @@
 #include <cmath>
 //#include <ios>
 #include <sstream>
+#include <list>
 //#include <algorithm>
 
-enum type{ u_integer, u_double, u_string, u_array };
+class var_value;
+
+typedef std::pair<std::unordered_map<std::string, var_value>, std::list<std::string> > arraypair;
+
+void delete_from_arraypair(arraypair &a, std::string k);
+
+enum type{ 
+	u_integer,
+	u_double,
+	u_string,
+	u_array,
+	u_null,
+	//u_date
+	};
 
 class var_value
 {
@@ -21,12 +35,12 @@ class var_value
 		int intval;
 		double doubleval;
 		std::string* stringval;
-		std::unordered_map<std::string, var_value>* array;
+		arraypair* array;
 
 		value(int i) : intval(i) {}
 		value(double d) : doubleval(d) {}
 		value(std::string* s) : stringval(s) {}
-		value(std::unordered_map<std::string, var_value>* a) : array(a) {}
+		value(arraypair* a) : array(a) {}
 
 		value() : intval(0){}
 		~value(){}; //TODO ezt később fix
@@ -39,7 +53,7 @@ public:
 	var_value(int i);
 	var_value(double d);
 	var_value(std::string* s);
-	var_value(std::unordered_map<std::string, var_value>* a);
+	var_value(arraypair* a);
 	var_value(const var_value& other);
 	var_value();
 	~var_value();
@@ -49,7 +63,9 @@ public:
 	void set_value(int i);
 	void set_value(double d);
 	void set_value(std::string s);
-	bool find(std::string s);
+	bool exists_in_array(std::string s);
+	//std::unordered_map<std::string, var_value>::iterator find(std::string s);
+	//void add_to_element(std::unordered_map<std::string, var_value>::iterator it);
 	std::string find_first_element_having_value(var_value v);
 	std::vector<std::string> find_elements_having_value(var_value v);
 	std::vector<var_value> return_array_elements();
@@ -57,7 +73,11 @@ public:
 	//void delete_elements_with_key(std::vector<std::string> vec);
 	int get_size();
 	void insert(std::string s, var_value a);
+	void insert_with_add(std::string s, var_value a);
 	var_value return_element_with_key(var_value v);
+	
+	//template<typename T>
+	//void convert_to_type()
 	//void set_value(std::unordered_map<std::string, var_value> a);
 
 	template<typename T>
@@ -110,6 +130,7 @@ class Symbol_Table
 	int find_variable(std::string* name);
 	void set_value(std::string* name, variable_desc v);
 	void set_local_value(std::string* name, variable_desc v);
+	void set_default_value(std::string name, var_value v);
 	variable_desc get_value(std::string* name);
 	void increase_stack();
 	void decrease_stack();

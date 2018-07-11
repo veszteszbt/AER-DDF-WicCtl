@@ -18,6 +18,11 @@ namespace wic{
 
 }*/
 
+void functions::add_variable(std::string name, var_value value)
+{
+	(*parser).symbol_table.set_default_value(name, value);
+}
+
 static void write_int(int i)
 {
 	std::cout << "writing int: " << i << std::endl;
@@ -36,9 +41,9 @@ static void write_string(std::string s)
 	//active=false;
 }
 
-static void write_array(std::unordered_map<std::string, var_value> m)
+static void write_array(std::pair<std::unordered_map<std::string, var_value>, std::list<std::string> > m)
 {
-	for(auto it = m.begin(); it!=m.end();it++)
+	for(auto it = m.first.begin(); it!=m.first.end();it++)
 	{
 		std::cout << "writing array: {key:" << it->first << ", value:" << it->second << "}" << std::endl;
 	}
@@ -145,6 +150,7 @@ functions::functions()
 	add_command("sin", sin);
 	add_command("is_true", is_true);
 	add_command("exit",exit);
+	add_variable("asd", 36);
 }
 	
 var_value functions::run(call* c)

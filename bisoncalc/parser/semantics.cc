@@ -104,6 +104,11 @@ expression_desc(row_number, v)
 	val = v;
 }
 
+expr_const::expr_const(int row_number) : row(row_number)
+{
+	val.set_type_noconvert(u_null);
+}
+
 void expr_const::evaluate()
 {
 }
@@ -155,7 +160,7 @@ expr_arr::expr_arr(int row_number,expr_arr* a) : row(row_number), val(a->get_val
 expr_arr::expr_arr(int row_number) : row(row_number)
 {
 	//std::cout << "array init2" << std::endl;
-	val = new std::unordered_map<std::string, var_value>;
+	val = new std::pair<std::unordered_map<std::string, var_value>, std::list<std::string> >;
 }
 
 //TODO ITT BIZTOS MEMÓRIASZIVÁRGÁS LESZ
@@ -179,7 +184,7 @@ void expr_arr::add(expression_desc* e)
 	if (val.get_type() == u_array)
 	{
 		//ez lehet overflowol
-		int i = val.get_size();
+		int i = 0; //val.get_size();
 		std::string s = std::to_string(i);
 		/*while(val.find(s))
 		{
@@ -190,6 +195,16 @@ void expr_arr::add(expression_desc* e)
 		//std::cout << "inserting " << e->get_val() << " with index " << s << std::endl;
 		val.insert(s, e->get_val());
 		//std::cout << "val is now " << val << std::endl;
+	}
+}
+
+void expr_arr::add(std::string s, expression_desc* e)
+{
+	if (val.get_type() == u_array)
+	{
+		e->evaluate();
+		//
+		val.insert_with_add(s, e->get_val());
 	}
 }
 

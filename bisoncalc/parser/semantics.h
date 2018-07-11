@@ -85,6 +85,7 @@ struct expr_unary : public expression_desc
 struct expr_const : public expression_desc
 {
 	expr_const(int row_number, var_value v);
+	expr_const(int row_number);
 
 	int row;
 	
@@ -118,6 +119,7 @@ struct expr_arr : public expression_desc
 	var_value get_val();
 	void deleteBecauseGccPolymorphicSucks();
 	void add(expression_desc* e);
+	void add(std::string s, expression_desc* e);
 	void evaluate();
 	type get_type();
 	int get_size();
