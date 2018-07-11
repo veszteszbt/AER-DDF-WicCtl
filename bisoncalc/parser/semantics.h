@@ -119,7 +119,8 @@ struct expr_arr : public expression_desc
 	var_value get_val();
 	void deleteBecauseGccPolymorphicSucks();
 	void add(expression_desc* e);
-	void add(std::string s, expression_desc* e);
+	//void add(std::string s, expression_desc* e);
+	void add(expression_desc* variable, expression_desc* varvalue);
 	void evaluate();
 	type get_type();
 	int get_size();

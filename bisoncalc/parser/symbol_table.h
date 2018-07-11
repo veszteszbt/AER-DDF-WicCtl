@@ -10,6 +10,8 @@
 //#include <ios>
 #include <sstream>
 #include <list>
+#include <cstdlib>
+#include <cerrno>
 //#include <algorithm>
 
 class var_value;
@@ -73,9 +75,13 @@ public:
 	//void delete_elements_with_key(std::vector<std::string> vec);
 	int get_size();
 	void insert(std::string s, var_value a);
+	void insert(var_value a);
 	void insert_with_add(std::string s, var_value a);
+	void insert_with_overwrite(std::string s, var_value a);
 	var_value return_element_with_key(var_value v);
-	
+	int getMaxKey();
+
+
 	//template<typename T>
 	//void convert_to_type()
 	//void set_value(std::unordered_map<std::string, var_value> a);

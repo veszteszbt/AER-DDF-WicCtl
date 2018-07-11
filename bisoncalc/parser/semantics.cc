@@ -184,8 +184,8 @@ void expr_arr::add(expression_desc* e)
 	if (val.get_type() == u_array)
 	{
 		//ez lehet overflowol
-		int i = 0; //val.get_size();
-		std::string s = std::to_string(i);
+		//int i = 0; //val.get_size();
+		//std::string s = std::to_string(i);
 		/*while(val.find(s))
 		{
 			i = i+1;
@@ -193,18 +193,38 @@ void expr_arr::add(expression_desc* e)
 		}*/
 		e->evaluate();
 		//std::cout << "inserting " << e->get_val() << " with index " << s << std::endl;
-		val.insert(s, e->get_val());
+		val.insert(e->get_val());
 		//std::cout << "val is now " << val << std::endl;
 	}
 }
 
-void expr_arr::add(std::string s, expression_desc* e)
+/*void expr_arr::add(std::string s, expression_desc* e)
 {
 	if (val.get_type() == u_array)
 	{
 		e->evaluate();
 		//
-		val.insert_with_add(s, e->get_val());
+		val.insert_with_overwrite(s, e->get_val());
+	}
+}*/
+
+void expr_arr::add(expression_desc* variable, expression_desc* varvalue)
+{
+	if (val.get_type() == u_array)
+	{
+		variable->evaluate();
+		varvalue->evaluate();
+		var_value temp = variable->get_val();
+		std::string s;
+		if(temp.value<std::string>(s))
+		{
+			val.insert_with_overwrite(s, varvalue->get_val());
+		}
+		else
+		{
+			std::cerr << "warning: this variable cannot be used as an index, inserting with default value" << std::endl;
+			val.insert(varvalue->get_val());
+		}
 	}
 }
 

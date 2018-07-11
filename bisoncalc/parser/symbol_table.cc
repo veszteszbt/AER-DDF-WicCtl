@@ -404,14 +404,35 @@ void var_value::insert(std::string s, var_value a)
 	}
 	else
 	{
-		int i = 0; //get_size();
+		if (exists_in_array(s))
+		{
+			int i = getMaxKey() + 1;
+			s = std::to_string(i);
+		}
+		//int i = 0; //get_size();
 		//std::cout << "looking up " << s << " in the map" << std::endl;
-		while(exists_in_array(s))
+		/*while(exists_in_array(s))
 		{
 			//std::cout << s << " is already an index" << std::endl;
 			s = std::to_string(i);
 			i++;
-		}
+		}*/
+		//std::cout << "insert function on " << s << ", " << a << std::endl;
+		val.array->first.insert(std::pair<std::string, var_value>(s,a));
+		val.array->second.push_back(s);
+	}
+}
+
+void var_value::insert(var_value a)
+{
+	if (var_type != u_array)
+	{
+		std::cerr << "can't insert since its not an array!" << std::endl;
+	}
+	else
+	{
+		int i = getMaxKey() + 1;
+		std::string s = std::to_string(i);
 		//std::cout << "insert function on " << s << ", " << a << std::endl;
 		val.array->first.insert(std::pair<std::string, var_value>(s,a));
 		val.array->second.push_back(s);
@@ -434,6 +455,19 @@ void var_value::insert_with_add(std::string s, var_value a)
 		{
 			insert(s, a);
 		}
+	}
+}
+
+void var_value::insert_with_overwrite(std::string s, var_value a)
+{
+	if (exists_in_array(s))
+	{
+		//std::cout << "overwriting " << (*(val.array->first.find(s))).second << "to" << a << std::endl;
+		(*(val.array->first.find(s))).second = a;
+	}
+	else
+	{
+		insert(s, a);
 	}
 }
 
@@ -501,6 +535,38 @@ void delete_from_arraypair(arraypair &a, std::string k)
 	{
 		std::cerr << "warning couldn't find key in the list" << std::endl;
 	}
+}
+
+int var_value::getMaxKey()
+{
+	int max = -1;
+	if (get_type() != u_array)
+	{
+		std::cerr << "cant get max element from a non array" << std::endl;
+	}
+	else
+	{
+		for (auto it = val.array->second.begin(); it!= val.array->second.end();it++)
+		{
+			int temperrno = errno;
+			errno = 0;
+			char * eptr;
+			long int temp = strtol((*it).c_str(), &eptr, 10);
+			if(!errno && !*eptr)
+			{
+				int currval = static_cast<int>(temp);
+				if(static_cast<long int>(currval) == temp)
+				{
+					if(max < currval)
+					{
+						max = currval;
+					}
+				}
+			}
+			errno = temperrno;
+		}
+	}
+	return max;
 }
 
 /*void var_value::delete_element_with_key(std::string key)
