@@ -97,7 +97,7 @@ void handler(rpc::incoming_call_handle<std::string,bool> h)
 int main()
 {
 	journal::init();
-	journal::min_level = 0;
+	journal::min_level = 255;
 	rpc::init();
 	rpc::set_command(0x100,handler);
 

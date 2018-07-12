@@ -9,10 +9,10 @@ heartbeat_test: heartbeat_test.cc
 pair_test: pair_test_a pair_test_b
 
 pair_test_a: pair_test_a.cc
-	g++-7.2.0 -O3 -std=c++17  -fdiagnostics-color -I../../ ../../{journal,sched/process}.cc -pthread $@.cc -o $@
+	g++ -O3 -std=c++17  -fdiagnostics-color -I../../ ../../journal.cc ../../sched/process.cc -pthread $@.cc -o $@
 
 pair_test_b: pair_test_b.cc
-	g++-7.2.0 -O3 -std=c++17  -fdiagnostics-color -I../../ ../../{journal,sched/process}.cc -pthread $@.cc -o $@
+	g++ -O3 -std=c++17  -fdiagnostics-color -I../../ ../../journal.cc ../../sched/process.cc -pthread $@.cc -o $@
 
 name_test: name_test.cc
 	g++ -O3 -std=c++17  -fdiagnostics-color -I../../ ../../{journal,sched/process}.cc -pthread name_test.cc -o name_test

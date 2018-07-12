@@ -161,8 +161,6 @@ void journal::notify(const std::string &s)
 
 void journal::process_start()
 {
-	out_stream = new std::ofstream("/var/log/wic_host.log",std::ios_base::app);
-
 	while(is_running)
 	{
 		item_lock.lock();
@@ -186,11 +184,12 @@ void journal::process_start()
 	delete out_stream;
 }
 
-void journal::init()
+void journal::init(const std::string &fname)
 {
 	if(process)
 		return;
 
+	out_stream = new std::ofstream(fname,std::ios_base::app);
 	is_running = true;
 	process = new std::thread(process_start);
 #ifdef __linux__

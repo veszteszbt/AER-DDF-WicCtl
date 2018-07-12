@@ -72,7 +72,7 @@ public:
 	static const uint8_t debug = 80;
 	static const uint8_t trace = 96;
 
-	static void init();
+	static void init(const std::string &fname);
 
 	static void uninit();
 

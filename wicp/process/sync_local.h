@@ -39,6 +39,9 @@ namespace process
 					TEnv::finish_sync_remote(*i,h);
 					TEnv::remotes_lock.unlock();
 					notify();
+					jrn(journal::trace) << "; remote: " << (std::string)h.ip <<
+					"call_finished" << journal::end;
+
 					return;
 				}
 

@@ -23,8 +23,6 @@ namespace wicp {
 
 	class role_type
 	{
-		device_type *volatile device;
-
 		std::mutex lock;
 
 
@@ -47,7 +45,6 @@ namespace wicp {
 
 		role_type(const std::string &pname)
 			: name(pname)
-			, device(0)
 		{}
 
 		~role_type()
@@ -61,28 +58,14 @@ namespace wicp {
 
 		net::ipv4_address get_ip()
 		{
-			lock.lock();
-			net::ipv4_address r;
-			if(device)
-				r = device->get_ip();
-			else
-				r = net::ipv4_address(0,0,0,0);
-			lock.unlock();
+			net::ipv4_address r(127,0,0,1);
 
 			return r;
 		}
 
 		uint8_t get_health()
 		{
-			lock.lock();
-			uint8_t r;
-			if(device)
-				r = device->get_health();
-			else
-				r = 0;
-			lock.unlock();
-
-			return r;
+			return 255;
 		}
 
 		template<typename T>
@@ -90,61 +73,32 @@ namespace wicp {
 		{
 			if(h.reason == earpc::reason::cancelled)
 				return;
+			else if(h.reason == earpc::reason::success)
+				journal(journal::info,"role.report_call") << "\e[32mcall succeeded\e[0m" << journal::end;
+
 			call_report_type r;
 			r.success = !h.reason;
 			r.latency = calc_latency(h);
-
-			lock.lock();
-			if(device)
-				device->report_call(r);
-			lock.unlock();
 		}
 
 		bool is_bound()
 		{
-			lock.lock();
-			const bool r = device;
-			lock.unlock();
-			return r;
+			return true;
 		}
 
 		bool is_bound_to(device_type &dev)
 		{
-			if(!&dev)
-				return false;
-			lock.lock();
-			const bool r = (device == &dev);
-			lock.unlock();
-			return r;
+			return true;
 		}
 
 		bool unbind()
 		{
-			lock.lock();
-			if(!device)
-			{
-				lock.unlock();
-				return false;
-			}
-			device = 0;
-			lock.unlock();
 			on_unbound(*this);
 			return true;
 		}
 
-
 		bool bind(device_type &dev)
 		{
-			if(!&dev)
-				return false;
-			lock.lock();
-			if(device)
-			{
-				lock.unlock();
-				return false;
-			}
-			device = &dev;
-			lock.unlock();
 			on_bound(*this);
 			return true;
 		}
