@@ -80,6 +80,22 @@ namespace process
 					cooldown_pending = true;
 					jrn(journal::trace) << "comitting new value to history; length is " << history.size() << journal::end;
 
+// TODO IN progress
+				const history_record hr(value);
+				// for(auto &object : wic_class::local_object_lock_table)
+				// {
+				// 	object->second.history.push_front(hr);
+				// 	if(object->second.history.size() > TEnv::history_size)
+				// 		object->second.history.pop_back();
+				// 	object->second.history_lock.unlock();
+
+				// 	TEnv::sync_local();
+
+				// 	proc_sync::notify();
+				// 	proc_log::notify();
+				// }
+
+/////
 				const history_record hr(value);
 				history.push_front(hr);
 				if(history.size() > TEnv::history_size)
