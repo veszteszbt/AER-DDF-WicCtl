@@ -41,9 +41,9 @@ static void write_string(std::string s)
 	//active=false;
 }
 
-static void write_array(std::pair<std::unordered_map<std::string, var_value>, std::list<std::string> > m)
+static void write_array(std::map<std::string, var_value> m)
 {
-	for(auto it = m.first.begin(); it!=m.first.end();it++)
+	for(auto it = m.begin(); it!=m.end();it++)
 	{
 		std::cout << "writing array: {key:" << it->first << ", value:" << it->second << "}" << std::endl;
 	}

@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	journal::init("journal/journal.txt");
 	journal(journal::info,"main") << "program started" << journal::end;
 	
-	std::map<std::string, variable_desc> default_symtable;
+	//std::map<std::string, variable_desc> default_symtable;
 	
 
 	if (argc < 2)

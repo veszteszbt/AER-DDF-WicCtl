@@ -17,7 +17,11 @@ WS [ \n\t\r]
 	}
 "case" return Parser::KEYWORD_CASE; 
 "in" return Parser::KEYWORD_IN; 
-"esac" return Parser::KEYWORD_ESAC; 
+"esac" {
+		extern int scanDepth;
+		scanDepth--;
+		return Parser::KEYWORD_ESAC;
+	}
 "for" return Parser::KEYWORD_FOR; 
 "while" return Parser::KEYWORD_WHILE; 
 "until" return Parser::KEYWORD_UNTIL; 
@@ -33,8 +37,17 @@ WS [ \n\t\r]
 	}
 "default" return Parser::KEYWORD_DEFAULT;
 "local" return Parser::KEYWORD_LOCAL;
-"{" return Parser::OCURLY; 
-"}" return Parser::CCURLY; 
+"{" {
+		extern int scanDepth;
+		scanDepth++;
+		return Parser::OCURLY; 
+	}
+"}" {
+		extern int scanDepth;
+		scanDepth--;
+		return Parser::CCURLY; 
+	}
+
 "[" return Parser::OSBRACKET;
 "]" return Parser::CSBRACKET;
 
@@ -91,7 +104,7 @@ WS [ \n\t\r]
 ["]([^\\\"]|\\.)*["] return Parser::DOUBLEQUOTE; 
 [0-9]*[.][0-9]+ return Parser::DOUBLE;
 [0-9]+ return Parser::INTEGER;
-0x[0-9] return Parser::HEXADECIMAL;
+0x[0-9]+ return Parser::HEXADECIMAL;
 [a-zA-Z]([a-zA-Z0-9]|"_")* return Parser::IDENTIFIER;
 
 {WS}+

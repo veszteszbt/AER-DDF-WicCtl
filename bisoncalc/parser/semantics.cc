@@ -154,13 +154,13 @@ var_value expr_var::get_val()
 expr_arr::expr_arr(int row_number,expr_arr* a) : row(row_number), val(a->get_val())
 {
 	//std::cout << "array init1" << std::endl;
-	val = a->get_val();
+	//val = a->get_val();
 }
 
 expr_arr::expr_arr(int row_number) : row(row_number)
 {
 	//std::cout << "array init2" << std::endl;
-	val = new std::pair<std::unordered_map<std::string, var_value>, std::list<std::string> >;
+	val = new std::map<std::string, var_value>;
 }
 
 //TODO ITT BIZTOS MEMÓRIASZIVÁRGÁS LESZ
@@ -237,9 +237,9 @@ void expr_arr::evaluate()
 	return val.get_type();
 }*/
 
-assign::assign(int row_number, std::string* var_name, expression_desc* ex) : row(row_number), vname(var_name), e(ex)
-{
-}
+assign::assign(int row_number, std::string* var_name, expression_desc* ex)
+	: row(row_number), vname(var_name), e(ex)
+{}
 
 var_value assign::get_return_value()
 {
@@ -251,9 +251,7 @@ var_value assign::get_return_value()
 }
 
 std::string assign::get_name()
-{
-	return *vname;
-}
+{ return *vname; }
 
 void assign::evaluate()
 {
@@ -1122,7 +1120,7 @@ void until_desc::evaluate()
 	while(true)
 	{
 		loop_condition->evaluate();
-		if (loop_condition->get_val() == 1)
+		if (loop_condition->get_val() != 0)
 		{
 			break;
 		}
@@ -1160,17 +1158,15 @@ var_value case_desc::get_return_value()
 void case_desc::evaluate()
 {
 	case_expr->evaluate();
-	auto it = case_parts.begin();
 	bool found = false;
-	while (it!=case_parts.end() && found == false)
+	for (auto it = case_parts.begin();it!=case_parts.end();it++)
 	{
 		(*it)->condition->evaluate();
-		if (case_expr->get_val() == ((*it)->condition->get_val()))
+		if (case_expr->get_val() == (*it)->condition->get_val())
 		{
 			found = true;
 			(*it)->evaluate();
 		}
-		it++;
 	}
 	if (!found)
 	{

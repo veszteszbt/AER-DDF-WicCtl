@@ -3,7 +3,6 @@
 
 %scanner ../scanner/Scanner.h
 
-
 %union
 {
 	std::string *str;
@@ -174,7 +173,7 @@ command:
 	KEYWORD_CASE expression KEYWORD_DO caseparts KEYWORD_DEFAULT CPARENTHESIS command_list CASE_DELIMITER KEYWORD_ESAC
 	{
 		$$ = new case_desc(d_loc__.first_line, $2, $4, $7);
-		journal(journal::info, "parser") << "command -> KEYWORD_CASE expression KEYWORD_IN caseparts KEYWORD_DEFAULT CPARENTHESIS command_list CASE_DELIMITER KEYWORD_ESAC" << journal::end;
+		journal(journal::info, "parser") << "command -> KEYWORD_CASE expression KEYWORD_DO caseparts KEYWORD_DEFAULT CPARENTHESIS command_list CASE_DELIMITER KEYWORD_ESAC" << journal::end;
 	}
 |
 	KEYWORD_IF expression KEYWORD_THEN command_list else_part KEYWORD_FI
@@ -373,7 +372,6 @@ expression:
 	{
 		$$ = new expr_const(d_loc__.first_line);
 		journal(journal::info, "parser") << "expression -> CONST_NULL" << journal::end;
-
 	}
 |
 	COMMAND_RETURNER OCURLY command CCURLY
@@ -403,6 +401,7 @@ arraypart:
 |
 	expression
 	{
+		//std::cout << "___________arraypart_________________" << std::endl;	
 		$$ = new expr_arr(d_loc__.first_line);
 		$$->add($1);
 		journal(journal::info, "parser") << "arraypart -> expression" << journal::end;

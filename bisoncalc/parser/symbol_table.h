@@ -16,7 +16,9 @@
 
 class var_value;
 
-typedef std::pair<std::unordered_map<std::string, var_value>, std::list<std::string> > arraypair;
+//typedef std::pair<std::unordered_map<std::string, var_value>, std::list<std::string> > arraypair;
+typedef std::map<std::string, var_value> arraypair;
+
 
 void delete_from_arraypair(arraypair &a, std::string k);
 
@@ -70,7 +72,7 @@ public:
 	//void add_to_element(std::unordered_map<std::string, var_value>::iterator it);
 	std::string find_first_element_having_value(var_value v);
 	std::vector<std::string> find_elements_having_value(var_value v);
-	std::vector<var_value> return_array_elements();
+	std::vector<var_value> return_array_elements(); // lehet nem kell
 	//void delete_element_with_key(std::string key);
 	//void delete_elements_with_key(std::vector<std::string> vec);
 	int get_size();
