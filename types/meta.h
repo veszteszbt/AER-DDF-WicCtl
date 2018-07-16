@@ -4,56 +4,108 @@
 
 namespace types {
 
-	template <typename Tkey, Tkey tKey, typename Tvalue, typename... Targs>
-	class static_map : public static_map<Tkey, Targs...>
+	template <typename Tkey, typename Tvalue, typename... Targs>
+	class static_map : public static_map<Targs...>
 	{
-		typedef Tkey key_type;
+		typedef typename Tkey::value_type key_type;
 
 		typedef Tvalue value_type;
 
-		constexpr static const key_type key = tKey;
+		constexpr static const key_type key = Tkey::value;
 
 		static value_type value;
 
 		static_map() = delete;
 	public:
 
-		template <key_type _key>
-		std::enable_if_t<_key == key, value_type&> 
+		template <typename T>
+		static std::enable_if_t<std::is_same_v<T, Tkey>, value_type&> 
 		get()
 		{ return value; }
 
-		template <key_type _key>
-		std::enable_if_t<_key != key, value_type&> 
+		template <typename T>
+		static std::enable_if_t<!std::is_same_v<T,Tkey>, decltype(std::declval<static_map<Targs...>>().template get<T>())> 
 		get()
-		{ return static_map<Targs...>::get<_key>(); }
+		{ return static_map<Targs...>::template get<T>(); }
 	};
 
-	template <typename Tkey, Tkey tKey, typename Tvalue>
-	class static_map
+	template <typename Tkey, typename Tvalue>
+	class static_map<Tkey, Tvalue>
 	{
-		typedef Tkey key_type;
+		typedef typename Tkey::value_type key_type;
 
 		typedef Tvalue value_type;
 
-		constexpr static const key_type key = tKey;
+		constexpr static const key_type key = Tkey::value;
 
 		static value_type value;
 
 		static_map() = delete;
 	public:
 	
-		template <key_type _key>
-		std::enable_if_t<_key == key, value_type&>
+		template <typename T>
+		static std::enable_if_t<std::is_same_v<T,Tkey>, value_type&>
 		get()
 		{ return value; }
 
-		template <key_type _key>
-		std::enable_if_t<_key != key, value_type&>
+		template <typename T>
+		static std::enable_if_t<!std::is_same_v<T,Tkey>, value_type&>
 		get()
-		{ static_assert(_key == key, "No such element"); }
+		{ static_assert(std::is_same_v<T,Tkey>, "No such element"); }
+	};
+
+	template <typename Tkey, typename Tvalue, typename... Targs>
+	class static_key_map : public static_key_map<Targs...>
+	{
+		typedef typename Tkey::value_type key_type;
+
+		typedef Tvalue value_type;
+
+		constexpr static const key_type key = Tkey::value;
+
+		value_type value;
+	public:
+
+		template <typename T>
+		std::enable_if_t<std::is_same_v<T, Tkey>, value_type&> 
+		get()
+		{ return value; }
+
+		template <typename T>
+		std::enable_if_t<!std::is_same_v<T, Tkey>, decltype(std::declval<static_key_map<Targs...>>().template get<T>())> 
+		get()
+		{ return static_key_map<Targs...>::template get<T>(); }
+	};
+
+	template <typename Tkey, typename Tvalue>
+	class static_key_map<Tkey, Tvalue>
+	{
+		typedef typename Tkey::value_type key_type;
+
+		typedef Tvalue value_type;
+
+		constexpr static const key_type key = Tkey::value;
+
+		value_type value;
+	public:
+	
+		template <typename T>
+		std::enable_if_t<std::is_same_v<T, Tkey>, value_type&> 
+		get()
+		{ return value; }
+
+		template <typename T>
+		std::enable_if_t<!std::is_same_v<T, Tkey>, value_type&> 
+		get()
+		{ static_assert(std::is_same_v<T,Tkey>, "No such element"); }
 	};
 	
+	template <typename Tkey, typename Tvalue, typename... Targs>
+	typename static_map<Tkey, Tvalue, Targs...>::value_type static_map<Tkey, Tvalue, Targs...>::value;
+
+	template <typename Tkey, typename Tvalue>
+	typename static_map<Tkey, Tvalue>::value_type static_map<Tkey, Tvalue>::value;
+
 }
 
 #endif

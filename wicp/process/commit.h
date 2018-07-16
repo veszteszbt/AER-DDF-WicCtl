@@ -1,13 +1,15 @@
 #ifndef WICP_PROCESS_COMMIT_H
 # define WICP_PROCESS_COMMIT_H
-# include <journal.h>
-# include <cstdint>
-# include <mutex>
-# include <thread>
 # include <atomic>
 # include <condition_variable>
-# include <net/ipv4_address.h>
+# include <cstdint>
+# include <mutex>
 # include <pthread.h>
+# include <thread>
+# include <queue>
+# include <net/ipv4_address.h>
+# include <journal.h>
+
 namespace wicp {
 namespace process
 {
@@ -26,7 +28,38 @@ namespace process
 
 		typedef typename TEnv::value_type      value_type;
 
+		struct queue_record
+		{
+			uint32_t cooldown_time;
+
+			object_id_type object_id;
+
+			queue_record(
+				uint32_t pcooldown_time,
+				object_id_type pobject_id,
+			)
+				: cooldown_time(pcooldown_time)
+				, object_id(pobject_id)
+			{}
+
+			bool operator()(const queue_record &lhs, const queue_record &rhs) const
+			{ return lhs.cooldown_time < rhs.cooldown_time; }
+		};
+
+		typedef std::priority_queue<
+			queue_record, 
+			std::vector<queue_record>, 
+			queue_record
+		> cooldowns_type;
+
+		typedef sched::lockable<std::list<objec_id_type>> object_id_buffer_type;
+
+		static cooldowns_type cooldowns;
+
+		static member_type &property;
 		
+		static object_id_buffer_type object_id_buffer;
+
 		static const uint32_t cooldown_time                         = TEnv::cooldown_time;
 
 		constexpr static history_type         &history              = TEnv::history;
@@ -81,7 +114,7 @@ namespace process
 					jrn(journal::trace) << "comitting new value to history; length is " << history.size() << journal::end;
 
 // TODO IN progress
-				const history_record hr(value);
+				// const history_record hr(value);
 				// for(auto &object : wic_class::local_object_lock_table)
 				// {
 				// 	object->second.history.push_front(hr);
@@ -94,8 +127,7 @@ namespace process
 				// 	proc_sync::notify();
 				// 	proc_log::notify();
 				// }
-
-/////
+////////
 				const history_record hr(value);
 				history.push_front(hr);
 				if(history.size() > TEnv::history_size)
@@ -132,8 +164,29 @@ namespace process
 			delete proc_thread;
 		}
 
-		static void notify()
+		static void notify(object_id_type object_id)
 		{
+			auto it = wic_class::find_local(object_id);
+			if(it != wic_class::end())
+			{
+				auto &property = it->second::get<member_id>();
+				if(property.cooldown_pending)
+				{
+					jrn(journal::trace) << "cooldown pending; ignoring notify" << journal::end;
+					return;			
+				}
+			}
+			else
+			{
+				jrn(journal::error) << "" << journal::end;
+				return;
+			}
+			object_id_buffer.lock();
+			object_id_buffer.emplace_back(object_id);
+			object_id_buffer.unlock();
+			std::lock_guard<std::mutex> lg(suspend_lock);
+			suspend_cv.notify_one();
+////////////////
 			if(cooldown_pending)
 			{
 				jrn(journal::trace) << "cooldown pending; ignoring notify" << journal::end;

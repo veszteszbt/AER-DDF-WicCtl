@@ -162,6 +162,12 @@ namespace wicp {
 	};
 
 	WIC_CLASS_TEMPLATE
+	typename WIC_CLASS::local_object_lock_table_type WIC_CLASS::local_object_lock_table;
+	
+	WIC_CLASS_TEMPLATE
+	typename WIC_CLASS::remote_object_lock_table_type WIC_CLASS::remote_object_lock_table;
+
+	WIC_CLASS_TEMPLATE
 	bool operator==(typename WIC_CLASS::local_iterator it, typename WIC_CLASS::end_iterator end_it)
 	{ return local_object_lock_table.end() == it; }
 
