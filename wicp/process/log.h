@@ -8,7 +8,7 @@
 # include <iomanip>
 # include <chrono>
 #ifdef LOG_SQL
-# include <process/sql_executor.h>
+//# include <process/sql_executor.h>
 #endif
 #ifdef _MSC_VER
 	#undef max
@@ -56,21 +56,21 @@ namespace process
 				time = r.time;
 				history_lock.unlock();
 
-#ifdef LOG_SQL
+// TODO #ifdef LOG_SQL
 
-				std::stringstream s;
-				s << "INSERT INTO `wic`.`log_wicp` VALUES (" << 
-					std::chrono::time_point_cast<std::chrono::nanoseconds>(r.time).time_since_epoch().count() << ',' <<
-					TEnv::class_id << ',' <<
-					TEnv::member_id << ",X'" << std::hex;
+// 				std::stringstream s;
+// 				s << "INSERT INTO `wic`.`log_wicp` VALUES (" << 
+// 					std::chrono::time_point_cast<std::chrono::nanoseconds>(r.time).time_since_epoch().count() << ',' <<
+// 					TEnv::class_id << ',' <<
+// 					TEnv::member_id << ",X'" << std::hex;
 
-				for(int i = 0; i < sizeof(value_type); ++i)
-					s << std::setfill('0') << std::setw(2) <<
-						static_cast<uint32_t>(reinterpret_cast<const uint8_t*>(&r.value)[i]);
+// 				for(int i = 0; i < sizeof(value_type); ++i)
+// 					s << std::setfill('0') << std::setw(2) <<
+// 						static_cast<uint32_t>(reinterpret_cast<const uint8_t*>(&r.value)[i]);
 					
-				s << "');";
-				::process::sql_executor::notify(s.str());
-#endif
+// 				s << "');";
+// 				::process::sql_executor::notify(s.str());
+// #endif
 
 			}
 			else

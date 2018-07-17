@@ -23,6 +23,8 @@ namespace wicp
 
 		typedef typename TConfig::cfg_member_id_type member_id_type;
 
+		typedef typename TConfig::cfg_object_id_type object_id_type;
+
 		typedef typename TConfig::cfg_value_type     value_type;
 
 		typedef typename rpc::template outgoing_call_handle<bool,value_type> set_handle_type;

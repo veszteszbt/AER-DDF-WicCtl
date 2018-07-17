@@ -2,8 +2,8 @@
 # define TYPES_META_H
 # include <type_traits>
 
-namespace types {
-
+namespace types 
+{
 	template <typename Tkey, typename Tvalue, typename... Targs>
 	class static_map : public static_map<Targs...>
 	{
@@ -19,13 +19,17 @@ namespace types {
 	public:
 
 		template <typename T>
-		static std::enable_if_t<std::is_same_v<T, Tkey>, value_type&> 
-		get()
+		static std::enable_if_t<
+			std::is_same_v<T, Tkey>, 
+			value_type&
+		> get()
 		{ return value; }
 
 		template <typename T>
-		static std::enable_if_t<!std::is_same_v<T,Tkey>, decltype(std::declval<static_map<Targs...>>().template get<T>())> 
-		get()
+		static std::enable_if_t<
+			!std::is_same_v<T,Tkey>, 
+			decltype(std::declval<static_map<Targs...>>().template get<T>())
+		> get()
 		{ return static_map<Targs...>::template get<T>(); }
 	};
 
@@ -44,18 +48,22 @@ namespace types {
 	public:
 	
 		template <typename T>
-		static std::enable_if_t<std::is_same_v<T,Tkey>, value_type&>
-		get()
+		static std::enable_if_t<
+			std::is_same_v<T,Tkey>, 
+			value_type&
+		> get()
 		{ return value; }
 
 		template <typename T>
-		static std::enable_if_t<!std::is_same_v<T,Tkey>, value_type&>
-		get()
+		static std::enable_if_t<
+			!std::is_same_v<T,Tkey>, 
+			value_type&
+		> get()
 		{ static_assert(std::is_same_v<T,Tkey>, "No such element"); }
 	};
 
 	template <typename Tkey, typename Tvalue, typename... Targs>
-	class static_key_map : public static_key_map<Targs...>
+	class static_keyed_map : public static_keyed_map<Targs...>
 	{
 		typedef typename Tkey::value_type key_type;
 
@@ -67,18 +75,22 @@ namespace types {
 	public:
 
 		template <typename T>
-		std::enable_if_t<std::is_same_v<T, Tkey>, value_type&> 
-		get()
+		std::enable_if_t<
+			std::is_same_v<T, Tkey>, 
+			value_type&
+		> get()
 		{ return value; }
 
 		template <typename T>
-		std::enable_if_t<!std::is_same_v<T, Tkey>, decltype(std::declval<static_key_map<Targs...>>().template get<T>())> 
-		get()
-		{ return static_key_map<Targs...>::template get<T>(); }
+		std::enable_if_t<
+			!std::is_same_v<T, Tkey>, 
+			decltype(std::declval<static_keyed_map<Targs...>>().template get<T>())
+		> get()
+		{ return static_keyed_map<Targs...>::template get<T>(); }
 	};
 
 	template <typename Tkey, typename Tvalue>
-	class static_key_map<Tkey, Tvalue>
+	class static_keyed_map<Tkey, Tvalue>
 	{
 		typedef typename Tkey::value_type key_type;
 
@@ -90,13 +102,17 @@ namespace types {
 	public:
 	
 		template <typename T>
-		std::enable_if_t<std::is_same_v<T, Tkey>, value_type&> 
-		get()
+		std::enable_if_t<
+			std::is_same_v<T, Tkey>,
+			value_type&
+		> get()
 		{ return value; }
 
 		template <typename T>
-		std::enable_if_t<!std::is_same_v<T, Tkey>, value_type&> 
-		get()
+		std::enable_if_t<
+			!std::is_same_v<T, Tkey>, 
+			value_type&
+		> get()
 		{ static_assert(std::is_same_v<T,Tkey>, "No such element"); }
 	};
 	

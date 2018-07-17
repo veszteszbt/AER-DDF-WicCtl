@@ -26,6 +26,7 @@ namespace wicp
 			static remotes_type remotes;
 
 			static std::mutex   remotes_lock;
+			typedef typename TConfig::wic_class			wic_class;
 		};
 
 		static journal jrn(uint8_t level)
@@ -37,41 +38,45 @@ namespace wicp
 
 		struct env_commit : public env
 		{
-			typedef typename process::sync_local<env> proc_sync;
-			typedef typename process::log<env>         proc_log;
+			typedef typename process::sync_local<env>	proc_sync;
+			typedef typename process::log<env>			proc_log;
 		};
 
-		typedef typename process::commit<env_commit>  proc_commit;
+		typedef typename env::wic_class 	wic_class;
 
-		typedef typename env_commit::proc_sync        proc_sync;
+		typedef typename process::commit<env_commit>	proc_commit;
 
-		typedef typename env::rpc                     rpc;
+		typedef typename env_commit::proc_sync			proc_sync;
 
-		typedef typename env::command_id_type         command_id_type;
+		typedef typename env::rpc						rpc;
+
+		typedef typename env::command_id_type			command_id_type;
 
 	public:
-		typedef typename env::value_type              value_type;
+		typedef typename env::value_type				value_type;
+
+		typedef typename env::object_id_type			object_id_type;
 
 	private:
-		typedef typename env::remotes_type            remotes_type;
+		typedef typename env::remotes_type				remotes_type;
 
-		typedef typename env::remote_record           remote_record;
+		typedef typename env::remote_record				remote_record;
 
-		typedef typename env::history_type            history_type;
+		typedef typename env::history_type				history_type;
 
 		typedef typename rpc::template incoming_call_handle<value_type,bool> get_handle_type;
 
 		typedef typename rpc::template incoming_call_handle<bool,value_type> set_handle_type;
 
-		static const command_id_type                  command_id = env::command_id;
+		static const command_id_type				command_id = env::command_id;
 
-		constexpr static remotes_type                &remotes = env::remotes;
+		constexpr static remotes_type				&remotes = env::remotes;
 
-		constexpr static history_type                &history = env::history;
+		constexpr static history_type				&history = env::history;
 
-		constexpr static std::mutex                  &remotes_lock = env::remotes_lock;
+		constexpr static std::mutex					&remotes_lock = env::remotes_lock;
 
-		constexpr static std::mutex                  &history_lock = env::history_lock;
+		constexpr static std::mutex					&history_lock = env::history_lock;
 
 
 		static void get_handler(get_handle_type h)
@@ -97,6 +102,7 @@ namespace wicp
 				history_lock.unlock();
 				jrn(journal::trace) << "set from remote " << (std::string)h.ip << journal::end;
 				h.respond(true);
+				// TODO Getting obj id for notify?
 				proc_commit::notify();
 			}
 		}
@@ -173,45 +179,38 @@ namespace wicp
 			object_id_type remote_object_id
 		)
 		{
-			wic_class::local_lock();
+			wic_class::lock_local();
 			auto local_it = wic_class::find_local(local_object_id);
 			if(local_it != wic_class::end())
 			{
-				wic_class::remote_lock();
+				wic_class::lock_remote();
 				auto remote_it = wic_class::find_remote(remote_object_id);
 				if(remote_it != wic_class::end())
 				{
-					local_it->remotes.lock();
-					local_it->remotes.emplace(remote_object_id);
-					local_it->remotes.unlock();
-					wic_class::remote_unlock();					
+					local_it->second.remotes.lock();
+					local_it->second.remotes.emplace(remote_object_id);
+					local_it->second.remotes.unlock();
+					wic_class::unlock_remote();		
+					wic_class::unlock_local();
+					
 					jrn(journal::trace) << "added remote `" << wic_class::name << "' object reference" << remote_object_id<< "'" << journal::end;
+					proc_sync::notify(local_object_id, remote_object_id);
+					return true;
 				}
 				else
 				{
-					wic_class::remote_unlock();
+					wic_class::unlock_remote();
+					wic_class::unlock_local();
 					jrn(journal::error) << "Invalid remote `" << wic_class::name << "' object reference `" << std::hex << remote_object_id << journal::end;
 					return false;
 				}
 			}
 			else
 			{
+				wic_class::unlock_local();
 				jrn(journal::error) << "Invalid local `" << wic_class::name << "' object reference `" << std::hex << local_object_id << journal::end;
 				return false;
 			}
-			wic_class::local_unlock();
-
-
-			return true;
-
-/////////////
-			remotes_lock.lock();
-			remotes.push_back(remote_record(role));
-			remotes_lock.unlock();
-			role.on_bound += proc_sync::notify;
-			role.on_unbound += proc_sync::cancel;
-			proc_sync::notify(role);
-			return true;
 		}
 
 		static bool remote_del(
@@ -219,47 +218,51 @@ namespace wicp
 			object_id_type remote_object_id
 		)
 		{
-			wic_class::local_lock();			
-			auto local_it = dummy_class::find_local(local_object_id);
-			if(local_it != dummy_class::end())
+			wic_class::lock_local();			
+			auto local_it = wic_class::find_local(local_object_id);
+			if(local_it != wic_class::end())
 			{
 				local_it->remotes.lock();
-				if(!local_it->remotes.remove(remote_object_id))
+				if(!local_it->remotes.erase(remote_object_id))
 				{
 					jrn(journal::error) << "Invalid remote `" << wic_class::name << "' object reference `" << std::hex << remote_object_id << journal::end;
+					local_it->remotes.unlock();
+					wic_class::unlock_local();			
+
 					return false;
 				}
 				local_it->remotes.unlock();
+				wic_class::unlock_local();
+				return true;
 			}
 			else
 			{
+				wic_class::unlock_local();			
 				jrn(journal::error) << "Invalid local `" << wic_class::name << "' object reference `" << std::hex << local_object_id << journal::end;
 				return false;
 			}
-			wic_class::local_unlock();
-
-			return true;
 ////////////////
-			remotes_lock.lock();
-			for(
-				typename remotes_type::iterator i = remotes.begin();
-				i != remotes.end();
-				++i
-			)
-				if(*i == role)
-				{
-					proc_sync::cancel(i);
-					remotes.erase(i);
-					remotes_lock.unlock();
-					role.on_bound -= proc_sync::notify;
-					role.on_unbound -= proc_sync::cancel;
-					jrn(journal::trace) << "deleted remote `" << (std::string)role.name << "'" << journal::end;
-					return true;
-				}
-			remotes_lock.unlock();
-			return false;
+			// remotes_lock.lock();
+			// for(
+			// 	typename remotes_type::iterator i = remotes.begin();
+			// 	i != remotes.end();
+			// 	++i
+			// )
+			// 	if(*i == role)
+			// 	{
+			// 		proc_sync::cancel(i);
+			// 		remotes.erase(i);
+			// 		remotes_lock.unlock();
+			// 		role.on_bound -= proc_sync::notify;
+			// 		role.on_unbound -= proc_sync::cancel;
+			// 		jrn(journal::trace) << "deleted remote `" << (std::string)role.name << "'" << journal::end;
+			// 		return true;
+			// 	}
+			// remotes_lock.unlock();
+			// return false;
 		}
 
+		// TODO clear all object history vs get object_id in arg
 		static void clear_history()
 		{
 			history_lock.lock();

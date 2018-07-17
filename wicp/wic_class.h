@@ -5,6 +5,7 @@
 # include <sched/listener.h>
 # include <sched/lockable.h>
 # include <wicp/types/object_record.h>
+# include <types/meta.h>
 
 
 #define WIC_CLASS_TEMPLATE template < \
@@ -15,10 +16,10 @@
 	typename... Tproperties \
 >
 
-#define WIC_CLASS wic_class<Tconfig, TobjectId, Taddress, Tproperties...>
+#define WIC_CLASS wic_class<Tconfig, TobjectId, Tvalue, Taddress, Tproperties...>
 
-namespace wicp {
-
+namespace wicp 
+{
 	WIC_CLASS_TEMPLATE
 	class wic_class
 	{
@@ -30,21 +31,16 @@ namespace wicp {
 
 		typedef Taddress					 	address_type;
 
-		typedef wic_class<
-			Tconfig, 
-			object_id_type, 
-			address_type, 
-			Tproperties...
-		> self;
+		typedef WIC_CLASS 						self;
 
-		typedef local_object_record<
+		typedef types::local_object_record<
 			self, 
 			object_id_type, 
 			value_type, 
 			Tproperties...
 		> local_object_record_type;
 
-		typedef remote_object_record<
+		typedef types::remote_object_record<
 			self, 
 			object_id_type, 
 			value_type, 
@@ -68,33 +64,24 @@ namespace wicp {
 
 		typedef typename remote_object_lock_table_type::iterator remote_iterator;
 		
+		
 		static local_object_lock_table_type local_object_lock_table;
 
 		static remote_object_lock_table_type remote_object_lock_table;
 
-		static const class_id_type = Tconfig::class_id;
+		static const class_id_type class_id = Tconfig::class_id;
 
-		constexpr static const char* name = Tconfig::name;
-
-
-		friend bool operator==(local_iterator i, end_iterator);
-
-		friend bool operator==(end_iterator, local_iterator i);
-
-		friend bool operator==(remote_iterator i, end_iterator);
-
-		friend bool operator==(end_iterator, remote_iterator i);
-
-		friend bool operator!=(local_iterator i, end_iterator);
-
-		friend bool operator!=(end_iterator, local_iterator i);
-
-		friend bool operator!=(remote_iterator i, end_iterator);
-
-		friend bool operator!=(end_iterator, remote_iterator i);
 		public:
+		constexpr static const char* name = Tconfig::cfg_name;
 
-		constexpr class end_iterator {};
+		struct end_iterator
+		{
+			operator local_iterator()
+			{ return local_object_lock_table.end(); }
+
+			operator remote_iterator()
+			{ return remote_object_lock_table.end(); }
+		};
 
 
 		// TODO
@@ -107,17 +94,42 @@ namespace wicp {
 		// 	return remote_object_lock_table.find(object_id);
 		// }
 
-		static void local_lock()
+		// TODO lock_local vs lock_lockal
+		static void lock_local()
 		{ local_object_lock_table.lock(); }
 
-		static void local_unlock()
+		static void unlock_local()
 		{ local_object_lock_table.unlock(); }
 
-		static void remote_lock()
+		static void lock_remote()
 		{ remote_object_lock_table.lock(); }
 
-		static void remote_unlock()
+		static void unlock_remote()
 		{ remote_object_lock_table.unlock(); }
+
+		template <typename T>
+		static std::enable_if_t<
+			std::is_same_v<T, local_object_record_type>
+		> lock()
+		{ lock_local(); }
+
+		template <typename T>
+		static std::enable_if_t<
+			std::is_same_v<T, remote_object_record_type>
+		> lock()
+		{ lock_remote(); }
+
+		template <typename T>
+		static std::enable_if_t<
+			std::is_same_v<T, local_object_record_type>
+		> unlock()
+		{ unlock_local(); }
+
+		template <typename T>
+		static std::enable_if_t<
+			std::is_same_v<T, remote_object_record_type>
+		> unlock()
+		{ unlock_remote(); }
 
 		static local_iterator find_local(object_id_type object_id) 
 		{ return local_object_lock_table.find(object_id); }
@@ -125,20 +137,37 @@ namespace wicp {
 		static remote_iterator find_remote(object_id_type object_id) 
 		{ return remote_object_lock_table.find(object_id); }
 	
+		template <typename T>
+		static std::enable_if_t<
+			std::is_same_v<T, local_object_record_type>,
+			local_iterator
+		> find(object_id_type pobject_id)
+		{ return find_local(pobject_id); }
+
+		template <typename T>
+		static std::enable_if_t<
+			std::is_same_v<T, remote_object_record_type>,
+			remote_iterator
+		> find(object_id_type pobject_id)
+		{ return find_remote(pobject_id); }
+
 		static end_iterator end()
 		{ return end_iterator(); }
 
 		static bool push_local(object_id_type object_id)
 		{
 			auto it = remote_object_lock_table.find(object_id);
-			if(it != remote_object_lock_table_type.end())
+			if(it != remote_object_lock_table.end())
 				return false;
 			
 			local_object_lock_table.emplace(object_id, object_id);
 			return true; 
 		}
 
-		static bool push_remote(object_id_type object_id, const address_type address)
+		static bool push_remote(
+			object_id_type object_id, 
+			const address_type address
+		)
 		{
 			auto it = local_object_lock_table.find(object_id);
 			if(it != local_object_lock_table.end())
@@ -162,46 +191,15 @@ namespace wicp {
 	};
 
 	WIC_CLASS_TEMPLATE
-	typename WIC_CLASS::local_object_lock_table_type WIC_CLASS::local_object_lock_table;
+	typename WIC_CLASS::local_object_lock_table_type 
+		WIC_CLASS::local_object_lock_table;
 	
 	WIC_CLASS_TEMPLATE
-	typename WIC_CLASS::remote_object_lock_table_type WIC_CLASS::remote_object_lock_table;
-
-	WIC_CLASS_TEMPLATE
-	bool operator==(typename WIC_CLASS::local_iterator it, typename WIC_CLASS::end_iterator end_it)
-	{ return local_object_lock_table.end() == it; }
-
-	WIC_CLASS_TEMPLATE
-	bool operator==(typename WIC_CLASS::remote_iterator it, typename WIC_CLASS::end_iterator end_it)
-	{ return remote_object_lock_table.end() == it; }
-
-	WIC_CLASS_TEMPLATE
-	bool operator==(typename WIC_CLASS::local_iterator it, typename WIC_CLASS::end_iterator end_it)
-	{ return it == end_it; }
-
-	WIC_CLASS_TEMPLATE
-	bool operator==(typename WIC_CLASS::remote_iterator it, typename WIC_CLASS::end_iterator end_it)
-	{ return it == end_it; }
-
-	WIC_CLASS_TEMPLATE
-	bool operator!=(typename WIC_CLASS::local_iterator it, typename WIC_CLASS::end_iterator end_it)
-	{ return !(local_object_lock_table.end() == it); }
-
-	WIC_CLASS_TEMPLATE
-	bool operator!=(typename WIC_CLASS::remote_iterator it, typename WIC_CLASS::end_iterator end_it)
-	{ return !(remote_object_lock_table.end() == it); }
-
-	WIC_CLASS_TEMPLATE
-	bool operator!=(typename WIC_CLASS::local_iterator it, typename WIC_CLASS::end_iterator end_it)
-	{ return !(it == end_it); }
-
-	WIC_CLASS_TEMPLATE
-	bool operator!=(typename WIC_CLASS::remote_iterator it, typename WIC_CLASS::end_iterator end_it)
-	{ return !(it == end_it); }
+	typename WIC_CLASS::remote_object_lock_table_type 
+		WIC_CLASS::remote_object_lock_table;
 }
 
 #undef WIC_CLASS_TEMPLATE
-
 #undef WIC_CLASS
 
 #endif

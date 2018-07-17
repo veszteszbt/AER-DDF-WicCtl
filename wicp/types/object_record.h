@@ -6,9 +6,12 @@
 # include <sched/lockable.h>
 # include <types/meta.h>
 
-namespace wicp {
-namespace types {
 
+#define OBJECT_RECORD_CLASS object_record<TwicClass, TobjectId, Tvalue, Tproperties...>
+
+namespace wicp {
+namespace types 
+{
 	template <
 		typename TwicClass,
 		typename TobjectId, 
@@ -21,7 +24,9 @@ namespace types {
 
 		typedef Tvalue value_type;
 
-		typedef static_map<Tproperties...> properties;
+		typedef ::types::static_keyed_map<Tproperties...> properties_type;
+
+		properties_type properties;
 
 		std::mutex property_lock;
 
@@ -40,7 +45,7 @@ namespace types {
 		typename... Tproperties
 	>
 	struct local_object_record 
-		: public object_record<TwicClass, TobjectId, Tvalue, Tproperties...>
+		: public OBJECT_RECORD_CLASS
 	{
 		typedef TobjectId object_id_type;
 
@@ -49,7 +54,7 @@ namespace types {
 		remotes_type remotes;
 
 		local_object_record(object_id_type object_id) 
-			: object_record(object_id) 
+			: OBJECT_RECORD_CLASS(object_id) 
 		{}
 	};
 
@@ -61,7 +66,7 @@ namespace types {
 		typename... Tproperties
 	>
 	struct remote_object_record 
-		: public object_record<TwicClass, TobjectId, Tvalue, Tproperties...>
+		: public OBJECT_RECORD_CLASS
 	{
 		typedef TobjectId object_id_type;
 
@@ -77,10 +82,12 @@ namespace types {
 			object_id_type object_id, 
 			const address_type &paddress
 		)
-			: object_record(object_id)
+			: OBJECT_RECORD_CLASS(object_id)
 			, address(paddress)
 		{}
 	};
 }}
+
+#undef OBJECT_RECORD_CLASS
 
 #endif

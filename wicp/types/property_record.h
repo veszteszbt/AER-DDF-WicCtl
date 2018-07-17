@@ -5,8 +5,8 @@
 # include <list>
 # include <sched/listener.h>
 namespace wicp {
-namespace types {
-
+namespace types 
+{
 	template <typename Tvalue>
 	struct property_record
 	{
@@ -36,8 +36,6 @@ namespace types {
 
 		static sched::listener on_change;
 
-		static std::mutex history_lock;
-
 		static bool cooldown_pending;
 	};
 
@@ -49,10 +47,7 @@ namespace types {
 	
 	template <typename Tvalue>
 	sched::listener property_record<Tvalue>::on_change;
-	
-	template <typename Tvalue>
-	std::mutex property_record<Tvalue>::history_lock;
-	
+		
 	template <typename Tvalue>
 	bool property_record<Tvalue>::cooldown_pending;
 

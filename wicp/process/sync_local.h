@@ -13,7 +13,15 @@ namespace process
 
 		typedef typename TEnv::command_id_type  command_id_type;
 
+		typedef typename TEnv::object_id_type  object_id_type;
+
+		typedef typename TEnv::member_id_type  member_id_type;
+
+		typedef typename TEnv::wic_class 	wic_class;
+
 		typedef typename TEnv::set_handle_type  set_handle_type;
+
+		static const member_id_type member_id = TEnv::member_id;
 
 		constexpr static remotes_type          &remotes = TEnv::remotes;
 
@@ -97,6 +105,47 @@ namespace process
 				}
 			TEnv::remotes_lock.unlock();
 			jrn(journal::warning) << "remote for notified role `" << role.name << "' not found" << journal::end;
+		}
+
+		static void notify(
+			object_id_type local_object_id,
+			object_id_type remote_object_id
+		)
+		{
+			wic_class::lock_local();
+			auto local_it = wic_class::find_local(local_object_id);
+			if(local_it != wic_class::end())
+			{
+				wic_class::lock_remote();
+				auto remote_it = wic_class::find_remote(remote_object_id);
+				if(remote_it != wic_class::end())
+				{
+					local_it->second.property_lock.lock();
+					auto &property = local_it->second.properties.template get<std::integral_constant<uint32_t, member_id>>();
+					if(property.history.empty())
+					{
+						jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
+						local_it->second.property_lock.unlock();
+						wic_class::unlock_remote();
+						wic_class::unlock_local();
+						return;
+					}
+					local_it->second.property_lock.unlock();
+
+					// TODO modify sync_remote
+					// TEnv::sync_remote(*i,types::function::notify,call_finish);
+
+					wic_class::unlock_remote();
+				}
+				else
+				{
+					wic_class::unlock_remote();
+					wic_class::unlock_local();
+					jrn(journal::error) << "Invalid remote `" << wic_class::name << "' object reference `" << std::hex << remote_object_id << journal::end;
+					return;
+				}
+			}
+			wic_class::unlock_local();
 		}
 
 		static void notify()

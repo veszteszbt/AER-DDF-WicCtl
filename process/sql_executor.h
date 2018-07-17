@@ -5,6 +5,7 @@
 # include <cppconn/resultset.h>
 # include <cppconn/statement.h>
 # include <pthread.h>
+
 namespace process
 {
 	class sql_executor
