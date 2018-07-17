@@ -1,6 +1,7 @@
 #include "parser/Parser.ih"
 #include "journal/journal.h"
 #include "functions.h"
+#include <sstream>
 
 Parser* parser;
 wic::functions* fptr;
@@ -17,10 +18,25 @@ int main(int argc, char* argv[])
 
 	if (argc < 2)
 	{
-		//new object, so it can be accessed in grammar
-		parser = new Parser;
+		// //new object, so it can be accessed in grammar
+		// parser = new Parser;
+		// fptr = new wic::functions;
+		// (*parser).parse();
+
+		std::stringstream s("writestring(\"hello\"); ");
+
+		parser = new Parser(s);
 		fptr = new wic::functions;
 		(*parser).parse();
+
+		std::stringstream c(
+			"x = 5;"
+			"writeint(x);"
+			"exit(1);"
+		);
+
+		(*parser).process_this(c);
+
 	}
 	else
 	{

@@ -11,8 +11,8 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		bisonc++ grammar
 
 		echo "inserting into Parser.h"
-		sed -i 's/lines./lines.\n#include "symbol_table.h"/' Parser.h
-		sed -i 's/Parser() = default;/Parser() = default;\n\t\tParser(std::string inFile) : d_scanner(inFile, std::cout){}/' Parser.h
+		sed -i 's/lines./lines.\n#include "symbol_table.h"\n#include<sstream>/' Parser.h
+		sed -i 's/Parser() = default;/Parser() = default;\n\t\tParser(std::stringstream \&ss) : d_scanner(ss, std::cout) {}\n\t\tParser(std::string inFile) : d_scanner(inFile, std::cout){}/' Parser.h
 		sed -i 's/int parse();/int parse();\n\t\tvoid finish(int i);/' Parser.h
 		sed -i 's/private:/\tSymbol_Table symbol_table;\n\nprivate:\n\t\tbool finished;\n\t\tint returnState;/' Parser.h
 
