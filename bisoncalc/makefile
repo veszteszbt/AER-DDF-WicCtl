@@ -10,7 +10,8 @@ STABLEDEPS=$(PDIR)/symbol_table.h
 JDEPS=$(JDIR)/journal.h
 DEPS=$(SDIR)/Scanner.h $(SDIR)/Scanner.ih $(SDIR)/Scannerbase.h $(PDIR)/Parser.h $(PDIR)/Parser.ih $(PDIR)/Parserbase.h $(PDIR)/semantics.h
 FNCTDEPS=functions.h $(SDEPS)
-OBJ=main.o lex.o parse.o semantics.o symbol_table.o journal.o functions.o type.o
+SHELLDEPS=shell.hh $(DEPS)
+OBJ=main.o lex.o parse.o semantics.o symbol_table.o journal.o functions.o type.o shell.o
 
 main: $(OBJ)
 	$(CXX) $(CXXFLAGS) -o commandline $(OBJ)
@@ -38,6 +39,9 @@ functions.o: functions.cc $(FNCTDEPS)
 
 type.o: types/type.cc types/type.h
 	$(CXX) $(CXXFLAGS) -c types/type.cc
+
+shell.o: shell.cc $(SHELLDEPS)
+	$(CXX) $(CXXFLAGS) -c shell.cc
 
 .PHONY: clean flex bison test
 

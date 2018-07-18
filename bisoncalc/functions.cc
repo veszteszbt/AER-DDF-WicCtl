@@ -1,7 +1,6 @@
 #include "functions.h"
 #include "parser/Parser.ih"
-
-extern Parser* parser;
+#include "shell.hh"
 
 namespace wic{
 
@@ -20,7 +19,7 @@ namespace wic{
 
 void functions::add_variable(std::string name, var_value value)
 {
-	(*parser).symbol_table.set_default_value(name, value);
+	(*commandline::shell::parser).symbol_table.set_default_value(name, value);
 }
 
 static void write_int(int i)
@@ -91,7 +90,7 @@ static void is_true(int b)
 static void exit(int i)
 {
 	std::cout << "exiting program with code " << i << std::endl;
-	(*parser).finish(i);
+	(*commandline::shell::parser).finish(i);
 }
 
 template<typename T>

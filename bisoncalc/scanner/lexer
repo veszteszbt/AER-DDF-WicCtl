@@ -4,48 +4,41 @@ WS [ \n\t\r]
 
 "if" 			return Parser::KEYWORD_IF; 
 "then" 			{
-					extern int scanDepth;
-					scanDepth++;
+					commandline::shell::scanDepth++;
 					return Parser::KEYWORD_THEN;
 				} 
 "else" 			return Parser::KEYWORD_ELSE; 
 "elif" 			return Parser::KEYWORD_ELIF; 
 "fi" 			{
-					extern int scanDepth;
-					scanDepth--;
+					commandline::shell::scanDepth--;
 					return Parser::KEYWORD_FI;
 				}
 "case" 			return Parser::KEYWORD_CASE; 
 "in" 			return Parser::KEYWORD_IN; 
 "esac"			 {
-					extern int scanDepth;
-					scanDepth--;
+					commandline::shell::scanDepth--;
 					return Parser::KEYWORD_ESAC;
 				}
 "for" 			return Parser::KEYWORD_FOR; 
 "while" 		return Parser::KEYWORD_WHILE; 
 "until" 		return Parser::KEYWORD_UNTIL; 
 "do"			{
-					extern int scanDepth;
-					scanDepth++;
+					commandline::shell::scanDepth++;
 					return Parser::KEYWORD_DO;
 				}
 "done" 			{
-					extern int scanDepth;
-					scanDepth--;
+					commandline::shell::scanDepth--;
 					return Parser::KEYWORD_DONE;
 				}
 "default" 		return Parser::KEYWORD_DEFAULT;
 "local" 		return Parser::KEYWORD_LOCAL;
 
 "{" 			{
-					extern int scanDepth;
-					scanDepth++;
+					commandline::shell::scanDepth++;
 					return Parser::OCURLY; 
 				}
 "}" 			{
-					extern int scanDepth;
-					scanDepth--;
+					commandline::shell::scanDepth--;
 					return Parser::CCURLY; 
 				}
 

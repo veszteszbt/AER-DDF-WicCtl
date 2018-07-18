@@ -1,10 +1,8 @@
 #include "semantics.h"
 #include "Parser.ih"
+#include "../shell.hh"
 
-//the parser object created in main
-extern Parser* parser;
-extern wic::functions* fptr;
-extern int scanDepth;
+//the commandline::shell::parser object created in main
 
 expression_desc::expression_desc(int row_number, var_value v) : row(row_number), val(v) {}
 
@@ -74,7 +72,7 @@ int command_list_desc::get_row()
 void command_list_desc::add(command_desc* cd)
 {
 	command_list.push_back(cd);
-	if (scanDepth == 0)
+	if (commandline::shell::scanDepth == 0)
 	{
 		(*cd).evaluate();
 	}
@@ -130,7 +128,7 @@ expr_var::expr_var(int row_number, std::string var_name) : row(row_number), name
 void expr_var::evaluate()
 {
 	//looks up the variable in the symbol table
-	int i = (*parser).symbol_table.find_variable(&name);
+	int i = (*commandline::shell::parser).symbol_table.find_variable(&name);
 	if (i == -1)
 	{
 		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m Variable " << name << " has no value yet!" << std::endl;
@@ -139,7 +137,7 @@ void expr_var::evaluate()
 	}
 	else
 	{
-		variable_desc v = (*parser).symbol_table.get_value(&name);
+		variable_desc v = (*commandline::shell::parser).symbol_table.get_value(&name);
 		val = v.value;
 		row = v.decl_row;
 	}
@@ -260,7 +258,7 @@ void assign::evaluate()
 	//std::cout << "e->get_val() " << vv << std::endl;
 	variable_desc v(row, e->get_val());
 	//sets the variable named <vname> in the symbol table, if it doesn't exist, it's created
-	(*parser).symbol_table.set_value(vname, v);
+	(*commandline::shell::parser).symbol_table.set_value(vname, v);
 	journal(journal::info, "semantics") << "Assigned " << v.return_value() << " to variable name " << (*vname) << journal::end;
 }
 
@@ -288,7 +286,7 @@ void local_assign::evaluate()
 	//val = e->get_val();
 	variable_desc v(row, e->get_val());
 	//same as expr_asg
-	(*parser).symbol_table.set_local_value(vname, v);
+	(*commandline::shell::parser).symbol_table.set_local_value(vname, v);
 	journal(journal::info, "semantics") << "Assigned " << v.return_value() << " to local variable name " << (*vname) << journal::end;
 }
 
@@ -319,7 +317,7 @@ expr_ael::expr_ael(int row_number, std::string var_name, expression_desc* n) : r
 void expr_ael::evaluate()
 {
 	//looks up the variable in the symbol table
-	int i = (*parser).symbol_table.find_variable(&name);
+	int i = (*commandline::shell::parser).symbol_table.find_variable(&name);
 	if (i == -1)
 	{
 		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m Variable " << name << " has no value yet!" << std::endl;
@@ -328,7 +326,7 @@ void expr_ael::evaluate()
 	}
 	else
 	{
-		variable_desc v = (*parser).symbol_table.get_value(&name);
+		variable_desc v = (*commandline::shell::parser).symbol_table.get_value(&name);
 		var_value m = v.value;
 		val = m.return_element_with_key(nth->get_val());
 		
@@ -1206,8 +1204,8 @@ void call::evaluate()
 		//std::cout << " " << args[i]->get_val();
 	}
 	//std::cout << std::endl;
-	//fptr->run(this, row);
-	returnval = fptr->run(this);
+	//commandline::shell::fptr->run(this, row);
+	returnval = commandline::shell::fptr->run(this);
 }
 
 argumentsvector::argumentsvector() : is_empty(true){}
@@ -1251,7 +1249,7 @@ var_value sytable_stack::get_return_value()
 void sytable_stack::evaluate()
 {
 	//adds another symbol table for shadowing ( {} operator ) 
-	(*parser).symbol_table.increase_stack();
+	(*commandline::shell::parser).symbol_table.increase_stack();
 	c->evaluate();
-	(*parser).symbol_table.decrease_stack();
+	(*commandline::shell::parser).symbol_table.decrease_stack();
 }

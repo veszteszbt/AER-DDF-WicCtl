@@ -22,6 +22,7 @@
 		echo "inserting into lex.cc"
 		sed -i 's/void ScannerBase::switchStream__(std::istream &in, size_t lineNr)/ScannerBase::ScannerBase(std::string const \&infilename, std::ostream \&out)\n:\n\td_filename(infilename),\n\td_out(new std::ostream(out.rdbuf())),\n\td_input(new std::ifstream(infilename)),\n\td_dfaBase__(s_dfa__)\n{}\n\nScannerBase::ScannerBase(std::stringstream \&ss, std::ostream \&out)\n:\n\td_filename("-"),\n\td_out(new std::ostream(out.rdbuf())),\n\td_in(\&ss),\n\td_input(new std::stringstream(ss.rdbuf()->str())),\n\td_dfaBase__(s_dfa__)\n{}\n\nvoid ScannerBase::switchStream__(std::istream \&in, size_t lineNr)/' lex.cc
 		sed -i 's/void ScannerBase::switchIstream(std::string const &infilename)/void ScannerBase::switchIstream(std::istream \&in)\n{\n\tswitchStream__(in, 1);\n}\n\nvoid ScannerBase::switchIstream(std::string const \&infilename)/' lex.cc
+		sed -i 's/#include <stdexcept>/#include <stdexcept>\n#include "..\/shell.hh"/' lex.cc
 
 		cd ..
 	;;
