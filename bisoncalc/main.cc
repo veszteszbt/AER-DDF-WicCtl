@@ -23,20 +23,19 @@ int main(int argc, char* argv[])
 		// fptr = new wic::functions;
 		// (*parser).parse();
 
-		std::stringstream s("writestring(\"hello\"); ");
+		std::stringstream s("writestring(\"hello\"");
 
 		parser = new Parser(s);
 		fptr = new wic::functions;
 		(*parser).parse();
 
 		std::stringstream c(
-			"x = 5;"
+			") ;x = 5;"
 			"writeint(x);"
 			"exit(1);"
 		);
-
 		(*parser).process_this(c);
-
+	
 	}
 	else
 	{

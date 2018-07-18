@@ -39,9 +39,7 @@ class Parser: public ParserBase
         void process_this(std::stringstream &ss)
         {
             d_scanner.switchIstream(ss);
-            std::cout << "process_this before parse()" << std::endl;
             parse();
-            std::cout << "process_this after parse()" << std::endl;
         }
 
 private:

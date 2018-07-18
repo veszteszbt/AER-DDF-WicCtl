@@ -3244,34 +3244,31 @@ try
         return;
     }
 
-    //////////////////////////
-    // finished = true;
-    // return;
-    //////////////////////////
-
     if (recovery__())
     {
-        std::cout << ">>> recovery__() then ABORT()" << std::endl;
         ABORT();
     }
     else
     {
-        std::cout << ">>> !recovery__() then ACCEPT()" << std::endl;
         ACCEPT();
     }
 }
-catch (ErrorRecovery__)
+catch (ErrorRecovery__ e)
 {
+    if(e == FINISH_THIS_STRINGSTREAM)
+    {
+        ParserBase::finished = true;
+        return;
+    }
+
     if (not recovery__())
     {
         errorRecovery__();
-        std::cout << ">>> not recovery__() then errorRecovery()" << std::endl;
     }
     else
     {
         if (token__() == Reserved__::EOF__)
         {
-            std::cout << ">>> got Reserved__::EOF__ " <<std::endl;
             ABORT();
         }
         popToken__();               // skip the failing token
@@ -3291,7 +3288,7 @@ void Parser::nextToken__()
     {
         return;                             
     }
-
+    
     if (savedToken__() != Reserved__::UNDETERMINED__)
     {
         popToken__();               // consume pending token
@@ -3338,23 +3335,13 @@ try
     //  5. An error occurs if d_token is not found, and the state has no
     //     default reduction.
 
-    clearin__();                            // initialize, push(0)
-    // ParserBase::finished = false;
-    ParserBase::index = 0;
-    // // ParserBase::set_dToken(Reserved__::UNDETERMINED__);
-    // ParserBase::set_dRecovery(false);
-    // ParserBase::set_terminalToken(false);
-
-    // std::cout << "> parser says: "
-
-    std::cout << "starting parse cycle" << ParserBase::index << std::endl;
+    // clearin__();                            // initialize, push(0)
+    ParserBase::finished = false;
     while (!ParserBase::finished)
     {
 // $insert prompt
-        std::cout << "in cycle " << index++ << std::endl; 
         nextCycle__();
     }
-    std::cout << "ending parse cycle" << std::endl;
 }
 catch (Return__ retValue)
 {
@@ -3362,7 +3349,6 @@ catch (Return__ retValue)
 }
 
 bool ParserBase::finished = false;
-long ParserBase::index = 0;
 
 
 // derived/tail

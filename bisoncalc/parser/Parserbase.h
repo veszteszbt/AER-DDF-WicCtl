@@ -152,11 +152,13 @@ union STYPE__
             PARSE_ACCEPT__ = 0,   // values used as parse()'s return values
             PARSE_ABORT__  = 1
         };
+        public:
         enum ErrorRecovery__
         {
             UNEXPECTED_TOKEN__,
+            FINISH_THIS_STRINGSTREAM
         };
-
+    protected:
         bool        d_actionCases__ = false;    // set by options/directives
         bool        d_debug__ = true;
         size_t      d_requiredTokens__;
@@ -222,7 +224,7 @@ union STYPE__
         {
             finished = true;
             returnState=i;
-        }
+        }        
 };
 
 // hdr/abort

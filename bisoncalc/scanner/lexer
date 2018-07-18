@@ -109,6 +109,11 @@ WS [ \n\t\r]
 					// (*parser).finish(lineNr());
 				}
 
+<<EOF>>			{
+					std::cout << "throwing FINISH_THIS_STRINGSTREAM" << std::endl;
+					throw ParserBase::FINISH_THIS_STRINGSTREAM;
+				}
+
 .           	{
 					std::cerr << lineNr() << ": \e[31;01mLexical error\e[0m" << std::endl;
 					std::terminate();
