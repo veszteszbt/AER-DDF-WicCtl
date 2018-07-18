@@ -104,13 +104,9 @@ WS [ \n\t\r]
 [a-zA-Z]([a-zA-Z0-9]|"_")*	return Parser::IDENTIFIER;
 
 
-{WS}+ 			{
-					std::cout << std::boolalpha << ParserBase::finished << std::endl;
-					// (*parser).finish(lineNr());
-				}
+{WS}+ 			//
 
 <<EOF>>			{
-					std::cout << "throwing FINISH_THIS_STRINGSTREAM" << std::endl;
 					throw ParserBase::FINISH_THIS_STRINGSTREAM;
 				}
 
