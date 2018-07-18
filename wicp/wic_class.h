@@ -32,7 +32,9 @@ namespace wicp
 		typedef Taddress					 	address_type;
 
 		typedef WIC_CLASS 						self;
-
+	
+	// TODO populate these to other processes
+	public:
 		typedef types::local_object_record<
 			self, 
 			object_id_type, 
@@ -47,7 +49,8 @@ namespace wicp
 			address_type, 
 			Tproperties...
 		> remote_object_record_type;
-
+	private:
+	
 		typedef sched::lockable<
 			std::map<
 				object_id_type, 
@@ -60,18 +63,20 @@ namespace wicp
 				remote_object_record_type
 		>> remote_object_lock_table_type;
 
+	// TODO 
+	public:
 		typedef typename local_object_lock_table_type::iterator local_iterator;
 
 		typedef typename remote_object_lock_table_type::iterator remote_iterator;
-		
+	private:
 		
 		static local_object_lock_table_type local_object_lock_table;
 
 		static remote_object_lock_table_type remote_object_lock_table;
 
 		static const class_id_type class_id = Tconfig::class_id;
-
 		public:
+		
 		constexpr static const char* name = Tconfig::cfg_name;
 
 		struct end_iterator
@@ -154,7 +159,7 @@ namespace wicp
 		static end_iterator end()
 		{ return end_iterator(); }
 
-		static bool push_local(object_id_type object_id)
+		static bool set_local(object_id_type object_id)
 		{
 			auto it = remote_object_lock_table.find(object_id);
 			if(it != remote_object_lock_table.end())
@@ -164,7 +169,7 @@ namespace wicp
 			return true; 
 		}
 
-		static bool push_remote(
+		static bool set_remote(
 			object_id_type object_id, 
 			const address_type address
 		)
@@ -173,21 +178,24 @@ namespace wicp
 			if(it != local_object_lock_table.end())
 				return false;
 
-			remote_object_lock_table.try_emplace(object_id, object_id, address);
+			auto pair_it = remote_object_lock_table.try_emplace(object_id, object_id, address);
+			if(!pair_it.second)
+				pair_it.first->second.address = address;
+				
 			return true;
 		}
 
-		static void erase_local(local_iterator it)
-		{ local_object_lock_table.erase(it); }
-
-		static void erase_remote(remote_iterator it)
-		{ remote_object_lock_table.erase(it); }
-
-		static bool remove_local(object_id_type object_id)
+		static bool clr_local(object_id_type object_id)
 		{ return local_object_lock_table.erase(object_id); }
 
-		static bool remove_remote(object_id_type object_id)
+		static bool clr_local(local_iterator it)
+		{ return local_object_lock_table.erase(it); }
+
+		static bool clr_remote(object_id_type object_id)
 		{ return remote_object_lock_table.erase(object_id); }
+
+		static bool clr_remote(remote_iterator it)
+		{ return remote_object_lock_table.erase(it); }
 	};
 
 	WIC_CLASS_TEMPLATE

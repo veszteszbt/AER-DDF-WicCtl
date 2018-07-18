@@ -10,6 +10,8 @@
 # include <queue>
 # include <net/ipv4_address.h>
 # include <journal.h>
+# include <types/time.h>
+# include <wicp/types/property_record.h>
 
 namespace wicp {
 namespace process
@@ -23,25 +25,32 @@ namespace process
 
 		typedef typename TEnv::proc_log        proc_log;
 
-		typedef typename TEnv::history_type    history_type;
-
-		typedef typename TEnv::history_record  history_record;
 
 		typedef typename TEnv::value_type      value_type;
 
+		// TODO getting these properly
+		typedef typename wicp::types::property_record_base<uint64_t, value_type>::history_type  history_type;
+
+		typedef typename wicp::types::property_record_base<uint64_t, value_type>::history_record  history_record;
+///
 		typedef typename TEnv::member_id_type      member_id_type;
 
 		typedef typename TEnv::object_id_type      object_id_type;
 
 		// TODO getting these
 		typedef typename TEnv::encap_object_type encap_object_type;
+		
 		typedef typename TEnv::wic_class wic_class;
+
+		typedef typename TEnv::member_id member_id; 
 
 		struct cooldown_record
 		{
 			object_id_type object_id;
 
 			uint32_t cooldown_time;
+
+			cooldown_record() = default;
 
 			cooldown_record(
 				object_id_type pobject_id,
@@ -70,8 +79,6 @@ namespace process
 
 		static const uint32_t cooldown_time			= TEnv::cooldown_time;
 
-		static const member_id_type	member_id 		= TEnv::member_id;
-
 
 		static std::mutex               suspend_lock;
 
@@ -85,7 +92,7 @@ namespace process
 		{
 			int* x, *y;
 			return journal(level,"wicp.commit") << "property: " << std::hex <<
-				TEnv::class_id << "::" << TEnv::member_id << ' ';
+				TEnv::class_id << "::" << TEnv::member_id::value << ' ';
 		}
 
 
@@ -117,8 +124,9 @@ namespace process
 					auto it = wic_class::template find<encap_object_type>(object_id);
 					if(it == wic_class::end())
 					{
-						jrn(journal::error) << "" << journal::end;
 						wic_class::template unlock<encap_object_type>();
+						jrn(journal::error) << "Invalid `" << 
+							wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
 						continue;
 					}
 					else
@@ -126,13 +134,13 @@ namespace process
 						cooldowns.lock();
 						while(!cooldowns.empty())
 						{
-							const auto current_time = clock::now();
+							const auto current_time = ::types::time::msec(clock::now());
 							auto lowest = cooldowns.top();
 							if(lowest.cooldown_time <= current_time)
 							{
 								auto obj_it = wic_class::template find<encap_object_type>(lowest.object_id);
 								if(obj_it != wic_class::end())
-									obj_it->properties.template get<member_id>().cooldown_pending = false;
+									obj_it->second.properties.template get<member_id>().cooldown_pending = false;
 
 								cooldowns.pop();
 							}
@@ -141,19 +149,20 @@ namespace process
 						}
 						cooldowns.unlock();
 						it->second.property_lock.lock();
-						auto &property = it->second.template get<member_id>();
+						auto &property = it->second.properties.template get<member_id>();
 
 						if(property.cooldown_pending)
 						{
-							jrn(journal::trace) << "cooldown pending; ignoring object `" << object_id << "'" << journal::end;
 							it->second.property_lock.unlock();
 							wic_class::template unlock<encap_object_type>();
+							jrn(journal::trace) << "cooldown pending; ignoring object `" << std::hex << object_id << "'" << journal::end;
 							continue;
 						}
 						else if(!property.history.empty() && property.local_value == property.history.front().value)
 						{
 							it->second.property_lock.unlock();
 							wic_class::template unlock<encap_object_type>();
+							jrn(journal::trace) << "no change; ignoring object `" << std::hex << object_id << "'" << journal::end;
 							continue; 
 						}
 						else
@@ -169,27 +178,27 @@ namespace process
 						it->second.property_lock.unlock();
 						wic_class::template unlock<encap_object_type>();
 
-						// TEnv::sync_local();
+						TEnv::sync_local(object_id);
 
-						// proc_sync::notify();
-						// proc_log::notify();
+						proc_sync::notify(object_id);
+						proc_log::notify(object_id);
 
 						cooldowns.lock();
-						cooldowns.emplace(object_id, hr.time + std::chrono::milliseconds(static_cast<uint32_t>(cooldown_time)));
+						cooldowns.emplace(object_id, ::types::time::msec(hr.time) + static_cast<uint32_t>(cooldown_time));
 						cooldowns.unlock();
 					}
 				}
-					std::unique_lock<std::mutex> ul(suspend_lock);
+				std::unique_lock<std::mutex> ul(suspend_lock);
+				object_id_buffer.lock();
+				const bool is_empty = object_id_buffer.empty();
+				if(is_empty)
+				{
+					object_id_buffer.unlock();
 					jrn(journal::trace) << "no change; suspending until next notify" << journal::end;
-					object_id_buffer.lock();
-					const bool is_empty = object_id_buffer.empty();
-					if(is_empty)
-					{
-						object_id_buffer.unlock();
-						suspend_cv.wait(ul);
-					}
-					else
-						object_id_buffer.unlock();
+					suspend_cv.wait(ul);
+				}
+				else
+					object_id_buffer.unlock();
 			}
 			jrn(journal::debug) << "uninitialized" << journal::end;
 		}

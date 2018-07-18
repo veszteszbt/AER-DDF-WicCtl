@@ -7,13 +7,46 @@
 namespace wicp {
 namespace types 
 {
-	template <typename Tvalue>
-	struct property_record
+	template <typename TcallId, typename Tvalue>
+	struct property_record_base
 	{
+		typedef TcallId call_id_type;
+
 		typedef Tvalue value_type;
 
 		typedef std::chrono::high_resolution_clock clock;
 	
+		struct remote_record
+		{
+			typename clock::time_point sync_timestamp;
+
+			typename clock::time_point pending_timestamp;
+
+			call_id_type call_id;
+
+			typename clock::time_point sync_start;
+
+			typename clock::duration latency;
+
+			uint32_t failures;
+
+			// remote_record(const remote_record &t)
+			// 	: sync_timestamp(t.sync_timestamp)
+			// 	, pending_timestamp(t.pending_timestamp)
+			// 	, sync_start(t.sync_start)
+			// 	, latency(t.latency)
+			// 	, failures(t.failures)
+			// 	, call_id(t.call_id)
+			// {}
+
+			remote_record()
+				: sync_timestamp(clock::time_point::min())
+				, pending_timestamp(clock::time_point::min())
+				, failures(0)
+				, call_id(0)
+			{}
+		};
+
 		struct history_record
 		{
 			typename clock::time_point time;
@@ -30,26 +63,15 @@ namespace types
 
 		typedef std::list<history_record> history_type;
 
-		static history_type history;
+		history_type history;
 
-		static value_type local_value;
+		remote_record remote;
 
-		static sched::listener on_change;
+		value_type local_value;
 
-		static bool cooldown_pending;
+		sched::listener on_change;
+
+		bool cooldown_pending;
 	};
-
-	template <typename Tvalue>
-	typename property_record<Tvalue>::history_type property_record<Tvalue>::history;
-	
-	template <typename Tvalue>
-	typename property_record<Tvalue>::value_type property_record<Tvalue>::local_value;
-	
-	template <typename Tvalue>
-	sched::listener property_record<Tvalue>::on_change;
-		
-	template <typename Tvalue>
-	bool property_record<Tvalue>::cooldown_pending;
-
 }}
 #endif
