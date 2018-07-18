@@ -21,7 +21,7 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		sed -i 's/lines./lines.\n#include "symbol_table.h"\n#include <sstream>/' Parser.h
 		sed -i 's/Parser() = default;/Parser(){ParserBase::clearin__();}\n\t\tParser(std::stringstream \&ss) : d_scanner(ss, std::cout) { ParserBase::clearin__(); }\n\t\tParser(std::string inFile) : d_scanner(inFile, std::cout){ ParserBase::clearin__(); }/' Parser.h
 		#sed -i 's/int parse();/int parse();\n\t\tvoid finish(int i);/' Parser.h
-		sed -i 's/private:/\tSymbol_Table symbol_table;\n\nvoid process_this(std::stringstream \&ss)\n\t\t{\n\t\t\td_scanner.switchIstream(ss);\n\t\t\tparse();\n\t\t}\n\nprivate:/' Parser.h
+		sed -i 's/private:/\tSymbol_Table symbol_table;\n\n\tvoid process_this(std::stringstream \&ss)\n\t{\n\t\td_scanner.switchIstream(ss);\n\t\tparse();\n\t}\n\n\tvoid process_this()\n\t{\n\t\td_scanner.switchIstream(std::cin);\n\t\tstd::cout << "\\n> program taking input from cin now:" << std::endl;\n\t\tparse();\n\t}\n\nprivate:/' Parser.h
 
 		echo "inserting into Parser.ih"
 		sed -i 's/std::cerr << "Syntax error\\n";/std::cerr << d_loc__.first_line << ": \\e[31;01mSyntax error\\e[0m\\n";\n\tstd::terminate();/' Parser.ih

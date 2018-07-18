@@ -23,19 +23,19 @@ int main(int argc, char* argv[])
 		// fptr = new wic::functions;
 		// (*parser).parse();
 
-		std::stringstream s("writestring(\"hello\"");
+		std::stringstream s("");
 
 		parser = new Parser(s);
 		fptr = new wic::functions;
 		(*parser).parse();
 
 		std::stringstream c(
-			") ;x = 5;"
+			"x = 5;"
 			"writeint(x);"
 			"exit(1);"
 		);
 		(*parser).process_this(c);
-	
+		(*parser).process_this();
 	}
 	else
 	{
@@ -51,7 +51,49 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+class shell
+{
+	Parser* parser;
+	wic::functions* fptr;
+	int scanDepth;
 
+	void init()
+	{
+		journal::init("journal/journal.txt");
+		journal(journal::info,"main") << "program started" << journal::end;
+		scanDepth = 0;
+	}
+
+public:
+	shell()
+	{
+		init();
+
+		std::stringstream s("");
+		parser = new Parser(s);
+		fptr = new wic::functions;
+	}
+
+	shell(const std::string &filename)
+	{
+		init();
+	}
+
+	void execute()
+	{
+		parser->process_this();
+	}
+
+	void execute(std::stringstream& ss)
+	{
+		parser->process_this(ss);
+	}
+
+	void execute(const std::string& filename)
+	{
+		parser->process_this(filename);
+	}
+};
 
 /*using namespace std;
 
