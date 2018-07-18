@@ -3224,7 +3224,6 @@ try
     if (s_state[state__()]->d_type & REQ_TOKEN)
         nextToken__();              // obtain next token
 
-
     int action = lookup__();        // lookup d_token in d_state
 
     if (action > 0)                 // SHIFT: push a new state
@@ -3245,19 +3244,36 @@ try
         return;
     }
 
+    //////////////////////////
+    // finished = true;
+    // return;
+    //////////////////////////
+
     if (recovery__())
+    {
+        std::cout << ">>> recovery__() then ABORT()" << std::endl;
         ABORT();
-    else 
+    }
+    else
+    {
+        std::cout << ">>> !recovery__() then ACCEPT()" << std::endl;
         ACCEPT();
+    }
 }
 catch (ErrorRecovery__)
 {
     if (not recovery__())
+    {
         errorRecovery__();
+        std::cout << ">>> not recovery__() then errorRecovery()" << std::endl;
+    }
     else
     {
         if (token__() == Reserved__::EOF__)
+        {
+            std::cout << ">>> got Reserved__::EOF__ " <<std::endl;
             ABORT();
+        }
         popToken__();               // skip the failing token
     }
 }
@@ -3323,12 +3339,22 @@ try
     //     default reduction.
 
     clearin__();                            // initialize, push(0)
+    // ParserBase::finished = false;
+    ParserBase::index = 0;
+    // // ParserBase::set_dToken(Reserved__::UNDETERMINED__);
+    // ParserBase::set_dRecovery(false);
+    // ParserBase::set_terminalToken(false);
 
-    while (!finished)
+    // std::cout << "> parser says: "
+
+    std::cout << "starting parse cycle" << ParserBase::index << std::endl;
+    while (!ParserBase::finished)
     {
 // $insert prompt
+        std::cout << "in cycle " << index++ << std::endl; 
         nextCycle__();
     }
+    std::cout << "ending parse cycle" << std::endl;
 }
 catch (Return__ retValue)
 {
@@ -3336,6 +3362,8 @@ catch (Return__ retValue)
 }
 
 bool ParserBase::finished = false;
+long ParserBase::index = 0;
+
 
 // derived/tail
 

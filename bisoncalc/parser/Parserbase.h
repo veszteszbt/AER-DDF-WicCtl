@@ -202,16 +202,28 @@ union STYPE__
     public:
         void setDebug(bool mode);
         void setDebug(DebugMode__ mode);
+        
         static bool finished;
         int returnState;
+        
+        static long index;
+
+        void set_terminalToken(bool b){
+            d_terminalToken = b; 
+        }
+        void set_dToken(int n){
+            d_token = n;
+        }
+        void set_dRecovery(bool b){
+            d_recovery = b;
+        }
+
         void finish(int i)
-{
-	finished = true;
-	returnState=i;
-}
-}; 
-
-
+        {
+            finished = true;
+            returnState=i;
+        }
+};
 
 // hdr/abort
 inline void ParserBase::ABORT() const

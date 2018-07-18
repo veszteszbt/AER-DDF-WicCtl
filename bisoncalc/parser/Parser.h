@@ -25,18 +25,24 @@ class Parser: public ParserBase
     Scanner d_scanner;
         
     public:
-        Parser() = default;
-		Parser(std::stringstream &ss) : d_scanner(ss, std::cout) {}
-		Parser(std::string inFile) : d_scanner(inFile, std::cout){}
+        Parser(){ParserBase::clearin__();}
+		Parser(std::stringstream &ss) : d_scanner(ss, std::cout) {
+            ParserBase::clearin__();
+        }
+		Parser(std::string inFile) : d_scanner(inFile, std::cout){
+            ParserBase::clearin__();
+        }
         int parse();
 		
+    	Symbol_Table symbol_table;
+
         void process_this(std::stringstream &ss)
         {
-            d_scanner.switchIstream(ss.str());
+            d_scanner.switchIstream(ss);
+            std::cout << "process_this before parse()" << std::endl;
             parse();
+            std::cout << "process_this after parse()" << std::endl;
         }
-
-    	Symbol_Table symbol_table;
 
 private:
 
@@ -54,6 +60,5 @@ private:
         void nextToken__();
         void print__();
 };
-
 
 #endif
