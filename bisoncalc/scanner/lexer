@@ -2,120 +2,116 @@ WS [ \n\t\r]
 
 %%
 
-"if" return Parser::KEYWORD_IF; 
-"then" {
-		extern int scanDepth;
-		scanDepth++;
-		return Parser::KEYWORD_THEN;
-	} 
-"else" return Parser::KEYWORD_ELSE; 
-"elif" return Parser::KEYWORD_ELIF; 
-"fi" {
-		extern int scanDepth;
-		scanDepth--;
-		return Parser::KEYWORD_FI;
-	}
-"case" return Parser::KEYWORD_CASE; 
-"in" return Parser::KEYWORD_IN; 
-"esac" {
-		extern int scanDepth;
-		scanDepth--;
-		return Parser::KEYWORD_ESAC;
-	}
-"for" return Parser::KEYWORD_FOR; 
-"while" return Parser::KEYWORD_WHILE; 
-"until" return Parser::KEYWORD_UNTIL; 
-"do" {
-		extern int scanDepth;
-		scanDepth++;
-		return Parser::KEYWORD_DO;
-	}
-"done" {
-		extern int scanDepth;
-		scanDepth--;
-		return Parser::KEYWORD_DONE;
-	}
-"default" return Parser::KEYWORD_DEFAULT;
-"local" return Parser::KEYWORD_LOCAL;
-"{" {
-		extern int scanDepth;
-		scanDepth++;
-		return Parser::OCURLY; 
-	}
-"}" {
-		extern int scanDepth;
-		scanDepth--;
-		return Parser::CCURLY; 
-	}
+"if" 			return Parser::KEYWORD_IF; 
+"then" 			{
+					extern int scanDepth;
+					scanDepth++;
+					return Parser::KEYWORD_THEN;
+				} 
+"else" 			return Parser::KEYWORD_ELSE; 
+"elif" 			return Parser::KEYWORD_ELIF; 
+"fi" 			{
+					extern int scanDepth;
+					scanDepth--;
+					return Parser::KEYWORD_FI;
+				}
+"case" 			return Parser::KEYWORD_CASE; 
+"in" 			return Parser::KEYWORD_IN; 
+"esac"			 {
+					extern int scanDepth;
+					scanDepth--;
+					return Parser::KEYWORD_ESAC;
+				}
+"for" 			return Parser::KEYWORD_FOR; 
+"while" 		return Parser::KEYWORD_WHILE; 
+"until" 		return Parser::KEYWORD_UNTIL; 
+"do"			{
+					extern int scanDepth;
+					scanDepth++;
+					return Parser::KEYWORD_DO;
+				}
+"done" 			{
+					extern int scanDepth;
+					scanDepth--;
+					return Parser::KEYWORD_DONE;
+				}
+"default" 		return Parser::KEYWORD_DEFAULT;
+"local" 		return Parser::KEYWORD_LOCAL;
 
-"[" return Parser::OSBRACKET;
-"]" return Parser::CSBRACKET;
+"{" 			{
+					extern int scanDepth;
+					scanDepth++;
+					return Parser::OCURLY; 
+				}
+"}" 			{
+					extern int scanDepth;
+					scanDepth--;
+					return Parser::CCURLY; 
+				}
 
-"|" return Parser::PIPE_SYMBOL; 
-"&&" return Parser::ANDF_SYMBOL; 
-"||" return Parser::ORF_SYMBOL; 
-";" return Parser::COMMAND_SEPARATOR; 
-"," return Parser::ELEMENT_SEPARATOR;
-";;" return Parser::CASE_DELIMITER; 
-"&" return Parser::BACKGROUND_COMMANDS; 
-"(" return Parser::OPARENTHESIS; 
-")" return Parser::CPARENTHESIS; 
-"<" return Parser::INPUT_REDIRECTION; 
-"<<" return Parser::INPUT_FROM_A_HERE_DOCUMENT; 
-">" return Parser::OUTPUT_CREATION; 
-">>" return Parser::OUTPUT_APPEND;
-"!" return Parser::NEGATE;
+"[" 			return Parser::OSBRACKET;
+"]" 			return Parser::CSBRACKET;
 
-"=>" return Parser::ARROW;
+"(" 			return Parser::OPARENTHESIS; 
+")" 			return Parser::CPARENTHESIS; 
 
-"+" return Parser::OPERATOR_PLUS;
-"-" return Parser::OPERATOR_MINUS;
-"/" return Parser::OPERATOR_DIVISION;
-"*" return Parser::OPERATOR_MULTIPLICATION;
-"%" return Parser::OPERATOR_MODULO;
-"**" return Parser::OPERATOR_POWER;
-"^" return Parser::OPERATOR_POWER;
-"=" return Parser::OPERATOR_LET_BE;
-"$" return Parser::COMMAND_RETURNER;
-"-eq" return Parser::OPERATOR_EQUAL;
-"-gt" return Parser::OPERATOR_GREATER_THAN;
-"-lt" return Parser::OPERATOR_LESS_THAN;
-"-geq" return Parser::OPERATOR_GREATER_EQUAL;
-"-leq" return Parser::OPERATOR_LESS_EQUAL;
-"-neq" return Parser::OPERATOR_NOT_EQUAL;
-"-a" return Parser::OPERATOR_AND;
-"-o" return Parser::OPERATOR_OR;
-"and" return Parser::OPERATOR_AND;
-"or" return Parser::OPERATOR_OR;
-"AND" return Parser::OPERATOR_AND;
-"OR" return Parser::OPERATOR_OR;
+"|" 			return Parser::PIPE_SYMBOL; 
+"&&" 			return Parser::ANDF_SYMBOL; 
+"||" 			return Parser::ORF_SYMBOL; 
+";" 			return Parser::COMMAND_SEPARATOR; 
+"," 			return Parser::ELEMENT_SEPARATOR;
+";;" 			return Parser::CASE_DELIMITER; 
+"&" 			return Parser::BACKGROUND_COMMANDS; 
+"<" 			return Parser::INPUT_REDIRECTION; 
+"<<" 			return Parser::INPUT_FROM_A_HERE_DOCUMENT; 
+">" 			return Parser::OUTPUT_CREATION; 
+">>" 			return Parser::OUTPUT_APPEND;
+"!" 			return Parser::NEGATE;
 
-"TRUE" return Parser::CONST_TRUE;
-"true" return Parser::CONST_TRUE;
-"FALSE" return Parser::CONST_FALSE;
-"false" return Parser::CONST_FALSE;
-"PI" return Parser::CONST_PI;
-"pi" return Parser::CONST_PI;
-"NULL" return Parser::CONST_NULL;
-"null" return Parser::CONST_NULL;
+"=>" 			return Parser::ARROW;
 
+"+" 			return Parser::OPERATOR_PLUS;
+"-" 			return Parser::OPERATOR_MINUS;
+"/" 			return Parser::OPERATOR_DIVISION;
+"*" 			return Parser::OPERATOR_MULTIPLICATION;
+"%" 			return Parser::OPERATOR_MODULO;
+"**" 			return Parser::OPERATOR_POWER;
+"^" 			return Parser::OPERATOR_POWER;
+"=" 			return Parser::OPERATOR_LET_BE;
+"$" 			return Parser::COMMAND_RETURNER;
+"-eq" 			return Parser::OPERATOR_EQUAL;
+"-gt" 			return Parser::OPERATOR_GREATER_THAN;
+"-lt" 			return Parser::OPERATOR_LESS_THAN;
+"-geq" 			return Parser::OPERATOR_GREATER_EQUAL;
+"-leq" 			return Parser::OPERATOR_LESS_EQUAL;
+"-neq" 			return Parser::OPERATOR_NOT_EQUAL;
+"-a" 			return Parser::OPERATOR_AND;
+"-o" 			return Parser::OPERATOR_OR;
 
-['][^']*['] return Parser::SINGLEQUOTE; 
-["]([^\\\"]|\\.)*["] return Parser::DOUBLEQUOTE; 
-[0-9]*[.][0-9]+ return Parser::DOUBLE;
-[0-9]+ return Parser::INTEGER;
-0x[0-9]+ return Parser::HEXADECIMAL;
-[a-zA-Z]([a-zA-Z0-9]|"_")* return Parser::IDENTIFIER;
+[Aa][Nn][Dd]				return Parser::OPERATOR_AND;
+[Oo][Rr]					return Parser::OPERATOR_OR;
 
-<<EOF>> 
+[Tt][Rr][Uu][Ee]			return Parser::CONST_TRUE;
+[Ff][Aa][Ll][Ss][Ee]		return Parser::CONST_FALSE;
+[Pp][Ii]					return Parser::CONST_PI;
+[Nn][Uu][Ll][Ll]			return Parser::CONST_NULL;
 
-{WS}+ {
-	//Parser::finish(lineNr());
-	}
+['][^']*['] 				return Parser::SINGLEQUOTE; 
+["]([^\\\"]|\\.)*["]		return Parser::DOUBLEQUOTE; 
+[0-9]*[.][0-9]+				return Parser::DOUBLE;
+[0-9]+						return Parser::INTEGER;
+0x[0-9]+					return Parser::HEXADECIMAL;
+[a-zA-Z]([a-zA-Z0-9]|"_")*	return Parser::IDENTIFIER;
 
-.           {
-				std::cerr << lineNr() << ": \e[31;01mLexical error\e[0m" << std::endl;
-				std::terminate();
-			}
+<<EOF>> 		//
+
+{WS}+ 			{
+					//Parser::finish(lineNr());
+				}
+
+.           	{
+					std::cerr << lineNr() << ": \e[31;01mLexical error\e[0m" << std::endl;
+					std::terminate();
+				}
 
 %%
