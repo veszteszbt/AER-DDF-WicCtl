@@ -66,9 +66,7 @@ public:
 
 	type get_type() const;
 	void set_type_noconvert(type t);
-	void set_value(int i);
-	void set_value(double d);
-	void set_value(std::string s);
+
 	bool exists_in_array(std::string s);
 	//std::unordered_map<std::string, var_value>::iterator find(std::string s);
 	//void add_to_element(std::unordered_map<std::string, var_value>::iterator it);
@@ -95,11 +93,16 @@ public:
 	//void convert_to_type()
 	//void set_value(std::unordered_map<std::string, var_value> a);
 
-	template<typename T>
-	bool value(T &t) const;
+	bool value(int&) const;
+	bool value(double&) const;
+	bool value(std::string&) const;
+	bool value(arraypair&) const;
 
-	template<typename T>
-	void set_value(T);
+	void set_value(int);
+	void set_value(double);
+	void set_value(std::string&);
+	void set_value(std::string*);
+	void set_value(arraypair*);
 
 	void append(std::string s);
 	//void add(var_value v);

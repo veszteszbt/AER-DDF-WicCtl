@@ -216,7 +216,7 @@ void expr_arr::add(expression_desc* variable, expression_desc* varvalue)
 		varvalue->evaluate();
 		var_value temp = variable->get_val();
 		std::string s;
-		if(temp.value<std::string>(s))
+		if(temp.value(s))
 		{
 			val.insert_with_overwrite(s, varvalue->get_val());
 		}
