@@ -8,9 +8,7 @@ namespace process
 	template<typename TEnv>
 	class sync_local
 	{
-		typedef typename TEnv::value_type       value_type;
-
-		typedef typename TEnv::remotes_type     remotes_type;
+		typedef typename TEnv::property_data_type	property_data_type;
 
 		typedef typename TEnv::command_id_type  command_id_type;
 
@@ -24,10 +22,6 @@ namespace process
 
 		typedef typename TEnv::set_handle_type  set_handle_type;
 
-		constexpr static remotes_type          &remotes = TEnv::remotes;
-
-		constexpr static std::mutex            &remotes_lock = TEnv::remotes_lock;
-
 		static journal jrn(uint8_t level)
 		{
 			return journal(level,"wicp.sync.local") << "property: " << std::hex <<
@@ -36,30 +30,58 @@ namespace process
 
 		static void call_finish(set_handle_type h)
 		{
+			const object_id_type object_id = h.value();
+			wic_class::lock_local();			
+			auto local_it = wic_class::find_local(12);
+			if(local_it != wic_class::end())
+			{
+				local_it->second.remotes.lock();
+				wic_class::lock_remote();
+				for(auto it = local_it->second.remotes.begin(); it != local_it->second.remotes.end();)
+				{
+					auto remote_it = wic_class::find_remote(*it);
+					if(remote_it != wic_class::end())
+					{
+						remote_it->second.property_lock.lock();
+						auto &property = remote_it->second.properties.template get<member_id>();
+						// if(property.call_id == h.call_id)
+						{
+							std::cout << "pelo\n";
+							// TODO
+							//i->role.report_call(h);
+							// TODO this may not needed
+							jrn(journal::trace) << "; remote: " << (std::string)h.ip << " call_finished" << journal::end;
+							TEnv::finish_sync_remote(remote_it->second, h);
 
-			// TEnv::remotes_lock.lock();
-			// for(
-			// 	typename remotes_type::iterator i = remotes.begin();
-			// 	i != remotes.end();
-			// 	++i
-			// )
-			// 	if(i->call_id == h.call_id)
-			// 	{
-			// 		i->role.report_call(h);
-			// 		TEnv::finish_sync_remote(*i,h);
-			// 		TEnv::remotes_lock.unlock();
-			// 		notify();
-					jrn(journal::trace) << "; remote: " << (std::string)h.ip << journal::end;
-			// 		"call_finished" << journal::end;
-
-			// 		return;
-			// 	}
-
-			// jrn(journal::critical) << "; remote: " << (std::string)h.ip <<
-			// 	"could not find remote for finished change" << journal::end;
-
-			// TEnv::remotes_lock.unlock();
-			// notify();
+							notify(object_id);
+							remote_it->second.property_lock.unlock();
+							wic_class::unlock_remote();
+							local_it->second.remotes.unlock();
+							wic_class::unlock_local();
+							return;
+						}
+						++it;
+					}
+					else
+					{
+						it = local_it->second.remotes.erase(it);
+						remote_it->second.property_lock.unlock();
+						jrn(journal::debug) << "corrupted remote object `" << *it << "'" << journal::end;
+					}
+				}
+				wic_class::unlock_remote();
+				local_it->second.remotes.unlock();
+				wic_class::unlock_local();
+				jrn(journal::critical) << "; remote: " << (std::string)h.ip <<
+					"could not find remote for finished change" << journal::end;
+				notify(object_id);
+			}
+			else
+			{
+				wic_class::unlock_local();			
+				jrn(journal::error) << "Invalid local `" << 
+					wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
+			}
 		}
 	public:
 		static void init()
@@ -70,43 +92,6 @@ namespace process
 		static void uninit()
 		{
 			jrn(journal::debug) << "uninitialized" << journal::end;
-		}
-
-		static void notify(role_type &role)
-		{
-			TEnv::history_lock.lock();
-			if(TEnv::history.empty())
-			{
-				TEnv::history_lock.unlock();
-				jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
-				return;
-			}
-			TEnv::history_lock.unlock();
-			TEnv::remotes_lock.lock();
-			for(
-				auto i = remotes.begin();
-				i != remotes.end();
-				++i
-			)
-				if(&i->role == &role)
-				{
-					if(i->role.is_bound())
-					{
-						jrn(journal::trace) << "remote: " << (std::string)i->role.get_ip() <<" doing sync via role `" <<
-							i->role.name<< "'" << journal::end;
-						TEnv::sync_remote(*i,types::function::notify,call_finish);
-						TEnv::remotes_lock.unlock();
-						return;
-					}
-					else
-					{
-						jrn(journal::debug) << "omitting sync via unbound role `" << i->role.name << "'" << journal::end;
-						TEnv::remotes_lock.unlock();
-						return;
-					}
-				}
-			TEnv::remotes_lock.unlock();
-			jrn(journal::warning) << "remote for notified role `" << role.name << "' not found" << journal::end;
 		}
 
 		static void notify(
@@ -136,6 +121,7 @@ namespace process
 					TEnv::sync_remote(remote_it->second,types::function::notify,call_finish);
 					local_it->second.property_lock.unlock();
 					wic_class::unlock_remote();
+					wic_class::unlock_local();
 				}
 				else
 				{
@@ -145,11 +131,24 @@ namespace process
 					return;
 				}
 			}
-			wic_class::unlock_local();
+			else
+			{
+				wic_class::unlock_local();			
+				jrn(journal::error) << "Invalid local `" << 
+					wic_class::name << "' object reference `" << std::hex << local_object_id << journal::end;
+			}	
 		}
 
 		static void notify(object_id_type object_id)
 		{
+			// TODO
+			// wic_class::lock_local_and_process(
+			// 	object_id, 
+			// 	[](auto local_it)
+			// 	{
+
+			// 	}
+			// );
 			wic_class::lock_local();
 			auto local_it = wic_class::find_local(object_id);
 			if(local_it != wic_class::end())
@@ -171,32 +170,34 @@ namespace process
 					auto remote_it = wic_class::find_remote(*it);
 					if(remote_it != wic_class::end())
 					{
-						jrn(journal::trace) << "; remote: " << (std::string)remote_it->second.address << " doing sync via object `" <<
+						jrn(journal::trace) << "; remote: " << (std::string)remote_it->second.ip << " doing sync via object `" <<
 							*it << "'" << journal::end;
 						TEnv::sync_remote(remote_it->second, types::function::notify, call_finish); 
 						++it;
 					}
 					else
 					{
-						local_it->second.remotes.erase(it++);
 						jrn(journal::debug) << "omitting sync via deleted object `" << *it << "'" << journal::end;
+						it = local_it->second.remotes.erase(it);
 					}
 				}
 				wic_class::unlock_remote();
 				local_it->second.remotes.unlock();
+				wic_class::unlock_local();
 			}
 			else
+			{
+				wic_class::unlock_local();
 				jrn(journal::error) << "Invalid local `" << 
 					wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
-
-			wic_class::unlock_local();
+			}
 		}
 
 		static void cancel(remote_iterator it)
 		{
 			if(it->second.remote.call_id)
 			{
-				jrn(journal::trace) << "remote: " << (std::string)it->second.address << " cancelling sync via object `" <<
+				jrn(journal::trace) << "remote: " << (std::string)it->second.ip << " cancelling sync via object `" <<
 					std::hex << it->second.object_id << "'" << journal::end;
 
 				TEnv::rpc::cancel(it->second.remote.call_id);

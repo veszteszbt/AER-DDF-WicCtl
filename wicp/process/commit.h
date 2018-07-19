@@ -25,19 +25,16 @@ namespace process
 
 		typedef typename TEnv::proc_log        proc_log;
 
+		typedef typename TEnv::property_data_type	property_data_type;
 
-		typedef typename TEnv::value_type      value_type;
+		typedef typename TEnv::history_type  history_type;
 
-		// TODO getting these properly
-		typedef typename wicp::types::property_record_base<uint64_t, value_type>::history_type  history_type;
+		typedef typename TEnv::history_record  history_record;
 
-		typedef typename wicp::types::property_record_base<uint64_t, value_type>::history_record  history_record;
-///
 		typedef typename TEnv::member_id_type      member_id_type;
 
 		typedef typename TEnv::object_id_type      object_id_type;
 
-		// TODO getting these
 		typedef typename TEnv::encap_object_type encap_object_type;
 		
 		typedef typename TEnv::wic_class wic_class;
@@ -108,7 +105,7 @@ namespace process
 			jrn(journal::debug) << "initialized" << journal::end;
 			while(is_running)
 			{
-				while(true)
+				while(1)
 				{
 					object_id_buffer.lock();
 					if(object_id_buffer.empty())
@@ -126,7 +123,7 @@ namespace process
 					{
 						wic_class::template unlock<encap_object_type>();
 						jrn(journal::error) << "Invalid `" << 
-							wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
+							wic_class::name << "' object reference `" << std::hex << object_id << "'" << journal::end;
 						continue;
 					}
 					else
@@ -190,8 +187,7 @@ namespace process
 				}
 				std::unique_lock<std::mutex> ul(suspend_lock);
 				object_id_buffer.lock();
-				const bool is_empty = object_id_buffer.empty();
-				if(is_empty)
+				if(object_id_buffer.empty())
 				{
 					object_id_buffer.unlock();
 					jrn(journal::trace) << "no change; suspending until next notify" << journal::end;

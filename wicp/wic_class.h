@@ -11,12 +11,12 @@
 #define WIC_CLASS_TEMPLATE template < \
 	typename Tconfig, \
 	typename TobjectId, \
-	typename Tvalue, \
+	typename TpropertyData, \
 	typename Taddress, \
 	typename... Tproperties \
 >
 
-#define WIC_CLASS wic_class<Tconfig, TobjectId, Tvalue, Taddress, Tproperties...>
+#define WIC_CLASS wic_class<Tconfig, TobjectId, TpropertyData, Taddress, Tproperties...>
 
 namespace wicp 
 {
@@ -27,25 +27,22 @@ namespace wicp
 
 		typedef TobjectId					 	object_id_type;
 
-		typedef Tvalue							value_type;
+		typedef TpropertyData					property_data_type;
 
 		typedef Taddress					 	address_type;
 
 		typedef WIC_CLASS 						self;
 	
-	// TODO populate these to other processes
 	public:
 		typedef types::local_object_record<
 			self, 
 			object_id_type, 
-			value_type, 
 			Tproperties...
 		> local_object_record_type;
 
 		typedef types::remote_object_record<
 			self, 
 			object_id_type, 
-			value_type, 
 			address_type, 
 			Tproperties...
 		> remote_object_record_type;
@@ -63,7 +60,6 @@ namespace wicp
 				remote_object_record_type
 		>> remote_object_lock_table_type;
 
-	// TODO 
 	public:
 		typedef typename local_object_lock_table_type::iterator local_iterator;
 
@@ -75,7 +71,7 @@ namespace wicp
 		static remote_object_lock_table_type remote_object_lock_table;
 
 		static const class_id_type class_id = Tconfig::class_id;
-		public:
+	public:
 		
 		constexpr static const char* name = Tconfig::cfg_name;
 
@@ -88,7 +84,15 @@ namespace wicp
 			{ return remote_object_lock_table.end(); }
 		};
 
+		static void init()
+		{
 
+		}
+
+		static void uninit()
+		{
+			
+		}
 		// TODO
 		// static auto find_object(object_id_type object_id)
 		// {
@@ -99,7 +103,6 @@ namespace wicp
 		// 	return remote_object_lock_table.find(object_id);
 		// }
 
-		// TODO lock_local vs lock_lockal
 		static void lock_local()
 		{ local_object_lock_table.lock(); }
 
@@ -180,8 +183,10 @@ namespace wicp
 
 			auto pair_it = remote_object_lock_table.try_emplace(object_id, object_id, address);
 			if(!pair_it.second)
-				pair_it.first->second.address = address;
-				
+			{
+				pair_it.first->second.ip = address;
+				pair_it.first->second.on_ip_change();
+			}
 			return true;
 		}
 
@@ -196,6 +201,24 @@ namespace wicp
 
 		static bool clr_remote(remote_iterator it)
 		{ return remote_object_lock_table.erase(it); }
+
+		// template <typename T>
+		// static void lock_local_and_process(object_id_type object_id, T &fn)
+		// {
+		// 	wic_class::lock_local();			
+		// 	auto local_it = wic_class::find_local(object_id);
+		// 	if(local_it != wic_class::end())
+		// 	{
+		// 		fn(local_it);
+		// 		wic_class::unlock_local();
+		// 	}
+		// 	else
+		// 	{
+		// 		wic_class::unlock_local();			
+		// 		jrn(journal::error) << "Invalid local `" << 
+		// 			wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
+		// 	}
+		// }
 	};
 
 	WIC_CLASS_TEMPLATE

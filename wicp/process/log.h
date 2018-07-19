@@ -22,13 +22,12 @@ namespace process
 	{
 		typedef typename TEnv::clock           clock;
 
-
 		typedef typename TEnv::value_type      value_type;
 
-		// TODO getting these properly
-		typedef typename wicp::types::property_record_base<uint64_t, value_type>::history_type  history_type;
+		typedef typename TEnv::history_type  history_type;
 
-		typedef typename wicp::types::property_record_base<uint64_t, value_type>::history_record  history_record;
+		typedef typename TEnv::history_record  history_record;
+
 
 		typedef typename TEnv::object_id_type	object_id_type;
 
@@ -93,6 +92,7 @@ namespace process
 					TEnv::class_id << ',' <<
 					TEnv::member_id::value << ",X'" << std::hex;
 
+				// TODO write only value or the whole structure
 				for(int i = 0; i < sizeof(value_type); ++i)
 					s << std::setfill('0') << std::setw(2) <<
 						static_cast<uint32_t>(reinterpret_cast<const uint8_t*>(&r.value)[i]);
