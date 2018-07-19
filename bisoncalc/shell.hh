@@ -27,6 +27,20 @@ public:
 
 	~shell();
 	
+	template<typename Tret, typename... Targ>
+	void add_command(const std::string &name, std::function<Tret(Targ...)> function)
+	{
+		fptr->add_command(name, function);
+		std::cout << "command added!" << std::endl;
+	}
+
+	template<typename Tret, typename... Targ>
+	void add_command(const std::string &name, Tret(*function)(Targ...))
+	{
+		fptr->add_command(name, function);
+		std::cout << "command added!" << std::endl;
+	}
+
 	void execute();
 
 	void execute(std::stringstream& ss);

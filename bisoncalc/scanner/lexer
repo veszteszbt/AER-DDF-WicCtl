@@ -1,5 +1,6 @@
 WS [ \n\t\r]
-
+CH ([a-zA-Z0-9]|"_")
+ID	[a-zA-Z]{CH}*
 %%
 
 "if" 			return Parser::KEYWORD_IF; 
@@ -94,7 +95,7 @@ WS [ \n\t\r]
 [0-9]*[.][0-9]+				return Parser::DOUBLE;
 [0-9]+						return Parser::INTEGER;
 0x[0-9]+					return Parser::HEXADECIMAL;
-[a-zA-Z]([a-zA-Z0-9]|"_")*	return Parser::IDENTIFIER;
+{ID}("::"{ID})*				return Parser::IDENTIFIER;
 
 
 {WS}+ 			//
