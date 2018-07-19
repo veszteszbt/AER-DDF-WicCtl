@@ -1,64 +1,145 @@
 #include "symbol_table.h"
 
-var_value::var_value(int i) : var_type(u_integer), val(i) {}
-
-var_value::var_value(double d) : var_type(u_double), val(d) {}
-
-var_value::var_value(std::string* s) : var_type(u_string), val(s) {}
-
-var_value::var_value(arraypair* a) : var_type(u_array), val(a) {}
-/*template<>
-void var_value::value::set_value(int i)
+void s_minus(const var_value& lhs, const var_value& rhs, var_value& ret)
 {
-	intval = i;
+	ret.set_type_noconvert(u_string);
+	std::string empty = "";
+	ret.set_value(&empty);
+	std::string s1, s2;
+	if(!lhs.value(s1)){ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
+
+	if(!rhs.value(s2)){ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
+
+	std::size_t found = s1.find(s2);
+	if (found != std::string::npos)
+		ret.append(s1.erase(found, s2.length()));
+	else
+		ret.append(s1);
 }
 
-template<>
-void var_value::value::set_value(double d)
+void s_add(const var_value& lhs, const var_value& rhs, var_value& ret)
 {
-	doubleval = d;
+	ret.set_type_noconvert(u_string);
+	std::string empty = "";
+	ret.set_value(&empty);
+	std::string s1, s2;
+	if(!lhs.value(s1))
+	{ s1 = ""; std::cerr<<"conversion failed"<<std::endl; }
+
+	if(!rhs.value(s2))
+	{ s2 = ""; std::cerr<<"conversion failed"<<std::endl; }
+
+	ret.append(s1);
+	ret.append(s2);
 }
 
-template<>
-void var_value::value::set_value(std::string s)
+void s_div(const var_value& lhs, const var_value& rhs, var_value& ret)
 {
-	*stringval = s;
+	ret.set_type_noconvert(u_string);
+	std::string empty = "";
+	ret.set_value(&empty);
+	std::string s1, s2;
+	if(!lhs.value(s1))
+	{ s1 = ""; std::cerr<<"conversion failed"<<std::endl; }
+
+	if(!rhs.value(s2))
+	{ s2 = ""; std::cerr<<"conversion failed"<<std::endl; }
+
+	std::size_t found = s1.find(s2);
+	while (found != std::string::npos)
+	{
+		s1 = (s1.erase(found, s2.length()));
+		found = s1.find(s2);
+	}
+	ret.append(s1);
 }
 
-template<>
-void var_value::value::set_value(std::string* s)
+template <typename T>
+struct mul
 {
-	stringval = s;
-}*/
+	constexpr static T calculate(const T& lhs, const T& rhs)
+	{ return lhs * rhs; }
+};
+
+template <typename T>
+struct division
+{
+	constexpr static T calculate(const T& lhs, const T& rhs)
+	{ return lhs / rhs; }
+};
+
+template <typename T>
+struct minus
+{
+	constexpr static T calculate(const T& lhs, const T& rhs)
+	{ return lhs - rhs; }
+};
+
+template <typename T>
+struct add
+{
+	constexpr static T calculate(const T& lhs, const T& rhs)
+	{ return lhs + rhs; }
+};
+
+template <typename T>
+struct power
+{
+	constexpr static T calculate(const T& lhs, const T& rhs)
+	{ return pow(lhs, rhs); }
+};
+
+template <template<typename> typename Op, typename T>
+std::enable_if_t<types::meta::is_one_of_v<T, int, double>, T>
+op(const var_value& lhs, const var_value& rhs)
+{
+	T i1, i2;
+	if(!lhs.value(i1))
+	{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
+
+	if(!rhs.value(i2))
+	{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
+
+	return Op<T>::calculate(i1, i2);
+}
+
+var_value::var_value(int i) 
+	: var_type(u_integer)
+	, val(i) 
+{}
+
+var_value::var_value(double d) 
+	: var_type(u_double)
+	, val(d) 
+{}
+
+var_value::var_value(std::string* s) 
+	: var_type(u_string)
+	, val(s) 
+{}
+
+var_value::var_value(arraypair* a) 
+	: var_type(u_array)
+	, val(a) 
+{}
 
 var_value::var_value() 
-: var_type(u_integer)
-, val(0)
+	: var_type(u_integer)
+	, val(0)
 {}
 
 var_value::~var_value()
 {
 	if (var_type == u_string)
-	{
-		//std::cout << "destroying the string: " << *(val.stringval) << std::endl;
 		val.stringval->std::string::~string();
-	}
 	else if (var_type == u_array)
-	{ val.array->arraypair::~map(); }
+		val.array->arraypair::~map();
 }
-
-
-// template<typename T>
-// bool var_value::value(T &t) const
-// {
-// 	return false;
-// }
 
 bool var_value::value(int &i) const
 {
-	//std::cout << "template value = " << val.intval << std::endl;
 	if (var_type == u_double)
-	{ i = static_cast<int>(val.doubleval); }
+		i = static_cast<int>(val.doubleval);
 	else if(var_type == u_string)
 	{
 		std::stringstream ss;
@@ -68,16 +149,15 @@ bool var_value::value(int &i) const
 			return false;
 	}
 	else if(var_type == u_integer)
-	{ i = val.intval; }
+		i = val.intval;
 	else if(var_type == u_array)
-	{ return false; }
+		return false;
 
 	return true;
 }
 
 bool var_value::value(double &d) const
 {
-	//std::cout << "template value = " << val.intval << std::endl;
 	if (var_type == u_integer)
 	{ d = static_cast<double>(val.intval); }
 	else if(var_type == u_string)
@@ -89,16 +169,15 @@ bool var_value::value(double &d) const
 			return false;
 	}
 	else if (var_type == u_double)
-	{ d = val.doubleval; }
+		d = val.doubleval;
 	else if(var_type == u_array)
-	{ return false; }
+		return false;
 
 	return true;
 }
 
 bool var_value::value(std::string &s) const
 {
-	//std::cout << "template value = " << val.intval << std::endl;
 	if (var_type == u_integer)
 	{ s = std::to_string(val.intval); }
 	else if(var_type == u_double)
@@ -152,8 +231,6 @@ var_value::var_value(const var_value& other) : var_type(other.var_type)
 			{
 				std::cerr << "cannot convert to int" << std::endl;
 			}
-			//set_value(other.value());
-			//std::cout << val.intval << " switch int " << other.value() << std::endl;
 			break;
 		}
 		case u_double:
@@ -165,10 +242,7 @@ var_value::var_value(const var_value& other) : var_type(other.var_type)
 				var_type = u_double;
 			}
 			else
-			{
 				std::cerr << "cannot convert to double" << std::endl;
-			}
-			//set_value(other.value());
 			break;
 		}
 		case u_string:
@@ -261,27 +335,18 @@ void var_value::append(std::string s)
 	}
 }
 
-bool var_value::exists_in_array(std::string s)
+std::pair<bool, arraypair::iterator> 
+var_value::exists_in_array(std::string s)
 {
 	if (var_type != u_array)
-	{
 		std::cerr << "can't use exists_in_array method since its not an array!" << std::endl;
-	}
 	else
 	{
 		auto it = val.array->find(s);
-		//std::cout << "find key " << s ;
-		//if (it == val.array->end())
-		//{
-		//	std::cout <<  " :not found" << std::endl;
-		//}
-		//else
-		//{
-		//	std::cout << " :" << it->first << ", " << it->second << std::endl;
-		//}
-		return (it != val.array->end());
+		return std::make_pair(it != val.array->end(), it);
 	}
-	return false;
+		
+	return std::make_pair(false, arraypair().end());
 }
 
 /*std::unordered_map<std::string, var_value>::iterator var_value::find(std::string s)
@@ -382,7 +447,7 @@ int var_value::get_size()
 	return 0;
 }
 
-void var_value::insert(std::string s, var_value a)
+void var_value::insert(std::string s, const var_value &a)
 {
 	if (var_type != u_array)
 	{
@@ -390,7 +455,7 @@ void var_value::insert(std::string s, var_value a)
 	}
 	else
 	{
-		if (exists_in_array(s))
+		if (exists_in_array(s).first)
 		{
 			int i = getMaxKey() + 1;
 			s = std::to_string(i);
@@ -399,109 +464,66 @@ void var_value::insert(std::string s, var_value a)
 		val.array->emplace(s,a);
 	}
 }
+void var_value::insert(const var_value &a)
+{ insert_after_max(a); }
 
-void var_value::insert(var_value a)
+void var_value::insert_after_max(const var_value &a)
 {
 	if (var_type != u_array)
-	{
 		std::cerr << "can't insert since its not an array!" << std::endl;
-	}
 	else
 	{
 		int i = getMaxKey() + 1;
 		std::string s = std::to_string(i);
-		//std::cout << "insert function on " << s << ", " << a << std::endl;
 		val.array->emplace(s,a);
-		//std::cout << "pushed back " << s << std::endl;
-		//val.array->second.push_back(s);
 	}
 }
 
-void var_value::insert_after_max(var_value a)
+void var_value::insert_before_min(const var_value &a)
 {
 	if (var_type != u_array)
-	{
 		std::cerr << "can't insert since its not an array!" << std::endl;
-	}
-	else
-	{
-		int i = getMaxKey() + 1;
-		std::string s = std::to_string(i);
-		//std::cout << "insert function on " << s << ", " << a << std::endl;
-		val.array->emplace(s,a);
-		//std::cout << "pushed back " << s << std::endl;
-		//val.array->second.push_back(s);
-	}
-}
-
-void var_value::insert_before_min(var_value a)
-{
-	if (var_type != u_array)
-	{
-		std::cerr << "can't insert since its not an array!" << std::endl;
-	}
 	else
 	{
 		int i = getMinKey() - 1;
 		std::string s = std::to_string(i);
-		//std::cout << "insert function on " << s << ", " << a << std::endl;
 		val.array->emplace(s,a);
-		//std::cout << "pushed back " << s << std::endl;
-		//val.array->second.push_back(s);
 	}
 }
 
-void var_value::insert_with_add(std::string s, var_value a)
-{
-	if (var_type != u_array)
-	{
-		std::cerr << "can't insert since its not an array!" << std::endl;
-	}
-	else
-	{
-		if (exists_in_array(s))
-		{
-			(*(val.array->find(s))).second = (*(val.array->find(s))).second + a;
-		}
-		else
-		{
-			insert(s, a);
+void var_value::insert_with_add(const std::string &s, const var_value &a)
+{ insert_with_impl<add<var_value>>(s, a); }
 
-		}
-	}
-}
+void var_value::insert_with_dif(const std::string &s, const var_value &a)
+{ insert_with_impl<minus<var_value>>(s, a); }
 
-void var_value::insert_with_dif(std::string s, var_value a)
-{
-	if (var_type != u_array)
-	{
-		std::cerr << "can't insert since its not an array!" << std::endl;
-	}
-	else
-	{
-		if (exists_in_array(s))
-		{
-			(*(val.array->find(s))).second = (*(val.array->find(s))).second - a;
-		}
-		else
-		{
-			insert(s, a);
+// template <typename Top>
+// void insert_with_impl()
+// {
+// 	if (var_type != u_array)
+// 	{ std::cerr << "can't insert since its not an array!" << std::endl; }
+// 	else
+// 	{
+// 		bool exists;
+// 		arraypair::iterator it;
+// 		std::tie(exists, it) = exists_in_array(s);
+// 		if (exists)
+// 			it->second = Top::calculate(it->second, a);
+// 		else
+// 			insert(s, a);
+// 	}
+// }
 
-		}
-	}
-}
 
 void var_value::insert_with_overwrite(std::string s, var_value a)
 {
-	if (exists_in_array(s))
-	{
-		//std::cout << "overwriting " << (*(val.array->first.find(s))).second << "to" << a << std::endl;
-		(*(val.array->find(s))).second = a;
-	}
+	bool exists;
+	arraypair::iterator it;
+	std::tie(exists, it) = exists_in_array(s);
+	if (exists)
+		it->second = a;
 	else
-	{
 		insert(s, a);
-	}
 }
 
 var_value var_value::return_element_with_key(var_value v)
@@ -551,9 +573,7 @@ std::vector<var_value> var_value::return_array_elements()
 }
 
 void delete_from_arraypair(arraypair &a, std::string k)
-{
-	a.erase(k);
-}
+{ a.erase(k); }
 
 int var_value::getMaxKey()
 {
@@ -584,7 +604,7 @@ int var_value::getMinKey()
 {
 	int min = -1;
 	if (get_type() != u_array)
-	{ std::cerr << "cant get max element from a non array" << std::endl; }
+	{ std::cerr << "cant get min element from a non array" << std::endl; }
 	else
 	{
 		for (auto it = val.array->cbegin(); it != val.array->cend(); ++it)
@@ -656,7 +676,7 @@ if (get_type() == u_array)
 	}
 }
 else
-	{
+{
 	if (right.get_type() == u_integer)
 	{
 		if (get_type() == u_string)
@@ -728,107 +748,34 @@ else
 	return *this;
 }
 
-template <typename T>
-struct mul
+void var_value::unio(const arraypair& b)
 {
-	constexpr static T calculate(const T& lhs, const T& rhs)
-	{ return lhs * rhs; }
-};
-
-template <typename T>
-struct division
-{
-	constexpr static T calculate(const T& lhs, const T& rhs)
-	{ return lhs / rhs; }
-};
-
-template <typename T>
-struct minus
-{
-	constexpr static T calculate(const T& lhs, const T& rhs)
-	{ return lhs - rhs; }
-};
-
-template <typename T>
-struct add
-{
-	constexpr static T calculate(const T& lhs, const T& rhs)
-	{ return lhs + rhs; }
-};
-
-template <typename T>
-struct power
-{
-	constexpr static T calculate(const T& lhs, const T& rhs)
-	{ return pow(lhs, rhs); }
-};
-
-template <template<typename> typename Op, typename T>
-std::enable_if_t<types::meta::is_one_of_v<T, int, double>, T>
-op(const var_value& lhs, const var_value& rhs)
-{
-	T i1, i2;
-	if(!lhs.value(i1))
-	{ i1 = 0; std::cerr<<"conversion failed"<<std::endl;}
-
-	if(!rhs.value(i2))
-	{ i2 = 0; std::cerr<<"conversion failed"<<std::endl;}
-
-	return Op<T>::calculate(i1, i2);
-}
-
-void s_minus(const var_value& lhs, const var_value& rhs, var_value& ret)
-{
-	ret.set_type_noconvert(u_string);
-	std::string empty = "";
-	ret.set_value(&empty);
-	std::string s1, s2;
-	if(!lhs.value(s1)){ s1 = ""; std::cerr<<"conversion failed"<<std::endl;}
-
-	if(!rhs.value(s2)){ s2 = ""; std::cerr<<"conversion failed"<<std::endl;}
-
-	std::size_t found = s1.find(s2);
-	if (found != std::string::npos)
-		ret.append(s1.erase(found, s2.length()));
-	else
-		ret.append(s1);
-}
-
-void s_add(const var_value& lhs, const var_value& rhs, var_value& ret)
-{
-	ret.set_type_noconvert(u_string);
-	std::string empty = "";
-	ret.set_value(&empty);
-	std::string s1, s2;
-	if(!lhs.value(s1))
-	{ s1 = ""; std::cerr<<"conversion failed"<<std::endl; }
-
-	if(!rhs.value(s2))
-	{ s2 = ""; std::cerr<<"conversion failed"<<std::endl; }
-
-	ret.append(s1);
-	ret.append(s2);
-}
-
-void s_div(const var_value& lhs, const var_value& rhs, var_value& ret)
-{
-	ret.set_type_noconvert(u_string);
-	std::string empty = "";
-	ret.set_value(&empty);
-	std::string s1, s2;
-	if(!lhs.value(s1))
-	{ s1 = ""; std::cerr<<"conversion failed"<<std::endl; }
-
-	if(!rhs.value(s2))
-	{ s2 = ""; std::cerr<<"conversion failed"<<std::endl; }
-
-	std::size_t found = s1.find(s2);
-	while (found != std::string::npos)
-	{
-		s1 = (s1.erase(found, s2.length()));
-		found = s1.find(s2);
-	}
-	ret.append(s1);
+    auto in1 = val.array->begin();
+    auto in2 = b.begin();
+    
+    while(in1 != val.array->end() || in2 != b.end())
+    {
+        if( in2 == b.end() || (
+               in1 != val.array->end() &&
+               in1->first < in2->first
+        ))
+        { ++in1; }
+        else 
+        if( in1 == val.array->end() || (
+                in2 != b.end() &&
+                in2->first < in1->first
+        ))
+        {
+            val.array->emplace(in2->first, in2->second);
+            ++in2;
+        }
+        else //in1->first == in2->first
+        {
+            in1->second = in1->second + in2->second;
+            ++in1;
+            ++in2;
+        }
+    }
 }
 
 var_value operator+(var_value l, var_value r)
@@ -839,30 +786,28 @@ var_value operator+(var_value l, var_value r)
 		ret.set_type_noconvert(u_array);
 		arraypair* tempmap = new arraypair;
 		ret.set_value(tempmap);
-		if (l.get_type() == u_array)
-		{
-			arraypair m1;
-			if(!l.value(m1))
-			{ std::cerr<<"conversion failed"<<std::endl; }
-
-			for(auto it = m1.begin(); it != m1.end(); ++it)
-				ret.insert(it->first,it->second);	
-		}
-
-		if (r.get_type() == u_array)
-		{
-			arraypair m2;
-			if(!r.value(m2))
-			{ std::cerr<<"conversion failed"<<std::endl; }
-
-			for(auto it = m2.begin(); it != m2.end(); ++it)
-				ret.insert_with_add(it->first,it->second);
-		}
-		else
-		{ ret.insert_after_max(r); }
 		
-		if (l.get_type() != u_array)
-		{ ret.insert_before_min(l); }
+		if (l.get_type() == u_array && r.get_type() != u_array)
+		{ 
+			if(!l.value(*tempmap))
+			{ std::cerr<<"conversion failed"<<std::endl; }
+			
+			ret.insert_after_max(r); 
+		}
+		else if (r.get_type() == u_array && l.get_type() != u_array)
+		{ 
+			if(!r.value(*tempmap))
+			{ std::cerr<<"conversion failed"<<std::endl; }
+			
+			ret.insert_before_min(l); 
+		}
+		else if (l.get_type() == u_array && r.get_type() == u_array)
+		{
+			if(!l.value(*tempmap))
+			{ std::cerr<<"conversion failed"<<std::endl; }
+
+			ret.unio(*r.val.array);
+		}
 	}
 	else
 	{

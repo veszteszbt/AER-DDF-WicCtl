@@ -14,10 +14,7 @@ void unio(arraypair& a, const arraypair& b)
                in1 != a.end() &&
                in1->first < in2->first
         ))
-        {
-            a.emplace(in1->first, in1->second);
-            ++in1;
-        }
+        { ++in1; }
         else 
         if( in1 == a.end() || (
                 in2 != b.end() &&
@@ -29,7 +26,7 @@ void unio(arraypair& a, const arraypair& b)
         }
         else //in1->first == in2->first
         {
-            a.emplace(in1->first, in1->second);
+            in1->second += in2->second;
             ++in1;
             ++in2;
         }
@@ -48,6 +45,7 @@ int main()
 
     arraypair merge_with = {
         {3, 3},
+        {4, 5},
         {5, 5},
         {8, 8}
     };

@@ -35,3 +35,9 @@
 *.app
 wicctl
 wic_host
+
+
+/bisoncalc/commandline
+/journal/journal.txt
+/.vscode
+/.vs

@@ -230,10 +230,6 @@ void expr_arr::evaluate()
 {
 	//std::cout << "array evaluate" << std::endl;
 }
-/*type expr_var::get_type()
-{
-	return val.get_type();
-}*/
 
 assign::assign(int row_number, std::string* var_name, expression_desc* ex)
 	: row(row_number), vname(var_name), e(ex)

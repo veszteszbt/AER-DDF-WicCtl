@@ -55,6 +55,29 @@ class var_value
 		void set_value(T);*/
 	} val;
 
+	int getMaxKey();
+	int getMinKey();
+
+	void unio(const arraypair& b);
+
+	template <typename Top>
+	void insert_with_impl(const std::string &s, const var_value &a)
+	{
+		if (var_type != u_array)
+		{ std::cerr << "can't insert since its not an array!" << std::endl; }
+		else
+		{
+			bool exists;
+			arraypair::iterator it;
+			std::tie(exists, it) = exists_in_array(s);
+
+			if (exists)
+				it->second = Top().calculate(it->second, a);
+			else
+				insert(s, a);
+		}
+	}
+
 public:
 	var_value(int i);
 	var_value(double d);
@@ -67,7 +90,7 @@ public:
 	type get_type() const;
 	void set_type_noconvert(type t);
 
-	bool exists_in_array(std::string s);
+	std::pair<bool, arraypair::iterator> exists_in_array(std::string s);
 	//std::unordered_map<std::string, var_value>::iterator find(std::string s);
 	//void add_to_element(std::unordered_map<std::string, var_value>::iterator it);
 	std::string find_first_element_having_value(var_value v);
@@ -77,17 +100,14 @@ public:
 	//void delete_element_with_key(std::string key);
 	//void delete_elements_with_key(std::vector<std::string> vec);
 	int get_size();
-	void insert(std::string s, var_value a);
-	void insert(var_value a);
-	void insert_after_max(var_value a);
-	void insert_before_min(var_value a);
-	void insert_with_add(std::string s, var_value a);
-	void insert_with_dif(std::string s, var_value a);
+	void insert(std::string s, const var_value &a);
+	void insert(const var_value &a);
+	void insert_after_max(const var_value &a);
+	void insert_before_min(const var_value &a);
+	void insert_with_add(const std::string &s, const var_value &a);
+	void insert_with_dif(const std::string &s, const var_value &a);
 	void insert_with_overwrite(std::string s, var_value a);
 	var_value return_element_with_key(var_value v);
-	int getMaxKey();
-	int getMinKey();
-
 
 	//template<typename T>
 	//void convert_to_type()
