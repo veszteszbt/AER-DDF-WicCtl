@@ -1,8 +1,0 @@
-typename:
-    '<'
-    identifier
-    '>'
-    {
-        checkField($2); //  d_field = $2; 
-    }
-;

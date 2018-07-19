@@ -57,12 +57,9 @@ static void write_reverse(std::string s)
 
 static void echo_c(std::string s, int i)
 {
-	//std::cout << "writing " << s << " " << i << "times" << std::endl;
 	for (int j=0;j<i;j++)
-	{
 		std::cout << s;
-	}
-	//std::cout << std::endl;
+	std::cout << std::endl;
 }
 
 static void echo_end()

@@ -1,5 +1,0 @@
-x=2;
-while x -lt 5 do
-x = x + 1;
-done;
-exit

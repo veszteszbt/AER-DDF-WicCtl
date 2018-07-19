@@ -1,4 +1,0 @@
-for x in 1,3,4,5 do
-y=x;
-done;
-exit

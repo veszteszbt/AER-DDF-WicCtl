@@ -1,4 +1,4 @@
-#include <shell.hh>
+#include <command_line/shell.hh>
 
 namespace commandline {
 
@@ -8,7 +8,6 @@ int shell::scanDepth = 0;
 
 void shell::init()
 {
-	journal::init("journal/journal.txt");
 	journal(journal::info,"main") << "program started" << journal::end;
 	scanDepth = 0;
 }
@@ -34,7 +33,6 @@ shell::~shell()
 	delete parser;
 	delete fptr;
 	journal(journal::info,"main") << "program finished" << journal::end;
-	journal::uninit();
 }
 
 void shell::execute()

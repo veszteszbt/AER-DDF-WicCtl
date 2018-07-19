@@ -1,4 +1,0 @@
-x = 5
-for i in x do
-x=15
-done

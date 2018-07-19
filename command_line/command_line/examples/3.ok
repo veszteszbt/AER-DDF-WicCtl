@@ -1,7 +1,0 @@
-i="0"
-if [ $i -eq 0 ]
-then
-echo 3ok
-else
-echo hiba
-fi

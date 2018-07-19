@@ -1,3 +1,0 @@
-Exit call
-1: ERROR: modulo operator can only be used with integer type!
-terminate called after throwing an instance of 'int'

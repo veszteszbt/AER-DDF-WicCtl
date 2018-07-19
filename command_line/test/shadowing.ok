@@ -1,7 +1,0 @@
-x = 5;
-{
-	local x = 7;
-	y = x;
-};
-z = x;
-exit

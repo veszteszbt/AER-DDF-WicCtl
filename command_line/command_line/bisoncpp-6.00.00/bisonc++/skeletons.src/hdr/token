@@ -1,4 +1,0 @@
-inline int \@Base::token__() const
-{
-    return d_token;
-}

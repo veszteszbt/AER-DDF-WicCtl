@@ -1,3 +1,0 @@
-Exit call
-1: ERROR: division by 0
-terminate called after throwing an instance of 'int'

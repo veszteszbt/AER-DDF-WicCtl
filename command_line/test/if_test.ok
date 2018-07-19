@@ -1,7 +1,0 @@
-x = 5;
-y = 3;
-if x -eq 5 then
-y=4;
-fi;
-y;
-exit

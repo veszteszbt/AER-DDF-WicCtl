@@ -1,6 +1,0 @@
-i="2"
-j="3"
-if [ $i -eq 1 ] || [ $j -eq 3 ]
-then
-echo 11ok
-fi

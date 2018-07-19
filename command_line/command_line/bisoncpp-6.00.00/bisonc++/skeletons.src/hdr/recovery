@@ -1,4 +1,0 @@
-inline bool \@Base::recovery__() const
-{
-    return d_recovery;
-}

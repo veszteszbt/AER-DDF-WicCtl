@@ -1,3 +1,0 @@
-5
-2: ERROR: Variable asd has no value yet!
-terminate called without an active exception

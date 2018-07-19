@@ -18,13 +18,13 @@ LIBS=-pthread -lmysqlcppconn -lasound -lsndfile -lavformat -lavcodec -lswresampl
 all: wicctl wic_host
 
 wicctl: wicctl.cc wicctl.h
-	g++ -I. -std=c++17 -lusb-1.0 -o wicctl wicctl.cc
+	g++-7 -I. -std=c++17 -lusb-1.0 -o wicctl wicctl.cc
 
 %.o: %.cc
-	g++ -DLOG_SQL -I. -g3 -std=c++17 -fdiagnostics-color -o $@ -c $<
+	g++-7 -DLOG_SQL -I. -g3 -std=c++17 -fdiagnostics-color -o $@ -c $<
 
-wic_host: wic_host.o alsa_host.o journal.o sched/process.o
-	g++ -I. -g3 -std=c++17 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o journal.o sched/process.o $(LIBS)
+wic_host: wic_host.o alsa_host.o journal.o sched/process.o command_line/shell.o command_line/functions.o command_line/parser/parse.o command_line/parser/semantics.o command_line/parser/symbol_table.o command_line/scanner/lex.o command_line/types/type.o
+	g++-7 -I. -g3 -std=c++17 -fdiagnostics-color -o wic_host $^ $(LIBS)
 
 clean:
 	rm *.o wicctl wic_host 
@@ -40,7 +40,7 @@ wicctl:
 	$(error wicctl cannot be built for platform $(PLATFORM))
 
 wic_host: wic_host.cc
-	g++ -DLOG_SQL -I. \
+	g++-7 -DLOG_SQL -I. \
 	-I"C:\Program Files\MySQL\MySQL Connector C++ 1.1.9\include" \
 	-g3 \
 	-std=c++17 \

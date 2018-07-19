@@ -1,7 +1,0 @@
-i="14"
-if ! [ $i -eq 13 ]
-then
-echo ${i}ok
-else
-echo hiba
-fi

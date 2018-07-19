@@ -1,4 +1,0 @@
-string cutEoln(string text)
-{
-    return resize(text, strlen(text) - 1);
-}

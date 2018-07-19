@@ -1,5 +1,0 @@
-The algorithm that is used to compute the look-ahead sets of all items of all
-states of a grammar is described in chapter 7 (The Bisonc++ Parser Algorithm)
-of Bisonc++'s user mannual, as well as in the state/determinelasets.cc source
-file. Please refer to these documentation sources for further information
-about the LA sets computation algorithm.

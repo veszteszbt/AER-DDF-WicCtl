@@ -2,7 +2,7 @@
 #define COMMANDLINE_H
 
 #include "parser/Parser.ih"
-#include "journal/journal.h"
+#include <journal.h>
 #include "functions.h"
 #include <sstream>
 

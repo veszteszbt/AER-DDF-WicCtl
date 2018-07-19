@@ -1,2 +1,0 @@
-1: Syntax error
-terminate called after throwing an instance of 'ParserBase::ErrorRecovery__'
