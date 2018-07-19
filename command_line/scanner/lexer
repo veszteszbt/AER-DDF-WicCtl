@@ -1,0 +1,112 @@
+WS [ \n\t\r]
+CH ([a-zA-Z0-9]|"_")
+ID	[a-zA-Z]{CH}*
+%%
+
+"if" 			return Parser::KEYWORD_IF; 
+"then" 			{
+					commandline::shell::scanDepth++;
+					return Parser::KEYWORD_THEN;
+				} 
+"else" 			return Parser::KEYWORD_ELSE; 
+"elif" 			return Parser::KEYWORD_ELIF; 
+"fi" 			{
+					commandline::shell::scanDepth--;
+					return Parser::KEYWORD_FI;
+				}
+"case" 			return Parser::KEYWORD_CASE; 
+"in" 			return Parser::KEYWORD_IN; 
+"esac"			 {
+					commandline::shell::scanDepth--;
+					return Parser::KEYWORD_ESAC;
+				}
+"for" 			return Parser::KEYWORD_FOR; 
+"while" 		return Parser::KEYWORD_WHILE; 
+"until" 		return Parser::KEYWORD_UNTIL; 
+"do"			{
+					commandline::shell::scanDepth++;
+					return Parser::KEYWORD_DO;
+				}
+"done" 			{
+					commandline::shell::scanDepth--;
+					return Parser::KEYWORD_DONE;
+				}
+"default" 		return Parser::KEYWORD_DEFAULT;
+"local" 		return Parser::KEYWORD_LOCAL;
+
+"{" 			{
+					commandline::shell::scanDepth++;
+					return Parser::OCURLY; 
+				}
+"}" 			{
+					commandline::shell::scanDepth--;
+					return Parser::CCURLY; 
+				}
+
+"[" 			return Parser::OSBRACKET;
+"]" 			return Parser::CSBRACKET;
+
+"(" 			return Parser::OPARENTHESIS; 
+")" 			return Parser::CPARENTHESIS; 
+
+"|" 			return Parser::PIPE_SYMBOL; 
+"&&" 			return Parser::ANDF_SYMBOL; 
+"||" 			return Parser::ORF_SYMBOL; 
+";" 			return Parser::COMMAND_SEPARATOR; 
+"," 			return Parser::ELEMENT_SEPARATOR;
+";;" 			return Parser::CASE_DELIMITER; 
+"&" 			return Parser::BACKGROUND_COMMANDS; 
+"<" 			return Parser::INPUT_REDIRECTION; 
+"<<" 			return Parser::INPUT_FROM_A_HERE_DOCUMENT; 
+">" 			return Parser::OUTPUT_CREATION; 
+">>" 			return Parser::OUTPUT_APPEND;
+"!" 			return Parser::NEGATE;
+
+"=>" 			return Parser::ARROW;
+
+"+" 			return Parser::OPERATOR_PLUS;
+"-" 			return Parser::OPERATOR_MINUS;
+"/" 			return Parser::OPERATOR_DIVISION;
+"*" 			return Parser::OPERATOR_MULTIPLICATION;
+"%" 			return Parser::OPERATOR_MODULO;
+"**" 			return Parser::OPERATOR_POWER;
+"^" 			return Parser::OPERATOR_POWER;
+"=" 			return Parser::OPERATOR_LET_BE;
+"$" 			return Parser::COMMAND_RETURNER;
+"-eq" 			return Parser::OPERATOR_EQUAL;
+"-gt" 			return Parser::OPERATOR_GREATER_THAN;
+"-lt" 			return Parser::OPERATOR_LESS_THAN;
+"-geq" 			return Parser::OPERATOR_GREATER_EQUAL;
+"-leq" 			return Parser::OPERATOR_LESS_EQUAL;
+"-neq" 			return Parser::OPERATOR_NOT_EQUAL;
+"-a" 			return Parser::OPERATOR_AND;
+"-o" 			return Parser::OPERATOR_OR;
+
+[Aa][Nn][Dd]				return Parser::OPERATOR_AND;
+[Oo][Rr]					return Parser::OPERATOR_OR;
+
+[Tt][Rr][Uu][Ee]			return Parser::CONST_TRUE;
+[Ff][Aa][Ll][Ss][Ee]		return Parser::CONST_FALSE;
+[Pp][Ii]					return Parser::CONST_PI;
+[Nn][Uu][Ll][Ll]			return Parser::CONST_NULL;
+
+['][^']*['] 				return Parser::SINGLEQUOTE; 
+["]([^\\\"]|\\.)*["]		return Parser::DOUBLEQUOTE; 
+[0-9]*[.][0-9]+				return Parser::DOUBLE;
+[0-9]+						return Parser::INTEGER;
+0x[0-9]+					return Parser::HEXADECIMAL;
+{ID}("::"{ID})*				return Parser::IDENTIFIER;
+
+
+{WS}+ 			//
+
+<<EOF>>			{
+					throw ParserBase::FINISH_THIS_STRINGSTREAM;
+				}
+
+.           	{
+					std::cerr << lineNr() << ": \e[31;01mLexical error\e[0m" << std::endl;
+					std::terminate();
+				}
+
+%%

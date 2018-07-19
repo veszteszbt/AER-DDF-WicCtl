@@ -1,0 +1,83 @@
+Often an action accompanies a production rule. It contains bf(C++) code that
+is executed once that production rule is recognized. The task of most actions
+is to compute a semantic value for the nonterminal recognized by the
+production rule, often using the semantic values made available by components
+of the production rule.
+
+An action consists of bf(C++) statements surrounded by braces, much like a
+compound statement in bf(C++). Most rules have just one action at the end of
+the rule, following all the components. Actions in the middle of a rule are
+tricky and should be used only for special purposes (see section
+ref(MIDACTIONS)).
+
+The components of production rules are numbered, the first component having
+number 1. E.g., in a production rule
+        verb(
+    nonterm:
+        first second third
+        )
+    tt(first) is component #1, tt(second) is component #2, tt(third) is
+component #3.  bf(C++) code in action blocks may refer to semantic values of
+these components using em(dollar-notations), where tt($i) refers to
+the semantic value of the i^sups(th) component. 
+
+Likewise, the semantic value of the rule's nonterminal is represented by
+tt($$). Here is a typical example:
+        verb(
+    exp:
+        ...
+    |
+        exp '+' exp
+        { 
+            $$ = $1 + $3; 
+        }
+    |
+        ...    
+        )
+    This rule constructs tt(exp) from two exp nonterminals connected by a
+plus-sign token. In the action, tt($1) and tt($3) represent the semantic
+values of, respectively, the first (left-hand side) tt(exp) component, and the
+second (right-hand side) tt(exp) component.
+
+The sum is assigned to tt($$), which becomes the semantic value of the tt(exp)
+nonterminal represented by the production rule.
+
+    Depending on the specification of the tt(default-actions) option/directive
+(cf. section ref(DEFAULTACTION)) b() may supply non-empty production rules
+with default action blocks containing the statement tt($$ = $1): the semantic
+value of the first component of the production rule is returned as the
+nonterminal's semantic value. Of course, the default action only is valid if
+the two data types match. Empty production rules are not provided with
+default action blocks.
+
+    Negative dollar indices (e.g., $-1) are allowed, and refer to semantic
+values of elements in rules before the component naming the current rule's
+nonterminal. This is a risky practice, and you should use it only when you
+know what you're doing. Here is a situation where you can use this reliably:
+        verb(
+    vardef:
+        type varlist ';'
+    ;
+    
+    varlist:
+        varlist ',' variable
+        {
+            defineVar($-1, $3);
+        }
+    |
+        variable
+        {
+            defineVar($-1, $1);
+        }
+    ;
+        )
+    
+    As long as tt(varlist) is only used in the tt(vardef) rule tt(varlist) can
+be sure that the type of the variable is available as the semantic value of
+the component immediately before (hence: $-1) the tt(varlist) component in the
+tt(vardef) rule. See also section ref(SPECIAL).
+
+    In addition to the dollar-notations shown here, b() supports several more
+dollar-notations. The next three subsections describe the dollar-notations
+that are available after specifying, respectively, the tt(%stype, %union) or
+tt(%polymorphic) directives.

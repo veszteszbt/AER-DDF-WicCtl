@@ -1,0 +1,4 @@
+for x = 2; x -lt 5; x = x + 1 do
+y = x;
+done;
+exit

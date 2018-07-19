@@ -44,7 +44,7 @@
 #include <peripheral/power_switch.h>
 #include <peripheral/rfid.h>
 #include <peripheral/text_display.h>
-
+#include <command_line/shell.hh>
 
 struct dm_config
 {
@@ -61,7 +61,6 @@ namespace ddf
 	/// Room pirate
 	namespace pirate
 	{
-
 			/// cashier_laser_controller
 			namespace cashier_laser_controller
 			{
@@ -17531,107 +17530,42 @@ static void uninit()
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
-template<typename T>
-bool set_property(const std::string &x)
+
+template<typename... Targs>
+struct shell_filler;
+
+template<typename T, typename... Targs>
+struct shell_filler<T, Targs...>
 {
-	if(T::config::name == x)
+	static void exec(commandline::shell &s)
+	{ shell_filler<Targs...>::exec(s); }
+};
+
+/* code of exec here >) */
+template<typename TConfig, typename... Targs>
+struct shell_filler<property_room<TConfig>, Targs...>
+{
+	static void foo(typename TConfig::cfg_value_type x)
+	{ property_room<TConfig>::value(x); }
+
+
+	static typename TConfig::cfg_value_type bar()
+	{ return property_room<TConfig>::value(); }
+
+	static void exec(commandline::shell &s)
 	{
-		typedef typename T::value_type Tv;
-		typedef typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type Td;
-		Td v;
-		std::cin >> v;
-		if(!std::cin.good())
-		{
-			std::string y;
-			std::cin >> y;
-			std::cout << "\e[31;01m[NOK]\e[0m Invalid value `"<<y<<"'" << std::endl;
-		}
-		else
-		{
-			T::value((Tv)v);
-			std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
-		}
-
-		return true;
+    	s.add_command(std::string(TConfig::name)+"::get", bar );
+    	s.add_command(std::string(TConfig::name)+"::set", foo );
+    	shell_filler<Targs...>::exec(s);
 	}
+};
 
-	else
-		return false;
-}
-
-template<typename T>
-bool get_property(const std::string &x)
+template<>
+struct shell_filler<>
 {
-	if(T::config::name == x)
-	{
-		typedef typename T::value_type Tv;
-		typedef typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type Td;
-		Td v = T::value();
-		std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
-		return true;
-	}
-
-	else
-		return false;
-}
-
-
-template<typename T>
-bool set_peripheral(const std::string &x)
-{
-	if(T::config::name == x)
-	{
-		typedef typename T::value_type Tv;
-		typedef typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type Td;
-		Td v;
-		std::cin >> v;
-		if(!std::cin.good())
-		{
-			std::string y;
-			std::cin >> y;
-			std::cout << "\e[31;01m[NOK]\e[0m Invalid value `"<<y<<"'" << std::endl;
-		}
-		else
-			std::cout << "\e[32;01m[OK]\e[0m " << (Td)(Tv)(typename T::value((Tv)v)) << std::endl;
-
-		return true;
-	}
-
-	else
-		return false;
-}
-
-template<typename T>
-bool get_peripheral(const std::string &x)
-{
-	if(T::config::name == x)
-	{
-		typedef typename T::value_type Tv;
-		typename std::conditional<std::is_same<Tv,uint8_t>::value,uint16_t,Tv>::type v = (typename T::value_type)typename T::value();
-		std::cout << "\e[32;01m[OK]\e[0m " << v << std::endl;
-		return true;
-	}
-
-	else
-		return false;
-}
-
-template<typename T>
-void rex_table_sensor_change()
-{ std::cout << T::config::name << " " << (int)typename T::value() << std::endl; }
-
-template<typename T>
-void add_print_event()
-{ T::value::on_change += rex_table_sensor_change<T>; }
-
-template<typename T>
-void set1()
-{ typename T::value(true); }
-
-void knock()
-{
-	std::cout << "knock" << std::endl;
-}
+	static void exec(commandline::shell &s)
+	{ return; }
+};
 
 int main()
 {
@@ -17648,496 +17582,34 @@ int main()
 	init();
 	ddf::service::statustimer::start();
 
-	ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::knock_sensor::value::on_change += knock;
+	commandline::shell s;
+	shell_filler<
+		ddf::pirate::map_controller::magnetic_sensor_2,
+		ddf::pirate::stone_chest_controller::magnetic_sensor_1,
+		ddf::pirate::stone_chest_controller::magnetic_sensor_2,
+		ddf::pirate::stone_chest_controller::magnetic_sensor_3,
+		ddf::pirate::stone_chest_controller::magnetic_sensor_4,
+		ddf::pirate::stone_chest_controller::magnetic_sensor_5,
+		ddf::pirate::rex_flipper_controller::photosensor_1,
+		ddf::pirate::rex_flipper_controller::photosensor_2,
+		ddf::pirate::rex_flipper_controller::photosensor_3,
+		ddf::pirate::rex_flipper_controller::photosensor_4,
+		ddf::pirate::rex_flipper_controller::photosensor_5,
+		ddf::pirate::rex_flipper_controller::photosensor_6,
+		ddf::pirate::rex_flipper_controller::photosensor_7,
+		ddf::pirate::rex_flipper_controller::rfid_reader,
+		ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::debouncer,
+		ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::photosensor,
+		ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::knock_sensor,
+		ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::potentiometer,
+		ddf::pirate::entrance_hanger_controller::debouncer,
+		ddf::pirate::entrance_hanger_controller::magnetic_sensor,
+		ddf::pirate::entrance_hanger_controller::debouncer_2,
+		ddf::pirate::restart_game,
+		ddf::pirate::gm_help_status
+	>::exec(s);
 
-	add_print_event<ddf::pirate::rex_flipper_controller::photosensor_1>();
-	add_print_event<ddf::pirate::rex_flipper_controller::photosensor_2>();
-	add_print_event<ddf::pirate::rex_flipper_controller::photosensor_3>();
-	add_print_event<ddf::pirate::rex_flipper_controller::photosensor_4>();
-	add_print_event<ddf::pirate::rex_flipper_controller::photosensor_5>();
-	add_print_event<ddf::pirate::rex_flipper_controller::photosensor_6>();
-	add_print_event<ddf::pirate::rex_flipper_controller::photosensor_7>();
-
-	set1<ddf::pirate::rex_flipper_controller::light_controller_1>();
-	set1<ddf::pirate::rex_flipper_controller::light_controller_2>();
-	set1<ddf::pirate::rex_flipper_controller::light_controller_3>();
-	set1<ddf::pirate::rex_flipper_controller::light_controller_4>();
-	set1<ddf::pirate::rex_flipper_controller::light_controller_5>();
-	set1<ddf::pirate::rex_flipper_controller::light_controller_6>();
-	set1<ddf::pirate::rex_flipper_controller::light_controller_7>();
-
-
-
-	std::string x;
-	while(true)
-	{
-
-		std::cin >> x;
-		if(x == "exit")
-			break;
-
-		else if(x == "buzz")
-		{
-			uint16_t freq,len;
-			std::cin >> freq;
-			std::cin >> len;
-			ddf::pirate::cashier_laser_controller::buzzer::value(tone_t(freq,len));
-		}
-
-		else if(x == "1")
-			ddf::pirate::room_1_content::chord::play();
-		else if(x == "2")
-			ddf::pirate::room_2_content::chord::play();
-		else if(x == "3")
-			ddf::magician::room_1_content::chord::play();
-		else if(x == "4")
-			ddf::magician::room_2_content::chord::play();
-		else if(x == "5")
-			ddf::villa::room_1_content::chord::play();
-		else if(x == "6")
-			ddf::villa::room_2_content::chord::play();
-		else if(x == "7")
-			ddf::junkyard::room_1_content::chord::play();
-		else if(x == "8")
-			ddf::junkyard::room_2_content::chord::play();
-
-		else if(x=="ledon")
-			ddf::junkyard::secret_box_controller_1::addressable_led::enabled(true);
-
-		else if(x=="ledoff")
-			ddf::junkyard::secret_box_controller_1::addressable_led::enabled(false);
-
-		else if(x == "delay")
-		{
-			int delay;
-			std::cin >> delay;
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-		}
-
-		else if(x == "get")
-		{
-			std::cin >> x;
-
-			if(get_peripheral<ddf::pirate::map_controller::magnetic_sensor_1>(x)) continue;
-			if(get_peripheral<ddf::pirate::map_controller::magnetic_sensor_2>(x)) continue;
-			if(get_peripheral<ddf::pirate::stone_chest_controller::magnetic_sensor_1>(x)) continue;
-			if(get_peripheral<ddf::pirate::stone_chest_controller::magnetic_sensor_2>(x)) continue;
-			if(get_peripheral<ddf::pirate::stone_chest_controller::magnetic_sensor_3>(x)) continue;
-			if(get_peripheral<ddf::pirate::stone_chest_controller::magnetic_sensor_4>(x)) continue;
-			if(get_peripheral<ddf::pirate::stone_chest_controller::magnetic_sensor_5>(x)) continue;
-//			if(get_peripheral<ddf::pirate::cashier_laser_controller::pin_pad>(x)) continue;
-			if(get_peripheral<ddf::pirate::cashier_laser_controller::switch_1>(x)) continue;
-			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_1>(x)) continue;
-			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_2>(x)) continue;
-			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_3>(x)) continue;
-			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_4>(x)) continue;
-			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_5>(x)) continue;
-			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_6>(x)) continue;
-			if(get_peripheral<ddf::pirate::rex_flipper_controller::photosensor_7>(x)) continue;
-			if(get_peripheral<ddf::pirate::rex_flipper_controller::rfid_reader>(x)) continue;
-			if(get_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::debouncer>(x)) continue;
-			if(get_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::photosensor>(x)) continue;
-			if(get_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::knock_sensor>(x)) continue;
-			if(get_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::potentiometer>(x)) continue;
-			if(get_peripheral<ddf::pirate::entrance_hanger_controller::debouncer>(x)) continue;
-			if(get_peripheral<ddf::pirate::entrance_hanger_controller::magnetic_sensor>(x)) continue;
-			if(get_peripheral<ddf::pirate::entrance_hanger_controller::debouncer_2>(x)) continue;
-			if(get_property<ddf::pirate::restart_game>(x)) continue;
-			if(get_property<ddf::pirate::gm_help_status>(x)) continue;
-			if(get_property<ddf::pirate::incoming_call>(x)) continue;
-			if(get_property<ddf::pirate::incoming_call_status>(x)) continue;
-			if(get_property<ddf::pirate::text_message>(x)) continue;
-			if(get_property<ddf::pirate::text_message_sender>(x)) continue;
-			if(get_property<ddf::pirate::comdev_reset>(x)) continue;
-			if(get_peripheral<ddf::magician::cupboard_controller::debouncer>(x)) continue;
-			if(get_peripheral<ddf::magician::cupboard_controller::magnetic_sensor>(x)) continue;
-			if(get_peripheral<ddf::magician::design_board_controller::linear_magnetic_sensor_1>(x)) continue;
-			if(get_peripheral<ddf::magician::design_board_controller::linear_magnetic_sensor_2>(x)) continue;
-			if(get_peripheral<ddf::magician::design_board_controller::linear_magnetic_sensor_3>(x)) continue;
-			if(get_peripheral<ddf::magician::futuristic_safe_controller::debouncer>(x)) continue;
-			if(get_peripheral<ddf::magician::futuristic_safe_controller::rfid_reader>(x)) continue;
-//			if(get_peripheral<ddf::magician::futuristic_safe_controller::pin_pad>(x)) continue;
-			if(get_peripheral<ddf::magician::entrance_controller::debouncer>(x)) continue;
-			if(get_peripheral<ddf::magician::entrance_controller::magnetic_sensor>(x)) continue;
-			if(get_property<ddf::magician::restart_game>(x)) continue;
-			if(get_property<ddf::magician::gm_help_status>(x)) continue;
-			if(get_property<ddf::magician::incoming_call>(x)) continue;
-			if(get_property<ddf::magician::incoming_call_status>(x)) continue;
-			if(get_property<ddf::magician::text_message>(x)) continue;
-			if(get_property<ddf::magician::text_message_sender>(x)) continue;
-			if(get_property<ddf::magician::comdev_reset>(x)) continue;
-//			if(get_peripheral<ddf::villa::safe_controller::pin_pad>(x)) continue;
-			if(get_peripheral<ddf::villa::safe_controller::debouncer_1>(x)) continue;
-			if(get_peripheral<ddf::villa::safe_controller::debouncer_2>(x)) continue;
-			if(get_peripheral<ddf::villa::desk_controller::debouncer_3>(x)) continue;
-			if(get_peripheral<ddf::villa::desk_controller::debouncer_4>(x)) continue;
-			if(get_peripheral<ddf::villa::control_room_controller::switch_1>(x)) continue;
-			if(get_peripheral<ddf::villa::control_room_controller::debouncer_1>(x)) continue;
-			if(get_peripheral<ddf::villa::entrance_controller::debouncer>(x)) continue;
-			if(get_peripheral<ddf::villa::entrance_controller::magnetic_sensor>(x)) continue;
-			if(get_property<ddf::villa::desktop_pc::started>(x)) continue;
-			if(get_property<ddf::villa::desktop_pc::shutdown>(x)) continue;
-			if(get_property<ddf::villa::desktop_pc::logged_in>(x)) continue;
-			if(get_property<ddf::villa::desktop_pc::recycled_restore>(x)) continue;
-			if(get_property<ddf::villa::desktop_pc::audioplay_started>(x)) continue;
-			if(get_property<ddf::villa::desktop_pc::audioplay_finished>(x)) continue;
-			if(get_property<ddf::villa::desktop_pc::audioplay_paused>(x)) continue;
-			if(get_property<ddf::villa::desktop_pc::restart_game>(x)) continue;
-			if(get_property<ddf::villa::desktop_pc::audioplay_startevent>(x)) continue;
-			if(get_property<ddf::villa::desktop_pc::audiopause_pauseevent>(x)) continue;
-			if(get_property<ddf::villa::video_device::started>(x)) continue;
-			if(get_property<ddf::villa::video_device::shutdown>(x)) continue;
-			if(get_property<ddf::villa::video_device::livecam_started>(x)) continue;
-			if(get_property<ddf::villa::video_device::livecamslides_started>(x)) continue;
-			if(get_property<ddf::villa::video_device::restart_game>(x)) continue;
-			if(get_property<ddf::villa::video_device::start_livecams>(x)) continue;
-			if(get_property<ddf::villa::video_device::stop_livecams>(x)) continue;
-			if(get_property<ddf::villa::video_device::start_tape>(x)) continue;
-			if(get_property<ddf::villa::video_device::stop_tape>(x)) continue;
-			if(get_property<ddf::villa::video_device::enabled>(x)) continue;
-			if(get_property<ddf::villa::video_device::casette_id>(x)) continue;
-			if(get_property<ddf::villa::video_device::play_ongoing>(x)) continue;
-			if(get_property<ddf::villa::video_device::livecam_ongoing>(x)) continue;
-			if(get_property<ddf::villa::restart_game>(x)) continue;
-			if(get_property<ddf::villa::gm_help_status>(x)) continue;
-			if(get_property<ddf::villa::incoming_call>(x)) continue;
-			if(get_property<ddf::villa::incoming_call_status>(x)) continue;
-			if(get_property<ddf::villa::text_message>(x)) continue;
-			if(get_property<ddf::villa::text_message_sender>(x)) continue;
-			if(get_property<ddf::villa::comdev_reset>(x)) continue;
-//			if(get_peripheral<ddf::junkyard::secret_box_controller_1::button_grid>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_1>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_2>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_3>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_4>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_5>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_6>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_1::debouncer_7>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_1>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_2>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_3>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_4>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_5>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_6>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_7>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_8>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_9>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_10>(x)) continue;
-			if(get_peripheral<ddf::junkyard::secret_box_controller_2::debouncer_12>(x)) continue;
-//			if(get_peripheral<ddf::junkyard::secret_box_controller_2::spare_in1>(x)) continue;
-//			if(get_peripheral<ddf::junkyard::secret_box_controller_2::spare_in2>(x)) continue;
-			if(get_peripheral<ddf::junkyard::entrance_controller::debouncer>(x)) continue;
-			if(get_peripheral<ddf::junkyard::entrance_controller::magnetic_sensor>(x)) continue;
-			if(get_property<ddf::junkyard::restart_game>(x)) continue;
-			if(get_property<ddf::junkyard::gm_help_status>(x)) continue;
-			if(get_property<ddf::junkyard::incoming_call>(x)) continue;
-			if(get_property<ddf::junkyard::incoming_call_status>(x)) continue;
-			if(get_property<ddf::junkyard::text_message>(x)) continue;
-			if(get_property<ddf::junkyard::text_message_sender>(x)) continue;
-			if(get_property<ddf::junkyard::comdev_reset>(x)) continue;
-			std::cout << "\e[31;01m[NOK]\e[0m No such peripheral" << std::endl;
-		}
-
-		else if(x == "set")
-		{
-			std::cin >> x;
-
-			if(set_peripheral<ddf::pirate::map_controller::led_strip>(x)) continue;
-			if(set_peripheral<ddf::pirate::stone_chest_controller::magnetic_lock_1>(x)) continue;
-			if(set_peripheral<ddf::pirate::stone_chest_controller::magnetic_lock_2>(x)) continue;
-			if(set_peripheral<ddf::pirate::stone_chest_controller::led_strip>(x)) continue;
-			if(set_peripheral<ddf::pirate::cashier_laser_controller::laser>(x)) continue;
-//			if(set_peripheral<ddf::pirate::cashier_laser_controller::lcd>(x)) continue;
-			if(set_peripheral<ddf::pirate::cashier_laser_controller::cash_box>(x)) continue;
-			if(set_peripheral<ddf::pirate::cashier_laser_controller::led_strip>(x)) continue;
-			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_1>(x)) continue;
-			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_2>(x)) continue;
-			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_3>(x)) continue;
-			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_4>(x)) continue;
-			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_5>(x)) continue;
-			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_6>(x)) continue;
-			if(set_peripheral<ddf::pirate::rex_flipper_controller::light_controller_7>(x)) continue;
-			if(set_peripheral<ddf::pirate::rex_flipper_controller::magnetic_lock>(x)) continue;
-			if(set_peripheral<ddf::pirate::rex_flipper_controller::led>(x)) continue;
-			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_1>(x)) continue;
-			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_2>(x)) continue;
-			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::magnetic_lock_3>(x)) continue;
-			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_1>(x)) continue;
-			if(set_peripheral<ddf::pirate::ghostbox_picture_laser_boat_wheel_controller::led_strip_2>(x)) continue;
-			if(set_property<ddf::pirate::restart_game>(x)) continue;
-			if(set_property<ddf::pirate::gm_help_status>(x)) continue;
-			if(set_property<ddf::pirate::incoming_call>(x)) continue;
-			if(set_property<ddf::pirate::incoming_call_status>(x)) continue;
-			if(set_property<ddf::pirate::text_message>(x)) continue;
-			if(set_property<ddf::pirate::text_message_sender>(x)) continue;
-			if(set_property<ddf::pirate::comdev_reset>(x)) continue;
-			if(set_peripheral<ddf::pirate::entrance_hanger_controller::led>(x)) continue;
-			if(set_peripheral<ddf::magician::cupboard_controller::magnetic_lock>(x)) continue;
-			if(set_peripheral<ddf::magician::cupboard_controller::led_strip>(x)) continue;
-			if(set_peripheral<ddf::magician::design_board_controller::magnetic_lock>(x)) continue;
-			if(set_peripheral<ddf::magician::futuristic_safe_controller::magnetic_lock>(x)) continue;
-			if(set_peripheral<ddf::magician::futuristic_safe_controller::addressable_led_strip>(x)) continue;
-			if(set_peripheral<ddf::magician::entrance_controller::led>(x)) continue;
-			if(set_property<ddf::magician::restart_game>(x)) continue;
-			if(set_property<ddf::magician::gm_help_status>(x)) continue;
-			if(set_property<ddf::magician::incoming_call>(x)) continue;
-			if(set_property<ddf::magician::incoming_call_status>(x)) continue;
-			if(set_property<ddf::magician::text_message>(x)) continue;
-			if(set_property<ddf::magician::text_message_sender>(x)) continue;
-			if(set_property<ddf::magician::comdev_reset>(x)) continue;
-			if(set_peripheral<ddf::villa::safe_controller::magnetic_lock>(x)) continue;
-			if(set_peripheral<ddf::villa::control_room_controller::magnetic_lock>(x)) continue;
-			if(set_peripheral<ddf::villa::entrance_controller::led>(x)) continue;
-			if(set_property<ddf::villa::desktop_pc::started>(x)) continue;
-			if(set_property<ddf::villa::desktop_pc::shutdown>(x)) continue;
-			if(set_property<ddf::villa::desktop_pc::logged_in>(x)) continue;
-			if(set_property<ddf::villa::desktop_pc::recycled_restore>(x)) continue;
-			if(set_property<ddf::villa::desktop_pc::audioplay_started>(x)) continue;
-			if(set_property<ddf::villa::desktop_pc::audioplay_finished>(x)) continue;
-			if(set_property<ddf::villa::desktop_pc::audioplay_paused>(x)) continue;
-			if(set_property<ddf::villa::desktop_pc::restart_game>(x)) continue;
-			if(set_property<ddf::villa::desktop_pc::audioplay_startevent>(x)) continue;
-			if(set_property<ddf::villa::desktop_pc::audiopause_pauseevent>(x)) continue;
-			if(set_property<ddf::villa::restart_game>(x)) continue;
-			if(set_property<ddf::villa::gm_help_status>(x)) continue;
-			if(set_property<ddf::villa::incoming_call>(x)) continue;
-			if(set_property<ddf::villa::incoming_call_status>(x)) continue;
-			if(set_property<ddf::villa::text_message>(x)) continue;
-			if(set_property<ddf::villa::text_message_sender>(x)) continue;
-			if(set_property<ddf::villa::comdev_reset>(x)) continue;
-			if(set_property<ddf::villa::video_device::started>(x)) continue;
-			if(set_property<ddf::villa::video_device::shutdown>(x)) continue;
-			if(set_property<ddf::villa::video_device::livecam_started>(x)) continue;
-			if(set_property<ddf::villa::video_device::livecamslides_started>(x)) continue;
-			if(set_property<ddf::villa::video_device::restart_game>(x)) continue;
-			if(set_property<ddf::villa::video_device::start_livecams>(x)) continue;
-			if(set_property<ddf::villa::video_device::stop_livecams>(x)) continue;
-			if(set_property<ddf::villa::video_device::start_tape>(x)) continue;
-			if(set_property<ddf::villa::video_device::stop_tape>(x)) continue;
-			if(set_property<ddf::villa::video_device::enabled>(x)) continue;
-			if(set_property<ddf::villa::video_device::casette_id>(x)) continue;
-			if(set_property<ddf::villa::video_device::play_ongoing>(x)) continue;
-			if(set_property<ddf::villa::video_device::livecam_ongoing>(x)) continue;
-			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_1>(x)) continue;
-			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_2>(x)) continue;
-			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_3>(x)) continue;
-			if(set_peripheral<ddf::junkyard::secret_box_controller_1::magnetic_lock_4>(x)) continue;
-			if(set_peripheral<ddf::junkyard::secret_box_controller_1::addressable_led>(x)) continue;
-			if(set_peripheral<ddf::junkyard::secret_box_controller_2::light_controller>(x)) continue;
-			if(set_peripheral<ddf::junkyard::secret_box_controller_2::magnetic_lock_1>(x)) continue;
-			if(set_peripheral<ddf::junkyard::secret_box_controller_2::magnetic_lock_2>(x)) continue;
-			if(set_peripheral<ddf::junkyard::secret_box_controller_2::magnetic_lock_3>(x)) continue;
-			if(set_peripheral<ddf::junkyard::secret_box_controller_2::magnetic_lock_4>(x)) continue;
-//			if(set_peripheral<ddf::junkyard::secret_box_controller_2::spare_out1>(x)) continue;
-//			if(set_peripheral<ddf::junkyard::secret_box_controller_2::spare_out2>(x)) continue;
-			if(set_peripheral<ddf::junkyard::entrance_controller::led>(x)) continue;
-			if(set_property<ddf::junkyard::restart_game>(x)) continue;
-			if(set_property<ddf::junkyard::gm_help_status>(x)) continue;
-			if(set_property<ddf::junkyard::incoming_call>(x)) continue;
-			if(set_property<ddf::junkyard::incoming_call_status>(x)) continue;
-			if(set_property<ddf::junkyard::text_message>(x)) continue;
-			if(set_property<ddf::junkyard::text_message_sender>(x)) continue;
-			if(set_property<ddf::junkyard::comdev_reset>(x)) continue;
-
-			std::cout << "\e[31;01m[NOK]\e[0m No such peripheral" << std::endl;
-		}
-		else if(x == "game")
-		{
-			std::string game,action;
-			std::cin >> game;
-			std::cin >> action;
-
-			uint8_t gamestate=0xff;
-			if(action == "start")
-				gamestate = 1;
-
-			else if(action == "stop")
-				gamestate = 0;
-
-			else if(action == "gametime")
-			{
-				uint64_t t = 0xff;
-				if(game == "pirate")
-					t = ddf::pirate::gametimer::value();
-				else if(game == "magician")
-					t = ddf::magician::gametimer::value();
-				else if(game == "villa")
-					t = ddf::villa::gametimer::value();
-				else if(game == "junkyard")
-					t = ddf::junkyard::gametimer::value();
-				else
-				{
-					std::cout << "\e[31;01m[NOK]\e[0m No such game" << std::endl;
-					continue;
-				}
-				std::cout << "\e[32;01m[OK]\e[0m " << std::dec << t << std::endl;
-				continue;
-			}
-
-			else
-			{
-				std::cout << "\e[31;01m[NOK]\e[0m No such action for a game" << std::endl;
-				continue;
-			}
-
-			if(game == "pirate")
-				ddf::pirate::gamestate::value(gamestate);
-			else if(game == "magician")
-				ddf::magician::gamestate::value(gamestate);
-			else if(game == "villa")
-				ddf::villa::gamestate::value(gamestate);
-			else if(game == "junkyard")
-				ddf::junkyard::gamestate::value(gamestate);
-			else
-			{
-				std::cout << "\e[31;01m[NOK]\e[0m No such game" << std::endl;
-				continue;
-			}
-		}
-		else if(x == "play")
-		{
-			std::cin >> x;
-			if(x == "magician")
-			{
-				std::cin >> x;
-				if(x == "1")
-					ddf::magician::room_1_content::event_1::playing(true);
-				else if(x == "2")
-					ddf::magician::room_1_content::event_2::playing(true);
-				else
-				{
-					std::cout << "\e[31;01m[NOK]\e[0m No such sound in magician" << std::endl;
-					continue;
-				}
-				std::cout << "\e[32;01m[OK]\e[0m" << std::endl;
-			}
-			else if(x == "villa")
-			{
-				std::cin >> x;
-				if(x == "1")
-					ddf::villa::room_1_content::event_1::playing(true);
-				else if(x == "2")
-					ddf::villa::room_1_content::event_2::playing(true);
-				else if(x == "3")
-					ddf::villa::room_1_content::event_3::playing(true);
-				else
-				{
-					std::cout << "\e[31;01m[NOK]\e[0m No such sound in villa" << std::endl;
-					continue;
-				}
-				std::cout << "\e[32;01m[OK]\e[0m" << std::endl;
-			}
-			else if(x == "junkyard")
-			{
-				std::cin >> x;
-				if(x == "1")
-					ddf::junkyard::room_1_content::event_1::playing(true);
-				else if(x == "2")
-					ddf::junkyard::room_1_content::event_2::playing(true);
-				else
-				{
-					std::cout << "\e[31;01m[NOK]\e[0m No such sound in magician" << std::endl;
-					continue;
-				}
-				std::cout << "\e[32;01m[OK]\e[0m" << std::endl;
-			}
-			else
-				std::cout << "\e[31;01m[NOK]\e[0m No such room" << std::endl;
-		
-		}
-		else if(x == "show")
-		{
-			std::cin >> x;
-/*			if(x == "devices")
-			{
-				for(auto i : dm::roles())
-				{
-					std::string sstate;
-					const uint8_t state = i.second->get_health();
-
-					if(state == 0)
-						sstate = "\e[30;01m(gone)\e[0m";
-					else if(state < 96)
-						sstate  = "\e[31;01m(poor)\e[0m";
-					else if(state < 192)
-						sstate = "\e[33;01m(moderate)\e[0m";
-					else
-						sstate = "\e[32;01m(good)\e[0m";
-
-					
-					std::cout << std::hex << i.second->serial << " " << (std::string)i.second->get_ip() << " " << sstate;
-					if(state !=  0)
-					{
-						std::cout << " " << i.second->get_app_name() << " " <<
-							(i.second->get_app_state()?"(\e[32mrunning\e[0m)":"(\e[31mnot running\e[0m)");
-
-					}
-
-					std::cout << std::endl;
-				}
-				std::cout << "\e[32;01m[OK]\e[0m" << std::endl;
-			}
-			else*/
-				std::cout << "\e[31;01m[NOK]\e[0m No such thing to show" << std::endl;
-		}
-
-		else if(x == "journal")
-		{
-			std::cin >> x;
-			if(x == "domains")
-			{
-				for(const auto &i : journal::get_domains())
-					std::cout << i << std::endl;
-				std::cout << "\e[32;01m[OK]\e[0m" << std::endl;
-				
-			}
-			else if(x == "get")
-			{
-				std::cin >> x;
-				std::cout << "\e[32;01m[OK]\e[0m " << (uint16_t)journal::domain_level(x)<< std::endl;
-			}
-			else if(x == "set")
-			{
-				uint16_t i;
-				std::cin >> x;
-				std::cin >> i;
-				if(!std::cin.good())
-				{
-					std::string y;
-					std::cin >> y;
-					std::cout << "\e[31;01m[NOK]\e[0m Invalid value `"<<y<<"'" << std::endl;
-				}
-				else
-				{
-					journal::domain_level(x,i);
-					std::cout << "\e[32;01m[OK]\e[0m"<< std::endl;
-				}
-			}
-			else if(x == "setall")
-			{
-				uint16_t i;
-				std::cin >> i;
-				if(!std::cin.good())
-				{
-					std::string y;
-					std::cin >> y;
-					std::cout << "\e[31;01m[NOK]\e[0m Invalid value `"<<y<<"'" << std::endl;
-				}
-				else
-				{
-					for(const auto &d : journal::get_domains())
-						journal::domain_level(d,i);
-					std::cout << "\e[32;01m[OK]\e[0m"<< std::endl;
-				}
-			}
-			else
-				std::cout << "\e[31;01m[NOK]\e[0m No such thing for journal" << std::endl;
-		
-		}
-		else
-			std::cout << "\e[31;01m[NOK]\e[0m Bullshit, I can't hear you" << std::endl;
-	}
+	s.execute();
 
 	uninit();
 

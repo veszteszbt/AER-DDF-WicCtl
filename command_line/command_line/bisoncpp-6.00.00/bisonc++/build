@@ -1,0 +1,175 @@
+#!/usr/bin/icmake -qt/tmp/bisonc++
+
+#include "icmconf"
+
+string  
+    g_logPath,
+    g_cwd = chdir("");  // initial working directory, ends in /
+
+int g_echo = ON;
+
+#include "icmake/cuteoln"
+#include "icmake/backtick"
+
+#include "icmake/setopt"
+#include "icmake/run"
+#include "icmake/md"
+#include "icmake/special"
+
+#include "icmake/pathfile"
+#include "icmake/findall"
+#include "icmake/loginstall"
+#include "icmake/logrecursive"
+#include "icmake/logzip"
+#include "icmake/logfile"
+#include "icmake/uninstall"
+
+#include "icmake/clean"
+#include "icmake/manpage"
+#include "icmake/manual"
+#include "icmake/github"
+#include "icmake/destinstall"
+#include "icmake/loginstalled"
+#include "icmake/install"
+
+void main(int argc, list argv)
+{
+    string option;
+    string psType;          // program or strip
+    int idx;
+    int precomp = 1;
+
+    for (idx = listlen(argv); idx--; )
+    {
+        if (argv[idx] == "-q")
+        {
+            g_echo = OFF;
+            argv -= (list)"-q";
+        }
+        else if (argv[idx] == "-P")
+        {
+            precomp = 0;
+            argv -= (list)"-P";
+        }
+        else if (strfind(argv[idx], "LOG:") == 0)
+        {
+            g_logPath = argv[idx];
+            argv -= (list)g_logPath;
+            g_logPath = substr(g_logPath, 4, strlen(g_logPath));
+        }
+    }
+
+    echo(g_echo);
+
+    option = argv[1];
+
+    if (option == "clean")
+        clean(0);
+
+    if (option == "distclean")
+        clean(1);
+
+    if (option != "")
+        special();
+
+    if (option == "install")
+        install(argv[2], argv[3]);
+
+    if (option == "uninstall")
+        uninstall(argv[2]);
+
+    if (option == "github")
+        github();
+
+    if (option == "man")
+        manpage();
+
+    if (option == "manual")
+        manual();
+
+
+    if (precomp)
+        exec(P_NOCHECK, 
+            "sed -i 's,^//#define PRECOMP,#define PRECOMP,' icmconf");
+    else
+    {
+        exec(P_NOCHECK, 
+            "sed -i 's,^#define PRECOMP,//#define PRECOMP,' icmconf");
+        exec(P_NOCHECK, "rm -f *.ih.gch */*.ih.gch");
+    }
+    
+    if (option == "library")
+    {
+        system("icmbuild library");
+        exit(0);
+    }
+
+
+    if (argv[2] == "strip") 
+        psType = "strip";
+    else
+        psType = "program";
+    
+    if (option == "program")
+    {
+        system("icmbuild " + psType);
+        exit(0);
+    }
+
+    if (option == "oxref")
+    {
+        system("icmbuild " + psType);
+        run("oxref -fxs tmp/main.o tmp/lib" LIBRARY ".a > " PROGRAM ".xref");
+        exit(0);
+    }
+
+    if (option == "scanner")
+    {
+        chdir("scanner");
+        system("flexc++ -i scanner.ih lexer");
+        chdir("..");
+        system("icmbuild " + psType);
+        exit(0);
+    }
+
+    printf("Usage: build [-q -P] what\n"
+    "Where\n"
+    "   -q:   run quietly, do not show executed commands\n"
+    "   -P:   do not use precompiled headers\n"
+    "`what' is one of:\n"
+    "   clean                - clean up remnants of previous compilations\n"
+    "   distclean            - clean + fully remove tmp/\n"
+    "   library              - build " PROGRAM "'s library\n"
+    "   man                  - build the man-page (requires Yodl)\n"
+    "   manual               - build the manual (requires Yodl)\n"
+    "   program [strip]      - build " PROGRAM " (optionally strip the "
+                                                                "executable)\n"
+    "   oxref [strip]        - same a `program', also builds xref file using "
+                                                                "oxref\n"
+    "   scanner [strip]      - build new scanner, then 'build program'\n"
+    "   install [LOG:path] selection [base] -\n"
+    "                         to install the software in the locations "
+                                                            "defined \n"
+    "                         in the INSTALL.im file, optionally below "
+                                                            "base.\n"
+    "                         LOG:path is optional: if specified `path' "
+                                                            "is the\n"
+    "                         logfile on which the installation log is "
+                                                            "written.\n"
+    "                         selection can be\n"
+    "                               x, to install all components,\n"
+    "                         or a combination of:\n"
+    "                               a (additional documentation),\n"
+    "                               b (binary program),\n"
+    "                               d (standard documentation),\n"
+    "                               m (man-pages)\n"
+    "                               s (skeleton files)\n"
+    "                               u (user guide)\n"
+    "   uninstall logfile   - remove files and empty directories listed\n"
+    "                         in the file 'logfile'\n"
+    "   github               - prepare github's gh-pages update\n"
+    "                          (internal use only)\n"
+    "\n"
+    );
+    exit(0);
+}

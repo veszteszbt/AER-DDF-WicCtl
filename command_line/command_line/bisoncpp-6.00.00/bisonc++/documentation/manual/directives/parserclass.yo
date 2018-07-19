@@ -1,0 +1,11 @@
+Syntax: bf(%class-name) tt(parser-class-name) 
+
+    By default, b() generates a parser-class using the class name 
+tt(Parser). The default can be changed using this directive which defines the
+name of the bf(C++) class that will be generated. It may be defined only once
+and tt(parser-class-name) must be a bf(C++) identifier.
+
+It is an error if this directive is used and an already existing parser-class
+header file does not define tt(class `className') and/or if an already
+existing implementation header file does not define members of the class
+tt(`className').

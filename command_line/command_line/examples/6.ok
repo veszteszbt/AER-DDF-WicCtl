@@ -1,0 +1,11 @@
+i="0"
+until [ $i -gt 9 ]
+do
+i=$[ $i+1 ]
+done
+if [ $i -eq 10 ]
+then
+echo 6ok
+else
+echo hiba
+fi

@@ -1,0 +1,62 @@
+Syntax: bf(%default-actions) tt(off|quiet|warn|std)
+
+By default, production rules without final action blocks are augmented by the
+bf(bison)(1) parser generator with tt($$ = $1) action blocks: the semantic
+value of the first component is returned as the rule's semantic value. Its
+manual also states that for empty rules there is no meaningful default
+action. However, it could be argued that empty production rules could return
+default semantic values, resulting in every matched rule having a defined
+semantic value.
+
+When multiple semantic value types are used, the semantic value type returned
+by a tt($$ = $1) action is not uniquely defined. For one rule tt($1) might be
+an tt(int) field in a union, for another rule it might be a tt(std::string
+*). With polymorphic semantic values comparable situations are encountered.
+
+By default, b() mimics bison's behavior in that it adds a tt($$ = $1) action
+block to rules not having final action blocks, but not to empty production
+rules. This default behavior can also explicitly be configured using the
+tt(default-actions std) option or directive. 
+
+B() also supports alternate ways of handling rules not having final action
+blocks.  When tt(off) is specified, b() does not add tt($$ = $1) action
+blocks; when polymorphic semantic values are used, then specifying
+    itemization(
+    it() tt(warn) adds specialized action blocks, using the semantic types of
+the first elements of the production rules, while issuing a warning;
+    it() tt(quiet) adds these action blocks without issuing warnings.
+    )    
+When either tt(warn) or tt(quiet) are specified the types of $$ and $1 must
+match. When b() detects a type mismatches it issues errors. 
+
+When polymorphic semantic values are used then the default tt($$ = $1) action
+probably is less useful than when, e.g., plain tt(%stype) semantic values are
+used. After all, no semantic values are associated with tt($$). Furthermore,
+once the production rule has been recognized, the production rule is reduced
+to the rule's left-hand side non-terminal. Thus, tt($1) ceases to exists,
+immediately following the tt($$ = $1) statement. Therefore, em(if) default
+actions are used in combination with polymorphic semantic value types they are
+implemented using move-operations: tt($$ = std::move($1)). However, in this
+situation default actions can frequently be suppressed, slightly improving the
+efficency of the generated parser.
+
+When a default action block can be added to a production rule and either
+tt(warn) or tt(quiet) was specified,  b() compares the types associated with
+rule's nonterminal, and with the production rule's first element. The tt(warn)
+and tt(quiet) specifications make identical decisions about the action
+blocks to add, but in addition tt(warn) also shows a warning message that the
+action block is added to the production rule.
+    itemization(
+    it() If no type is associated with the rule then no default action block
+        is added if no type was associated with the production rule's first
+        element either; otherwise an error is issued.
+    it() If the rule's type is tt(STYPE__) then, if no type is associated
+        with the production rule's first element it is initialized to
+        tt(STYPE__); otherwise it is initialized with the first element's
+        semantic value.
+    it() If the rule is associated with a polymorphic tag then, if the same
+        tag was associated with production rule's first element it is
+        initialized with the first element's semantic value. Otherwise an
+        error is issued.
+    )
+

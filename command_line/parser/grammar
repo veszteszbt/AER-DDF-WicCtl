@@ -1,0 +1,529 @@
+%baseclass-preinclude "../functions.h"
+%lsp-needed
+
+%scanner ../scanner/Scanner.h
+
+%union
+{
+	std::string *str;
+	int *integ;
+	double *dbl;
+	expression_desc *exd;
+	expr_arr *ar;
+	command_list_desc *cld;
+	command_desc *cd;
+	c_expression_list *cel;
+	casepart *cp;
+	casepartvector *cpv;
+	argumentsvector* av;
+}
+
+%token KEYWORD_IF
+%token KEYWORD_THEN
+%token KEYWORD_ELSE
+%token KEYWORD_ELIF
+%token KEYWORD_FI
+%token KEYWORD_CASE
+%token KEYWORD_IN
+%token KEYWORD_ESAC
+%token KEYWORD_FOR
+%token KEYWORD_WHILE
+%token KEYWORD_UNTIL
+%token KEYWORD_DO
+%token KEYWORD_DONE
+%token KEYWORD_DEFAULT
+%token KEYWORD_LOCAL
+%token OCURLY
+%token CCURLY
+%token PIPE_SYMBOL
+%token ANDF_SYMBOL
+%token ORF_SYMBOL
+%token COMMAND_SEPARATOR
+%token ELEMENT_SEPARATOR
+%token CASE_DELIMITER
+%token BACKGROUND_COMMANDS
+%token OPARENTHESIS
+%token CPARENTHESIS
+%token INPUT_REDIRECTION
+%token INPUT_FROM_A_HERE_DOCUMENT
+%token OUTPUT_CREATION
+%token OUTPUT_APPEND
+%token <str>SINGLEQUOTE
+%token <str>DOUBLEQUOTE
+%token <dbl>DOUBLE
+%token <integ> INTEGER
+%token <str> IDENTIFIER
+%token NEGATE
+%token HEXADECIMAL
+%token COMMAND_RETURNER
+%token OSBRACKET
+%token CSBRACKET
+%token ARROW
+
+%token CONST_TRUE
+%token CONST_FALSE
+%token CONST_PI
+%token CONST_NULL
+
+%right OPERATOR_LET_BE
+%left OPERATOR_AND OPERATOR_OR
+%left OPERATOR_EQUAL OPERATOR_GREATER_THAN OPERATOR_LESS_THAN OPERATOR_GREATER_EQUAL OPERATOR_LESS_EQUAL OPERATOR_NOT_EQUAL
+%left OPERATOR_PLUS OPERATOR_MINUS
+%left OPERATOR_MULTIPLICATION OPERATOR_DIVISION OPERATOR_MODULO
+%right OPERATOR_POWER
+%right UNARY_MINUS
+
+%type <cld> start
+%type <exd> expression
+%type <exd> input_output
+%type <cld> command_list
+%type <cd> command
+%type <cld> else_part
+%type <cel> expression_list
+%type <cp> case_part
+%type <cpv> caseparts
+%type <av> arguments
+%type <ar> arraypart
+
+
+%%
+
+
+start:
+	command_list
+	{
+		$$ = new command_list_desc($1);
+		//$$->evaluate();
+		journal(journal::info, "parser") << "start -> command_list" << journal::end;
+	}
+;
+
+command_list:
+	command_list command COMMAND_SEPARATOR
+	{	
+		$$ = new command_list_desc();
+		$$->add($1);
+		$$->add($2);
+		delete $1;
+		journal(journal::info, "parser") << "command_list command COMMAND_SEPARATOR" << journal::end;
+	}
+|
+	command COMMAND_SEPARATOR
+	{
+		$$ = new command_list_desc();
+		$$->add($1);
+		journal(journal::info, "parser") << "command_list -> command COMMAND_SEPARATOR" << journal::end;
+	}
+;
+
+command:
+	IDENTIFIER OPARENTHESIS arguments CPARENTHESIS
+	{
+		//call* thiscall = new call(*$1, $3);
+		//extern wic::functions* fptr;
+		//fptr->run(thiscall);
+		//$$ = thiscall;
+		$$ = new call(*$1, $3, d_loc__.first_line);
+		journal(journal::info, "parser") << "command -> IDENTIFIER ( arguments )" << journal::end;
+
+	}
+|
+	IDENTIFIER OPERATOR_LET_BE expression
+	{
+		$$ = new assign(d_loc__.first_line, $1, $3);
+		journal(journal::info, "parser") << "command -> IDENTIFIER OPERATOR_LET_BE expression" << journal::end;
+	}
+|
+	KEYWORD_LOCAL IDENTIFIER OPERATOR_LET_BE expression
+	{
+		$$ = new local_assign(d_loc__.first_line, $2, $4);
+		journal(journal::info, "parser") << "expression -> KEYWORD_LOCAL IDENTIFIER OPERATOR_LET_BE expression" << journal::end;
+	}
+|
+	OCURLY command_list CCURLY
+	{
+		$$ = new sytable_stack($2);
+		journal(journal::info, "parser") << "command -> OCURLY command_list CCURLY" << journal::end;
+	}
+|
+	KEYWORD_FOR IDENTIFIER KEYWORD_IN expression_list KEYWORD_DO command_list KEYWORD_DONE
+	{
+		$$ = new for_in_desc(d_loc__.first_line, $2, $4, $6);
+		journal(journal::info, "parser") << "KEYWORD_FOR IDENTIFIER KEYWORD_IN expression_list KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
+	}
+|
+	KEYWORD_FOR command COMMAND_SEPARATOR expression COMMAND_SEPARATOR command KEYWORD_DO command_list KEYWORD_DONE
+	{
+		$$ = new for_3_desc(d_loc__.first_line, $2, $4, $6, $8);
+		journal(journal::info, "parser") << "command -> KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
+	}
+|
+	KEYWORD_WHILE expression KEYWORD_DO command_list KEYWORD_DONE
+	{
+		$$ = new while_desc(d_loc__.first_line, $2, $4);
+		journal(journal::info, "parser") << "command -> KEYWORD_WHILE expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
+	}
+|
+	KEYWORD_UNTIL expression KEYWORD_DO command_list KEYWORD_DONE
+	{
+		$$ = new until_desc(d_loc__.first_line, $2, $4);
+		journal(journal::info, "parser") << "command -> KEYWORD_UNTIL expression KEYWORD_DO command_list KEYWORD_DONE" << journal::end;
+	}
+|
+	KEYWORD_CASE expression KEYWORD_DO caseparts KEYWORD_DEFAULT CPARENTHESIS command_list CASE_DELIMITER KEYWORD_ESAC
+	{
+		$$ = new case_desc(d_loc__.first_line, $2, $4, $7);
+		journal(journal::info, "parser") << "command -> KEYWORD_CASE expression KEYWORD_DO caseparts KEYWORD_DEFAULT CPARENTHESIS command_list CASE_DELIMITER KEYWORD_ESAC" << journal::end;
+	}
+|
+	KEYWORD_IF expression KEYWORD_THEN command_list else_part KEYWORD_FI
+	{
+		$$ = new if_desc(d_loc__.first_line, $2, $4, $5);
+		journal(journal::info, "parser") << "command -> KEYWORD_IF expression KEYWORD_THEN command_list else_part KEYWORD_FI" << journal::end;
+	}
+;
+
+expression:
+	OPARENTHESIS expression CPARENTHESIS
+	{
+		$$ = new expr_par(d_loc__.first_line, $2);
+		journal(journal::info, "parser") << "expression -> OPARENTHESIS expression CPARENTHESIS" << journal::end;
+	}
+|
+	NEGATE expression
+	{
+		$$ = new expr_neg(d_loc__.first_line, $2);
+		journal(journal::info, "parser") << "expression -> NEGATE expression" << journal::end;
+	}
+|
+	expression OPERATOR_AND expression
+	{
+		$$ = new expr_and(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_AND expression" << journal::end;
+	}
+|
+	expression OPERATOR_OR expression
+	{
+		$$ = new expr_or(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_OR expression" << journal::end;
+	}
+|
+	expression OPERATOR_EQUAL expression
+	{
+		$$ = new expr_eq(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_EQUAL expression" << journal::end;
+	}
+|
+	expression OPERATOR_NOT_EQUAL expression
+	{
+		$$ = new expr_neq(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_NOT_EQUAL expression" << journal::end;
+	}
+|
+	expression OPERATOR_LESS_EQUAL expression
+	{
+		$$ = new expr_leq(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_LESS_EQUAL expression" << journal::end;
+	}
+|
+	expression OPERATOR_GREATER_EQUAL expression
+	{
+		$$ = new expr_geq(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_GREATER_EQUAL expression" << journal::end;
+	}
+|
+	expression OPERATOR_LESS_THAN expression
+	{
+		$$ = new expr_lt(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_LESS_THAN expression" << journal::end;
+	}
+|
+	expression OPERATOR_GREATER_THAN expression
+	{
+		$$ = new expr_gt(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_GREATER_THAN expression" << journal::end;
+	}
+|
+	expression OPERATOR_PLUS expression
+	{
+		$$ = new expr_add(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_PLUS expression" << journal::end;
+	}
+|
+	expression OPERATOR_MINUS expression
+	{
+		$$ = new expr_dif(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_MINUS expression" << journal::end;
+	}
+|
+	expression OPERATOR_MULTIPLICATION expression
+	{
+		$$ = new expr_mul(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_MULTIPLICATION expression" << journal::end;
+	}
+|
+	expression OPERATOR_DIVISION expression
+	{
+		$$ = new expr_div(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_DIVISION expression" << journal::end;
+	}
+|
+	expression OPERATOR_MODULO expression
+	{
+		$$ = new expr_mod(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_MODULO expression" << journal::end;
+	}
+|
+	expression OPERATOR_POWER expression
+	{
+		$$ = new expr_pow(d_loc__.first_line,$1,$3);
+		journal(journal::info, "parser") << "expression -> expression OPERATOR_POWER expression" << journal::end;
+	}
+|
+	OPERATOR_MINUS expression %prec UNARY_MINUS
+	{
+		$$ = new expr_um(d_loc__.first_line,$2);
+		journal(journal::info, "parser") << "expression -> OPERATOR_MINUS expression %prec UNARY_MINUS" << journal::end;
+	}
+|
+	IDENTIFIER OSBRACKET expression CSBRACKET
+	{
+		//variable_desc vd = symbol_table.get_value($1);
+		//var_value v = vd.return_value();
+		$$ = new expr_ael(d_loc__.first_line, *$1, $3);
+		$$->evaluate();
+	}
+|
+	INTEGER
+	{
+		$$ = new expr_const(d_loc__.first_line, *$1);
+		journal(journal::info, "parser") << "expression -> INTEGER" << journal::end;
+	}
+|
+	DOUBLE
+	{
+		$$ = new expr_const(d_loc__.first_line, *$1);
+		journal(journal::info, "parser") << "expression -> DOUBLE" << journal::end;
+	}
+|
+	SINGLEQUOTE
+	{
+		//remove the quote characters
+		std::string* temp = new std::string((*$1).substr(1,(*$1).size()-2));
+		$$ = new expr_const(d_loc__.first_line, temp);
+		journal(journal::info, "parser") << "expression -> SINGLEQUOTE" << journal::end;
+	}
+|
+	DOUBLEQUOTE
+	{
+		//remove the quote characters
+		std::string* temp = new std::string((*$1).substr(1,(*$1).size()-2));
+		$$ = new expr_const(d_loc__.first_line,temp);
+		journal(journal::info, "parser") << "expression -> DOUBLEQUOTE" << journal::end;
+	}
+|
+	HEXADECIMAL
+	{
+		/*std::string* temp = new std::string($1);
+		int hex;
+		std::istringstream i;
+		i.str(*temp);
+		i >> std::dec >> hex;
+		$$ = new expr_const(d_loc__.first_line, hex);*/
+		journal(journal::info, "parser") << "expression -> HEXADECIMAL" << journal::end;
+	}
+|
+	input_output
+	{
+		journal(journal::info, "parser") << "expression -> input_output" << journal::end;
+	}
+|
+	IDENTIFIER
+	{
+		$$ = new expr_var(d_loc__.first_line, *$1);
+		journal(journal::info, "parser") << "expression -> IDENTIFIER" << journal::end;
+	}
+|
+	OSBRACKET arraypart CSBRACKET
+	{
+		$$ = new expr_arr(d_loc__.first_line, $2);
+	}
+|
+	CONST_TRUE
+	{
+		$$ = new expr_const(d_loc__.first_line, 1);
+		journal(journal::info, "parser") << "expression -> CONST_TRUE" << journal::end;
+	}
+|
+	CONST_FALSE
+	{
+		$$ = new expr_const(d_loc__.first_line, 0);
+		journal(journal::info, "parser") << "expression -> CONST_FALSE" << journal::end;
+	}
+|
+	CONST_PI
+	{
+		double Pi = acos(-1);
+		$$ = new expr_const(d_loc__.first_line, Pi);
+		journal(journal::info, "parser") << "expression -> CONST_Pi" << journal::end;
+	}
+|
+	CONST_NULL
+	{
+		$$ = new expr_const(d_loc__.first_line);
+		journal(journal::info, "parser") << "expression -> CONST_NULL" << journal::end;
+	}
+|
+	COMMAND_RETURNER OCURLY command CCURLY
+	{
+		$$ = new expr_const(d_loc__.first_line, $3->get_return_value());
+		journal(journal::info, "parser") << "expression -> COMMAND_RETURNER OCURLY command CCURLY" << journal::end;
+	}
+;
+
+arraypart:
+	arraypart ELEMENT_SEPARATOR expression
+	{
+		//std::cout << "___________arraypart_________________" << std::endl;
+		$$ = new expr_arr(d_loc__.first_line,$1);
+		$$->add($3);
+		$1->deleteBecauseGccPolymorphicSucks();
+		journal(journal::info, "parser") << "arraypart -> arraypart ELEMENT_SEPARATOR expression" << journal::end;
+	}
+|
+	arraypart ELEMENT_SEPARATOR expression ARROW expression
+	{
+		$$ = new expr_arr(d_loc__.first_line, $1);
+		$$->add($3, $5);
+		$1->deleteBecauseGccPolymorphicSucks();
+		journal(journal::info, "parser") << "arraypart -> arraypart ELEMENT_SEPARATOR IDENTIFIER ARROW expression" << journal::end;
+	}
+|
+	expression
+	{
+		//std::cout << "___________arraypart_________________" << std::endl;	
+		$$ = new expr_arr(d_loc__.first_line);
+		$$->add($1);
+		journal(journal::info, "parser") << "arraypart -> expression" << journal::end;
+	}
+|
+	expression ARROW expression
+	{
+		$$ = new expr_arr(d_loc__.first_line);
+		$$->add($1, $3);
+		journal(journal::info, "parser") << "arraypart -> expression ARROW expression" << journal::end;
+	}
+|
+	//empty
+	{
+		$$ = new expr_arr(d_loc__.first_line);
+		journal(journal::info, "parser") << "arraypart -> empty" << journal::end;
+	}
+;
+
+
+arguments:
+	arguments ELEMENT_SEPARATOR expression
+	{
+		$$ = new argumentsvector();
+		$$->add($1);
+		$$->add($3);
+		//delete $3; //ez undefined behaviort okozna itt mert virtuális osztályt törölsz
+		journal(journal::info, "parser") << "arguments -> arguments ELEMENT_SEPARATOR expression" << journal::end;
+	}
+|
+	expression
+	{
+		$$ = new argumentsvector();
+		$$->add($1);
+		journal(journal::info, "parser") << "arguments -> expression" << journal::end;
+	}
+|
+	//empty
+	{
+		$$ = new argumentsvector();
+		journal(journal::info, "parser") << "arguments -> empty" << journal::end;
+	}
+;
+
+input_output:
+	OUTPUT_CREATION IDENTIFIER
+	{
+		journal(journal::info, "parser") << "input_output -> OUTPUT_CREATION IDENTIFIER" << journal::end;
+	}
+|
+	INPUT_REDIRECTION IDENTIFIER
+	{
+		journal(journal::info, "parser") << "input_output -> INPUT_REDIRECTION IDENTIFIER" << journal::end;
+	}
+|
+	INPUT_FROM_A_HERE_DOCUMENT IDENTIFIER
+	{
+		journal(journal::info, "parser") << "input_output -> INPUT_FROM_A_HERE_DOCUMENT IDENTIFIER" << journal::end;
+	}
+|
+	OUTPUT_APPEND IDENTIFIER
+	{
+		journal(journal::info, "parser") << "input_output -> OUTPUT_APPEND IDENTIFIER" << journal::end;
+	}
+;
+
+
+caseparts:
+	caseparts case_part
+	{
+		$$ = new casepartvector();
+		$$->add($1);
+		$$->add($2);
+		delete $1;
+		journal(journal::info, "parser") << "caseparts -> case_part caseparts" << journal::end;
+	}
+|
+	case_part
+	{
+		$$ = new casepartvector();
+		$$->add($1);
+		journal(journal::info, "parser") << "caseparts -> case_part" << journal::end;
+	}
+;
+
+case_part:
+	expression CPARENTHESIS command_list CASE_DELIMITER
+	{
+		$$ = new casepart($1, $3);
+		journal(journal::info, "parser") << "case_part -> expression CPARENTHESIS command_list CASE_DELIMITER" << journal::end;
+	}
+;
+
+else_part:
+	KEYWORD_ELSE command_list
+	{
+		$$ = new command_list_desc();
+		$$->add($2);
+		delete $2;
+		journal(journal::info, "parser") << "else_part -> KEYWORD_ELSE command_list" << journal::end;
+	}
+|
+	//empty
+	{
+		$$ = new command_list_desc();
+		journal(journal::info, "parser") << "else_part -> empty" << journal::end;
+	}
+;
+	
+expression_list:
+	expression_list ELEMENT_SEPARATOR expression
+	{
+		$$ = new c_expression_list();
+		$$->add($1);
+		$$->add($3);	
+		journal(journal::info, "parser") << "expression_list -> expression_list ELEMENT_SEPARATOR expression" << journal::end;
+	}
+|
+	expression
+	{
+		$$ = new c_expression_list();
+		$$->add($1);
+		journal(journal::info, "parser") << "expression_list -> expression" << journal::end;
+	}
+;

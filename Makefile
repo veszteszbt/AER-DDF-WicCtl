@@ -18,13 +18,13 @@ LIBS=-pthread -lmysqlcppconn -lasound -lsndfile -lavformat -lavcodec -lswresampl
 all: wicctl wic_host
 
 wicctl: wicctl.cc wicctl.h
-	g++-7.2.0 -I. -std=c++14 -lusb-1.0 -o wicctl wicctl.cc
+	g++ -I. -std=c++17 -lusb-1.0 -o wicctl wicctl.cc
 
 %.o: %.cc
-	g++ -DLOG_SQL -I. -g3 -std=c++14 -fdiagnostics-color -o $@ -c $<
+	g++ -DLOG_SQL -I. -g3 -std=c++17 -fdiagnostics-color -o $@ -c $<
 
 wic_host: wic_host.o alsa_host.o journal.o sched/process.o
-	g++-7.2.0 -I. -g3 -std=c++14 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o journal.o sched/process.o $(LIBS)
+	g++ -I. -g3 -std=c++17 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o journal.o sched/process.o $(LIBS)
 
 clean:
 	rm *.o wicctl wic_host 
@@ -43,7 +43,7 @@ wic_host: wic_host.cc
 	g++ -DLOG_SQL -I. \
 	-I"C:\Program Files\MySQL\MySQL Connector C++ 1.1.9\include" \
 	-g3 \
-	-std=c++14 \
+	-std=c++17 \
 	-fdiagnostics-color \
 	-pthread \
 	-o wic_host wic_host.cc journal.cc sched/process.cc \

@@ -1,0 +1,25 @@
+Bic() also supports em(polymorphic semantic values). Polymorphic semantic
+values were developed as an alternative to using unions. Traditional unions
+can still be used, but are now considered somewhat `old school'. Polymorphic
+semantic values were added to b() as the result of a suggestion originally
+made by Dallas A. Clement in September 2007.
+
+In this section a simple example program is developed illustrating the use of
+polymorphic semantic values.  The sources of the example can be retrieved from
+the distribution's lurl(poly) directory.
+
+One may wonder why a tt(union) is still used by b() as bf(C++) offers
+inherently superior approaches to combine multiple types into one union
+type. The bf(C++) way to do so is by defining a polymorphic base class and a
+series of derived classes implementing the various exclusive data types. The
+tt(union) approach is still supported by b(), mainly for historic reasons as
+it is supported by bf(bison)(1) and bf(bison++); dropping the tt(union) would
+needlessly impede backward compatibility.
+
+The preferred alternative to a tt(union), however, is a polymorphic base
+class. The example program (cf. lurl(poly)) uses a polymorphic semantic value
+type, supporting either tt(int) or tt(std::string) semantic values. These
+types are asociated with tags (resp. tt(INT) and tt(TEXT)) using the
+tt(%polymorphic) directive, discussed next.
+
+

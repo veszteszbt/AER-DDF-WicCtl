@@ -1,0 +1,17 @@
+%token X
+%default-actions quiet
+
+%%
+
+run: 
+    one
+|
+    two X
+;
+
+one:
+;
+
+two:
+    one
+;
