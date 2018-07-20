@@ -13,6 +13,7 @@
 #include <tuple>
 #include <typeinfo>
 #include "types/type.h"
+#include "types/meta.hh"
 #include "parser/semantics.h"
 #include <algorithm>
 #include <iterator>
@@ -48,17 +49,32 @@ class functions
 		std::enable_if_t< ! (index <= 0)>
 		create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
 		{
-			//std::cout << "indukcio" << std::endl;
-
-			if(!(args[index-1].value(std::get< index-1 >(t))))
-				errv.push_back(
-					std::to_string(index) +
-					" (" + types::type::name(std::get< index-1 >(t)) + ")"
-				);
-
-			create_tuple<index-1>(t,args,errv);
+			int x = 0;
+			types::meta::for_each(t, [&](auto& i){
+				if(!(args[index-1-x].value(i)))
+				{
+					errv.push_back(
+						std::to_string(index-x++) +
+						" (" + types::type::name(i) + ")"
+					);
+				}
+			});
 		}
 
+		// template<int index = sizeof...(Targ)>
+		// std::enable_if_t< ! (index <= 0)>
+		// create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
+		// {
+		// 	//std::cout << "indukcio" << std::endl;
+
+		// 	if(!(args[index-1].value(std::get< index-1 >(t))))
+		// 		errv.push_back(
+		// 			std::to_string(index) +
+		// 			" (" + types::type::name(std::get< index-1 >(t)) + ")"
+		// 		);
+
+		// 	create_tuple<index-1>(t,args,errv);
+		// }
 
 		template<int index = sizeof...(Targ)>
 		std::enable_if_t<index <= 0>
