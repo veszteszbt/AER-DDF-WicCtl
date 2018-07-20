@@ -37,9 +37,6 @@ bool convert(const std::string &input, std::string &output);*/
 
 class functions
 {
-	std::vector<var_value> arguments;
-	
-
 	template<typename Tret, typename... Targ>
 	class command_wrapper
 	{
@@ -47,18 +44,18 @@ class functions
 		
 		std::function<Tret(Targ...)> command;
 
-
 		template<int index = sizeof...(Targ)>
-		std::enable_if_t<!(index <= 0)>
+		std::enable_if_t< ! (index <= 0)>
 		create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
 		{
 			//std::cout << "indukcio" << std::endl;
-			//args[index-1].value<arg_tuple_t::get<index-1>>();
 
-			//if(!convert(args[index-1],std::get<index-1>(t)))
+			if(!(args[index-1].value(std::get< index-1 >(t))))
+				errv.push_back(
+					std::to_string(index) +
+					" (" + types::type::name(std::get< index-1 >(t)) + ")"
+				);
 
-			if(!(args[index-1].value(std::get<index-1>(t))))
-				errv.push_back(std::to_string(index)+" ("+types::type::name(std::get<index-1>(t))+")");
 			create_tuple<index-1>(t,args,errv);
 		}
 
@@ -66,12 +63,7 @@ class functions
 		template<int index = sizeof...(Targ)>
 		std::enable_if_t<index <= 0>
 		create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
-		{
-			//std::cout << "alapeset" << std::endl;
-			//if (!convert(args[0],std::get<0>(t)))
-			//    errv.push_back(std::to_string(index+1)+" ("+types::type::name(std::get<0>(t))+")");
-			   
-		}
+		{ /*std::cout << "alapeset" << std::endl; */ }
 
 		template<typename Tr = Tret>
 		std::enable_if_t<std::is_same_v<Tr,void>,var_value>
@@ -84,9 +76,7 @@ class functions
 		template<typename Tr = Tret>
 		std::enable_if_t<!std::is_same_v<Tr,void>,var_value>
 		execute(arg_tuple_t &a)
-		{
-			return var_value(std::apply(command,a));
-		}
+		{ return var_value(std::apply(command,a)); }
  
 	public:
 		//int row;
@@ -131,40 +121,26 @@ class functions
 			}
 		}
 	};
+
+	std::vector<var_value> arguments;
+
 	std::map<std::string, std::function<var_value(const std::vector<var_value> &args)> > commands;
+
 public:
 	template<typename Tret, typename... Targ>
 	void add_command(const std::string &name, std::function<Tret(Targ...)> cmd)
-	{
-		//std::cout << "added command" << std::endl;
-		commands[name] = command_wrapper<Tret,Targ...>(cmd);
-	}
+	{ commands[name] = command_wrapper<Tret,Targ...>(cmd); }
 
 	template<typename Tret, typename... Targ>
 	void add_command(const std::string &name, Tret(*cmd)(Targ...))
-	{
-		//std::cout << "added command" << std::endl;
-		commands[name] = command_wrapper<Tret,Targ...>(cmd);
-	}
+	{ commands[name] = command_wrapper<Tret,Targ...>(cmd); }
 
 	void add_variable(std::string name, var_value value);
 
 	var_value run(call* c);
 
 	functions();
-
-
-
 };
-
-
-
-
-
-
-
-
 }
-
 
 #endif

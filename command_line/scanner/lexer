@@ -36,18 +36,18 @@ ID	[a-zA-Z]{CH}*
 
 "{" 			{
 					commandline::shell::scanDepth++;
-					return Parser::OCURLY; 
+					return Parser::OPEN_CURLY_BRACKET;
 				}
 "}" 			{
 					commandline::shell::scanDepth--;
-					return Parser::CCURLY; 
+					return Parser::CLOSING_CURLY_BRACKET; 
 				}
 
-"[" 			return Parser::OSBRACKET;
-"]" 			return Parser::CSBRACKET;
+"[" 			return Parser::OPEN_SQUARE_BRACKET;
+"]" 			return Parser::CLOSING_SQUARE_BRACKET;
 
-"(" 			return Parser::OPARENTHESIS; 
-")" 			return Parser::CPARENTHESIS; 
+"(" 			return Parser::OPEN_PARENTHESIS; 
+")" 			return Parser::CLOSING_PARENTHESIS; 
 
 "|" 			return Parser::PIPE_SYMBOL; 
 "&&" 			return Parser::ANDF_SYMBOL; 
@@ -71,7 +71,7 @@ ID	[a-zA-Z]{CH}*
 "%" 			return Parser::OPERATOR_MODULO;
 "**" 			return Parser::OPERATOR_POWER;
 "^" 			return Parser::OPERATOR_POWER;
-"=" 			return Parser::OPERATOR_LET_BE;
+"=" 			return Parser::OPERATOR_ASSIGN;
 "$" 			return Parser::COMMAND_RETURNER;
 "-eq" 			return Parser::OPERATOR_EQUAL;
 "-gt" 			return Parser::OPERATOR_GREATER_THAN;
@@ -90,8 +90,8 @@ ID	[a-zA-Z]{CH}*
 [Pp][Ii]					return Parser::CONST_PI;
 [Nn][Uu][Ll][Ll]			return Parser::CONST_NULL;
 
-['][^']*['] 				return Parser::SINGLEQUOTE; 
-["]([^\\\"]|\\.)*["]		return Parser::DOUBLEQUOTE; 
+['][^']*['] 				return Parser::SINGLE_QUOTE; 
+["]([^\\\"]|\\.)*["]		return Parser::DOUBLE_QUOTE; 
 [0-9]*[.][0-9]+				return Parser::DOUBLE;
 [0-9]+						return Parser::INTEGER;
 0x[0-9]+					return Parser::HEXADECIMAL;
@@ -100,9 +100,7 @@ ID	[a-zA-Z]{CH}*
 
 {WS}+ 			//
 
-<<EOF>>			{
-					throw ParserBase::FINISH_THIS_STRINGSTREAM;
-				}
+<<EOF>>			{ throw ParserBase::FINISH_THIS_STRINGSTREAM; }
 
 .           	{
 					std::cerr << lineNr() << ": \e[31;01mLexical error\e[0m" << std::endl;

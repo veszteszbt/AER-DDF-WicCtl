@@ -42,10 +42,8 @@ static void write_string(std::string s)
 
 static void write_array(std::map<std::string, var_value> m)
 {
-	for(auto it = m.begin(); it!=m.end();it++)
-	{
+	for(auto it = m.begin(); it != m.end(); ++it)
 		std::cout << "writing array: {key:" << it->first << ", value:" << it->second << "}" << std::endl;
-	}
 }
 
 static void write_reverse(std::string s)
@@ -57,62 +55,32 @@ static void write_reverse(std::string s)
 
 static void echo_c(std::string s, int i)
 {
-	for (int j=0;j<i;j++)
+	for (unsigned int j = 0; j < i; ++j)
 		std::cout << s;
+
 	std::cout << std::endl;
 }
 
 static void echo_end()
-{
-	std::cout << std::endl;
-}
+{ std::cout << std::endl; }
 
 static void is_true(int b)
 {
 	if(b)
-	{
 		std::cout << "TRUE" << std::endl;
-	}
 	else
-	{
 		std::cout << "FALSE" << std::endl;
-	}
 }
-
-/*static double sinus(double x)
-{
-	return sin(x);
-}*/
 
 static void exit(int i)
 {
 	std::cout << "exiting program with code " << i << std::endl;
-	(*commandline::shell::parser).finish(i);
+	commandline::shell::parser->finish(i);
 }
 
 template<typename T>
-static void echo(T t)
-{
-	std::cout << t << std::endl;
-}
-
-template<>
-void echo(int i)
-{
-	std::cout << i << std::endl;
-}
-
-template<>
-void echo(double d)
-{
-	std::cout << d << std::endl;
-}
-
-template<>
-void echo(std::string s)
-{
-	std::cout << s << std::endl;
-}
+static void echo(const T& t)
+{ std::cout << t << std::endl; }
 
 functions::functions()
 {
@@ -126,10 +94,7 @@ functions::functions()
 	devstat::init();
 
 	gmclient_test::test_room_1::init();
-	 ezek a vic hostban még a ciklus előtt vannak*/
-	
-	
-	
+	 ezek a wic_host-ban még a ciklus előtt vannak*/
 	
 	//ez var_Value miatt még nem jó
 	add_command("writeint",write_int);
@@ -160,10 +125,8 @@ var_value functions::run(call* c)
 	auto runcommand = commands.find(command_name);
 	if (runcommand!=commands.end())
 	{
-		for (unsigned int i=0;i<args.size();i++)
-		{
+		for (unsigned int i = 0; i < args.size(); ++i)
 			arguments.push_back(args[i]->val);
-		}
 
 		//template<class T>
 		//typename std::result_of<T(void)>
@@ -195,15 +158,9 @@ var_value functions::run(call* c)
 	return v;
 }
 
-
-
-
-
 template<typename V, typename T>
 static bool convert(const V &input, T &output)
-{
-	return false;
-}
+{ return false; }
 
 /*template<>
 bool convert(const std::string &input, int &output)
@@ -263,9 +220,4 @@ bool convert(const std::string &input, std::string &output)
 	output=input;
 	return true;
 }*/
-
-	 
-
-	
-
 }
