@@ -5,14 +5,14 @@
 namespace wic{
 
 /*static void delay(const std::vector<std::string> &args){
-	
-	//std::this_thread::sleep_for(std::chrono::milliseconds(delay));  
+
+	//std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	std::cout << "delay" << std::endl;
 }*/
 
 /*static void gamestate(const std::vector<std::string> &args)
 {
-	
+
 	std::cout << "gamestate" << std::endl;
 
 }*/
@@ -86,16 +86,16 @@ functions::functions()
 {
 	//active=true;
 	/*alsa_host::init();
-	
+
 	process::sql_executor::init();
-	
+
 	wicc_earpc::init();
-	
+
 	devstat::init();
 
 	gmclient_test::test_room_1::init();
 	 ezek a wic_host-ban még a ciklus előtt vannak*/
-	
+
 	//ez var_Value miatt még nem jó
 	add_command("writeint",write_int);
 	add_command("writedouble",write_double);
@@ -113,7 +113,7 @@ functions::functions()
 	add_command("exit",exit);
 	add_variable("asd", 36);
 }
-	
+
 var_value functions::run(call* c)
 {
 	var_value v = 0;
@@ -130,7 +130,7 @@ var_value functions::run(call* c)
 
 		//template<class T>
 		//typename std::result_of<T(void)>
-		//v lehet void is!! 
+		//v lehet void is!!
 		//v = std::result_of<runcommand->second(arguments)>;
 		v = runcommand->second(arguments);
 	}

@@ -3,26 +3,26 @@ CH ([a-zA-Z0-9]|"_")
 ID	[a-zA-Z]{CH}*
 %%
 
-"if" 			return Parser::KEYWORD_IF; 
+"if" 			return Parser::KEYWORD_IF;
 "then" 			{
 					commandline::shell::scanDepth++;
 					return Parser::KEYWORD_THEN;
-				} 
-"else" 			return Parser::KEYWORD_ELSE; 
-"elif" 			return Parser::KEYWORD_ELIF; 
+				}
+"else" 			return Parser::KEYWORD_ELSE;
+"elif" 			return Parser::KEYWORD_ELIF;
 "fi" 			{
 					commandline::shell::scanDepth--;
 					return Parser::KEYWORD_FI;
 				}
-"case" 			return Parser::KEYWORD_CASE; 
-"in" 			return Parser::KEYWORD_IN; 
+"case" 			return Parser::KEYWORD_CASE;
+"in" 			return Parser::KEYWORD_IN;
 "esac"			 {
 					commandline::shell::scanDepth--;
 					return Parser::KEYWORD_ESAC;
 				}
-"for" 			return Parser::KEYWORD_FOR; 
-"while" 		return Parser::KEYWORD_WHILE; 
-"until" 		return Parser::KEYWORD_UNTIL; 
+"for" 			return Parser::KEYWORD_FOR;
+"while" 		return Parser::KEYWORD_WHILE;
+"until" 		return Parser::KEYWORD_UNTIL;
 "do"			{
 					commandline::shell::scanDepth++;
 					return Parser::KEYWORD_DO;
@@ -40,25 +40,25 @@ ID	[a-zA-Z]{CH}*
 				}
 "}" 			{
 					commandline::shell::scanDepth--;
-					return Parser::CLOSING_CURLY_BRACKET; 
+					return Parser::CLOSING_CURLY_BRACKET;
 				}
 
 "[" 			return Parser::OPEN_SQUARE_BRACKET;
 "]" 			return Parser::CLOSING_SQUARE_BRACKET;
 
-"(" 			return Parser::OPEN_PARENTHESIS; 
-")" 			return Parser::CLOSING_PARENTHESIS; 
+"(" 			return Parser::OPEN_PARENTHESIS;
+")" 			return Parser::CLOSING_PARENTHESIS;
 
-"|" 			return Parser::PIPE_SYMBOL; 
-"&&" 			return Parser::ANDF_SYMBOL; 
-"||" 			return Parser::ORF_SYMBOL; 
-";" 			return Parser::COMMAND_SEPARATOR; 
+"|" 			return Parser::PIPE_SYMBOL;
+"&&" 			return Parser::ANDF_SYMBOL;
+"||" 			return Parser::ORF_SYMBOL;
+";" 			return Parser::COMMAND_SEPARATOR;
 "," 			return Parser::ELEMENT_SEPARATOR;
-";;" 			return Parser::CASE_DELIMITER; 
-"&" 			return Parser::BACKGROUND_COMMANDS; 
-"<" 			return Parser::INPUT_REDIRECTION; 
-"<<" 			return Parser::INPUT_FROM_A_HERE_DOCUMENT; 
-">" 			return Parser::OUTPUT_CREATION; 
+";;" 			return Parser::CASE_DELIMITER;
+"&" 			return Parser::BACKGROUND_COMMANDS;
+"<" 			return Parser::INPUT_REDIRECTION;
+"<<" 			return Parser::INPUT_FROM_A_HERE_DOCUMENT;
+">" 			return Parser::OUTPUT_CREATION;
 ">>" 			return Parser::OUTPUT_APPEND;
 "!" 			return Parser::NEGATE;
 
@@ -90,8 +90,8 @@ ID	[a-zA-Z]{CH}*
 [Pp][Ii]					return Parser::CONST_PI;
 [Nn][Uu][Ll][Ll]			return Parser::CONST_NULL;
 
-['][^']*['] 				return Parser::SINGLE_QUOTE; 
-["]([^\\\"]|\\.)*["]		return Parser::DOUBLE_QUOTE; 
+['][^']*['] 				return Parser::SINGLE_QUOTE;
+["]([^\\\"]|\\.)*["]		return Parser::DOUBLE_QUOTE;
 [0-9]*[.][0-9]+				return Parser::DOUBLE;
 [0-9]+						return Parser::INTEGER;
 0x[0-9]+					return Parser::HEXADECIMAL;

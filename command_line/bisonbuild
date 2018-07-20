@@ -15,7 +15,7 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		sed -i 's/UNEXPECTED_TOKEN__,/UNEXPECTED_TOKEN__,\n\t\t\tFINISH_THIS_STRINGSTREAM/' Parserbase.h
 		sed -i 's/bool        d_actionCases__ = false;/protected:\n\t\tbool        d_actionCases__ = false;/' Parserbase.h
 		sed -i 's/void setDebug(DebugMode__ mode);/void setDebug(DebugMode__ mode);\n\nstatic bool finished;\n\t\tint returnState;\n\t\tstatic long index;\n\n\t\tvoid finish(int i)\n\t\t{\n\t\t\tfinished = true;\n\t\t\treturnState=i;\n\t\t}/' Parserbase.h
-		
+
 
 		echo "inserting into Parser.h"
 		sed -i 's/lines./lines.\n#include "symbol_table.h"\n#include <sstream>/' Parser.h
@@ -26,7 +26,7 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		echo "inserting into Parser.ih"
 		sed -i 's/\/\/ $insert class.h/\/\/ \$insert class.h\n#ifndef PARSER_IH\n#define PARSER_IH/' Parser.ih
 		sed -i 's/std::cerr << "Syntax error\\n";/std::cerr << d_loc__.first_line << ": \\e[31;01mSyntax error\\e[0m\\n";\n\tstd::terminate();/' Parser.ih
-		sed -i 's/return d_scanner.lex();/int ret = d_scanner.lex();\n\td_loc__.first_line = d_scanner.lineNr();\n\tif( ret == IDENTIFIER || ret == SINGLEQUOTE || ret == DOUBLEQUOTE )\n\t{\n\t\td_val__.str = new std::string(d_scanner.matched());\n\t}\n\telse if( ret == INTEGER )\n\t{\n\t\td_val__.integ = new int(stoi(d_scanner.matched()));\n\t}\n\telse if( ret == DOUBLE )\n\t{\n\t\td_val__.dbl = new double(stod(d_scanner.matched()));\n\t}\n\treturn ret;/' Parser.ih
+		sed -i 's/return d_scanner.lex();/int ret = d_scanner.lex();\n\td_loc__.first_line = d_scanner.lineNr();\n\tif( ret == IDENTIFIER || ret == SINGLE_QUOTE || ret == DOUBLE_QUOTE )\n\t{\n\t\td_val__.str = new std::string(d_scanner.matched());\n\t}\n\telse if( ret == INTEGER )\n\t{\n\t\td_val__.integ = new int(stoi(d_scanner.matched()));\n\t}\n\telse if( ret == DOUBLE )\n\t{\n\t\td_val__.dbl = new double(stod(d_scanner.matched()));\n\t}\n\treturn ret;/' Parser.ih
 		sed -i 's/\/\/using namespace std;/\/\/using namespace std;\n#endif/' Parser.ih
 
 		echo "inserting into parse.cc"
@@ -34,8 +34,8 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		sed -i 's/if (not recovery__())/if(e == FINISH_THIS_STRINGSTREAM)\n\t{\n\t\tParserBase::finished = true;\n\t\treturn;\n\t}\n\n\tif (not recovery__())/' parse.cc
 		sed -i 's/clearin__();/\/\/ clearin__();/' parse.cc
 		sed -i 's/while (true)/ParserBase::finished = false;\n\twhile (!ParserBase::finished)/' parse.cc
-		#to remove warning
-		#(sed cant do this) insert into parse.cc:
+		# to remove warning
+		# (sed can't do this) insert into parse.cc:
 		# return returnState;
 		# before } catch (Return__ retValue)
 		sed -i 's/\/\/ derived\/tail/bool ParserBase::finished = false;\n\/\/ derived\/tail/' parse.cc
@@ -56,4 +56,3 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		echo "Operation aborted."
 	;;
 	esac
-	

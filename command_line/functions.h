@@ -41,7 +41,7 @@ class functions
 	class command_wrapper
 	{
 		typedef std::tuple<std::decay_t<Targ>... > arg_tuple_t;
-		
+
 		std::function<Tret(Targ...)> command;
 
 		template<int index = sizeof...(Targ)>
@@ -59,7 +59,7 @@ class functions
 			create_tuple<index-1>(t,args,errv);
 		}
 
-		
+
 		template<int index = sizeof...(Targ)>
 		std::enable_if_t<index <= 0>
 		create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
@@ -77,7 +77,7 @@ class functions
 		std::enable_if_t<!std::is_same_v<Tr,void>,var_value>
 		execute(arg_tuple_t &a)
 		{ return var_value(std::apply(command,a)); }
- 
+
 	public:
 		//int row;
 		command_wrapper(std::function<Tret(Targ...)> c) : command(c){}
