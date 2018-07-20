@@ -57,7 +57,8 @@ namespace types
 	template <
 		typename TwicClass, 
 		typename TobjectId, 
-		typename Taddress, 
+		typename TcallId,
+		typename Taddress,
 		typename... Tproperties
 	>
 	struct remote_object_record 
@@ -73,9 +74,15 @@ namespace types
 
 		typedef TobjectId object_id_type;
 
+		typedef TcallId call_id_type;
+
 		typedef Taddress address_type;
 
 		address_type ip;
+
+		bool initial_sync_pending;
+
+		call_id_type initial_sync_cid;
 
 		sched::listener on_destroy;
 
@@ -87,6 +94,8 @@ namespace types
 		)
 			: OBJECT_RECORD_CLASS(object_id)
 			, ip(paddress)
+			, initial_sync_pending(true)
+			, initial_sync_cid(0)
 		{}
 	};
 }}

@@ -618,6 +618,25 @@ namespace process
 					return r;
 				}
 			}
+
+			Targ argument()
+			{
+				Targ r;
+				if(serializer<Targ>::deserialize(r,outgoing_call_handle_base::arg_bytes))
+					journal(journal::trace,"earpc.call.incoming") <<
+						"call id: " << std::hex << outgoing_call_handle_base::call_id <<
+						"; command: " << std::hex << outgoing_call_handle_base::command_id <<
+						"; source: " << (std::string) outgoing_call_handle_base::ip <<
+						"; taking argument" << journal::end;
+				else
+					journal(journal::critical,"earpc.call.incoming") <<
+						"call id: " << std::hex << outgoing_call_handle_base::call_id <<
+						"; command: " << std::hex << outgoing_call_handle_base::command_id <<
+						"; source: " << (std::string) outgoing_call_handle_base::ip <<
+						"; unable to deserialize argument" << journal::end;
+
+				return r;	
+			}
 		};
 
 		static void start()

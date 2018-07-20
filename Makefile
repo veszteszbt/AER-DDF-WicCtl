@@ -26,13 +26,13 @@ wicctl: wicctl.cc wicctl.h
 wic_host: wic_host.o alsa_host.o journal.o sched/process.o
 	g++ -I. -g3 -std=c++17 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o journal.o sched/process.o $(LIBS)
 
-pair_test: pair_test_a pair_test_b
+pair_test: pair_test_l pair_test_r
 
-pair_test_a: pair_test_a.o journal.o sched/process.o
-	g++ -I. -g3 -std=c++17 -fdiagnostics-color -o pair_test_a pair_test_a.o journal.o sched/process.o $(LIBS)
+pair_test_l: pair_test_l.o journal.o sched/process.o
+	g++ -I. -g3 -std=c++17 -fdiagnostics-color -o pair_test_l pair_test_l.o journal.o sched/process.o $(LIBS)
 
-pair_test_b: pair_test_b.o journal.o sched/process.o
-	g++ -I. -g3 -std=c++17 -fdiagnostics-color -o pair_test_b pair_test_b.o journal.o sched/process.o $(LIBS)
+pair_test_r: pair_test_r.o journal.o sched/process.o
+	g++ -I. -g3 -std=c++17 -fdiagnostics-color -o pair_test_r pair_test_r.o journal.o sched/process.o $(LIBS)
 
 clean:
 	rm *.o wicctl wic_host 

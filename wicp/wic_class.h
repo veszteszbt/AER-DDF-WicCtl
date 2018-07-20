@@ -10,13 +10,14 @@
 
 #define WIC_CLASS_TEMPLATE template < \
 	typename Tconfig, \
+	typename TcallId, \
 	typename TobjectId, \
-	typename TpropertyData, \
+	typename Tvalue, \
 	typename Taddress, \
 	typename... Tproperties \
 >
 
-#define WIC_CLASS wic_class<Tconfig, TobjectId, TpropertyData, Taddress, Tproperties...>
+#define WIC_CLASS wic_class<Tconfig, TcallId, TobjectId, Tvalue, Taddress, Tproperties...>
 
 namespace wicp 
 {
@@ -25,9 +26,11 @@ namespace wicp
 	{
 		typedef typename Tconfig::class_id_type	class_id_type;
 
+		typedef TcallId							call_id_type;
+
 		typedef TobjectId					 	object_id_type;
 
-		typedef TpropertyData					property_data_type;
+		typedef Tvalue							value_type;
 
 		typedef Taddress					 	address_type;
 
@@ -43,6 +46,7 @@ namespace wicp
 		typedef types::remote_object_record<
 			self, 
 			object_id_type, 
+			call_id_type,
 			address_type, 
 			Tproperties...
 		> remote_object_record_type;

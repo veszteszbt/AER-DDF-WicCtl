@@ -14,40 +14,64 @@ namespace process
 
 		typedef typename TEnv::value_type      value_type;
 
-		typedef typename TEnv::remote_record   remote_record;
-
 		typedef typename TEnv::history_type    history_type;
 
 		typedef typename TEnv::set_handle_type set_handle_type;
 
-		constexpr static remote_record        &remote = TEnv::remote;
+		typedef typename TEnv::wic_class wic_class;
 
-		constexpr static history_type         &history = TEnv::history;
+		typedef typename TEnv::object_id_type object_id_type;
 
-		constexpr static std::mutex           &history_lock = TEnv::history_lock;
+		typedef typename TEnv::member_id member_id;
+
+		typedef typename TEnv::property_data_type property_data_type;
 
 		static journal jrn(uint8_t level)
 		{
-			return journal(level,"wicp.sync.remote") << "role: " << remote.role.name << "; property: " << std::hex <<
-				TEnv::class_id << "::" << TEnv::member_id << ' ';
+			return journal(level,"wicp.sync.remote") << "property: " << std::hex <<
+				TEnv::class_id << "::" << member_id::value << ' ';
 		}
 
 		static void call_finish(set_handle_type h)
 		{
-			remote.role.report_call(h);
-			if(h.reason != earpc::reason::success)
+			const object_id_type arg_object_id = h.argument().object_id;
+			const object_id_type ret_object_id = h.value();
+
+			wic_class::lock_remote();
+			auto it = wic_class::find_remote(arg_object_id);
+			if(it != wic_class::end())
 			{
-				++remote.failures;
-				jrn(journal::error) << "; remote: " << (std::string)h.ip << " sync failed" << journal::end;
+				// TODO remote.role.report_call(h);
+				it->second.property_lock.lock();
+				auto &property = it->second.properties.template get<member_id>();
+				if(h.reason)
+				{
+					++property.failures;
+					jrn(journal::error) << "; remote: " << (std::string)h.ip << " sync failed" << journal::end;
+				}
+				else
+				{
+					if(arg_object_id != ret_object_id)
+					{
+						it->second.property_lock.unlock();
+						wic_class::unlock_remote();
+						jrn(journal::critical) << "; remote: " << (std::string)h.ip << " sync succeeded, but got invalid remote `" << 
+							wic_class::name << "' object reference `" << std::hex << ret_object_id << journal::end;
+						return;
+					}
+					jrn(journal::trace) << "; remote: " << (std::string)h.ip << " sync succeeded" << journal::end;
+				}
+				TEnv::finish_sync_remote(property, h);
+				it->second.property_lock.unlock();
+				wic_class::unlock_remote();
+				notify(arg_object_id);
 			}
 			else
 			{
-				jrn(journal::trace) << "; remote: " << (std::string)h.ip << " sync succeeded" << journal::end;
+				wic_class::unlock_remote();
+				jrn(journal::error) << "Invalid remote `" << 
+					wic_class::name << "' object reference `" << std::hex << arg_object_id << journal::end;
 			}
-
-
-			TEnv::finish_sync_remote(remote,h);
-			notify();
 		}
 
 	public:
@@ -61,39 +85,57 @@ namespace process
 			jrn(journal::debug) << "uninitialized" << journal::end;
 		}
 
-		static void notify()
+		static void notify(object_id_type object_id)
 		{
-			history_lock.lock();
-			if(history.empty())
+			wic_class::lock_remote();
+			auto it = wic_class::find_remote(object_id);
+			if(it != wic_class::end())
 			{
-				jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
-				history_lock.unlock();
-				return;
-			}
-
-			history_lock.unlock();
-			if(remote.role.is_bound())
-			{
-				jrn(journal::trace) << "; remote: " << (std::string)remote.role.get_ip() <<" doing sync" << journal::end;
-				TEnv::sync_remote(remote,types::function::set,call_finish);
+				it->second.property_lock.lock();
+				auto &property = it->second.properties.template get<member_id>();
+				if(property.history.empty())
+				{
+					it->second.property_lock.unlock();					
+					wic_class::unlock_remote();
+					jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
+					return;
+				}
+				jrn(journal::trace) << "; remote: " << (std::string)it->second.ip <<" doing sync" << journal::end;
+				TEnv::sync_remote(property, object_id, it->second.ip, types::function::set, call_finish);
+				it->second.property_lock.unlock();
+				wic_class::unlock_remote();
 			}
 			else
 			{
-				jrn(journal::debug) << "omitting sync via unbound role" << journal::end;
+				wic_class::unlock_remote();
+				jrn(journal::error) << "Invalid remote `" << 
+					wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
 			}
 		}
 
-		static void cancel()
+		static void cancel(object_id_type object_id)
 		{
-			history_lock.lock();
-			if(remote.call_id)
+			wic_class::lock_remote();
+			auto it = wic_class::find_remote(object_id);
+			if(it != wic_class::end())
 			{
-				jrn(journal::debug) << "cancelling sync" << journal::end;
-				TEnv::rpc::cancel(remote.call_id);
-				remote.call_id = 0;
+				it->second.property_lock.lock();
+				auto &property = it->second.properties.template get<member_id>();
+				if(property.call_id)
+				{
+					jrn(journal::debug) << "cancelling sync" << journal::end;
+					TEnv::rpc::cancel(property.call_id);
+					property.call_id = 0;
+				}
+				it->second.property_lock.unlock();
+				wic_class::unlock_remote();
 			}
-			history_lock.unlock();
-		
+			else
+			{
+				wic_class::unlock_remote();
+				jrn(journal::error) << "Invalid remote `" << 
+					wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
+			}		
 		}
 	};
 }}

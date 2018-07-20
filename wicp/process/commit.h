@@ -167,7 +167,7 @@ namespace process
 						
 						jrn(journal::trace) << "comitting new value to history; length is " << property.history.size() << journal::end;
 
-						const history_record hr(property.local_value);
+						history_record hr(property.local_value);
 						property.history.push_front(hr);
 						if(property.history.size() > TEnv::history_size)
 							property.history.pop_back();

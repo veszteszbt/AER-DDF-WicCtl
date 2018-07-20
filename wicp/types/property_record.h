@@ -7,12 +7,12 @@
 namespace wicp {
 namespace types 
 {
-	template <typename TcallId, typename TpropertyData>
+	template <typename TcallId, typename Tvalue>
 	struct property_record_base
 	{
 		typedef TcallId call_id_type;
 
-		typedef TpropertyData property_data_type;
+		typedef Tvalue value_type;
 
 		typedef std::chrono::high_resolution_clock clock;
 
@@ -20,11 +20,11 @@ namespace types
 		{
 			typename clock::time_point	time;
 
-			property_data_type			value;
+			value_type			value;
 
 			history_record() = default;
 
-			history_record(property_data_type v)
+			history_record(value_type v)
 				: time(clock::now())
 				, value(v)
 			{}
@@ -48,7 +48,7 @@ namespace types
 
 		uint32_t failures;
 
-		property_data_type local_value;
+		value_type local_value;
 
 		sched::listener on_change;
 
@@ -64,7 +64,7 @@ namespace types
 			, local_timestamp(clock::time_point::min())
 		{}
 
-		void init(property_data_type p = property_data_type())
+		void init(value_type p = value_type())
 		{
 			// TODO
 		}
