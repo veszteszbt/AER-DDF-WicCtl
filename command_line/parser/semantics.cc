@@ -47,10 +47,13 @@ void command_desc::set_row(int &r)
 int command_desc::get_row()
 { return row; }
 
-command_list_desc::command_list_desc()
+command_list_desc::command_list_desc() 
+	: row(0)
+	, command_list(std::vector<command_desc*>())
 {}
 
-command_list_desc::command_list_desc(command_list_desc* other)
+command_list_desc::command_list_desc(command_list_desc* other) 
+	: row(0)
 {
 	unsigned int osize = other->command_list.size();
 	command_list.resize(osize);
@@ -866,6 +869,9 @@ void casepartvector::add(casepartvector* other)
 		case_parts.push_back(other->case_parts[i]);
 }
 
+// TODO
+command_list_desc default_command_list_desc_pointer_value = command_list_desc();
+
 case_desc::case_desc(
 	int row_number,
 	expression_desc* case_expr_,
@@ -875,7 +881,11 @@ case_desc::case_desc(
 	: case_expr(case_expr_)
 	, case_parts(caseparts_->case_parts)
 	, defaultcase(dcase)
-{ row = row_number; }
+{
+	row = row_number;
+	if(dcase == 0)
+		dcase = &default_command_list_desc_pointer_value;
+}
 
 var_value case_desc::get_return_value()
 {
