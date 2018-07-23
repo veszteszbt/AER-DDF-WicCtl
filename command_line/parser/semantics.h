@@ -199,7 +199,6 @@ struct expr_ael : public expression_desc
 
 	expr_ael(int row_number, std::string var_name, expression_desc* n);
 
-	type get_type(); // TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -214,7 +213,6 @@ struct expr_add : public expr_binary
 	expr_add(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type(); 		// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -229,7 +227,6 @@ struct expr_dif : public expr_binary
 	expr_dif(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type();		// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -244,7 +241,6 @@ struct expr_mul : public expr_binary
 	expr_mul(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();			// TODO missing definition
-	type get_type();		// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -261,7 +257,6 @@ struct expr_div : public expr_binary
 	expr_div(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type();		// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -276,7 +271,6 @@ struct expr_pow : public expr_binary
 	expr_pow(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();			// TODO missing definition
-	type get_type();		// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -292,7 +286,6 @@ struct expr_mod : public expr_binary
 	expr_mod(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type();		// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -307,7 +300,6 @@ struct expr_or : public expr_binary
 	expr_or(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type();		// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -324,7 +316,6 @@ struct expr_and : public expr_binary
 	type expr_type;
 
 	int get_row();
-	type get_type();			// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -341,7 +332,6 @@ struct expr_eq : public expr_binary
 	expr_eq(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type();			// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -358,7 +348,6 @@ struct expr_neq : public expr_binary
 	expr_neq(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type();			// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -375,7 +364,6 @@ struct expr_leq : public expr_binary
 	expr_leq(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type();			// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -391,7 +379,6 @@ struct expr_geq : public expr_binary
 	expr_geq(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type();			// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -408,7 +395,6 @@ struct expr_lt : public expr_binary
 	expr_lt(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type();			// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -425,7 +411,6 @@ struct expr_gt : public expr_binary
 	expr_gt(int row_number, expression_desc* left, expression_desc* right);
 
 	int get_row();
-	type get_type();			// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -440,7 +425,6 @@ struct expr_neg : public expr_unary
 	expr_neg(int row_number, expression_desc* ex);
 
 	int get_row();
-	type get_type();			// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
@@ -455,7 +439,6 @@ struct expr_um : public expr_unary
 	expr_um(int row_number, expression_desc* ex);
 
 	int get_row();
-	type get_type();			// TODO missing definition
 	var_value get_val();
 
 	void evaluate();
