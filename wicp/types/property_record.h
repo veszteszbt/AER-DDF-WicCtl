@@ -7,10 +7,12 @@
 namespace wicp {
 namespace types 
 {
-	template <typename TcallId, typename Tvalue>
+	template <typename TcallId, typename TobjectId, typename Tvalue>
 	struct property_record_base
 	{
 		typedef TcallId call_id_type;
+
+		typedef TobjectId object_id_type;
 
 		typedef Tvalue value_type;
 
@@ -42,6 +44,10 @@ namespace types
 
 		call_id_type call_id;
 
+		call_id_type initial_sync_cid;
+
+		bool initial_sync_pending;
+
 		typename clock::time_point sync_start;
 
 		typename clock::duration latency;
@@ -50,10 +56,9 @@ namespace types
 
 		value_type local_value;
 
-		sched::listener on_change;
+		sched::event<object_id_type> on_change;
 
 		bool cooldown_pending;
-
 
 		// TODO local_timestamp?
 		property_record_base()
@@ -62,6 +67,9 @@ namespace types
 			, failures(0)
 			, call_id(0)
 			, local_timestamp(clock::time_point::min())
+			, initial_sync_pending(true)
+			, initial_sync_cid(0)
+
 		{}
 
 		void init(value_type p = value_type())

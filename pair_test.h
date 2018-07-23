@@ -57,16 +57,16 @@ struct property_data_type
 		object_id_type pobject_id,
 		const value_type &pvalue 
 	) 
-		: value(pvalue)
-		, object_id(pobject_id)
+		: object_id(pobject_id)
+		, value(pvalue)
 	{}
 
-	bool operator==(const property_data_type &that)
+	bool operator==(const property_data_type &that) const
 	{ return std::tie(object_id, value) == std::tie(that.object_id, that.value); }
 };
 
 template <int N>
-struct Int : public wicp::types::property_record_base<uint64_t,uint8_t>
+struct Int : public wicp::types::property_record_base<uint32_t, uint64_t, uint8_t>
 {
 	static const int result = N;
 };
@@ -96,7 +96,6 @@ struct wic_class_config : public property_config_base
 
 	typedef wicp::wic_class<
 		TestConfig,
-		typename rpc::call_id_type,
 		cfg_object_id_type, 
 		cfg_value_type, 
 		net::ipv4_address,
@@ -105,8 +104,18 @@ struct wic_class_config : public property_config_base
 };
 
 typedef wicp::local_property<wic_class_config> local_property;
+static void l_change_handler(uint64_t object_id)
+{
+	std::cout << "local property value: `" << int(local_property::value(object_id)) << "'" << std::endl;
+}
 
 typedef wicp::remote_property<wic_class_config> remote_property;
+static void r_change_handler(uint64_t object_id)
+{
+	std::cout << "remote property value: `" << int(remote_property::value(object_id)) << "'" << std::endl;
+}
+
+static int count = 0;
 
 int main() 
 { 
@@ -121,14 +130,20 @@ int main()
 		wic_class_config::cfg_wic_class::set_local(69);
 		wic_class_config::cfg_wic_class::set_remote(70, {127,0,0,1});
 		local_property::init();
+		local_property::subscribe_to_change(69, l_change_handler);
 		local_property::remote_add(69, 70);
-		local_property::value(69,6);
+		while(1)
+		{
+			std::this_thread::sleep_for(500ms);
+			local_property::value(69,count++);
+		}
 	}
 	else
 	{
 		wic_class_config::cfg_wic_class::set_local(70);
 		wic_class_config::cfg_wic_class::set_remote(69, {127,0,0,1});
 		remote_property::init(69);
+		remote_property::subscribe_to_change(69, r_change_handler);
 		// remote_property::value(69,12);
 	}
 	// local_property::value(12, 8);

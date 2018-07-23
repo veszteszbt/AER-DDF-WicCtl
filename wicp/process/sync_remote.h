@@ -8,23 +8,23 @@ namespace process
 	template<typename TEnv>
 	class sync_remote
 	{
-		typedef typename TEnv::clock           clock;
+		typedef typename TEnv::clock				clock;
 
-		typedef typename TEnv::command_id_type command_id_type;
+		typedef typename TEnv::command_id_type		command_id_type;
 
-		typedef typename TEnv::value_type      value_type;
+		typedef typename TEnv::value_type			value_type;
 
-		typedef typename TEnv::history_type    history_type;
+		typedef typename TEnv::history_type			history_type;
 
-		typedef typename TEnv::set_handle_type set_handle_type;
+		typedef typename TEnv::set_handle_type		set_handle_type;
 
-		typedef typename TEnv::wic_class wic_class;
+		typedef typename TEnv::wic_class			wic_class;
 
-		typedef typename TEnv::object_id_type object_id_type;
+		typedef typename TEnv::object_id_type		object_id_type;
 
-		typedef typename TEnv::member_id member_id;
+		typedef typename TEnv::member_id			member_id;
 
-		typedef typename TEnv::property_data_type property_data_type;
+		typedef typename TEnv::property_data_type	property_data_type;
 
 		static journal jrn(uint8_t level)
 		{
@@ -113,6 +113,7 @@ namespace process
 			}
 		}
 
+		// TODO calling this, i think the time is when we delete a remote at remote_del
 		static void cancel(object_id_type object_id)
 		{
 			wic_class::lock_remote();

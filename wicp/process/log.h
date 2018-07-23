@@ -68,13 +68,12 @@ namespace process
 			auto it = wic_class::template find<encap_object_type>(object_id);
 			if(it == wic_class::end())
 			{
-				jrn(journal::error) << "Invalid `" << wic_class::name << "' object reference `" << std::hex << object_id << journal::end;	
 				wic_class::template unlock<encap_object_type>();
+				jrn(journal::error) << "Invalid `" << wic_class::name << "' object reference `" << std::hex << object_id << journal::end;	
 				return;
 			}
 			it->second.property_lock.lock();
 			const auto &property = it->second.properties.template get<member_id>();
-
 			const history_record r = property.history.front();
 			
 			it->second.property_lock.unlock();

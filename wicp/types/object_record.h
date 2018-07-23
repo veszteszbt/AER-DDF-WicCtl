@@ -6,7 +6,6 @@
 # include <sched/lockable.h>
 # include <types/meta.h>
 
-
 #define OBJECT_RECORD_CLASS object_record<TwicClass, TobjectId, Tproperties...>
 
 namespace wicp {
@@ -57,32 +56,19 @@ namespace types
 	template <
 		typename TwicClass, 
 		typename TobjectId, 
-		typename TcallId,
 		typename Taddress,
 		typename... Tproperties
 	>
 	struct remote_object_record 
 		: public OBJECT_RECORD_CLASS
 	{
-		// struct call_report_type
-		// {
-		// 	bool    success;
-		// 	int32_t latency;
-		// };
-
-		// virtual void report_call(call_report_type) = 0;
+		// void report_call(call_report_type) = TwicClassReportCall;
 
 		typedef TobjectId object_id_type;
-
-		typedef TcallId call_id_type;
 
 		typedef Taddress address_type;
 
 		address_type ip;
-
-		bool initial_sync_pending;
-
-		call_id_type initial_sync_cid;
 
 		sched::listener on_destroy;
 
@@ -94,8 +80,6 @@ namespace types
 		)
 			: OBJECT_RECORD_CLASS(object_id)
 			, ip(paddress)
-			, initial_sync_pending(true)
-			, initial_sync_cid(0)
 		{}
 	};
 }}

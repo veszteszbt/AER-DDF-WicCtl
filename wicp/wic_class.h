@@ -7,26 +7,30 @@
 # include <wicp/types/object_record.h>
 # include <types/meta.h>
 
-
 #define WIC_CLASS_TEMPLATE template < \
 	typename Tconfig, \
-	typename TcallId, \
 	typename TobjectId, \
 	typename Tvalue, \
 	typename Taddress, \
 	typename... Tproperties \
 >
 
-#define WIC_CLASS wic_class<Tconfig, TcallId, TobjectId, Tvalue, Taddress, Tproperties...>
+#define WIC_CLASS wic_class<Tconfig, TobjectId, Tvalue, Taddress, Tproperties...>
 
 namespace wicp 
 {
 	WIC_CLASS_TEMPLATE
 	class wic_class
 	{
-		typedef typename Tconfig::class_id_type	class_id_type;
+		struct call_report_type
+		{
+			bool    success;
+			int32_t latency;
+		};
 
-		typedef TcallId							call_id_type;
+		// void report_call(call_report_type) = Treport_call;
+
+		typedef typename Tconfig::class_id_type	class_id_type;
 
 		typedef TobjectId					 	object_id_type;
 
@@ -46,7 +50,6 @@ namespace wicp
 		typedef types::remote_object_record<
 			self, 
 			object_id_type, 
-			call_id_type,
 			address_type, 
 			Tproperties...
 		> remote_object_record_type;
@@ -178,7 +181,7 @@ namespace wicp
 
 		static bool set_remote(
 			object_id_type object_id, 
-			const address_type address
+			address_type address
 		)
 		{
 			auto it = local_object_lock_table.find(object_id);

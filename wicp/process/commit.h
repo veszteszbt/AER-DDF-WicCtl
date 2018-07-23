@@ -19,27 +19,7 @@ namespace process
 	template<typename TEnv>
 	class commit
 	{
-		typedef std::chrono::high_resolution_clock clock;
-
-		typedef typename TEnv::proc_sync       proc_sync;
-
-		typedef typename TEnv::proc_log        proc_log;
-
-		typedef typename TEnv::property_data_type	property_data_type;
-
-		typedef typename TEnv::history_type  history_type;
-
-		typedef typename TEnv::history_record  history_record;
-
-		typedef typename TEnv::member_id_type      member_id_type;
-
-		typedef typename TEnv::object_id_type      object_id_type;
-
-		typedef typename TEnv::encap_object_type encap_object_type;
-		
-		typedef typename TEnv::wic_class wic_class;
-
-		typedef typename TEnv::member_id member_id; 
+		typedef typename TEnv::object_id_type		object_id_type;
 
 		struct cooldown_record
 		{
@@ -61,6 +41,26 @@ namespace process
 			{ return lhs.cooldown_time < rhs.cooldown_time; }
 		};
 
+		typedef std::chrono::high_resolution_clock	clock;
+
+		typedef typename TEnv::proc_sync			proc_sync;
+
+		typedef typename TEnv::proc_log				proc_log;
+
+		typedef typename TEnv::property_data_type	property_data_type;
+
+		typedef typename TEnv::history_type			history_type;
+
+		typedef typename TEnv::history_record		history_record;
+
+		typedef typename TEnv::member_id_type		member_id_type;
+
+		typedef typename TEnv::encap_object_type	encap_object_type;
+
+		typedef typename TEnv::wic_class			wic_class;
+
+		typedef typename TEnv::member_id 			member_id;
+
 		typedef sched::lockable<
 			std::priority_queue<
 				cooldown_record,
@@ -68,22 +68,24 @@ namespace process
 				cooldown_record
 		>> cooldowns_type;
 
-		typedef sched::lockable<std::list<object_id_type>> object_id_buffer_type;
+		typedef sched::lockable<
+			std::list<
+				object_id_type
+		>> object_id_buffer_type;
 
-		static cooldowns_type cooldowns;
+		static cooldowns_type				cooldowns;
 
-		static object_id_buffer_type object_id_buffer;
+		static object_id_buffer_type		object_id_buffer;
 
-		static const uint32_t cooldown_time			= TEnv::cooldown_time;
+		static const uint32_t cooldown_time	= TEnv::cooldown_time;
 
+		static std::mutex					suspend_lock;
 
-		static std::mutex               suspend_lock;
+		static std::condition_variable		suspend_cv;
 
-		static std::condition_variable  suspend_cv;
+		static std::thread					*proc_thread;
 
-		static std::thread             *proc_thread;
-
-		static volatile bool            is_running;
+		static volatile bool				is_running;
 
 		static journal jrn(uint8_t level)
 		{
@@ -122,7 +124,7 @@ namespace process
 					if(it == wic_class::end())
 					{
 						wic_class::template unlock<encap_object_type>();
-						jrn(journal::error) << "Invalid `" << 
+						jrn(journal::error) << "Invalid `" <<
 							wic_class::name << "' object reference `" << std::hex << object_id << "'" << journal::end;
 						continue;
 					}
@@ -132,7 +134,7 @@ namespace process
 						while(!cooldowns.empty())
 						{
 							const auto current_time = ::types::time::msec(clock::now());
-							auto lowest = cooldowns.top();
+							const auto lowest = cooldowns.top();
 							if(lowest.cooldown_time <= current_time)
 							{
 								auto obj_it = wic_class::template find<encap_object_type>(lowest.object_id);
@@ -160,11 +162,11 @@ namespace process
 							it->second.property_lock.unlock();
 							wic_class::template unlock<encap_object_type>();
 							jrn(journal::trace) << "no change; ignoring object `" << std::hex << object_id << "'" << journal::end;
-							continue; 
+							continue;
 						}
 						else
 							property.cooldown_pending = true;
-						
+
 						jrn(journal::trace) << "comitting new value to history; length is " << property.history.size() << journal::end;
 
 						history_record hr(property.local_value);
@@ -172,14 +174,21 @@ namespace process
 						if(property.history.size() > TEnv::history_size)
 							property.history.pop_back();
 
-						it->second.property_lock.unlock();
-						wic_class::template unlock<encap_object_type>();
-
-						TEnv::sync_local(object_id);
+						if(TEnv::sync_local(property))
+						{
+							it->second.property_lock.unlock();
+							wic_class::template unlock<encap_object_type>();
+							property.on_change(object_id);
+						}
+						else
+						{
+							it->second.property_lock.unlock();
+							wic_class::template unlock<encap_object_type>();
+						}
 
 						proc_sync::notify(object_id);
 						proc_log::notify(object_id);
-
+						// TODO emplace here or before the calls
 						cooldowns.lock();
 						cooldowns.emplace(object_id, ::types::time::msec(hr.time) + static_cast<uint32_t>(cooldown_time));
 						cooldowns.unlock();

@@ -36,7 +36,7 @@ namespace wicp
 
 		typedef typename rpc::template incoming_call_handle<object_id_type, property_data_type> notify_handle_type;
 
-		typedef wicp::types::property_record_base<object_id_type, value_type> property_record_base;
+		typedef wicp::types::property_record_base<call_id_type, object_id_type, value_type> property_record_base;
 
 		typedef typename property_record_base::history_type  history_type;
 
@@ -50,10 +50,6 @@ namespace wicp
 
 		typedef std::integral_constant<member_id_type, TConfig::cfg_member_id> member_id;
 
-		static typename clock::time_point            local_timestamp;
-
-		static sched::listener on_change;
-
 		static_assert(
 			sizeof(command_id_type) >= sizeof(class_id_type) + sizeof(member_id_type),
 			"class and member id types does not fit together in command id type"
@@ -62,8 +58,6 @@ namespace wicp
 		static const uint32_t                        cooldown_time = TConfig::cfg_cooldown_time;
 
 		static const uint32_t                        history_size  = TConfig::cfg_history_size;
-
-		constexpr static const bool                  commit_change_only   = TConfig::cfg_commit_change_only;
 
 		static const class_id_type                   class_id      = TConfig::cfg_class_id;
 
@@ -80,31 +74,25 @@ namespace wicp
 				class_id << "::" << member_id::value << ' ';
 		}
 
-		static void sync_local(object_id_type object_id)
+		template <typename Tproperty>
+		static std::enable_if_t<
+			std::is_base_of_v<
+				property_record_base,
+				Tproperty
+			>, bool
+		> sync_local(Tproperty &property)
 		{
-			wic_class::lock_local();
-			auto it = wic_class::find_local(object_id);
-			if(it != wic_class::end())
+			if(property.history.empty())
 			{
-				it->second.property_lock.lock();
-				auto &property = it->second.properties.template get<member_id>();
-				if(property.history.empty())
-				{
-					it->second.property_lock.unlock();
-					wic_class::unlock_local();
-					return;				
-				}
-				if(local_timestamp < property.history.front().time)
-				{
-					local_timestamp = property.history.front().time;
-					property.on_change();
-					it->second.property_lock.unlock();
-					wic_class::unlock_local();
-					return;
-				}
-				it->second.property_lock.unlock();
+				jrn(journal::error) << "nothing to do history is empty" << journal::end;
+				return false;				
 			}
-			wic_class::unlock_local();
+			if(property.local_timestamp < property.history.front().time)
+			{
+				property.local_timestamp = property.history.front().time;
+				return true;
+			}
+			return false;
 		}
 
 		template <typename Tproperty>
@@ -113,27 +101,25 @@ namespace wicp
 				property_record_base, 
 				Tproperty
 			>
-		> sync_remote(
+		> sync_remote(		
 			Tproperty &property,
+			const history_type &history,
 			object_id_type object_id,
 			net::ipv4_address ip,
 			uint8_t function,
 			void(*callback)(set_handle_type)
 		)
 		{
-			// TODO we already check this in sync_local/123 and our lock is still on, also in sync_remote/67
-			// history_lock.lock();
-			// if(history.empty())
-			// {
-			// 	history_lock.unlock();
-			// 	jrn(journal::trace) << "history is empty; omitting sync" << journal::end;
-			// 	return;
-			// }
-			if(property.sync_timestamp > property.history.front().time)
+			if(history.empty())
+			{
+				jrn(journal::trace) << "history is empty; omitting sync" << journal::end;
+				return;
+			}
+			if(property.sync_timestamp > history.front().time)
 			{
 				jrn(journal::critical) << "remote: " << (std::string)ip <<
 					"; sync timestamp is newer than tip of history; recovering by synchronizing last item" << journal::end;
-				property.sync_timestamp = property.history.front().time - std::chrono::nanoseconds(1);
+				property.sync_timestamp = history.front().time - std::chrono::nanoseconds(1);
 			}
 			else if(property.pending_timestamp != clock::time_point::min())
 			{
@@ -152,20 +138,17 @@ namespace wicp
 				property.pending_timestamp = clock::time_point::min();
 				property.sync_start = clock::time_point::min();
 			}
-			else if(property.sync_timestamp == property.history.front().time)
+			else if(property.sync_timestamp == history.front().time)
 			{
 				jrn(journal::trace) << "remote: " << (std::string)ip << "; up-to-date" << journal::end;
 				return;
-			}
-			
+			}			
 			jrn(journal::trace) << "remote: " << (std::string)ip << "; sync needed" << journal::end;
 
-			typename std::remove_reference_t<decltype(property)>::
-				history_type::iterator i = property.history.begin();
+			typename history_type::const_iterator i = history.begin();
 			for(
-				typename std::remove_reference_t<decltype(property)>::
-					history_type::iterator j = property.history.begin();
-				j != property.history.end();
+				typename history_type::const_iterator j = history.begin();
+				j != history.end();
 				++j
 			)
 			{
@@ -185,6 +168,54 @@ namespace wicp
 			jrn(journal::trace) << "remote: " << (std::string)ip << "; sync initiated" << journal::end;
 			property.call_id = rpc::call(ip,command_id|function,v,callback);
 		}
+
+		template <typename Tproperty>
+		static std::enable_if_t<
+			std::is_base_of_v<
+				property_record_base, 
+				Tproperty
+			>
+		> sync_remote(
+			Tproperty &property,
+			object_id_type local_object_id,
+			object_id_type remote_object_id,
+			net::ipv4_address ip,
+			uint8_t function,
+			void(*callback)(set_handle_type)
+		)
+		{
+			wic_class::lock_local();
+			auto it = wic_class::find_local(local_object_id);
+			if(it != wic_class::end())
+			{
+				it->second.property_lock.lock();
+				history_type history = it->second.properties.template get<member_id>().history;
+				sync_remote(property, history, remote_object_id, ip,function, callback);
+				wic_class::unlock_local();
+				it->second.property_lock.unlock();
+			}
+			else
+			{
+				wic_class::unlock_local();
+				jrn(journal::error) << "Invalid `" << 
+					wic_class::name << "' object reference `" << std::hex << local_object_id << journal::end;
+			}
+		}
+
+		template <typename Tproperty>
+		static std::enable_if_t<
+			std::is_base_of_v<
+				property_record_base, 
+				Tproperty
+			>
+		> sync_remote(
+			Tproperty &property,
+			object_id_type object_id,
+			net::ipv4_address ip,
+			uint8_t function,
+			void(*callback)(set_handle_type)
+		)
+		{ sync_remote(property, property.history, object_id, ip, function, callback); }
 
 		template <typename Tproperty>
 		static std::enable_if_t<
@@ -214,13 +245,6 @@ namespace wicp
 	};
 
 	template<typename c>
-	sched::listener property_env_base<c>::on_change;
-
-	template<typename c>
 	typename property_env_base<c>::value_type property_env_base<c>::default_value;
-
-	template<typename c>
-	typename property_env_base<c>::clock::time_point property_env_base<c>::local_timestamp =
-		property_env_base<c>::clock::time_point::min();
 }
 #endif
