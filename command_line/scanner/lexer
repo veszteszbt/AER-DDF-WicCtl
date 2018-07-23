@@ -1,6 +1,7 @@
 WS [ \n\t\r]
 CH ([a-zA-Z0-9]|"_")
 ID	[a-zA-Z]{CH}*
+
 %%
 
 "if" 			return Parser::KEYWORD_IF;
@@ -33,6 +34,7 @@ ID	[a-zA-Z]{CH}*
 				}
 "default" 		return Parser::KEYWORD_DEFAULT;
 "local" 		return Parser::KEYWORD_LOCAL;
+"exit"			return Parser::KEYWORD_EXIT;
 
 "{" 			{
 					commandline::shell::scanDepth++;
@@ -102,9 +104,16 @@ ID	[a-zA-Z]{CH}*
 
 <<EOF>>			{ throw ParserBase::FINISH_THIS_STRINGSTREAM; }
 
-.           	{
+[^\n]+\\n       {
 					std::cerr << lineNr() << ": \e[31;01mLexical error\e[0m" << std::endl;
-					std::terminate();
+					std::cerr << "the symbol " << matched() << " will be ignored, continue the command from there! (call the execute function again to continue!)" << std::endl;
+					throw ParserBase::FINISH_THIS_STRINGSTREAM;
+				}
+				
+.		        {
+					std::cerr << lineNr() << ": \e[31;01mLexical error\e[0m" << std::endl;
+					std::cerr << "the symbol " << matched() << " will be ignored, continue the command from there! (call the execute function again to continue!)" << std::endl;
+					throw ParserBase::FINISH_THIS_STRINGSTREAM;
 				}
 
 %%

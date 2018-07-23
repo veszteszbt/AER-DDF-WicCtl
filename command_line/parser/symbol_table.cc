@@ -1,5 +1,6 @@
 #include "symbol_table.h"
 
+
 void s_minus(const var_value& lhs, const var_value& rhs, var_value& ret)
 {
 	ret.set_type_noconvert(u_string);
@@ -1319,7 +1320,7 @@ int Symbol_Table::find_variable(std::string* name)
 	{
 		std::cerr << "ERROR: the vector of symbol tables is empty for some reason" << std::endl;
 		journal(journal::info, "symbol_table") << "ERROR: the vector of symbol tables is empty for some reason" << journal::end;
-		std::terminate();
+		//ERROR
 	}
 	while(i>0)
 	{

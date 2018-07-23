@@ -53,9 +53,9 @@ static void write_reverse(std::string s)
 	std::reverse(s.begin(), s.end());
 }
 
-static void echo_c(std::string s, int i)
+static void echo_c(std::string s,int i)
 {
-	for (unsigned int j = 0; j < i; ++j)
+	for (int j = 0; j < i; ++j)
 		std::cout << s;
 
 	std::cout << std::endl;
@@ -71,6 +71,31 @@ static void is_true(int b)
 	else
 		std::cout << "FALSE" << std::endl;
 }
+
+/*static void var_info(var_value v)
+{
+	switch (v.get_type())
+	{
+		case u_integer :
+			std::cout << "u_integer" << std::endl;
+			break;
+		case u_double :
+			std::cout << "u_double" << std::endl;
+			break;
+		case u_string :
+			std::cout << "u_string" << std::endl;
+			break;
+		case u_array :
+			std::cout << "u_array" << std::endl;
+			break;
+		case u_null :
+			std::cout << "u_void" << std::endl;
+			break;
+		default :
+			std::cout << "unable to determine variable type" << std::endl;
+	}
+	std::cout << v << std::endl;
+}*/
 
 static void exit(int i)
 {
@@ -110,6 +135,7 @@ functions::functions()
 	add_command("echo_end", echo_end);
 	add_command("sin", sin);
 	add_command("is_true", is_true);
+	//add_command("var_info", var_info);
 	add_command("exit",exit);
 	add_variable("asd", 36);
 }
@@ -138,7 +164,8 @@ var_value functions::run(call* c)
 	{
 		std::cerr << "\e[31;01mERROR:\e[0m Unknown command!" << std::endl;
 		journal(journal::info, "functions") << "ERROR: Unknown command!" << journal::end;
-		std::terminate();
+		//ERROR
+		return 0;
 		//unknown command
 	}
 

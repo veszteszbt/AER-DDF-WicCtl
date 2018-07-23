@@ -130,7 +130,7 @@ void expr_var::evaluate()
 	{
 		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m Variable " << name << " has no value yet!" << std::endl;
 		journal(journal::info, "semantics") << row << ": ERROR: Variable " << name << " has no value yet!" << journal::end;
-		std::terminate();
+		//ERROR
 	}
 	else
 	{
@@ -209,7 +209,7 @@ var_value assign::get_return_value()
 	var_value v = 0;
 	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (assignment)!" << std::endl;
 	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (assignment)!" << journal::end;
-	std::terminate();
+	//ERROR
 
 	return v;
 }
@@ -238,7 +238,7 @@ var_value local_assign::get_return_value()
 	var_value v = 0;
 	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (local assignment)!" << std::endl;
 	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function! (local assignment)!" << journal::end;
-	std::terminate();
+	//ERROR
 
 	return v;
 }
@@ -289,7 +289,7 @@ expression_desc* c_expression_list::return_element(unsigned int i)
 		//shouldn't happen though
 		std::cerr << std::endl << "\e[31;01mERROR:\e[0m indexing error in expression_list" << std::endl;
 		journal(journal::info, "semantics") << "ERROR: indexing error in expression_list" << journal::end;
-		std::terminate();
+		//ERROR
 	}
 }
 
@@ -324,7 +324,7 @@ void expr_ael::evaluate()
 	{
 		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m Variable " << name << " has no value yet!" << std::endl;
 		journal(journal::info, "semantics") << row << ": ERROR: Variable " << name << " has no value yet!" << journal::end;
-		std::terminate();
+		//ERROR
 	}
 	else
 	{
@@ -420,7 +420,7 @@ void expr_div::evaluate()
 	{
 		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m division by 0" << std::endl;
 		journal(journal::info, "semantics") << row << ": ERROR: division by 0" << journal::end;
-		std::terminate();
+		//ERROR
 	}
 }
 
@@ -463,15 +463,15 @@ void expr_mod::evaluate()
 		{
 			case 1: std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m modulo cannot be 0!" << std::endl;
 					journal(journal::info, "semantics") << row << ": ERROR: modulo cannot be 0!" << journal::end;
-					std::terminate();
+					//ERROR
 					break;
 			case 2: std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m modulo operator can only be used with integer type!" << std::endl;
 					journal(journal::info, "semantics") << row << ": ERROR: modulo operator can only be used with integer type!" << journal::end;
-					std::terminate();
+					//ERROR
 					break;
 			default: std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m unknown error in modulo operator" << std::endl;
 					journal(journal::info, "semantics") << row << ": ERROR: unknown error in modulo operator" << journal::end;
-					std::terminate();
+					//ERROR
 		}
 	}
 }
@@ -701,7 +701,7 @@ var_value for_3_desc::get_return_value()
 	var_value v = 0;
 	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (for loop)!" << std::endl;
 	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (for loop)!" << journal::end;
-	std::terminate();
+	//ERROR
 
 	return v;
 }
@@ -739,7 +739,7 @@ var_value for_in_desc::get_return_value()
 	var_value v = 0;
 	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (for loop)!" << std::endl;
 	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (for loop)!" << journal::end;
-	std::terminate();
+	//ERROR
 
 	return v;
 }
@@ -771,7 +771,7 @@ var_value if_desc::get_return_value()
 	var_value v = 0;
 	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (if statement)!" << std::endl;
 	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (if statement)!" << journal::end;
-	std::terminate();
+	//ERROR
 
 	return v;
 }
@@ -799,7 +799,7 @@ var_value while_desc::get_return_value()
 	var_value v = 0;
 	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (while loop)!" << std::endl;
 	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (while loop)!" << journal::end;
-	std::terminate();
+	//ERROR
 
 	return v;
 }
@@ -830,7 +830,7 @@ var_value until_desc::get_return_value()
 	var_value v = 0;
 	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (until loop)!" << std::endl;
 	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (until loop)!" << journal::end;
-	std::terminate();
+	//ERROR
 
 	return v;
 }
@@ -892,7 +892,7 @@ var_value case_desc::get_return_value()
 	var_value v = 0;
 	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (case statement)!" << std::endl;
 	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (case statement)!" << journal::end;
-	std::terminate();
+	//ERROR
 
 	return v;
 }
@@ -988,7 +988,7 @@ var_value sytable_stack::get_return_value()
 	var_value v = 0;
 	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function ( {} aka symbol table stack)!" << std::endl;
 	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function ( {} aka symbol table stack)!" << journal::end;
-	std::terminate();
+	//ERROR
 
 	return v;
 }

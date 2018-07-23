@@ -21,18 +21,18 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		sed -i 's/lines./lines.\n#include "symbol_table.h"\n#include <sstream>/' Parser.h
 		sed -i 's/Parser() = default;/Parser(){ParserBase::clearin__();}\n\t\tParser(std::stringstream \&ss) : d_scanner(ss, std::cout) { ParserBase::clearin__(); }\n\t\tParser(std::string inFile) : d_scanner(inFile, std::cout){ ParserBase::clearin__(); }/' Parser.h
 		#sed -i 's/int parse();/int parse();\n\t\tvoid finish(int i);/' Parser.h
-		sed -i 's/private:/\tSymbol_Table symbol_table;\n\n\tvoid process_this(std::stringstream \&ss)\n\t{\n\t\td_scanner.switchIstream(ss);\n\t\tparse();\n\t}\n\n\tvoid process_this(const std::string \&filename)\n\t{\n\t\td_scanner.switchIstream(filename);\n\t\tparse();\n\t}\n\n\tvoid process_this()\n\t{\n\t\td_scanner.switchIstream(std::cin);\n\t\tstd::cout << "\\n> program taking input from cin now:" << std::endl;\n\t\tparse();\n\t}\n\nprivate:/' Parser.h
+		sed -i 's/private:/\tSymbol_Table symbol_table;\n\n\tvoid process_this(std::stringstream \&ss)\n\t{\n\t\t std::cout << ss.str() << std::endl;\n\t\td_scanner.switchIstream(ss);\n\t\tparse();\n\t}\n\n\tvoid process_this(const std::string \&filename)\n\t{\n\t\td_scanner.switchIstream(filename);\n\t\tparse();\n\t}\n\n\tvoid process_this()\n\t{\n\t\td_scanner.switchIstream(std::cin);\n\t\tstd::cout << "\\n> program taking input from cin now:" << std::endl;\n\t\tparse();\n\t}\n\nprivate:/' Parser.h
 
 		echo "inserting into Parser.ih"
 		sed -i 's/\/\/ $insert class.h/\/\/ \$insert class.h\n#ifndef PARSER_IH\n#define PARSER_IH/' Parser.ih
-		sed -i 's/std::cerr << "Syntax error\\n";/std::cerr << d_loc__.first_line << ": \\e[31;01mSyntax error\\e[0m\\n";\n\tstd::terminate();/' Parser.ih
+		sed -i 's/std::cerr << "Syntax error\\n";/std::cerr << d_loc__.first_line << ": \\e[31;01mSyntax error\\e[0m\\n";/' Parser.ih
 		sed -i 's/return d_scanner.lex();/int ret = d_scanner.lex();\n\td_loc__.first_line = d_scanner.lineNr();\n\tif( ret == IDENTIFIER || ret == SINGLE_QUOTE || ret == DOUBLE_QUOTE )\n\t{\n\t\td_val__.str = new std::string(d_scanner.matched());\n\t}\n\telse if( ret == INTEGER )\n\t{\n\t\td_val__.integ = new int(stoi(d_scanner.matched()));\n\t}\n\telse if( ret == DOUBLE )\n\t{\n\t\td_val__.dbl = new double(stod(d_scanner.matched()));\n\t}\n\treturn ret;/' Parser.ih
 		sed -i 's/\/\/using namespace std;/\/\/using namespace std;\n#endif/' Parser.ih
 
 		echo "inserting into parse.cc"
 		sed -i 's/catch (ErrorRecovery__)/catch (ErrorRecovery__ e)/' parse.cc
-		sed -i 's/if (not recovery__())/if(e == FINISH_THIS_STRINGSTREAM)\n\t{\n\t\tParserBase::finished = true;\n\t\treturn;\n\t}\n\n\tif (not recovery__())/' parse.cc
 		sed -i 's/clearin__();/\/\/ clearin__();/' parse.cc
+		sed -i 's/if (not recovery__())/if(e == FINISH_THIS_STRINGSTREAM)\n\t{\n\t\tParserBase::finished = true;\n\t\treturn;\n\t}\n\telse\n\t{\n\t\tstd::cout << ">encountered an error, please write a semicolon (;) to ensure that the state with the error is closed" << std::endl;\n\t\tclearin__();\n\t}\n\n\tif (not recovery__())/' parse.cc
 		sed -i 's/while (true)/ParserBase::finished = false;\n\twhile (!ParserBase::finished)/' parse.cc
 		# to remove warning
 		# (sed can't do this) insert into parse.cc:

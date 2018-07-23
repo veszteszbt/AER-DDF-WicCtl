@@ -105,7 +105,8 @@ class functions
 			{
 				std::cerr << "\e[31;01mERROR:\e[0m expected " << sizeof...(Targ) << " arguments, received " << args.size() << std::endl;
 				journal(journal::info, "functions") << "expected " << sizeof...(Targ) << " arguments, received " << args.size() << journal::end;
-				std::terminate();
+				//ERROR();
+				return 0;
 			}
 			else
 			{
@@ -119,7 +120,8 @@ class functions
 				{
 					std::cerr << "\e[31;01mERROR:\e[0m argument " << errorvect[0] << " is invalid" << std::endl;
 					journal(journal::info, "functions") << "argument " << errorvect[0] << " is invalid" << journal::end;
-					std::terminate();
+					//ERROR();
+					return 0;
 				}
 				else
 				{
@@ -132,7 +134,8 @@ class functions
 					}
 					std::cerr << " are invalid" << std::endl;
 					journal(journal::info, "functions") << " are invalid" << journal::end;
-					std::terminate();
+					//ERROR();
+					return 0;
 				}
 			}
 		}

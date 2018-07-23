@@ -474,11 +474,14 @@ struct for_3_desc : public command_desc
 {
 	// int row; // > comment for the same reason
 	command_desc* start;
+
+	expression_desc* loop_condition;
+
 	command_desc* iterate;
 
 	command_list_desc* commands;
 
-	expression_desc* loop_condition;
+
 
 	for_3_desc(
 		int row_number,
@@ -624,6 +627,7 @@ struct call : public command_desc
 	// int row; // > comment for the same reason
 	var_value returnval;
 
+
 	call(std::string n, argumentsvector* a, int row_number);
 
 	var_value get_return_value();
@@ -637,6 +641,7 @@ struct sytable_stack : public command_desc
 	command_list_desc* c;
 
 	sytable_stack(command_list_desc* cd);
+
 
 	var_value get_return_value();
 

@@ -8,7 +8,7 @@ int shell::scanDepth = 0;
 
 void shell::init()
 {
-	journal(journal::info,"main") << "program started" << journal::end;
+	journal(journal::info,"shell") << "program started" << journal::end;
 	scanDepth = 0;
 }
 
@@ -32,21 +32,24 @@ shell::~shell()
 {
 	delete parser;
 	delete fptr;
-	journal(journal::info,"main") << "program finished" << journal::end;
+	journal(journal::info,"shell") << "program finished" << journal::end;
 }
 
 void shell::execute()
 {
+	journal(journal::info,"shell") << "starting new parse cycle" << journal::end;
 	parser->process_this();
 }
 
 void shell::execute(std::stringstream& ss)
 {
+	journal(journal::info,"shell") << "starting new parse cycle" << journal::end;
 	parser->process_this(ss);
 }
 
 void shell::execute(const std::string& filename)
 {
+	journal(journal::info,"shell") << "starting new parse cycle" << journal::end;
 	parser->process_this(filename);
 }
 

@@ -1,0 +1,178 @@
+2018.07.23 15:04:01.137655 [INFO] (main) program started
+2018.07.23 15:04:01.137778 [INFO] (symbol_table) creating symbol table
+2018.07.23 15:04:01.137920 [INFO] (symbol_table) set value of asd
+2018.07.23 15:04:01.137980 [INFO] (main) starting new parse cycle
+2018.07.23 15:04:01.138072 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:04:01.138155 [INFO] (parser) command -> IDENTIFIER OPERATOR_ASSIGN expression
+2018.07.23 15:04:01.138193 [INFO] (symbol_table) set value of x
+2018.07.23 15:04:01.138227 [INFO] (semantics) Assigned 5 to variable name x
+2018.07.23 15:04:01.138242 [INFO] (parser) command_list -> command COMMAND_SEPARATOR
+2018.07.23 15:04:01.138339 [INFO] (main) starting new parse cycle
+2018.07.23 15:04:01.138376 [INFO] (main) starting new parse cycle
+2018.07.23 15:04:04.697914 [INFO] (parser) expression -> IDENTIFIER
+2018.07.23 15:04:04.697978 [INFO] (parser) arguments -> expression
+2018.07.23 15:04:04.698236 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:04:10.726571 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:04:10.726618 [INFO] (parser) arguments -> expression
+2018.07.23 15:04:10.726638 [INFO] (parser) command -> IDENTIFIER ( arguments )
+2018.07.23 15:04:10.726700 [INFO] (parser) command_list command COMMAND_SEPARATOR
+2018.07.23 15:06:31.478734 [INFO] (main) program started
+2018.07.23 15:06:31.478800 [INFO] (symbol_table) creating symbol table
+2018.07.23 15:06:31.478928 [INFO] (symbol_table) set value of asd
+2018.07.23 15:06:31.478973 [INFO] (main) starting new parse cycle
+2018.07.23 15:06:31.479232 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:06:31.479296 [INFO] (main) starting new parse cycle
+2018.07.23 15:06:31.479352 [INFO] (main) starting new parse cycle
+2018.07.23 15:06:36.929946 [INFO] (parser) expression -> IDENTIFIER
+2018.07.23 15:06:36.929998 [INFO] (parser) arguments -> expression
+2018.07.23 15:06:36.930220 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:06:43.624902 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:06:43.624959 [INFO] (parser) arguments -> expression
+2018.07.23 15:08:14.837244 [INFO] (main) program started
+2018.07.23 15:08:14.837329 [INFO] (symbol_table) creating symbol table
+2018.07.23 15:08:14.837440 [INFO] (symbol_table) set value of asd
+2018.07.23 15:08:14.837517 [INFO] (main) starting new parse cycle
+2018.07.23 15:08:14.837876 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:08:14.837935 [INFO] (main) starting new parse cycle
+2018.07.23 15:08:14.837978 [INFO] (main) starting new parse cycle
+2018.07.23 15:08:18.348776 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:08:18.348821 [INFO] (parser) arguments -> expression
+2018.07.23 15:08:18.348842 [INFO] (parser) command -> IDENTIFIER ( arguments )
+2018.07.23 15:08:18.348903 [INFO] (parser) command_list -> command COMMAND_SEPARATOR
+2018.07.23 15:08:20.366516 [INFO] (main) program started
+2018.07.23 15:08:20.366550 [INFO] (symbol_table) creating symbol table
+2018.07.23 15:08:20.366631 [INFO] (symbol_table) set value of asd
+2018.07.23 15:08:20.366677 [INFO] (main) starting new parse cycle
+2018.07.23 15:08:20.366914 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:08:20.366969 [INFO] (main) starting new parse cycle
+2018.07.23 15:08:20.367021 [INFO] (main) starting new parse cycle
+2018.07.23 15:08:24.672896 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:09:00.342280 [INFO] (main) program started
+2018.07.23 15:09:00.342347 [INFO] (symbol_table) creating symbol table
+2018.07.23 15:09:00.342472 [INFO] (symbol_table) set value of asd
+2018.07.23 15:09:00.342516 [INFO] (main) starting new parse cycle
+2018.07.23 15:09:00.342887 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:09:00.342948 [INFO] (main) starting new parse cycle
+2018.07.23 15:09:00.342989 [INFO] (main) starting new parse cycle
+2018.07.23 15:09:12.881876 [INFO] (parser) expression -> IDENTIFIER
+2018.07.23 15:09:12.881948 [INFO] (parser) arguments -> expression
+2018.07.23 15:09:12.881990 [INFO] (parser) command -> IDENTIFIER ( arguments )
+2018.07.23 15:09:12.882138 [INFO] (semantics) 1: ERROR: Variable x has no value yet!
+2018.07.23 15:09:12.882191 [INFO] (parser) command_list command COMMAND_SEPARATOR
+2018.07.23 15:10:47.449935 [INFO] (main) program started
+2018.07.23 15:10:47.449992 [INFO] (symbol_table) creating symbol table
+2018.07.23 15:10:47.450136 [INFO] (symbol_table) set value of asd
+2018.07.23 15:10:47.450186 [INFO] (main) starting new parse cycle
+2018.07.23 15:10:47.450402 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:10:47.450437 [INFO] (main) starting new parse cycle
+2018.07.23 15:10:47.450461 [INFO] (main) starting new parse cycle
+2018.07.23 15:11:24.732633 [INFO] (main) program started
+2018.07.23 15:11:24.732699 [INFO] (symbol_table) creating symbol table
+2018.07.23 15:11:24.732827 [INFO] (symbol_table) set value of asd
+2018.07.23 15:11:24.732881 [INFO] (main) starting new parse cycle
+2018.07.23 15:11:24.733306 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:11:24.733370 [INFO] (main) starting new parse cycle
+2018.07.23 15:11:24.733469 [INFO] (main) starting new parse cycle
+2018.07.23 15:11:46.939947 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:11:46.940015 [INFO] (parser) arguments -> expression
+2018.07.23 15:11:46.940054 [INFO] (parser) command -> IDENTIFIER ( arguments )
+2018.07.23 15:11:46.940161 [INFO] (parser) command_list command COMMAND_SEPARATOR
+2018.07.23 15:11:49.687222 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:11:49.687276 [INFO] (parser) arguments -> expression
+2018.07.23 15:11:49.687300 [INFO] (parser) command -> IDENTIFIER ( arguments )
+2018.07.23 15:11:49.687371 [INFO] (parser) command_list command COMMAND_SEPARATOR
+2018.07.23 15:12:05.474244 [INFO] (main) program started
+2018.07.23 15:12:05.474287 [INFO] (symbol_table) creating symbol table
+2018.07.23 15:12:05.474360 [INFO] (symbol_table) set value of asd
+2018.07.23 15:12:05.474393 [INFO] (main) starting new parse cycle
+2018.07.23 15:12:05.474680 [INFO] (main) starting new parse cycle
+2018.07.23 15:12:05.474737 [INFO] (main) starting new parse cycle
+2018.07.23 15:12:11.049128 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:12:13.945235 [INFO] (parser) error COMMAND_SEPARATOR
+2018.07.23 15:12:30.917710 [INFO] (main) program started
+2018.07.23 15:12:30.917800 [INFO] (symbol_table) creating symbol table
+2018.07.23 15:12:30.917933 [INFO] (symbol_table) set value of asd
+2018.07.23 15:12:30.917989 [INFO] (main) starting new parse cycle
+2018.07.23 15:12:30.918180 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:12:30.918229 [INFO] (parser) command -> IDENTIFIER OPERATOR_ASSIGN expression
+2018.07.23 15:12:30.918260 [INFO] (symbol_table) set value of x
+2018.07.23 15:12:30.918296 [INFO] (semantics) Assigned 5 to variable name x
+2018.07.23 15:12:30.918316 [INFO] (parser) command_list -> command COMMAND_SEPARATOR
+2018.07.23 15:12:30.918424 [INFO] (main) starting new parse cycle
+2018.07.23 15:12:30.918568 [INFO] (main) starting new parse cycle
+2018.07.23 15:12:46.282838 [INFO] (parser) expression -> IDENTIFIER
+2018.07.23 15:12:46.282951 [INFO] (parser) arguments -> expression
+2018.07.23 15:12:46.282995 [INFO] (parser) command -> IDENTIFIER ( arguments )
+2018.07.23 15:12:46.283089 [INFO] (symbol_table) get value of x
+2018.07.23 15:12:46.283252 [INFO] (parser) command_list command COMMAND_SEPARATOR
+2018.07.23 15:13:35.764853 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:13:35.764949 [INFO] (parser) command -> IDENTIFIER OPERATOR_ASSIGN expression
+2018.07.23 15:13:35.765084 [INFO] (parser) expression -> IDENTIFIER
+2018.07.23 15:13:35.765159 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:13:35.765219 [INFO] (parser) expression -> expression OPERATOR_LESS_THAN expression
+2018.07.23 15:13:35.765330 [INFO] (parser) expression -> IDENTIFIER
+2018.07.23 15:13:35.765372 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:13:35.765423 [INFO] (parser) expression -> expression OPERATOR_PLUS expression
+2018.07.23 15:13:35.765445 [INFO] (parser) command -> IDENTIFIER OPERATOR_ASSIGN expression
+2018.07.23 15:13:52.695470 [INFO] (parser) expression -> IDENTIFIER
+2018.07.23 15:13:52.695507 [INFO] (parser) expression -> INTEGER
+2018.07.23 15:13:52.695521 [INFO] (parser) expression -> expression OPERATOR_LESS_THAN expression
+2018.07.23 15:13:52.695536 [INFO] (parser) arguments -> expression
+2018.07.23 15:13:52.695554 [INFO] (parser) command -> IDENTIFIER ( arguments )
+2018.07.23 15:13:52.695580 [INFO] (parser) command_list -> command COMMAND_SEPARATOR
+2018.07.23 15:13:54.446141 [INFO] (parser) command -> KEYWORD_FOR expression COMMAND_SEPARATOR expression COMMAND_SEPARATOR expression KEYWORD_DO command_list KEYWORD_DONE
+2018.07.23 15:13:54.446266 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.446309 [INFO] (semantics) Assigned 5 to variable name x
+2018.07.23 15:13:54.446350 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.446386 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.446462 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.446517 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.446551 [INFO] (semantics) Assigned 6 to variable name x
+2018.07.23 15:13:54.446580 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.446614 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.446687 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.446721 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.446750 [INFO] (semantics) Assigned 7 to variable name x
+2018.07.23 15:13:54.446778 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.446809 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.446875 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.446909 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.446940 [INFO] (semantics) Assigned 8 to variable name x
+2018.07.23 15:13:54.446967 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.446998 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447085 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447121 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.447153 [INFO] (semantics) Assigned 9 to variable name x
+2018.07.23 15:13:54.447192 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447224 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447293 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447326 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.447357 [INFO] (semantics) Assigned 10 to variable name x
+2018.07.23 15:13:54.447384 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447414 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447475 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447508 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.447552 [INFO] (semantics) Assigned 11 to variable name x
+2018.07.23 15:13:54.447581 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447613 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447673 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447714 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.447748 [INFO] (semantics) Assigned 12 to variable name x
+2018.07.23 15:13:54.447776 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447812 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447879 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.447919 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.447952 [INFO] (semantics) Assigned 13 to variable name x
+2018.07.23 15:13:54.447986 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.448033 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.448090 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.448130 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.448161 [INFO] (semantics) Assigned 14 to variable name x
+2018.07.23 15:13:54.448189 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.448224 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.448289 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.448329 [INFO] (symbol_table) set value of x
+2018.07.23 15:13:54.448360 [INFO] (semantics) Assigned 15 to variable name x
+2018.07.23 15:13:54.448395 [INFO] (symbol_table) get value of x
+2018.07.23 15:13:54.448433 [INFO] (parser) command_list command COMMAND_SEPARATOR
+2018.07.23 15:14:24.066144 [INFO] (parser) expression -> INTEGER

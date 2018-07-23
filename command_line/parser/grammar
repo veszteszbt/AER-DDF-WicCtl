@@ -1,6 +1,8 @@
 %baseclass-preinclude "../functions.h"
 %lsp-needed
 
+
+
 %scanner ../scanner/Scanner.h
 
 %union
@@ -59,6 +61,7 @@
 %token OPEN_SQUARE_BRACKET
 %token CLOSING_SQUARE_BRACKET
 %token ARROW
+%token KEYWORD_EXIT
 
 %token CONST_TRUE
 %token CONST_FALSE
@@ -90,11 +93,14 @@
 
 
 start:
-	command_list
+	command_list KEYWORD_EXIT
 	{
+		//note that KEYWORD_EXIT exists only to block reduction to start state
 		$$ = new command_list_desc($1);
 		//$$->evaluate();
 		journal(journal::info, "parser") << "start -> command_list" << journal::end;
+		finished = true;
+		return;
 	}
 ;
 
@@ -108,11 +114,30 @@ command_list:
 		journal(journal::info, "parser") << "command_list command COMMAND_SEPARATOR" << journal::end;
 	}
 |
+	command_list error COMMAND_SEPARATOR
+	{
+		//clearin__();
+		std::cout << "asd"<< std::endl;
+		$$ = new command_list_desc();
+		$$->add($1);
+		delete $1;
+		journal(journal::info, "parser") << "command_list error COMMAND_SEPARATOR" << journal::end;
+		//finished = true;
+	}
+|
 	command COMMAND_SEPARATOR
 	{
 		$$ = new command_list_desc();
 		$$->add($1);
 		journal(journal::info, "parser") << "command_list -> command COMMAND_SEPARATOR" << journal::end;
+	}
+|
+	error COMMAND_SEPARATOR
+	{
+		//clearin__();
+		std::cout << ">Successfully recovered from error state, continue the program" << std::endl;
+		$$ = new command_list_desc();
+		journal(journal::info, "parser") << "error COMMAND_SEPARATOR" << journal::end;
 	}
 ;
 
