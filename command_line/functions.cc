@@ -64,6 +64,11 @@ static void echo_c(std::string s,int i)
 static void echo_end()
 { std::cout << std::endl; }
 
+static void do_nothing()
+{
+
+}
+
 static void is_true(int b)
 {
 	if(b)
@@ -109,19 +114,7 @@ static void echo(const T& t)
 
 functions::functions()
 {
-	//active=true;
-	/*alsa_host::init();
-
-	process::sql_executor::init();
-
-	wicc_earpc::init();
-
-	devstat::init();
-
-	gmclient_test::test_room_1::init();
-	 ezek a wic_host-ban még a ciklus előtt vannak*/
-
-	//ez var_Value miatt még nem jó
+	//usage: add_command(<function's name in the shell>, <function's name here>);
 	add_command("writeint",write_int);
 	add_command("writedouble",write_double);
 	add_command("writestring",write_string);
@@ -135,6 +128,7 @@ functions::functions()
 	add_command("echo_end", echo_end);
 	add_command("sin", sin);
 	add_command("is_true", is_true);
+	add_command("do_nothing", do_nothing);
 	//add_command("var_info", var_info);
 	add_command("exit",exit);
 	add_variable("asd", 36);

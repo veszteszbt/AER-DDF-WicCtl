@@ -3842,7 +3842,7 @@ int main()
 
 	alsa_host::init();
 
-	process::sql_executor::init();
+	//process::sql_executor::init();
 
 	wicc_earpc::init();
 
