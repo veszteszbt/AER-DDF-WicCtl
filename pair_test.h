@@ -107,19 +107,30 @@ typedef wicp::local_property<wic_class_config> local_property;
 static void l_change_handler(uint64_t object_id)
 {
 	std::cout << "local property value: `" << int(local_property::value(object_id)) << "'" << std::endl;
+	if(object_id == 68)
+		++object_id;
+	else
+		--object_id;
+
+	local_property::value(object_id, local_property::value(object_id, local_property::value(object_id)+1));
 }
 
 typedef wicp::remote_property<wic_class_config> remote_property;
 static void r_change_handler(uint64_t object_id)
 {
 	std::cout << "remote property value: `" << int(remote_property::value(object_id)) << "'" << std::endl;
+	if(object_id == 68)
+		++object_id;
+	else
+		--object_id;
+
+	remote_property::value(object_id, remote_property::value(object_id, remote_property::value(object_id)+1));	
 }
 
 static int count = 0;
 
 int main() 
 { 
-	//wicp::role_type test_role("dummy");
 	journal::min_level = 255;
 	journal::init(fname);
 	rpc::init();
@@ -127,24 +138,34 @@ int main()
 	std::this_thread::sleep_for(5s);
 	if(sport == 1234)
 	{
+		wic_class_config::cfg_wic_class::set_local(68);
 		wic_class_config::cfg_wic_class::set_local(69);
 		wic_class_config::cfg_wic_class::set_remote(70, {127,0,0,1});
+		wic_class_config::cfg_wic_class::set_remote(71, {127,0,0,1});
 		local_property::init();
 		local_property::subscribe_to_change(69, l_change_handler);
+		// local_property::subscribe_to_change(69, l_change_handler);
+		local_property::remote_add(68, 70);
+		local_property::remote_add(68, 71);
 		local_property::remote_add(69, 70);
-		while(1)
-		{
-			std::this_thread::sleep_for(500ms);
-			local_property::value(69,count++);
-		}
+		local_property::remote_add(69, 71);
+		local_property::value(69, 0);
 	}
 	else
 	{
 		wic_class_config::cfg_wic_class::set_local(70);
+		wic_class_config::cfg_wic_class::set_local(71);
+		wic_class_config::cfg_wic_class::set_remote(68, {127,0,0,1});
 		wic_class_config::cfg_wic_class::set_remote(69, {127,0,0,1});
-		remote_property::init(69);
-		remote_property::subscribe_to_change(69, r_change_handler);
-		// remote_property::value(69,12);
+		remote_property::init(68); 
+		remote_property::init(69); // TODO place this to set_remote
+		// remote_property::subscribe_to_change(68, r_change_handler);		
+		remote_property::subscribe_to_change(69, r_change_handler);		
+		// while(1)
+		// {
+		// 	std::this_thread::sleep_for(500ms);
+		// 	remote_property::value(69, count++);
+		// }
 	}
 	// local_property::value(12, 8);
 	// local_property::value(12, 4);

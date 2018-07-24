@@ -62,11 +62,16 @@ namespace types
 	struct remote_object_record 
 		: public OBJECT_RECORD_CLASS
 	{
-		// void report_call(call_report_type) = TwicClassReportCall;
+		typedef Taddress address_type;
+
+		struct call_report_type
+		{
+			bool    success;
+			int32_t latency;
+			address_type address;
+		};
 
 		typedef TobjectId object_id_type;
-
-		typedef Taddress address_type;
 
 		address_type ip;
 
@@ -81,6 +86,31 @@ namespace types
 			: OBJECT_RECORD_CLASS(object_id)
 			, ip(paddress)
 		{}
+
+		template <typename T>
+		void report_call(const T &h)
+		{
+			if(h.reason == earpc::reason::cancelled)
+				return;
+			if(h.ip != ip)
+			{
+				on_ip_change();
+				ip = h.ip;
+			}
+
+			call_report_type r;
+			r.success = !h.reason;
+			r.latency = calc_latency(h);			
+		}
+	private:
+	
+		template<typename T, typename U = decltype(T::finished), typename V = decltype(T::started)>
+		int32_t calc_latency(const T &h)
+		{ return ::types::time::msec(h.finished-h.started); }
+
+		template<typename T, typename U = decltype(T::received)>
+		int32_t calc_latency(const T &h)
+		{ return -1; }
 	};
 }}
 

@@ -8,6 +8,7 @@
 # include <pthread.h>
 # include <thread>
 # include <queue>
+# include <unordered_set>
 # include <net/ipv4_address.h>
 # include <journal.h>
 # include <types/time.h>
@@ -23,9 +24,9 @@ namespace process
 
 		struct cooldown_record
 		{
-			object_id_type object_id;
+			object_id_type	object_id;
 
-			uint32_t cooldown_time;
+			uint32_t		cooldown_time;
 
 			cooldown_record() = default;
 
@@ -66,26 +67,25 @@ namespace process
 				cooldown_record,
 				std::vector<cooldown_record>,
 				cooldown_record
-		>> cooldowns_type;
+		>>											cooldowns_type;
 
 		typedef sched::lockable<
-			std::list<
-				object_id_type
-		>> object_id_buffer_type;
+			std::unordered_set<object_id_type>
+		>											object_id_buffer_type;
 
-		static cooldowns_type				cooldowns;
+		static cooldowns_type						cooldowns;
 
-		static object_id_buffer_type		object_id_buffer;
+		static object_id_buffer_type				object_id_buffer;
 
-		static const uint32_t cooldown_time	= TEnv::cooldown_time;
+		static const uint32_t 	cooldown_time	= 	TEnv::cooldown_time;
 
-		static std::mutex					suspend_lock;
+		static std::mutex							suspend_lock;
 
-		static std::condition_variable		suspend_cv;
+		static std::condition_variable				suspend_cv;
 
-		static std::thread					*proc_thread;
+		static std::thread							*proc_thread;
 
-		static volatile bool				is_running;
+		static volatile bool						is_running;
 
 		static journal jrn(uint8_t level)
 		{
@@ -93,14 +93,6 @@ namespace process
 			return journal(level,"wicp.commit") << "property: " << std::hex <<
 				TEnv::class_id << "::" << TEnv::member_id::value << ' ';
 		}
-
-
-		// static void cooldown_finish()
-		// {
-		// 	jrn(journal::trace) << "cooldown finished" << journal::end;
-		// 	if(value != history.front().value)
-		// 		notify();
-		// }
 
 		static void start()
 		{
@@ -115,8 +107,8 @@ namespace process
 						object_id_buffer.unlock();
 						break;
 					}
-					const object_id_type object_id = object_id_buffer.front();
-					object_id_buffer.pop_front();
+					const object_id_type object_id = *object_id_buffer.begin();
+					object_id_buffer.erase(object_id_buffer.begin());
 					object_id_buffer.unlock();
 
 					wic_class::template lock<encap_object_type>();
@@ -137,10 +129,12 @@ namespace process
 							const auto lowest = cooldowns.top();
 							if(lowest.cooldown_time <= current_time)
 							{
-								auto obj_it = wic_class::template find<encap_object_type>(lowest.object_id);
-								if(obj_it != wic_class::end())
-									obj_it->second.properties.template get<member_id>().cooldown_pending = false;
-
+								auto lowest_it = wic_class::template find<encap_object_type>(lowest.object_id);
+								if(lowest_it != wic_class::end())
+								{
+									lowest_it->second.properties.template get<member_id>().cooldown_pending = false;
+									safe_emplace_to_object_id_buffer(lowest.object_id);
+								}
 								cooldowns.pop();
 							}
 							else
@@ -188,7 +182,6 @@ namespace process
 
 						proc_sync::notify(object_id);
 						proc_log::notify(object_id);
-						// TODO emplace here or before the calls
 						cooldowns.lock();
 						cooldowns.emplace(object_id, ::types::time::msec(hr.time) + static_cast<uint32_t>(cooldown_time));
 						cooldowns.unlock();
@@ -208,6 +201,12 @@ namespace process
 			jrn(journal::debug) << "uninitialized" << journal::end;
 		}
 
+		static void safe_emplace_to_object_id_buffer(object_id_type object_id)
+		{
+			object_id_buffer.lock();
+			object_id_buffer.emplace(object_id);
+			object_id_buffer.unlock();
+		}
 	public:
 
 		static void init()
@@ -230,10 +229,7 @@ namespace process
 
 		static void notify(object_id_type pobject_id)
 		{
-			object_id_buffer.lock();
-			object_id_buffer.emplace_back(pobject_id);
-			object_id_buffer.unlock();
-
+			safe_emplace_to_object_id_buffer(pobject_id);
 			std::lock_guard<std::mutex> lg(suspend_lock);
 			suspend_cv.notify_one();
 		}

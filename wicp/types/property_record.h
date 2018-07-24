@@ -12,8 +12,6 @@ namespace types
 	{
 		typedef TcallId call_id_type;
 
-		typedef TobjectId object_id_type;
-
 		typedef Tvalue value_type;
 
 		typedef std::chrono::high_resolution_clock clock;
@@ -22,7 +20,7 @@ namespace types
 		{
 			typename clock::time_point	time;
 
-			value_type			value;
+			value_type					value;
 
 			history_record() = default;
 
@@ -32,27 +30,42 @@ namespace types
 			{}
 		};
 
+		struct sync_record
+		{
+			typename clock::time_point timestamp;
+
+			typename clock::time_point pending_timestamp;
+
+			call_id_type 				call_id;
+
+			typename clock::time_point	start;
+
+			typename clock::duration	latency;
+
+			uint32_t 					failures;
+
+			sync_record()
+				: timestamp(clock::time_point::min())
+				, pending_timestamp(clock::time_point::min())
+				, start(clock::time_point::min())
+				, failures(0)
+				, call_id(0)
+			{}
+		};
+
+		typedef TobjectId object_id_type;
+
 		typedef std::list<history_record> history_type;
 
 		history_type history;
-	
-		typename clock::time_point sync_timestamp;
 
-		typename clock::time_point pending_timestamp;
+		sync_record sync;
 
 		typename clock::time_point local_timestamp;
-
-		call_id_type call_id;
 
 		call_id_type initial_sync_cid;
 
 		bool initial_sync_pending;
-
-		typename clock::time_point sync_start;
-
-		typename clock::duration latency;
-
-		uint32_t failures;
 
 		value_type local_value;
 
@@ -60,16 +73,10 @@ namespace types
 
 		bool cooldown_pending;
 
-		// TODO local_timestamp?
 		property_record_base()
-			: sync_timestamp(clock::time_point::min())
-			, pending_timestamp(clock::time_point::min())
-			, failures(0)
-			, call_id(0)
-			, local_timestamp(clock::time_point::min())
+			: local_timestamp(clock::time_point::min())
 			, initial_sync_pending(true)
 			, initial_sync_cid(0)
-
 		{}
 
 		void init(value_type p = value_type())
@@ -78,9 +85,9 @@ namespace types
 		}
 
 		// remote_record(const remote_record &t)
-		// 	: sync_timestamp(t.sync_timestamp)
+		// 	: timestamp(t.timestamp)
 		// 	, pending_timestamp(t.pending_timestamp)
-		// 	, sync_start(t.sync_start)
+		// 	, start(t.start)
 		// 	, latency(t.latency)
 		// 	, failures(t.failures)
 		// 	, call_id(t.call_id)

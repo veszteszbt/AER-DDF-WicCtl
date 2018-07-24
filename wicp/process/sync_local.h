@@ -64,17 +64,25 @@ namespace process
 							remote_it->second.property_lock.lock();
 							auto &property = 
 								remote_it->second.properties.template get<member_id>();
-							if(property.call_id == h.call_id)
+							if(property.sync.call_id == h.call_id)
+							{	std::cout << "property " << std::hex << property.sync.call_id << std::endl;
+								std::cout << "handle " << std::hex << h.call_id << std::endl;
+							}
+							if(property.sync.call_id == h.call_id)
 							{
-								// TODO
-								//i->role.report_call(h);
-								jrn(journal::trace) << "; remote: " << (std::string)h.ip << " call_finished" << journal::end;
-								TEnv::finish_sync_remote(property, h);
+								remote_it->second.report_call(h);
+								jrn(journal::trace) <<
+									"; remote: " << (std::string)h.ip <<
+									"; object: " << std::hex << *it <<
+									"; call finished" << journal::end;
+
+								TEnv::finish_sync_remote(property.sync, h);
 								remote_it->second.property_lock.unlock();
 								wic_class::unlock_remote();
 								local_it->second.remotes.unlock();
 								wic_class::unlock_local();
 								notify(arg_object_id);
+								std::cout << "lofasz\n";
 								return;
 							}
 							remote_it->second.property_lock.unlock();
@@ -83,15 +91,20 @@ namespace process
 						else
 						{
 							it = local_it->second.remotes.erase(it);
-							jrn(journal::debug) << "corrupted remote object `" << *it << "'" << journal::end;
+							jrn(journal::error) << "corrupted remote object `" << *it << "'" << journal::end;
 						}
 					}
+
 					wic_class::unlock_remote();
 					local_it->second.remotes.unlock();
 					wic_class::unlock_local();
-					jrn(journal::critical) << "; remote: " << (std::string)h.ip <<
-						"could not find remote for finished change" << journal::end;
+					jrn(journal::critical) <<
+						"; remote: " << (std::string)h.ip << std::hex <<
+						"; object: " << arg_object_id <<
+					"; could not find remote for finished change" << journal::end;
 					notify(arg_object_id);
+					std::cout << "IDE NEM KENE ELJUTNI " << std::hex << h.call_id << std::endl;
+
 				}
 				else
 				{
@@ -121,28 +134,31 @@ namespace process
 			auto local_it = wic_class::find_local(local_object_id);
 			if(local_it != wic_class::end())
 			{
+				local_it->second.property_lock.lock();
+				auto &local_property = 
+					local_it->second.properties.template get<member_id>();
+				if(local_property.history.empty())
+				{
+					jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
+					local_it->second.property_lock.unlock();
+					wic_class::unlock_local();
+					return;
+				}
+				local_it->second.property_lock.unlock();
 				wic_class::lock_remote();
 				auto remote_it = wic_class::find_remote(remote_object_id);
 				if(remote_it != wic_class::end())
 				{
 					remote_it->second.property_lock.lock();
-					auto &property = 
+					auto &remote_property = 
 						remote_it->second.properties.template get<member_id>();
-					if(property.history.empty())
-					{
-						jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
-						remote_it->second.property_lock.unlock();
-						wic_class::unlock_remote();
-						wic_class::unlock_local();
-						return;
-					}
 					jrn(journal::trace) << "remote: " << (std::string)remote_it->second.ip << " doing sync via object `" <<
 						std::hex << remote_object_id << "'" << journal::end;
 
 					TEnv::sync_remote(
-						property, 
+						remote_property.sync, 
+						local_property.history,
 						local_object_id,
-						remote_object_id,
 						remote_it->second.ip, 
 						types::function::notify, 
 						call_finish
@@ -187,7 +203,8 @@ namespace process
 				{
 					local_it->second.property_lock.unlock();
 					wic_class::unlock_local();
-					jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
+					jrn(journal::trace) << "nothing to do for object `" << 
+						std::hex << object_id << "'; suspending until next notify" << journal::end;
 					return;
 				}
 				local_it->second.property_lock.unlock();
@@ -207,9 +224,9 @@ namespace process
 						auto &remote_property = 
 							remote_it->second.properties.template get<member_id>();
 						TEnv::sync_remote(
-							remote_property, 
+							remote_property.sync, 
 							local_property.history,
-							*it,
+							object_id,
 							remote_it->second.ip, 
 							types::function::notify, 
 							call_finish

@@ -41,12 +41,12 @@ namespace process
 			auto it = wic_class::find_remote(arg_object_id);
 			if(it != wic_class::end())
 			{
-				// TODO remote.role.report_call(h);
+				it->second.report_call(h);
 				it->second.property_lock.lock();
 				auto &property = it->second.properties.template get<member_id>();
 				if(h.reason)
 				{
-					++property.failures;
+					++property.sync.failures;
 					jrn(journal::error) << "; remote: " << (std::string)h.ip << " sync failed" << journal::end;
 				}
 				else
@@ -61,7 +61,7 @@ namespace process
 					}
 					jrn(journal::trace) << "; remote: " << (std::string)h.ip << " sync succeeded" << journal::end;
 				}
-				TEnv::finish_sync_remote(property, h);
+				TEnv::finish_sync_remote(property.sync, h);
 				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
 				notify(arg_object_id);
@@ -100,7 +100,7 @@ namespace process
 					jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
 					return;
 				}
-				jrn(journal::trace) << "; remote: " << (std::string)it->second.ip <<" doing sync" << journal::end;
+				jrn(journal::trace) << "; remote: " << (std::string)it->second.ip << " doing sync" << journal::end;
 				TEnv::sync_remote(property, object_id, it->second.ip, types::function::set, call_finish);
 				it->second.property_lock.unlock();
 				wic_class::unlock_remote();

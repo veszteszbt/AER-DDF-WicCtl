@@ -79,7 +79,12 @@ namespace wicp
 				{
 					local_it->second.property_lock.lock();
 					auto &property = local_it->second.properties.template get<member_id>();
-					property_data_type rv({object_id, property.history.empty() ? property.local_value : property.history.front().value});
+					property_data_type rv({
+						object_id, 
+						property.history.empty() ? 
+						property.local_value : 
+						property.history.front().value
+					});
 					local_it->second.property_lock.unlock();
 					wic_class::unlock_local();
 					jrn(journal::trace) << "get from remote " << (std::string)h.ip << journal::end;
@@ -122,8 +127,8 @@ namespace wicp
 				}
 			}
 		}
-
 	public:
+	
 		static void init()
 		{
 // ///////////////

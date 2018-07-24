@@ -22,14 +22,6 @@ namespace wicp
 	WIC_CLASS_TEMPLATE
 	class wic_class
 	{
-		struct call_report_type
-		{
-			bool    success;
-			int32_t latency;
-		};
-
-		// void report_call(call_report_type) = Treport_call;
-
 		typedef typename Tconfig::class_id_type	class_id_type;
 
 		typedef TobjectId					 	object_id_type;
@@ -78,6 +70,34 @@ namespace wicp
 		static remote_object_lock_table_type remote_object_lock_table;
 
 		static const class_id_type class_id = Tconfig::class_id;
+
+
+		template <typename TmemberId, typename Tproperty, typename... Tremaining>
+		static void init_properties()
+		{
+			Tproperty::init();
+			init_properties<Tremaining...>();
+		}
+
+		template <typename TmemberId, typename Tproperty>
+		static void init_properties()
+		{
+			Tproperty::init();
+		}
+
+		template <typename TmemberId, typename Tproperty, typename... Tremaining>
+		static void uninit_properties()
+		{
+			Tproperty::uninit();
+			uninit_properties<Tremaining...>();
+		}
+
+		template <typename TmemberId, typename Tproperty>
+		static void uninit_properties()
+		{
+			Tproperty::uninit();
+		}
+
 	public:
 		
 		constexpr static const char* name = Tconfig::cfg_name;
@@ -93,13 +113,15 @@ namespace wicp
 
 		static void init()
 		{
-
+			// init_properties<Tproperties...>();
 		}
 
 		static void uninit()
 		{
-			
+			// uninit_properties<Tproperties...>();			
 		}
+
+		
 		// TODO
 		// static auto find_object(object_id_type object_id)
 		// {
@@ -204,7 +226,15 @@ namespace wicp
 		{ return local_object_lock_table.erase(it); }
 
 		static bool clr_remote(object_id_type object_id)
-		{ return remote_object_lock_table.erase(object_id); }
+		{ 
+			auto it = remote_object_lock_table.find(object_id);
+			if(it = remote_object_lock_table.end())
+			{
+				it->on_destory();
+				return clr_remote(it);
+			}
+			return false; 
+		}
 
 		static bool clr_remote(remote_iterator it)
 		{ return remote_object_lock_table.erase(it); }

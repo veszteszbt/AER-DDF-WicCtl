@@ -80,31 +80,32 @@ namespace wicp
 			return journal(level,"wicp.property.remote") <<
 				"; property: " << std::hex << env::class_id << "::" << env::member_id::value <<
 				"; ";
-
 		}
 
 		static void notify_handler(notify_handle_type h)
 		{
-			// TODO remote.role.report_call(h);
+			// TODO we can't report call here
 			if(h.reason != earpc::reason::process)
 			{
 				jrn(journal::error) << "notify with reason " << std::dec << (int)h.reason << journal::end;
 				h.respond(object_id_type());
 				return;
 			}
-
 			const property_data_type property_data = h.value();
 			const object_id_type object_id = property_data.object_id;
 
 			wic_class::lock_remote();
-			auto it = wic_class::find_remote(object_id); // TODO FIND_local
+			auto it = wic_class::find_remote(object_id);
 			if(it != wic_class::end())
 			{
+				it->second.report_call(h);
 				it->second.property_lock.lock();
 				auto &property = it->second.properties.template get<member_id>();
 
 				if(property.local_value == property_data.value)
 				{
+					it->second.property_lock.unlock();
+					wic_class::unlock_remote();
 					jrn(journal::warning) << "notify with no change" << journal::end;
 					h.respond(object_id);
 					return;
@@ -124,7 +125,7 @@ namespace wicp
 				if(property.history.size() > history_size)
 					property.history.pop_back();
 
-				property.sync_timestamp = property.history.front().time;
+				property.sync.timestamp = property.history.front().time;
 				if(env::sync_local(property))
 				{
 					it->second.property_lock.unlock();
@@ -142,39 +143,7 @@ namespace wicp
 			else
 			{
 				wic_class::unlock_remote();
-				// TODO should we respond ? h.respond(property_data_type());
-				jrn(journal::error) << "Invalid remote `" << 
-					wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
-			}
-		}
-
-		static void do_initial_sync(object_id_type object_id)
-		{
-			wic_class::lock_remote();
-			auto it = wic_class::find_remote(object_id);
-			if(it != wic_class::end())
-			{
-				it->second.property_lock.lock();
-				auto &property = it->second.properties.template get<member_id>();
-				if(!property.initial_sync_pending)
-				{
-					it->second.property_lock.unlock();
-					jrn(journal::trace) << "initial sync already completed" << journal::end;
-					return;
-				}				
-				jrn(journal::trace) << "doing initial sync" << journal::end;
-				property.initial_sync_cid = rpc::call(
-					it->second.ip,
-					command_id | types::function::get,
-					object_id,
-					get_handler
-				);
-				it->second.property_lock.unlock();
-				wic_class::unlock_remote();
-			}
-			else
-			{
-				wic_class::unlock_remote();
+				h.respond(object_id_type()); // TODO should we respond ?
 				jrn(journal::error) << "Invalid remote `" << 
 					wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
 			}
@@ -184,7 +153,7 @@ namespace wicp
 		{
 			const property_data_type property_data = h.value();
 			const object_id_type arg_object_id = h.argument();
-			//TODO remote.role.report_call(h);
+			// TODO remote.role.report_call(h);
 			if(h.reason != earpc::reason::success)
 			{
 				if(h.reason != earpc::reason::cancelled)
@@ -227,7 +196,7 @@ namespace wicp
 				if(property.history.size() > history_size)
 					property.history.pop_back();
 
-				property.sync_timestamp = property.history.front().time;
+				property.sync.timestamp = property.history.front().time;
 				property.initial_sync_pending = false;
 				if(env::sync_local(property))
 				{
@@ -248,6 +217,39 @@ namespace wicp
 				jrn(journal::error) << "Invalid remote `" << 
 					wic_class::name << "' object reference `" << std::hex << arg_object_id << journal::end;
 			}			
+		}
+
+		static void do_initial_sync(object_id_type object_id)
+		{
+			wic_class::lock_remote();
+			auto it = wic_class::find_remote(object_id);
+			if(it != wic_class::end())
+			{
+				it->second.property_lock.lock();
+				auto &property = it->second.properties.template get<member_id>();
+				if(!property.initial_sync_pending)
+				{
+					it->second.property_lock.unlock();
+					wic_class::unlock_remote();
+					jrn(journal::trace) << "initial sync already completed" << journal::end;
+					return;
+				}				
+				jrn(journal::trace) << "doing initial sync" << journal::end;
+				property.initial_sync_cid = rpc::call(
+					it->second.ip,
+					command_id | types::function::get,
+					object_id,
+					get_handler
+				);
+				it->second.property_lock.unlock();
+				wic_class::unlock_remote();
+			}
+			else
+			{
+				wic_class::unlock_remote();
+				jrn(journal::error) << "Invalid remote `" << 
+					wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
+			}
 		}
 
 		// static void bind_handler(role_type &role)
@@ -281,7 +283,7 @@ namespace wicp
 			// new(&env::remote) remote_record(role);
 			// env::value = env::default_value = v;
 			// history.push_back(history_record(v));
-			// env::local_timestamp = env::remote.sync_timestamp = history.back().time;
+			// env::local_timestamp = env::remote.timestamp = history.back().time;
 			// env::remote.pending_timestamp = clock::time_point::min();
 			// initial_sync_pending = true;
 

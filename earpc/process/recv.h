@@ -623,16 +623,16 @@ namespace process
 			{
 				Targ r;
 				if(serializer<Targ>::deserialize(r,outgoing_call_handle_base::arg_bytes))
-					journal(journal::trace,"earpc.call.incoming") <<
+					journal(journal::trace,"earpc.call.outgoing") <<
 						"call id: " << std::hex << outgoing_call_handle_base::call_id <<
 						"; command: " << std::hex << outgoing_call_handle_base::command_id <<
-						"; source: " << (std::string) outgoing_call_handle_base::ip <<
+						"; target: " << (std::string) outgoing_call_handle_base::ip <<
 						"; taking argument" << journal::end;
 				else
-					journal(journal::critical,"earpc.call.incoming") <<
+					journal(journal::critical,"earpc.call.outgoing") <<
 						"call id: " << std::hex << outgoing_call_handle_base::call_id <<
 						"; command: " << std::hex << outgoing_call_handle_base::command_id <<
-						"; source: " << (std::string) outgoing_call_handle_base::ip <<
+						"; target: " << (std::string) outgoing_call_handle_base::ip <<
 						"; unable to deserialize argument" << journal::end;
 
 				return r;	
