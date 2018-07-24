@@ -108,9 +108,9 @@ static void exit(int i)
 	commandline::shell::parser->finish(i);
 }
 
-template<typename T>
+/*template<typename T>
 static void echo(const T& t)
-{ std::cout << t << std::endl; }
+{ std::cout << t << std::endl; }*/
 
 functions::functions()
 {
@@ -120,18 +120,23 @@ functions::functions()
 	add_command("writestring",write_string);
 	add_command("writearray", write_array);
     //add_command("gamestate",gamestate);
-	add_command("echo", echo<int>);
-	add_command("echo", echo<double>);
-	add_command("echo", echo<std::string>);
+	//add_command("echo", echo<int>);
+	//add_command("echo", echo<double>);
+	//add_command("echo", echo<std::string>);
 	add_command("write_reverse", write_reverse);
 	add_command("echo_c", echo_c);
 	add_command("echo_end", echo_end);
 	add_command("sin", sin);
+	add_command("cos", cos);
+	add_command("tan", tan);
+	add_command("atan", atan);
 	add_command("is_true", is_true);
 	add_command("do_nothing", do_nothing);
 	//add_command("var_info", var_info);
 	add_command("exit",exit);
-	add_variable("asd", 36);
+	add_variable("TRUE", 1);
+	add_variable("FALSE", 0);
+	add_variable("PI", 3.141592653589793238462643383279502884);
 }
 
 var_value functions::run(call* c)

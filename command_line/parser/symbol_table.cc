@@ -627,9 +627,23 @@ var_value& var_value::operator=(var_value right)
 {
 	if (get_type() == u_array)
 	{
-		if (right.get_type() != u_array) // TODO mégis
-			std::cerr << "cant assign variable to an array" << std::endl;
+		if (right.get_type() != u_array)
+		{
+			val.array->arraypair::~map();
+			if (right.get_type() == u_string)
+			{
+				std::string* temp = new std::string;
+				right.value(*temp);
+				// sets pointer to temp (std::string* type)
+				set_value(temp);
+				var_type = u_string;
+			}
+			else if (right.get_type() == u_integer)
+				assign_impl<int>(u_integer, right);
 
+			else if (right.get_type() == u_double)
+				assign_impl<double>(u_double, right);
+		}	
 		else
 		{
 			val.array->clear();
@@ -935,6 +949,7 @@ var_value operator/(var_value l, var_value r)
 
 				for(auto it = m2.begin(); it != m2.end(); ++it)
 				{
+					//TODO make it element / element? same with *
 					std::vector<std::string> vec = l.find_elements_having_value(it->second);
 					for(auto it2 = vec.begin(); it2 != vec.end(); ++it2)
 						delete_from_arraypair(m1, *it2);

@@ -61,11 +61,7 @@
 %token OPEN_SQUARE_BRACKET
 %token CLOSING_SQUARE_BRACKET
 %token ARROW
-%token KEYWORD_EXIT
 
-%token CONST_TRUE
-%token CONST_FALSE
-%token CONST_PI
 %token CONST_NULL
 
 %right OPERATOR_ASSIGN
@@ -93,7 +89,7 @@
 
 
 start:
-	command_list KEYWORD_EXIT
+	command_list CASE_DELIMITER
 	{
 		//note that KEYWORD_EXIT exists only to block reduction to start state
 		$$ = new command_list_desc($1);
@@ -371,25 +367,6 @@ expression:
 |
 	OPEN_SQUARE_BRACKET arraypart CLOSING_SQUARE_BRACKET
 	{ $$ = new expr_arr(d_loc__.first_line, $2); }
-|
-	CONST_TRUE
-	{
-		$$ = new expr_const(d_loc__.first_line, 1);
-		journal(journal::info, "parser") << "expression -> CONST_TRUE" << journal::end;
-	}
-|
-	CONST_FALSE
-	{
-		$$ = new expr_const(d_loc__.first_line, 0);
-		journal(journal::info, "parser") << "expression -> CONST_FALSE" << journal::end;
-	}
-|
-	CONST_PI
-	{
-		double Pi = acos(-1);
-		$$ = new expr_const(d_loc__.first_line, Pi);
-		journal(journal::info, "parser") << "expression -> CONST_Pi" << journal::end;
-	}
 |
 	CONST_NULL
 	{

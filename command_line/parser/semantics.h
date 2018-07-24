@@ -8,6 +8,7 @@
 #include <vector>
 #include <cmath>
 #include <journal.h>
+//#include "../journal/journal.h"
 #include "symbol_table.h"
 //#include "../functions.h"
 

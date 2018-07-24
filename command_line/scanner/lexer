@@ -34,7 +34,6 @@ ID	[a-zA-Z]{CH}*
 				}
 "default" 		return Parser::KEYWORD_DEFAULT;
 "local" 		return Parser::KEYWORD_LOCAL;
-"exit"			return Parser::KEYWORD_EXIT;
 
 "{" 			{
 					commandline::shell::scanDepth++;
@@ -87,9 +86,7 @@ ID	[a-zA-Z]{CH}*
 [Aa][Nn][Dd]				return Parser::OPERATOR_AND;
 [Oo][Rr]					return Parser::OPERATOR_OR;
 
-[Tt][Rr][Uu][Ee]			return Parser::CONST_TRUE;
-[Ff][Aa][Ll][Ss][Ee]		return Parser::CONST_FALSE;
-[Pp][Ii]					return Parser::CONST_PI;
+
 [Nn][Uu][Ll][Ll]			return Parser::CONST_NULL;
 
 ['][^']*['] 				return Parser::SINGLE_QUOTE;
