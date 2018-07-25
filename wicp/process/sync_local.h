@@ -31,88 +31,89 @@ namespace process
 		static void call_finish(set_handle_type h)
 		{
 			const object_id_type arg_object_id = h.argument().object_id;
-			const object_id_type ret_object_id = h.value();
 			if(h.reason)
 			{
-				jrn(journal::error) << "; remote: " << (std::string)h.ip <<
-					" error in call, restarting sync for object `" << arg_object_id << "'" << journal::end;
+				jrn(journal::error) << 
+					"; remote: " << (std::string)h.ip <<
+					" error in call, restarting sync for object " << std::hex << arg_object_id << 
+					journal::end;
 				notify(arg_object_id);
+				return;
 			}
-			else
+			
+			const object_id_type ret_object_id = h.value();
+			if(arg_object_id != ret_object_id)
 			{
-				if(arg_object_id != ret_object_id)
-				{
-					jrn(journal::critical) << "; remote: " << (std::string)h.ip << " sync succeeded, but got invalid local `" << 
-						wic_class::name << "' object reference `" << std::hex << ret_object_id << journal::end;
-					return;
-				}
+				jrn(journal::critical) << 
+					"; remote: " << (std::string)h.ip << 
+					" sync succeeded, but got invalid local `" << 
+					wic_class::name << "' object reference " << std::hex << ret_object_id << 
+					journal::end;
+				return;
+			}
 
-				wic_class::lock_local();
-				auto local_it = wic_class::find_local(arg_object_id);
-				if(local_it != wic_class::end())
+			wic_class::lock_local();
+			auto local_it = wic_class::find_local(arg_object_id);
+			if(local_it == wic_class::end())
+			{
+				wic_class::unlock_local();			
+				jrn(journal::error) << 
+					"Invalid local `" << wic_class::name << 
+					"' object reference " << std::hex << arg_object_id << 
+					journal::end;
+				return;
+			}
+
+			local_it->second.remotes.lock();
+			wic_class::lock_remote();
+			for(
+				auto device = local_it->second.remotes.begin(); 
+				device != local_it->second.remotes.end();
+			)
+			{
+				auto remote_it = wic_class::find_remote(*device);
+				if(remote_it != wic_class::end())
 				{
-					local_it->second.remotes.lock();
-					wic_class::lock_remote();
-					for(
-						auto it = local_it->second.remotes.begin(); 
-						it != local_it->second.remotes.end();
-					)
+					remote_it->second.property_lock.lock();
+					auto &property = 
+						remote_it->second.properties.template get<member_id>();
+					if(property.sync.call_id == h.call_id)
 					{
-						auto remote_it = wic_class::find_remote(*it);
-						if(remote_it != wic_class::end())
-						{
-							remote_it->second.property_lock.lock();
-							auto &property = 
-								remote_it->second.properties.template get<member_id>();
-							if(property.sync.call_id == h.call_id)
-							{	std::cout << "property " << std::hex << property.sync.call_id << std::endl;
-								std::cout << "handle " << std::hex << h.call_id << std::endl;
-							}
-							if(property.sync.call_id == h.call_id)
-							{
-								remote_it->second.report_call(h);
-								jrn(journal::trace) <<
-									"; remote: " << (std::string)h.ip <<
-									"; object: " << std::hex << *it <<
-									"; call finished" << journal::end;
+						remote_it->second.report_call(h);
+						jrn(journal::trace) <<
+							"object: " << std::hex << arg_object_id <<
+							"; remote: " << (std::string)h.ip <<
+							"; object: " << std::hex << *device <<
+							"; call finished" << 
+							journal::end;
 
-								TEnv::finish_sync_remote(property.sync, h);
-								remote_it->second.property_lock.unlock();
-								wic_class::unlock_remote();
-								local_it->second.remotes.unlock();
-								wic_class::unlock_local();
-								notify(arg_object_id);
-								std::cout << "lofasz\n";
-								return;
-							}
-							remote_it->second.property_lock.unlock();
-							++it;
-						}
-						else
-						{
-							it = local_it->second.remotes.erase(it);
-							jrn(journal::error) << "corrupted remote object `" << *it << "'" << journal::end;
-						}
+						TEnv::finish_sync_remote(property.sync, h);
+						remote_it->second.property_lock.unlock();
+						wic_class::unlock_remote();
+						local_it->second.remotes.unlock();
+						wic_class::unlock_local();
+						notify(arg_object_id);
+						return;
 					}
-
-					wic_class::unlock_remote();
-					local_it->second.remotes.unlock();
-					wic_class::unlock_local();
-					jrn(journal::critical) <<
-						"; remote: " << (std::string)h.ip << std::hex <<
-						"; object: " << arg_object_id <<
-					"; could not find remote for finished change" << journal::end;
-					notify(arg_object_id);
-					std::cout << "IDE NEM KENE ELJUTNI " << std::hex << h.call_id << std::endl;
-
+					remote_it->second.property_lock.unlock();
+					++device;
 				}
 				else
 				{
-					wic_class::unlock_local();			
-					jrn(journal::error) << "Invalid local `" << 
-						wic_class::name << "' object reference `" << std::hex << arg_object_id << journal::end;
+					device = local_it->second.remotes.erase(device);
+					jrn(journal::error) << "corrupted remote object " << *device << journal::end;
 				}
 			}
+
+			wic_class::unlock_remote();
+			local_it->second.remotes.unlock();
+			wic_class::unlock_local();
+			jrn(journal::critical) <<
+				"; remote: " << (std::string)h.ip << std::hex <<
+				"; object: " << arg_object_id <<
+				"; could not find remote for finished change" << 
+				journal::end;
+			notify(arg_object_id);
 		}
 	public:
 		static void init()
@@ -132,55 +133,63 @@ namespace process
 		{
 			wic_class::lock_local();
 			auto local_it = wic_class::find_local(local_object_id);
-			if(local_it != wic_class::end())
-			{
-				local_it->second.property_lock.lock();
-				auto &local_property = 
-					local_it->second.properties.template get<member_id>();
-				if(local_property.history.empty())
-				{
-					jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
-					local_it->second.property_lock.unlock();
-					wic_class::unlock_local();
-					return;
-				}
-				local_it->second.property_lock.unlock();
-				wic_class::lock_remote();
-				auto remote_it = wic_class::find_remote(remote_object_id);
-				if(remote_it != wic_class::end())
-				{
-					remote_it->second.property_lock.lock();
-					auto &remote_property = 
-						remote_it->second.properties.template get<member_id>();
-					jrn(journal::trace) << "remote: " << (std::string)remote_it->second.ip << " doing sync via object `" <<
-						std::hex << remote_object_id << "'" << journal::end;
-
-					TEnv::sync_remote(
-						remote_property.sync, 
-						local_property.history,
-						local_object_id,
-						remote_it->second.ip, 
-						types::function::notify, 
-						call_finish
-					);
-					remote_it->second.property_lock.unlock();
-					wic_class::unlock_remote();
-					wic_class::unlock_local();
-				}
-				else
-				{
-					wic_class::unlock_remote();
-					wic_class::unlock_local();
-					jrn(journal::error) << "Invalid remote `" << wic_class::name << "' object reference `" << std::hex << remote_object_id << journal::end;
-					return;
-				}
-			}
-			else
+			if(local_it == wic_class::end())
 			{
 				wic_class::unlock_local();			
-				jrn(journal::error) << "Invalid local `" << 
-					wic_class::name << "' object reference `" << std::hex << local_object_id << journal::end;
-			}	
+				jrn(journal::error) << 
+					"Invalid local `" << wic_class::name << 
+					"' object reference " << std::hex << local_object_id << 
+					journal::end;
+				return;
+			}
+
+			local_it->second.property_lock.lock();
+			auto &local_property = 
+				local_it->second.properties.template get<member_id>();
+			if(local_property.history.empty())
+			{
+				jrn(journal::trace) << 
+					"object: " << std::hex << local_object_id << 
+					"; nothing to do; suspending until next notify" << 
+					journal::end;
+				local_it->second.property_lock.unlock();
+				wic_class::unlock_local();
+				return;
+			}
+			local_it->second.property_lock.unlock();
+			// TODO should we check that remote is a remote of local? i think we dooo :) 
+			wic_class::lock_remote();
+			auto remote_it = wic_class::find_remote(remote_object_id);
+			if(remote_it != wic_class::end())
+			{
+				remote_it->second.property_lock.lock();
+				auto &remote_property = 
+					remote_it->second.properties.template get<member_id>();
+				jrn(journal::trace) << 
+					"object: " << std::hex << local_object_id <<
+					"; remote: " << (std::string)remote_it->second.ip <<
+					" doing sync via object " << remote_object_id << 
+					journal::end;
+
+				TEnv::sync_remote(
+					remote_property.sync, 
+					local_property.history,
+					local_object_id,
+					remote_it->second.ip, 
+					types::function::notify, 
+					call_finish
+				);
+				remote_it->second.property_lock.unlock();
+				wic_class::unlock_remote();
+				wic_class::unlock_local();
+				return;
+			}
+			wic_class::unlock_remote();
+			wic_class::unlock_local();
+			jrn(journal::error) << 
+				"Invalid remote `" << wic_class::name << 
+				"' object reference " << std::hex << remote_object_id << 
+				journal::end;
 		}
 
 		static void notify(object_id_type object_id)
@@ -195,69 +204,79 @@ namespace process
 			// );
 			wic_class::lock_local();
 			auto local_it = wic_class::find_local(object_id);
-			if(local_it != wic_class::end())
+			if(local_it == wic_class::end())
 			{
-				local_it->second.property_lock.lock();
-				auto &local_property = local_it->second.properties.template get<member_id>();
-				if(local_property.history.empty())
-				{
-					local_it->second.property_lock.unlock();
-					wic_class::unlock_local();
-					jrn(journal::trace) << "nothing to do for object `" << 
-						std::hex << object_id << "'; suspending until next notify" << journal::end;
-					return;
-				}
+				wic_class::unlock_local();
+				jrn(journal::error) << 
+					"Invalid local `" << wic_class::name << 
+					"' object reference " << std::hex << object_id << 
+					journal::end;
+				return;
+			}
+
+			local_it->second.property_lock.lock();
+			auto &local_property = local_it->second.properties.template get<member_id>();
+			if(local_property.history.empty())
+			{
 				local_it->second.property_lock.unlock();
-				local_it->second.remotes.lock();
-				wic_class::lock_remote();
-				for(
-					auto it = local_it->second.remotes.begin(); 
-					it != local_it->second.remotes.end();
-				)
-				{
-					auto remote_it = wic_class::find_remote(*it);
-					if(remote_it != wic_class::end())
-					{
-						jrn(journal::trace) << "; remote: " << (std::string)remote_it->second.ip << " doing sync via object `" <<
-							std::hex << *it << "'" << journal::end;
-						remote_it->second.property_lock.lock();
-						auto &remote_property = 
-							remote_it->second.properties.template get<member_id>();
-						TEnv::sync_remote(
-							remote_property.sync, 
-							local_property.history,
-							object_id,
-							remote_it->second.ip, 
-							types::function::notify, 
-							call_finish
-						); 
-						remote_it->second.property_lock.unlock();
-						++it;
-					}
-					else
-					{
-						it = local_it->second.remotes.erase(it);
-						jrn(journal::debug) << "omitting sync via deleted object `" << std::hex << *it << "'" << journal::end;
-					}
-				}
-				wic_class::unlock_remote();
-				local_it->second.remotes.unlock();
 				wic_class::unlock_local();
+				jrn(journal::trace) << 
+					"object: " << std::hex << object_id << 
+					"; nothing to do suspending until next notify" << 
+					journal::end;
+				return;
 			}
-			else
+
+			local_it->second.property_lock.unlock();
+			local_it->second.remotes.lock();
+			wic_class::lock_remote();
+			for(
+				auto device = local_it->second.remotes.begin(); 
+				device != local_it->second.remotes.end();
+			)
 			{
-				wic_class::unlock_local();
-				jrn(journal::error) << "Invalid local `" << 
-					wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
+				auto remote_it = wic_class::find_remote(*device);
+				if(remote_it != wic_class::end())
+				{
+					jrn(journal::trace) << 
+						"; object: " << std::hex << object_id <<
+						"; remote: " << (std::string)remote_it->second.ip << 
+						"; doing sync via device: " << *device << 
+						journal::end;
+
+					remote_it->second.property_lock.lock();
+					auto &remote_property = 
+						remote_it->second.properties.template get<member_id>();
+					TEnv::sync_remote(
+						remote_property.sync, 
+						local_property.history,
+						object_id,
+						remote_it->second.ip, 
+						types::function::notify, 
+						call_finish
+					); 
+					remote_it->second.property_lock.unlock();
+					++device;
+				}
+				else
+				{
+					device = local_it->second.remotes.erase(device);
+					jrn(journal::debug) << "omitting sync via deleted object " << std::hex << *device << journal::end;
+				}
 			}
+			wic_class::unlock_remote();
+			local_it->second.remotes.unlock();
+			wic_class::unlock_local();
 		}
 
 		static void cancel(remote_iterator it)
 		{
 			if(it->second.remote.call_id)
 			{
-				jrn(journal::trace) << "remote: " << (std::string)it->second.ip << " cancelling sync via object `" <<
-					std::hex << it->second.object_id << "'" << journal::end;
+				jrn(journal::trace) << 
+					"remote: " << (std::string)it->second.ip << 
+					" cancelling sync via object " << std::hex << it->second.object_id << 
+					journal::end;
 
 				TEnv::rpc::cancel(it->second.remote.call_id);
 				it->second.remote.call_id = 0;
@@ -269,28 +288,51 @@ namespace process
 			object_id_type remote_object_id
 		)
 		{
+			wic_class::lock_local();
 			auto local_it = wic_class::find_local(local_object_id);
-			if(local_it != wic_class::end())
+			if(local_it == wic_class::end())
 			{
-				wic_class::lock_remote();
-				auto remote_it = wic_class::find_remote(remote_object_id);
-				if(remote_it != wic_class::end())
-				{
-					cancel(remote_it);
-					wic_class::unlock_remote();		
-					return;
-				}
-				else
-				{
-					wic_class::unlock_remote();
-					jrn(journal::error) << "Invalid remote `" << 
-						wic_class::name << "' object reference `" << std::hex << remote_object_id << journal::end;
-					return;
-				}
+				wic_class::unlock_local();
+				jrn(journal::error) << 
+					
+						"Invalid local `" << wic_class::name << 
+						"' object reference " << std::hex 
+						<< local_object_id << 
+					journal::end;
+				return;
 			}
-			else
-				jrn(journal::error) << "Invalid local `" << 
-					wic_class::name << "' object reference `" << std::hex << local_object_id << journal::end;
+
+			local_it->second.remotes.lock();
+			auto device = local_it->second.remotes.find(remote_object_id);
+			if(device == local_it->second.remotes.end())
+			{
+				local_it->second.remotes.unlock();
+				wic_class::unlock_local();
+				jrn(journal::error) <<
+					"local object: " << std::hex << local_object_id <<
+					"; has no remote object: " << remote_object_id <<
+					journal::end;
+			}
+
+			local_it->second.remotes.unlock();
+			// TODO when to unlock remotes
+			wic_class::lock_remote();
+			auto remote_it = wic_class::find_remote(remote_object_id);
+			if(remote_it == wic_class::end())
+			{
+				wic_class::unlock_remote();
+				wic_class::unlock_local();
+				jrn(journal::error) << 
+					"Invalid remote `" << wic_class::name << 
+					"' object reference " << std::hex << remote_object_id << 
+					journal::end;
+				return;
+			}
+
+			cancel(remote_it);
+			// TODO journal
+			wic_class::unlock_remote();		
+			wic_class::unlock_local();
 		}
 	};
 }}

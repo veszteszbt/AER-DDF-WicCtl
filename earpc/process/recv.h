@@ -352,7 +352,7 @@ namespace process
 			// Process outgoing calls
 			buf_outgoing_call::lock();
 			auto ocall = buf_outgoing_call::find(h.call_id);
-			if(ocall != buf_outgoing_call::end())
+			if(ocall == buf_outgoing_call::end())
 				journal(journal::error,"earpc.call.outgoing") <<
 					"call id: " << std::hex << h.call_id <<
 					"; remote: " << (std::string)ip <<

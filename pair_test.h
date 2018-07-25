@@ -20,6 +20,7 @@
 
 #include <status.h>
 #include <event.h>
+#include <journal.h>
 
 #include <property_room.h>
 #include <property_external.h>
@@ -90,9 +91,9 @@ struct wic_class_config : public property_config_base
 
 	typedef property_data_type<cfg_object_id_type, cfg_value_type> cfg_property_data_type;
 
-	static const uint32_t cfg_member_id = 3;
-
 	static const uint32_t cfg_cooldown_time = 1000;
+
+	static const uint32_t cfg_member_id = 3;
 
 	typedef wicp::wic_class<
 		TestConfig,
@@ -104,30 +105,49 @@ struct wic_class_config : public property_config_base
 };
 
 typedef wicp::local_property<wic_class_config> local_property;
+
+static int count = 0;
+
 static void l_change_handler(uint64_t object_id)
 {
-	std::cout << "local property value: `" << int(local_property::value(object_id)) << "'" << std::endl;
-	if(object_id == 68)
+	auto value = int(local_property::value(object_id));
+	std::cout << "object: " << std::hex << object_id << "; local property value: `" << std::dec << value << "'" << std::endl;
+	journal(journal::trace, "lofasz") << "object: " << std::hex << object_id << " local property value: `" << std::dec << value << "'" << journal::end;
+	if(object_id == 0x68)
 		++object_id;
 	else
 		--object_id;
 
-	local_property::value(object_id, local_property::value(object_id, local_property::value(object_id)+1));
+	local_property::value(object_id, local_property::value(object_id) + 1);
+}
+
+static void l_change_handler_echo(uint64_t object_id)
+{
+	auto value = int(local_property::value(object_id));
+	std::cout << "object: " << std::hex << object_id << ";         local property value: `" << std::dec << value << "'" << std::endl;
+	journal(journal::trace, "faszlo") << "object: " << std::hex << object_id << " local property value: `" << std::dec << value << "'" << journal::end;
 }
 
 typedef wicp::remote_property<wic_class_config> remote_property;
 static void r_change_handler(uint64_t object_id)
 {
-	std::cout << "remote property value: `" << int(remote_property::value(object_id)) << "'" << std::endl;
-	if(object_id == 68)
+	auto value = int(remote_property::value(object_id));
+	std::cout << "object: " << std::hex << object_id << "; remote property value: `" << std::dec << value << "'" << std::endl;
+	journal(journal::trace, "lofasz") << "object: " << std::hex << object_id << " remote property value: `" << std::dec << value << "'" << journal::end;
+	if(object_id == 0x68)
 		++object_id;
 	else
 		--object_id;
 
-	remote_property::value(object_id, remote_property::value(object_id, remote_property::value(object_id)+1));	
+	remote_property::value(object_id, remote_property::value(object_id) + 1);	
 }
 
-static int count = 0;
+static void r_change_handler_echo(uint64_t object_id)
+{
+	auto value = int(remote_property::value(object_id));
+	std::cout << "object: " << std::hex << object_id << ";         remote property value: `" << std::dec << value << "'" << std::endl;
+	journal(journal::trace, "faszlo") << "object: " << std::hex << object_id << " remote property value: `" << std::dec << value << "'" << journal::end;
+}
 
 int main() 
 { 
@@ -135,44 +155,38 @@ int main()
 	journal::init(fname);
 	rpc::init();
 	using namespace std::literals::chrono_literals;
-	std::this_thread::sleep_for(5s);
 	if(sport == 1234)
 	{
-		wic_class_config::cfg_wic_class::set_local(68);
-		wic_class_config::cfg_wic_class::set_local(69);
-		wic_class_config::cfg_wic_class::set_remote(70, {127,0,0,1});
-		wic_class_config::cfg_wic_class::set_remote(71, {127,0,0,1});
-		local_property::init();
-		local_property::subscribe_to_change(69, l_change_handler);
-		// local_property::subscribe_to_change(69, l_change_handler);
-		local_property::remote_add(68, 70);
-		local_property::remote_add(68, 71);
-		local_property::remote_add(69, 70);
-		local_property::remote_add(69, 71);
-		local_property::value(69, 0);
+		wic_class_config::cfg_wic_class::set_local(0x68);
+		wic_class_config::cfg_wic_class::set_local(0x69);
+		wic_class_config::cfg_wic_class::set_remote(0x70, {127,0,0,1});
+		// wic_class_config::cfg_wic_class::set_remote(71, {127,0,0,1});
+		local_property lp;
+		lp.init();
+		lp.init(0x68,10);
+		lp.init(0x69,15);
+		lp.subscribe_to_change(0x69, l_change_handler);
+		lp.subscribe_to_change(0x68, l_change_handler_echo);
+		lp.remote_add(0x68, 0x70);
+		lp.remote_add(0x69, 0x70);
+		std::this_thread::sleep_for(4s);	
+		lp.value(0x68, 0);
 	}
 	else
 	{
-		wic_class_config::cfg_wic_class::set_local(70);
-		wic_class_config::cfg_wic_class::set_local(71);
-		wic_class_config::cfg_wic_class::set_remote(68, {127,0,0,1});
-		wic_class_config::cfg_wic_class::set_remote(69, {127,0,0,1});
-		remote_property::init(68); 
-		remote_property::init(69); // TODO place this to set_remote
-		// remote_property::subscribe_to_change(68, r_change_handler);		
-		remote_property::subscribe_to_change(69, r_change_handler);		
-		// while(1)
-		// {
-		// 	std::this_thread::sleep_for(500ms);
-		// 	remote_property::value(69, count++);
-		// }
+		wic_class_config::cfg_wic_class::set_local(0x70);
+		wic_class_config::cfg_wic_class::set_local(0x71);
+		wic_class_config::cfg_wic_class::set_remote(0x68, {127,0,0,1});
+		wic_class_config::cfg_wic_class::set_remote(0x69, {127,0,0,1});
+		remote_property rp;
+		rp.init();
+		std::this_thread::sleep_for(2s);
+		rp.init(0x68);
+		rp.init(0x69); // TODO place this to set_remote
+		// remote_property::subscribe_to_change(68, r_change_handler);
+		rp.subscribe_to_change(0x68, r_change_handler);		
+		rp.subscribe_to_change(0x69, r_change_handler_echo);		
 	}
-	// local_property::value(12, 8);
-	// local_property::value(12, 4);
-
-	// remote_property::value(34, 8);
-	// remote_property::value(34, 4);
-	//device_role::remote_add(device_role::instance(0));
 	while(1)
 	{
 		std::string x ;

@@ -68,8 +68,6 @@ namespace wicp
 			((member_id::value & (static_cast<member_id_type>(-1) >> 3)) << 3)
 		;
 
-		static value_type default_value;
-
 		static journal jrn(uint8_t level)
 		{
 			return journal(level,"wicp.base") << "property: " << std::hex <<
@@ -91,8 +89,20 @@ namespace wicp
 			}
 			if(property.local_timestamp < property.history.front().time)
 			{
+				auto j = jrn(journal::debug);
+				j << "local value is ";
+				if(property.local_timestamp == clock::time_point::min())
+					j << "ages";
+				else
+					j << ::types::time::msec(property.history.front().time-property.local_timestamp) << " msec";
+
+				j << " behind history." << journal::end;
 				property.local_timestamp = property.history.front().time;
 				return true;
+			}
+			else 
+			{
+				jrn(journal::debug) << "local value is up-to-date with history." << journal::end;
 			}
 			return false;
 		}
@@ -123,15 +133,18 @@ namespace wicp
 				{
 					uint32_t msecs = 
 						std::chrono::duration_cast<std::chrono::milliseconds>(clock::now()-sync.start).count();
-					if(msecs/(sync.failures+1) < 3600)
+					if(sync.call_id)
 					{
-						jrn(journal::trace) << "remote: " << (std::string)ip << "; sync has been pending for " <<
-							msecs << "msec" <<
-							journal::end;
+						jrn(journal::trace) << 
+							"remote: " << (std::string)ip <<
+							"; sync has been pending for " << msecs << "msec" <<
+						journal::end;
 						return;
 					}
 				}
-				jrn(journal::critical) << "remote: " << (std::string)ip << "; object: "<< std::hex << object_id <<  
+				jrn(journal::critical) << 
+					"remote: " << (std::string)ip << 
+					"; object: "<< std::hex << object_id <<
 					"; sync start has been corrupted; resetting to consistent state" << journal::end;
 
 				sync.pending_timestamp = clock::time_point::min();
@@ -165,7 +178,6 @@ namespace wicp
 
 			const property_data_type v = {object_id, i->value};
 			jrn(journal::trace) << "remote: " << (std::string)ip << "; sync initiated" << journal::end;
-			jrn(journal::trace) << "last sync call id: " << std::hex << sync.call_id << journal::end;
 			
 			sync.call_id = rpc::call(ip,command_id|function,v,callback);
 		}
@@ -192,8 +204,9 @@ namespace wicp
 			else
 			{
 				wic_class::unlock_local();
-				jrn(journal::error) << "Invalid `" << 
-					wic_class::name << "' object reference `" << std::hex << local_object_id << journal::end;
+				jrn(journal::error) << "Invalid `" << wic_class::name << 
+					"' object reference `" << std::hex << local_object_id << 
+				journal::end;
 			}
 		}
 
@@ -232,8 +245,5 @@ namespace wicp
 			sync.pending_timestamp = clock::time_point::min();
 		}
 	};
-
-	template<typename c>
-	typename property_env_base<c>::value_type property_env_base<c>::default_value;
 }
 #endif

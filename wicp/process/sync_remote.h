@@ -39,39 +39,53 @@ namespace process
 
 			wic_class::lock_remote();
 			auto it = wic_class::find_remote(arg_object_id);
-			if(it != wic_class::end())
+			if(it == wic_class::end())
 			{
-				it->second.report_call(h);
-				it->second.property_lock.lock();
-				auto &property = it->second.properties.template get<member_id>();
-				if(h.reason)
-				{
-					++property.sync.failures;
-					jrn(journal::error) << "; remote: " << (std::string)h.ip << " sync failed" << journal::end;
-				}
-				else
-				{
-					if(arg_object_id != ret_object_id)
-					{
-						it->second.property_lock.unlock();
-						wic_class::unlock_remote();
-						jrn(journal::critical) << "; remote: " << (std::string)h.ip << " sync succeeded, but got invalid remote `" << 
-							wic_class::name << "' object reference `" << std::hex << ret_object_id << journal::end;
-						return;
-					}
-					jrn(journal::trace) << "; remote: " << (std::string)h.ip << " sync succeeded" << journal::end;
-				}
-				TEnv::finish_sync_remote(property.sync, h);
+				wic_class::unlock_remote();
+				jrn(journal::error) << 
+					"Invalid remote `" << wic_class::name << 
+					"' object reference: " << std::hex << arg_object_id << 
+					journal::end;
+				return;
+			}
+
+			it->second.report_call(h);
+			it->second.property_lock.lock();
+			auto &property = it->second.properties.template get<member_id>();
+			if(h.reason)
+			{
+				++property.sync.failures;
+				jrn(journal::error) << 
+					"remote: " << (std::string)h.ip << 
+					"; object: " << std::hex << arg_object_id << 
+					"; sync failed" << 
+					journal::end;
+				return;
+			}
+
+			if(arg_object_id != ret_object_id)
+			{
 				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
-				notify(arg_object_id);
+				jrn(journal::critical) << 
+					"remote: " << (std::string)h.ip << 
+					"; sync succeeded with call " << std::hex << h.call_id << 
+					"; but got invalid remote `" << wic_class::name << 
+					"' object reference " << std::hex << ret_object_id << 
+					journal::end;
+				return;
 			}
-			else
-			{
-				wic_class::unlock_remote();
-				jrn(journal::error) << "Invalid remote `" << 
-					wic_class::name << "' object reference `" << std::hex << arg_object_id << journal::end;
-			}
+
+			jrn(journal::trace) << 
+				"remote: " << (std::string)h.ip <<
+				"; object: " << std::hex << arg_object_id << 
+				"; sync succeeded with call: " << std::hex << h.call_id << 
+				journal::end;
+
+			TEnv::finish_sync_remote(property.sync, h);
+			it->second.property_lock.unlock();
+			wic_class::unlock_remote();
+			notify(arg_object_id);
 		}
 
 	public:
@@ -97,19 +111,34 @@ namespace process
 				{
 					it->second.property_lock.unlock();					
 					wic_class::unlock_remote();
-					jrn(journal::trace) << "nothing to do; suspending until next notify" << journal::end;
+					jrn(journal::trace) << 
+						"object: " << std::hex << object_id << 
+						"; nothing to do; suspending until next notify" << 
+						journal::end;
 					return;
 				}
-				jrn(journal::trace) << "; remote: " << (std::string)it->second.ip << " doing sync" << journal::end;
-				TEnv::sync_remote(property, object_id, it->second.ip, types::function::set, call_finish);
+
+				jrn(journal::trace) << 
+					"remote: " << (std::string)it->second.ip << 
+					"; doing sync via object: " << std::hex << object_id << 
+					journal::end;
+				TEnv::sync_remote(
+					property, 
+					object_id, 
+					it->second.ip, 
+					types::function::set, 
+					call_finish
+				);
 				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
 			}
 			else
 			{
 				wic_class::unlock_remote();
-				jrn(journal::error) << "Invalid remote `" << 
-					wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
+				jrn(journal::error) << 
+					"Invalid remote `" << wic_class::name << 
+					"' object reference: " << std::hex << object_id << 
+					journal::end;
 			}
 		}
 
@@ -118,25 +147,29 @@ namespace process
 		{
 			wic_class::lock_remote();
 			auto it = wic_class::find_remote(object_id);
-			if(it != wic_class::end())
+			if(it == wic_class::end())
 			{
-				it->second.property_lock.lock();
-				auto &property = it->second.properties.template get<member_id>();
-				if(property.call_id)
-				{
-					jrn(journal::debug) << "cancelling sync" << journal::end;
-					TEnv::rpc::cancel(property.call_id);
-					property.call_id = 0;
-				}
-				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
+				jrn(journal::error) << 
+					"Invalid remote `" << wic_class::name << 
+					"' object reference: " << std::hex << object_id << 
+					journal::end;
+				return;
 			}
-			else
+			
+			it->second.property_lock.lock();
+			auto &property = it->second.properties.template get<member_id>();
+			if(property.call_id)
 			{
-				wic_class::unlock_remote();
-				jrn(journal::error) << "Invalid remote `" << 
-					wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
-			}		
+				jrn(journal::debug) << 
+					"object: " << std::hex << object_id << 
+					"; cancelling sync" << 
+					journal::end;
+				TEnv::rpc::cancel(property.call_id);
+				property.call_id = 0;
+			}
+			it->second.property_lock.unlock();
+			wic_class::unlock_remote();
 		}
 	};
 }}

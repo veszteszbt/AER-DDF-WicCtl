@@ -69,13 +69,15 @@ namespace types
 
 		value_type local_value;
 
+		// TODO init default_value
+		value_type default_value;
+
 		sched::event<object_id_type> on_change;
 
 		bool cooldown_pending;
 
 		property_record_base()
 			: local_timestamp(clock::time_point::min())
-			, initial_sync_pending(true)
 			, initial_sync_cid(0)
 		{}
 

@@ -193,11 +193,17 @@ namespace wicp
 
 		static bool set_local(object_id_type object_id)
 		{
+			remote_object_lock_table.lock();
 			auto it = remote_object_lock_table.find(object_id);
 			if(it != remote_object_lock_table.end())
+			{
+				remote_object_lock_table.unlock();
 				return false;
+			}
 			
 			local_object_lock_table.emplace(object_id, object_id);
+			remote_object_lock_table.unlock();
+			// TODO init_properties<Tproperties...>(object_id);
 			return true; 
 		}
 
@@ -206,9 +212,13 @@ namespace wicp
 			address_type address
 		)
 		{
+			local_object_lock_table.lock();
 			auto it = local_object_lock_table.find(object_id);
 			if(it != local_object_lock_table.end())
+			{
+				local_object_lock_table.unlock();
 				return false;
+			}
 
 			auto pair_it = remote_object_lock_table.try_emplace(object_id, object_id, address);
 			if(!pair_it.second)
@@ -216,6 +226,9 @@ namespace wicp
 				pair_it.first->second.ip = address;
 				pair_it.first->second.on_ip_change();
 			}
+			local_object_lock_table.unlock();
+			// TODO init_properties<Tproperties...>(object_id);
+
 			return true;
 		}
 
