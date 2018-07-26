@@ -37,27 +37,27 @@ namespace wicp
 			self, 
 			object_id_type, 
 			Tproperties...
-		> local_object_record_type;
+		> 										local_object_record_type;
 
 		typedef types::remote_object_record<
 			self, 
 			object_id_type, 
 			address_type, 
 			Tproperties...
-		> remote_object_record_type;
+		> 										remote_object_record_type;
 	private:
 	
 		typedef sched::lockable<
 			std::map<
 				object_id_type, 
 				local_object_record_type
-		>> local_object_lock_table_type;
+		>> 										local_object_lock_table_type;
 		
 		typedef sched::lockable<
 			std::map<
 				object_id_type, 
 				remote_object_record_type
-		>> remote_object_lock_table_type;
+		>> 										remote_object_lock_table_type;
 
 	public:
 		typedef typename local_object_lock_table_type::iterator local_iterator;
@@ -65,11 +65,11 @@ namespace wicp
 		typedef typename remote_object_lock_table_type::iterator remote_iterator;
 	private:
 		
-		static local_object_lock_table_type local_object_lock_table;
+		static local_object_lock_table_type 	local_object_lock_table;
 
-		static remote_object_lock_table_type remote_object_lock_table;
+		static remote_object_lock_table_type 	remote_object_lock_table;
 
-		static const class_id_type class_id = Tconfig::class_id;
+		static const class_id_type 	class_id = Tconfig::class_id;
 
 
 		template <typename TmemberId, typename Tproperty, typename... Tremaining>
@@ -208,7 +208,7 @@ namespace wicp
 		}
 
 		static bool set_remote(
-			object_id_type object_id, 
+			object_id_type object_id,
 			address_type address
 		)
 		{

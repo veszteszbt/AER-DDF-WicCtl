@@ -92,7 +92,7 @@ namespace wicp
 			if(it == wic_class::end())
 			{
 				wic_class::unlock_remote();
-				h.respond(object_id_type()); // TODO should we respond ?
+				h.respond(object_id_type(0));
 				jrn(journal::error) <<
 					"Invalid remote `" << wic_class::name << 
 					"' object reference `" << std::hex << object_id << 
@@ -108,13 +108,13 @@ namespace wicp
 					"object: " << std::hex << object_id << 
 					"; notify with reason " << std::dec << (int)h.reason << 
 					journal::end;
-				h.respond(object_id_type());
+				h.respond(object_id_type(0));
 				return;
 			}
 
 			it->second.property_lock.lock();
 			auto &property = it->second.properties.template get<member_id>();
-
+			// TODO std::cout << ">>object: " << std::hex << object_id << ";local value: `" << std::dec << int(property.local_value) << "'" << ";new value: `" << int(property_data.value) << std::endl;
 			if(property.local_value == property_data.value)
 			{
 				it->second.property_lock.unlock();
@@ -129,7 +129,7 @@ namespace wicp
 
 			jrn(journal::trace) << 
 				"object: " << std::hex << object_id << 
-				"; notify with new value" << 
+				"; notify with new value " << std::dec << int(property_data.value) <<
 				journal::end;
 
 			if(property.initial_sync_pending)
@@ -144,7 +144,7 @@ namespace wicp
 			}
 
 			property.local_value = property_data.value;
-			property.history.push_front(property_data.value);
+			property.history.emplace_front(property_data.value);
 			if(property.history.size() > history_size)
 				property.history.pop_back();
 
@@ -161,7 +161,6 @@ namespace wicp
 				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
 			}
-			
 			proc_log::notify(object_id);
 		}
 
@@ -236,8 +235,8 @@ namespace wicp
 				
 			property.initial_sync_pending = false;
 			property.local_value = property_data.value;
-			
-			property.history.push_front(history_record(property_data.value));
+
+			property.history.emplace_front(property_data.value);
 			if(property.history.size() > history_size)
 				property.history.pop_back();
 
@@ -312,6 +311,19 @@ namespace wicp
 			jrn(journal::debug) << "initialized" << journal::end;
 		}
 
+		static bool init_sync_pending(object_id_type object_id)
+		{
+			wic_class::lock_remote();
+			auto it = wic_class::find_remote(object_id);
+
+			it->second.property_lock.lock();
+			bool b = it->second.properties.template get<member_id>().initial_sync_pending;
+			it->second.property_lock.unlock();
+			wic_class::unlock_remote();
+
+			return b;
+		}
+
 		void init(object_id_type object_id, value_type pvalue = value_type())
 		{
 			// TODO tell me what is this new(&env::remote) remote_record(role);
@@ -361,75 +373,6 @@ namespace wicp
 			jrn(journal::debug) << "uninitialized" << journal::end;
 		}
 
-		static value_type default_value(object_id_type object_id)
-		{ 
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it == wic_class::end())
-			{
-				wic_class::unlock_remote();
-				jrn(journal::error) << 
-					"Invalid remote `" << wic_class::name << 
-					"' object reference " << std::hex << object_id << 
-					journal::end;
-				return value_type();
-			}
-
-			remote_it->second.property_lock.lock();
-			auto &property = remote_it->second.properties.template get<member_id>();
-			const value_type default_value = property.default_value;
-			remote_it->property_lock.unlock();
-			wic_class::unlock_remote();
-			// TODO journal
-			return default_value;
-		}
-
-		static uint32_t failures(object_id_type object_id)
-		{ 
-			wic_class::lock_remote();
-			auto it = wic_class::find_remote(object_id);
-			if(it == wic_class::end())
-			{
-				wic_class::unlock_remote();
-				jrn(journal::error) << 
-					"Invalid remote `" << wic_class::name << 
-					"' object reference " << std::hex << object_id << 
-					journal::end;
-				return uint32_t(); 
-			}
-
-			it->second.property_lock.lock();
-			const uint32_t failures = it->second.properties.template get<member_id>().failures;
-			it->second.property_lock.unlock();
-			wic_class::unlock_remote();
-			// TODO journal
-
-			return failures;
-		}
-
-		static typename clock::duration latency(object_id_type object_id)
-		{ 
-			wic_class::lock_remote();
-			auto it = wic_class::find_remote(object_id);
-			if(it == wic_class::end())
-			{
-				wic_class::unlock_remote();
-				jrn(journal::error) << 
-					"Invalid remote `" << wic_class::name << 
-					"' object reference " << std::hex << object_id << 
-					journal::end;
-				return clock::duration(); 
-			}
-
-			it->second.property_lock.lock();
-			const auto latency = it->second.properties.template get<member_id>().latency;
-			it->second.property_lock.unlock();
-			wic_class::unlock_remote();
-			// TODO journal
-
-			return latency;
-		}
-
 		static value_type value(object_id_type object_id)
 		{ 
 			wic_class::lock_remote();
@@ -441,7 +384,7 @@ namespace wicp
 					"Invalid remote `" << wic_class::name << 
 					"' object reference " << std::hex << object_id << 
 					journal::end;
-				return value_type(); 
+				return value_type(0); 
 			}
 
 			it->second.property_lock.lock();
@@ -467,7 +410,7 @@ namespace wicp
 					"Invalid remote `" << wic_class::name << 
 					"' object reference `" << std::hex << object_id << 
 					journal::end;
-				return value_type();
+				return value_type(0);
 			}
 
 			it->second.property_lock.lock();
@@ -481,9 +424,10 @@ namespace wicp
 				return pvalue;
 			}
 
+			// TODO delete value cout
 			jrn(journal::trace) << 
 				"object: " << std::hex << object_id << 
-				"; value set via API" << 
+				"; value set to " << std::dec << int(pvalue) <<  "; via API" << 
 				journal::end;
 			const value_type value = property.local_value = pvalue;
 			if(property.initial_sync_pending)
@@ -498,6 +442,75 @@ namespace wicp
 			wic_class::unlock_remote();
 			proc_commit::notify(object_id);
 			return value;
+		}
+
+		static value_type default_value(object_id_type object_id)
+		{ 
+			wic_class::lock_remote();
+			auto remote_it = wic_class::find_remote(object_id);
+			if(remote_it == wic_class::end())
+			{
+				wic_class::unlock_remote();
+				jrn(journal::error) << 
+					"Invalid remote `" << wic_class::name << 
+					"' object reference " << std::hex << object_id << 
+					journal::end;
+				return value_type(0);
+			}
+
+			remote_it->second.property_lock.lock();
+			auto &property = remote_it->second.properties.template get<member_id>();
+			const value_type default_value = property.default_value;
+			remote_it->property_lock.unlock();
+			wic_class::unlock_remote();
+			// TODO journal
+			return default_value;
+		}
+
+		static uint32_t failures(object_id_type object_id)
+		{ 
+			wic_class::lock_remote();
+			auto it = wic_class::find_remote(object_id);
+			if(it == wic_class::end())
+			{
+				wic_class::unlock_remote();
+				jrn(journal::error) << 
+					"Invalid remote `" << wic_class::name << 
+					"' object reference " << std::hex << object_id << 
+					journal::end;
+				return uint32_t(0); 
+			}
+
+			it->second.property_lock.lock();
+			const uint32_t failures = it->second.properties.template get<member_id>().failures;
+			it->second.property_lock.unlock();
+			wic_class::unlock_remote();
+			// TODO journal
+
+			return failures;
+		}
+
+		static typename clock::duration latency(object_id_type object_id)
+		{ 
+			wic_class::lock_remote();
+			auto it = wic_class::find_remote(object_id);
+			if(it == wic_class::end())
+			{
+				wic_class::unlock_remote();
+				jrn(journal::error) << 
+					"Invalid remote `" << wic_class::name << 
+					"' object reference " << std::hex << object_id << 
+					journal::end;
+				return clock::duration(0); 
+			}
+
+			it->second.property_lock.lock();
+			const auto latency = it->second.properties.template get<member_id>().latency;
+			it->second.property_lock.unlock();
+			wic_class::unlock_remote();
+			// TODO journal
+
+			return latency;
 		}
 
 		static void clear_history(object_id_type object_id)
@@ -521,7 +534,10 @@ namespace wicp
 			wic_class::unlock_remote();
 		}
 
-		static void subscribe_to_change(object_id_type object_id, void (*change_handler)(object_id_type object_id))
+		static void subscribe_to_change(
+			object_id_type object_id, 
+			void (*change_handler)(object_id_type object_id)
+		)
 		{
 			wic_class::lock_remote();
 			auto it = wic_class::find_remote(object_id);

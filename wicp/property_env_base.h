@@ -94,16 +94,17 @@ namespace wicp
 				if(property.local_timestamp == clock::time_point::min())
 					j << "ages";
 				else
-					j << ::types::time::msec(property.history.front().time-property.local_timestamp) << " msec";
+					j << ::types::time::msec(
+						property.history.front().time - property.local_timestamp
+					) << " msec";
 
 				j << " behind history." << journal::end;
 				property.local_timestamp = property.history.front().time;
 				return true;
 			}
 			else 
-			{
 				jrn(journal::debug) << "local value is up-to-date with history." << journal::end;
-			}
+
 			return false;
 		}
 
@@ -124,7 +125,8 @@ namespace wicp
 			if(sync.timestamp > history.front().time)
 			{
 				jrn(journal::critical) << "remote: " << (std::string)ip <<
-					"; sync timestamp is newer than tip of history; recovering by synchronizing last item" << journal::end;
+					"; sync timestamp is newer than tip of history; recovering by synchronizing last item" << 
+					journal::end;
 				sync.timestamp = history.front().time - std::chrono::nanoseconds(1);
 			}
 			else if(sync.pending_timestamp != clock::time_point::min())
@@ -133,25 +135,27 @@ namespace wicp
 				{
 					uint32_t msecs = 
 						std::chrono::duration_cast<std::chrono::milliseconds>(clock::now()-sync.start).count();
+					jrn(journal::trace) << 
+						"remote: " << (std::string)ip <<
+						"; sync has been pending for " << msecs << "msec" <<
+					journal::end;
 					if(sync.call_id)
-					{
-						jrn(journal::trace) << 
-							"remote: " << (std::string)ip <<
-							"; sync has been pending for " << msecs << "msec" <<
-						journal::end;
-						return;
-					}
+						return;	
 				}
-				jrn(journal::critical) << 
-					"remote: " << (std::string)ip << 
-					"; object: "<< std::hex << object_id <<
-					"; sync start has been corrupted; resetting to consistent state" << journal::end;
+				else
+				{
+					jrn(journal::critical) << 
+						"remote: " << (std::string)ip << 
+						"; object: "<< std::hex << object_id <<
+						"; sync start has been corrupted; resetting to consistent state" << journal::end;
 
-				sync.pending_timestamp = clock::time_point::min();
-				sync.start = clock::time_point::min();
+					sync.pending_timestamp = clock::time_point::min();
+					sync.start = clock::time_point::min();
+				}
 			}
 			else if(sync.timestamp == history.front().time)
 			{
+			// TODO std::cout << ">>object: " << std::hex << object_id << ";local value: `"  << int(history.front().value) << std::endl;
 				jrn(journal::trace) << "remote: " << (std::string)ip << "; up-to-date" << journal::end;
 				return;
 			}			
@@ -180,34 +184,6 @@ namespace wicp
 			jrn(journal::trace) << "remote: " << (std::string)ip << "; sync initiated" << journal::end;
 			
 			sync.call_id = rpc::call(ip,command_id|function,v,callback);
-		}
-
-		static void sync_remote(
-			sync_record &sync,
-			object_id_type local_object_id,
-			object_id_type remote_object_id,
-			net::ipv4_address ip,
-			uint8_t function,
-			void(*callback)(set_handle_type)
-		)
-		{
-			wic_class::lock_local();
-			auto it = wic_class::find_local(local_object_id);
-			if(it != wic_class::end())
-			{
-				it->second.property_lock.lock();
-				const history_type history = it->second.properties.template get<member_id>().history;
-				sync_remote(sync, history, remote_object_id, ip,function, callback);
-				wic_class::unlock_local();
-				it->second.property_lock.unlock();
-			}
-			else
-			{
-				wic_class::unlock_local();
-				jrn(journal::error) << "Invalid `" << wic_class::name << 
-					"' object reference `" << std::hex << local_object_id << 
-				journal::end;
-			}
 		}
 
 		template <typename Tproperty>

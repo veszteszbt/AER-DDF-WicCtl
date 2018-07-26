@@ -35,7 +35,6 @@ namespace process
 		static void call_finish(set_handle_type h)
 		{
 			const object_id_type arg_object_id = h.argument().object_id;
-			const object_id_type ret_object_id = h.value();
 
 			wic_class::lock_remote();
 			auto it = wic_class::find_remote(arg_object_id);
@@ -54,17 +53,24 @@ namespace process
 			auto &property = it->second.properties.template get<member_id>();
 			if(h.reason)
 			{
-				++property.sync.failures;
 				jrn(journal::error) << 
 					"remote: " << (std::string)h.ip << 
 					"; object: " << std::hex << arg_object_id << 
 					"; sync failed" << 
 					journal::end;
+				TEnv::finish_sync_remote(property.sync, h);
+				it->second.property_lock.unlock();
+				wic_class::unlock_remote();
+				++property.sync.failures;
+				notify(arg_object_id);
+
 				return;
 			}
-
+			
+			const object_id_type ret_object_id = h.value();
 			if(arg_object_id != ret_object_id)
 			{
+				// TODO TEnv::finish_sync_remote(property.sync, h);
 				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
 				jrn(journal::critical) << 
@@ -73,6 +79,8 @@ namespace process
 					"; but got invalid remote `" << wic_class::name << 
 					"' object reference " << std::hex << ret_object_id << 
 					journal::end;
+				// TODO notify(arg_object_id);
+
 				return;
 			}
 
@@ -103,43 +111,42 @@ namespace process
 		{
 			wic_class::lock_remote();
 			auto it = wic_class::find_remote(object_id);
-			if(it != wic_class::end())
-			{
-				it->second.property_lock.lock();
-				auto &property = it->second.properties.template get<member_id>();
-				if(property.history.empty())
-				{
-					it->second.property_lock.unlock();					
-					wic_class::unlock_remote();
-					jrn(journal::trace) << 
-						"object: " << std::hex << object_id << 
-						"; nothing to do; suspending until next notify" << 
-						journal::end;
-					return;
-				}
-
-				jrn(journal::trace) << 
-					"remote: " << (std::string)it->second.ip << 
-					"; doing sync via object: " << std::hex << object_id << 
-					journal::end;
-				TEnv::sync_remote(
-					property, 
-					object_id, 
-					it->second.ip, 
-					types::function::set, 
-					call_finish
-				);
-				it->second.property_lock.unlock();
-				wic_class::unlock_remote();
-			}
-			else
+			if(it == wic_class::end())
 			{
 				wic_class::unlock_remote();
 				jrn(journal::error) << 
 					"Invalid remote `" << wic_class::name << 
 					"' object reference: " << std::hex << object_id << 
 					journal::end;
+				return;
 			}
+			
+			it->second.property_lock.lock();
+			auto &property = it->second.properties.template get<member_id>();
+			if(property.history.empty())
+			{
+				it->second.property_lock.unlock();					
+				wic_class::unlock_remote();
+				jrn(journal::trace) << 
+					"object: " << std::hex << object_id << 
+					"; nothing to do; suspending until next notify" << 
+					journal::end;
+				return;
+			}
+
+			jrn(journal::trace) << 
+				"remote: " << (std::string)it->second.ip << 
+				"; doing sync via object: " << std::hex << object_id << 
+				journal::end;
+			TEnv::sync_remote(
+				property, 
+				object_id, 
+				it->second.ip, 
+				types::function::set, 
+				call_finish
+			);
+			it->second.property_lock.unlock();
+			wic_class::unlock_remote();
 		}
 
 		// TODO calling this, i think the time is when we delete a remote at remote_del
@@ -156,7 +163,7 @@ namespace process
 					journal::end;
 				return;
 			}
-			
+
 			it->second.property_lock.lock();
 			auto &property = it->second.properties.template get<member_id>();
 			if(property.call_id)

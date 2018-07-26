@@ -117,7 +117,7 @@ static void l_change_handler(uint64_t object_id)
 		++object_id;
 	else
 		--object_id;
-
+	// std::cout << ">object: " << std::hex << object_id << "; local property value: `" << std::dec << int(local_property::value(object_id)) << "'" << std::endl;
 	local_property::value(object_id, local_property::value(object_id) + 1);
 }
 
@@ -125,7 +125,7 @@ static void l_change_handler_echo(uint64_t object_id)
 {
 	auto value = int(local_property::value(object_id));
 	std::cout << "object: " << std::hex << object_id << ";         local property value: `" << std::dec << value << "'" << std::endl;
-	journal(journal::trace, "faszlo") << "object: " << std::hex << object_id << " local property value: `" << std::dec << value << "'" << journal::end;
+	journal(journal::trace, "faszlo_echo") << "object: " << std::hex << object_id << " local property value: `" << std::dec << value << "'" << journal::end;
 }
 
 typedef wicp::remote_property<wic_class_config> remote_property;
@@ -139,14 +139,15 @@ static void r_change_handler(uint64_t object_id)
 	else
 		--object_id;
 
-	remote_property::value(object_id, remote_property::value(object_id) + 1);	
+	// if(!remote_property::init_sync_pending(object_id))
+		remote_property::value(object_id, remote_property::value(object_id) + 1);	
 }
 
 static void r_change_handler_echo(uint64_t object_id)
 {
 	auto value = int(remote_property::value(object_id));
 	std::cout << "object: " << std::hex << object_id << ";         remote property value: `" << std::dec << value << "'" << std::endl;
-	journal(journal::trace, "faszlo") << "object: " << std::hex << object_id << " remote property value: `" << std::dec << value << "'" << journal::end;
+	journal(journal::trace, "faszlo_echo") << "object: " << std::hex << object_id << " remote property value: `" << std::dec << value << "'" << journal::end;
 }
 
 int main() 
@@ -163,14 +164,14 @@ int main()
 		// wic_class_config::cfg_wic_class::set_remote(71, {127,0,0,1});
 		local_property lp;
 		lp.init();
-		lp.init(0x68,10);
-		lp.init(0x69,15);
+		lp.init(0x68,0);
+		lp.init(0x69,0);
 		lp.subscribe_to_change(0x69, l_change_handler);
 		lp.subscribe_to_change(0x68, l_change_handler_echo);
 		lp.remote_add(0x68, 0x70);
 		lp.remote_add(0x69, 0x70);
-		std::this_thread::sleep_for(4s);	
-		lp.value(0x68, 0);
+		std::this_thread::sleep_for(4s);
+		// lp.value(0x68, 0);
 	}
 	else
 	{
@@ -191,6 +192,21 @@ int main()
 	{
 		std::string x ;
 		std::cin >> x;
+		if(x == "print")
+		{
+			if(sport == 1234)
+			{
+				std::cout << "object: " << std::hex << "68" << "; value: " << std::dec << int(local_property::value(0x68)) << std::endl;	
+				std::cout << "object: " << std::hex << "69" << "; value: " << std::dec << int(local_property::value(0x69)) << std::endl;	
+			}
+			else
+			{
+				std::cout << "object: " << std::hex << "68" << "; value: " << std::dec << int(remote_property::value(0x68)) << std::endl;	
+				std::cout << "object: " << std::hex << "69; value: " << std::dec << int(remote_property::value(0x69)) << std::endl;	
+			}
+		}
+		else
+			remote_property::value(0x68, remote_property::value(0x68) + 1);	
 	}
 
 }

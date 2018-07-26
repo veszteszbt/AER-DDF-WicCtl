@@ -26,13 +26,13 @@ namespace process
 		{
 			object_id_type	object_id;
 
-			uint32_t		cooldown_time;
+			uint64_t		cooldown_time;
 
 			cooldown_record() = default;
 
 			cooldown_record(
 				object_id_type pobject_id,
-				uint32_t pcooldown_time
+				uint64_t pcooldown_time
 			)
 				: object_id(pobject_id)
 				, cooldown_time(pcooldown_time)
@@ -61,6 +61,8 @@ namespace process
 		typedef typename TEnv::wic_class			wic_class;
 
 		typedef typename TEnv::member_id 			member_id;
+
+		typedef typename TEnv::property_record_base	property_record_base;
 
 		typedef sched::lockable<
 			std::priority_queue<
@@ -93,7 +95,49 @@ namespace process
 			return journal(level,"wicp.commit") << "property: " << std::hex <<
 				TEnv::class_id << "::" << TEnv::member_id::value << ' ';
 		}
+		
+		template <typename Tproperty>
+		static std::enable_if_t<
+			std::is_base_of_v<
+				property_record_base, 
+				Tproperty
+			>, bool
+		> is_sync_needed(const Tproperty &property)
+		{ return !property.history.empty() && property.local_value != property.history.front().value; }
 
+
+		static void check_cooldowns()
+		{
+			cooldowns.lock();
+			while(!cooldowns.empty())
+			{
+				const auto lowest = cooldowns.top();
+				const auto current_time = ::types::time::msec(clock::now());
+				if(lowest.cooldown_time <= current_time)
+				{
+					wic_class::template lock<encap_object_type>();
+					auto lowest_it = 
+						wic_class::template find<encap_object_type>(lowest.object_id);
+					if(lowest_it != wic_class::end())
+					{
+						auto &property = lowest_it->second.properties.template get<member_id>();
+						property.cooldown_pending = false;
+						if(is_sync_needed(property))
+							safe_emplace_to_object_id_buffer(lowest.object_id);
+
+						jrn(journal::trace) << 
+							"object: "<< std::hex << lowest.object_id << 
+							"; cooldown expired" << 
+							journal::end;
+					}
+					cooldowns.pop();
+					wic_class::template unlock<encap_object_type>();
+				}
+				else
+					break;
+			}
+			cooldowns.unlock();
+		}
 		static void start()
 		{
 			jrn(journal::debug) << "initialized" << journal::end;
@@ -111,29 +155,9 @@ namespace process
 					const object_id_type object_id = *object_id_buffer.begin();
 					object_id_buffer.erase(object_id_buffer.begin());
 					object_id_buffer.unlock();
-					
-					// TODO the place of this
-					cooldowns.lock();
-					while(!cooldowns.empty())
-					{
-						const auto lowest = cooldowns.top();
-						const auto current_time = ::types::time::msec(clock::now());
-						if(lowest.cooldown_time <= current_time)
-						{
-							auto lowest_it = wic_class::template find<encap_object_type>(lowest.object_id);
-							if(lowest_it != wic_class::end())
-							{
-								jrn(journal::trace) << "object: "<< std::hex << object_id << "; cooldown expired" << journal::end;
-								lowest_it->second.properties.template get<member_id>().cooldown_pending = false;
-								safe_emplace_to_object_id_buffer(lowest.object_id);
-							}
-							cooldowns.pop();
-						}
-						else
-							break;
-					}
-					cooldowns.unlock();
 
+					check_cooldowns(); // TODO proper name
+					
 					wic_class::template lock<encap_object_type>();
 					auto it = wic_class::template find<encap_object_type>(object_id);
 					if(it == wic_class::end())
@@ -146,7 +170,6 @@ namespace process
 
 					it->second.property_lock.lock();
 					auto &property = it->second.properties.template get<member_id>();
-
 					if(property.cooldown_pending)
 					{
 						it->second.property_lock.unlock();
@@ -154,7 +177,7 @@ namespace process
 						jrn(journal::trace) << "cooldown pending; ignoring object: " << std::hex << object_id << journal::end;
 						continue;
 					}
-					else if(!property.history.empty() && property.local_value == property.history.front().value)
+					else if(!is_sync_needed(property))
 					{
 						it->second.property_lock.unlock();
 						wic_class::template unlock<encap_object_type>();
@@ -166,11 +189,11 @@ namespace process
 
 					jrn(journal::trace) << 
 						"object: " << std::hex << object_id << 
-						"; comitting new value to history; length is " << property.history.size() << 
+						"; comitting new value to history; length is " << int(property.history.size()) << 
 						journal::end;
 
-					history_record hr(property.local_value);
-					property.history.push_front(hr);
+					const history_record hr(property.local_value);
+					property.history.emplace_front(hr);
 					if(property.history.size() > TEnv::history_size)
 						property.history.pop_back();
 
@@ -198,8 +221,43 @@ namespace process
 				if(object_id_buffer.empty())
 				{
 					object_id_buffer.unlock();
-					jrn(journal::trace) << "no change; suspending until next notify" << journal::end;
-					suspend_cv.wait(ul);
+					if(cooldowns.empty())
+					{
+						jrn(journal::trace) << "no change; suspending until next notify" << journal::end;
+						suspend_cv.wait(ul);
+					}
+					else
+					{
+						cooldowns.lock();
+						const auto lowest = cooldowns.top();
+						const auto current_time = ::types::time::msec(clock::now());
+						if(lowest.cooldown_time > current_time)
+						{
+							cooldowns.unlock();
+							jrn(journal::trace) << "no change; suspending until: " << lowest.cooldown_time - current_time << "ms" << journal::end;
+							suspend_cv.wait_until(
+								ul, 
+								clock::time_point(std::chrono::milliseconds(lowest.cooldown_time))
+							);
+							jrn(journal::trace) << "resuming" << journal::end;
+							wic_class::template lock<encap_object_type>();
+							auto lowest_it = 
+								wic_class::template find<encap_object_type>(lowest.object_id);
+							if(lowest_it != wic_class::end())
+							{
+								auto &property = lowest_it->second.properties.template get<member_id>();
+								if(is_sync_needed(property))
+									safe_emplace_to_object_id_buffer(lowest.object_id);
+							}
+							wic_class::template unlock<encap_object_type>();
+						}
+						else
+						{
+							cooldowns.unlock();
+							jrn(journal::trace) << "no change; suspending until next notify" << journal::end;
+							suspend_cv.wait(ul);
+						}
+					}
 				}
 				else
 					object_id_buffer.unlock();
