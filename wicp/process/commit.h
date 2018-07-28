@@ -145,7 +145,9 @@ namespace process
 			{
 				while(1)
 				{
+					check_cooldowns(); // TODO proper name
 					object_id_buffer.lock();
+
 					if(object_id_buffer.empty())
 					{
 						object_id_buffer.unlock();
@@ -156,7 +158,6 @@ namespace process
 					object_id_buffer.erase(object_id_buffer.begin());
 					object_id_buffer.unlock();
 
-					check_cooldowns(); // TODO proper name
 					
 					wic_class::template lock<encap_object_type>();
 					auto it = wic_class::template find<encap_object_type>(object_id);
@@ -234,7 +235,7 @@ namespace process
 						if(lowest.cooldown_time > current_time)
 						{
 							cooldowns.unlock();
-							jrn(journal::trace) << "no change; suspending until: " << lowest.cooldown_time - current_time << "ms" << journal::end;
+							jrn(journal::trace) << "no change; suspending for " << lowest.cooldown_time - current_time << "ms" << journal::end;
 							suspend_cv.wait_until(
 								ul, 
 								clock::time_point(std::chrono::milliseconds(lowest.cooldown_time))

@@ -4,6 +4,7 @@
 # include <mutex>
 # include <list>
 # include <sched/listener.h>
+# include <wicp/types/sync_record.h>
 namespace wicp {
 namespace types 
 {
@@ -30,36 +31,15 @@ namespace types
 			{}
 		};
 
-		struct sync_record
-		{
-			typename clock::time_point timestamp;
-
-			typename clock::time_point pending_timestamp;
-
-			call_id_type 				call_id;
-
-			typename clock::time_point	start;
-
-			typename clock::duration	latency;
-
-			uint32_t 					failures;
-
-			sync_record()
-				: timestamp(clock::time_point::min())
-				, pending_timestamp(clock::time_point::min())
-				, start(clock::time_point::min())
-				, failures(0)
-				, call_id(0)
-			{}
-		};
-
 		typedef TobjectId object_id_type;
 
 		typedef std::list<history_record> history_type;
 
+		typedef ::wicp::types::sync_record<call_id_type, clock> sync_record_type;
+
 		history_type history;
 
-		sync_record sync;
+		sync_record_type sync;
 
 		typename clock::time_point local_timestamp;
 

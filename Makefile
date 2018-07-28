@@ -11,6 +11,8 @@ else
 endif
 
 
+CXX=g++-7
+
 ifeq ($(PLATFORM),LINUX)
 
 LIBS=-pthread -lmysqlcppconn -lasound -lsndfile -lavformat -lavcodec -lswresample -lswscale -lavutil -lm
@@ -18,21 +20,21 @@ LIBS=-pthread -lmysqlcppconn -lasound -lsndfile -lavformat -lavcodec -lswresampl
 all: wicctl wic_host
 
 wicctl: wicctl.cc wicctl.h
-	g++-7.2.0 -I. -std=c++17 -lusb-1.0 -o wicctl wicctl.cc
+	$(CXX) -I. -std=c++17 -lusb-1.0 -o wicctl wicctl.cc
 
 %.o: %.cc
-	g++ -DLOG_SQL -I. -g3 -std=c++17 -fdiagnostics-color -o $@ -c $<
+	$(CXX) -DLOG_SQL -I. -g3 -std=c++17 -fdiagnostics-color -o $@ -c $<
 
 wic_host: wic_host.o alsa_host.o journal.o sched/process.o
-	g++ -I. -g3 -std=c++17 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o journal.o sched/process.o $(LIBS)
+	$(CXX) -I. -g3 -std=c++17 -fdiagnostics-color -o wic_host wic_host.o alsa_host.o journal.o sched/process.o $(LIBS)
 
 pair_test: pair_test_l pair_test_r
 
 pair_test_l: pair_test_l.o journal.o sched/process.o
-	g++ -I. -g3 -std=c++17 -fdiagnostics-color -o pair_test_l pair_test_l.o journal.o sched/process.o $(LIBS)
+	$(CXX) -I. -g3 -std=c++17 -fdiagnostics-color -o pair_test_l pair_test_l.o journal.o sched/process.o $(LIBS)
 
 pair_test_r: pair_test_r.o journal.o sched/process.o
-	g++ -I. -g3 -std=c++17 -fdiagnostics-color -o pair_test_r pair_test_r.o journal.o sched/process.o $(LIBS)
+	$(CXX) -I. -g3 -std=c++17 -fdiagnostics-color -o pair_test_r pair_test_r.o journal.o sched/process.o $(LIBS)
 
 clean:
 	rm *.o wicctl wic_host 
@@ -48,7 +50,7 @@ wicctl:
 	$(error wicctl cannot be built for platform $(PLATFORM))
 
 wic_host: wic_host.cc
-	g++ -DLOG_SQL -I. \
+	$(CXX) -DLOG_SQL -I. \
 	-g3 \
 	-std=c++17 \
 	-fdiagnostics-color \

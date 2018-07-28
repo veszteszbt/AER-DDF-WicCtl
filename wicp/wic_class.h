@@ -9,40 +9,40 @@
 
 #define WIC_CLASS_TEMPLATE template < \
 	typename Tconfig, \
-	typename TobjectId, \
-	typename Tvalue, \
-	typename Taddress, \
 	typename... Tproperties \
 >
 
-#define WIC_CLASS wic_class<Tconfig, TobjectId, Tvalue, Taddress, Tproperties...>
+#define WIC_CLASS wic_class<Tconfig, Tproperties...>
 
 namespace wicp 
 {
 	WIC_CLASS_TEMPLATE
-	class wic_class
+	struct wic_class
 	{
-		typedef typename Tconfig::class_id_type	class_id_type;
+		typedef typename Tconfig::cfg_class_id_type	   class_id_type;
 
-		typedef TobjectId					 	object_id_type;
+		typedef typename Tconfig::cfg_member_id_type       member_id_type;
 
-		typedef Tvalue							value_type;
+		typedef typename Tconfig::cfg_object_id_type       object_id_type;
 
-		typedef Taddress					 	address_type;
 
-		typedef WIC_CLASS 						self;
+		typedef typename Tconfig::cfg_earpc::call_id_type  call_id_type;
+
+		typedef typename Tconfig::cfg_address_type         address_type;
+
+		typedef typename Tconfig::cfg_clock                clock;
+
+	private:
+		typedef WIC_CLASS                                  self;
 	
 	public:
 		typedef types::local_object_record<
 			self, 
-			object_id_type, 
 			Tproperties...
 		> 										local_object_record_type;
 
 		typedef types::remote_object_record<
 			self, 
-			object_id_type, 
-			address_type, 
 			Tproperties...
 		> 										remote_object_record_type;
 	private:

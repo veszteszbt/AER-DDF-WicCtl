@@ -324,7 +324,7 @@ namespace wicp
 			return b;
 		}
 
-		void init(object_id_type object_id, value_type pvalue = value_type())
+		static void init(object_id_type object_id, value_type pvalue = value_type())
 		{
 			// TODO tell me what is this new(&env::remote) remote_record(role);
 			
@@ -408,7 +408,7 @@ namespace wicp
 				wic_class::unlock_remote();
 				jrn(journal::error) << 
 					"Invalid remote `" << wic_class::name << 
-					"' object reference `" << std::hex << object_id << 
+					"' object reference " << std::hex << object_id << 
 					journal::end;
 				return value_type(0);
 			}

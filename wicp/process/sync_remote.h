@@ -49,28 +49,29 @@ namespace process
 			}
 
 			it->second.report_call(h);
+
 			it->second.property_lock.lock();
 			auto &property = it->second.properties.template get<member_id>();
+
+			TEnv::finish_sync_remote(property.sync, h);
+
 			if(h.reason)
 			{
+				++property.sync.failures;
 				jrn(journal::error) << 
 					"remote: " << (std::string)h.ip << 
 					"; object: " << std::hex << arg_object_id << 
 					"; sync failed" << 
 					journal::end;
-				TEnv::finish_sync_remote(property.sync, h);
 				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
-				++property.sync.failures;
 				notify(arg_object_id);
-
 				return;
 			}
 			
 			const object_id_type ret_object_id = h.value();
 			if(arg_object_id != ret_object_id)
 			{
-				// TODO TEnv::finish_sync_remote(property.sync, h);
 				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
 				jrn(journal::critical) << 
@@ -79,8 +80,8 @@ namespace process
 					"; but got invalid remote `" << wic_class::name << 
 					"' object reference " << std::hex << ret_object_id << 
 					journal::end;
-				// TODO notify(arg_object_id);
 
+				notify(arg_object_id);
 				return;
 			}
 
@@ -90,7 +91,6 @@ namespace process
 				"; sync succeeded with call: " << std::hex << h.call_id << 
 				journal::end;
 
-			TEnv::finish_sync_remote(property.sync, h);
 			it->second.property_lock.unlock();
 			wic_class::unlock_remote();
 			notify(arg_object_id);
@@ -138,6 +138,7 @@ namespace process
 				"remote: " << (std::string)it->second.ip << 
 				"; doing sync via object: " << std::hex << object_id << 
 				journal::end;
+
 			TEnv::sync_remote(
 				property, 
 				object_id, 

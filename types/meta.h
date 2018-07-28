@@ -62,58 +62,58 @@ namespace types
 		{ static_assert(std::is_same_v<T,Tkey>, "No such element"); }
 	};
 
-	template <typename Tkey, typename Tvalue, typename... Targs>
+	template <typename T, typename... Targs>
 	class static_keyed_map : public static_keyed_map<Targs...>
 	{
-		typedef typename Tkey::value_type key_type;
+		typedef typename T::first_type::value_type key_type;
 
-		typedef Tvalue value_type;
+		typedef typename T::second_type value_type;
 
-		constexpr static const key_type key = Tkey::value;
+		constexpr static const key_type key = T::first_type::value;
 
 		value_type value;
 	public:
 
-		template <typename T>
+		template <typename Tx>
 		std::enable_if_t<
-			std::is_same_v<T, Tkey>, 
+			std::is_same_v<Tx, typename T::first_type>, 
 			value_type&
 		> get()
 		{ return value; }
 
-		template <typename T>
+		template <typename Tx>
 		std::enable_if_t<
-			!std::is_same_v<T, Tkey>, 
+			!std::is_same_v<Tx, typename T::first_type>, 
 			decltype(std::declval<static_keyed_map<Targs...>>().template get<T>())
 		> get()
 		{ return static_keyed_map<Targs...>::template get<T>(); }
 	};
 
-	template <typename Tkey, typename Tvalue>
-	class static_keyed_map<Tkey, Tvalue>
+	template <typename T>
+	class static_keyed_map<T>
 	{
-		typedef typename Tkey::value_type key_type;
+		typedef typename T::first_type::value_type key_type;
 
-		typedef Tvalue value_type;
+		typedef typename T::second_type value_type;
 
-		constexpr static const key_type key = Tkey::value;
+		constexpr static const key_type key = T::first_type::value;
 
 		value_type value;
 	public:
-	
-		template <typename T>
+
+		template <typename Tx>
 		std::enable_if_t<
-			std::is_same_v<T, Tkey>,
+			std::is_same_v<Tx, typename T::first_type>, 
 			value_type&
 		> get()
 		{ return value; }
 
-		template <typename T>
+		template <typename Tx>
 		std::enable_if_t<
-			!std::is_same_v<T, Tkey>, 
+			!std::is_same_v<Tx, typename T::first_type>, 
 			value_type&
 		> get()
-		{ static_assert(std::is_same_v<T,Tkey>, "No such element"); }
+		{ static_assert(std::is_same_v<Tx,T::first_type>, "No such element"); }
 	};
 	
 	template <typename Tkey, typename Tvalue, typename... Targs>

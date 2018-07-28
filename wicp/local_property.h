@@ -34,6 +34,8 @@ namespace wicp
 
 		typedef typename env::wic_class					wic_class;
 
+		typedef typename wic_class::clock                               clock;
+
 		typedef typename wic_class::local_iterator		local_iterator;
 
 		typedef typename env::member_id 				member_id;
@@ -58,12 +60,12 @@ namespace wicp
 		typedef typename rpc::template incoming_call_handle<
 			property_data_type, 
 			object_id_type
-		> 												get_handle_type;
+		> get_handle_type;
 
 		typedef typename rpc::template incoming_call_handle<
 			object_id_type, 
 			property_data_type
-		> 												set_handle_type;
+		> set_handle_type;
 
 		static const command_id_type				command_id = env::command_id;
 
@@ -162,7 +164,7 @@ namespace wicp
 			jrn(journal::debug) << "initialized" << journal::end;
 		}
 
-		void init(
+		static void init(
 			object_id_type object_id,
 			value_type value = value_type()
 		)
@@ -288,7 +290,7 @@ namespace wicp
 				wic_class::unlock_local();
 				jrn(journal::debug) << 
 					"object: " << std::hex << object_id << 
-					"; set from API with the same value, what we have" << int(pvalue) << 
+					"; set from API with no change" << int(pvalue) << 
 					journal::end;
 				// TODO journal
 				return pvalue;
@@ -360,7 +362,9 @@ namespace wicp
 			}
 
 			local_it->second.remotes.lock();
-			local_it->second.remotes.emplace(remote_object_id);
+
+			local_it->second.remotes.try_emplace(remote_object_id);
+			
 			local_it->second.remotes.unlock();
 			wic_class::unlock_remote();
 			wic_class::unlock_local();

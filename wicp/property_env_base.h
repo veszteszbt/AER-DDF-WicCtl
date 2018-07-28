@@ -6,6 +6,7 @@
 # include <sched/listener.h>
 # include <wicp/role.h>
 # include <wicp/types/property_record.h>
+# include <wicp/types/sync_record.h>
 # include <journal.h>
 namespace wicp
 {
@@ -40,7 +41,7 @@ namespace wicp
 
 		typedef typename property_record_base::history_record  history_record;
 
-		typedef typename property_record_base::sync_record  sync_record;
+		typedef ::wicp::types::sync_record<call_id_type, clock> sync_record;
 
 		typedef typename property_record_base::history_type	history_type;
 

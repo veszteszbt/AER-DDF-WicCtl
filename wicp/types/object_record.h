@@ -5,20 +5,20 @@
 # include <sched/listener.h>
 # include <sched/lockable.h>
 # include <types/meta.h>
+# include <wicp/types/sync_record.h>
 
-#define OBJECT_RECORD_CLASS object_record<TwicClass, TobjectId, Tproperties...>
+#define OBJECT_RECORD_CLASS object_record<TwicClass, Tproperties...>
 
 namespace wicp {
 namespace types 
 {
 	template <
 		typename TwicClass,
-		typename TobjectId, 
 		typename... Tproperties
 	>
 	struct object_record
 	{
-		typedef TobjectId object_id_type;
+		typedef typename TwicClass::object_id_type        object_id_type;
 
 		typedef ::types::static_keyed_map<Tproperties...> properties_type;
 
@@ -36,18 +36,46 @@ namespace types
 
 	template <
 		typename TwicClass,
-		typename TobjectId,
 		typename... Tproperties
 	>
-	struct local_object_record 
+	class local_object_record 
 		: public OBJECT_RECORD_CLASS
 	{
-		typedef TobjectId object_id_type;
+		template<typename Tpair,typename T>
+		struct change_second_to : std::pair<typename Tpair::first_type,T> {};
 
-		typedef sched::lockable<std::set<object_id_type>> remotes_type;
+	public:
+		typedef typename TwicClass::clock           clock;
 
+		typedef typename TwicClass::call_id_type    call_id_type;
+
+		typedef typename TwicClass::object_id_type  object_id_type;
+
+		/*! Type to hold sync status for one property of a remote endpoint */
+		typedef sync_record<
+			call_id_type,
+			clock
+		> remote_property_sync_record;
+
+		/*! Type to hold sync status for each property of a remote endpoint */
+		typedef ::types::static_keyed_map<
+			change_second_to<
+				Tproperties,
+				remote_property_sync_record
+			>...
+		> remote_object_sync_record;
+
+		/*! Type to map remote object ids to sync records */
+		typedef sched::lockable<
+			std::map<
+				object_id_type,
+				remote_object_sync_record
+			>
+		> remotes_type;
+
+		/*! Store of remote endpoints */
 		remotes_type remotes;
-
+ 
 		local_object_record(object_id_type object_id) 
 			: OBJECT_RECORD_CLASS(object_id) 
 		{}
@@ -55,14 +83,14 @@ namespace types
 
 	template <
 		typename TwicClass, 
-		typename TobjectId, 
-		typename Taddress,
 		typename... Tproperties
 	>
 	struct remote_object_record 
 		: public OBJECT_RECORD_CLASS
 	{
-		typedef Taddress address_type;
+		typedef typename TwicClass::address_type   address_type;
+
+		typedef typename TwicClass::object_id_type object_id_type;
 
 		struct call_report_type
 		{
@@ -70,8 +98,6 @@ namespace types
 			int32_t latency;
 			address_type address;
 		};
-
-		typedef TobjectId object_id_type;
 
 		address_type ip;
 
@@ -94,16 +120,16 @@ namespace types
 				return;
 			if(h.ip != ip)
 			{
-				on_ip_change();
 				ip = h.ip;
+				on_ip_change();
 			}
 
 			call_report_type r;
 			r.success = !h.reason;
 			r.latency = calc_latency(h);			
 		}
+
 	private:
-	
 		template<typename T, typename U = decltype(T::finished), typename V = decltype(T::started)>
 		int32_t calc_latency(const T &h)
 		{ return ::types::time::msec(h.finished-h.started); }
