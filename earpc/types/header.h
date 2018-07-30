@@ -24,7 +24,12 @@ struct header
 	}
 
 	bool checksum_verify() const
-	{ return net::algorithm::checksum_verify(this,sizeof(header<TEnv>)); }
+	{ 
+		if(checksum)
+			return net::algorithm::checksum_verify(this,sizeof(header<TEnv>));
+		else
+			return true;
+	}
 };
 #pragma pack(pop)
 

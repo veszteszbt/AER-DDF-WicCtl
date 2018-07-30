@@ -49,7 +49,6 @@ namespace types
 
 		value_type local_value;
 
-		// TODO init default_value
 		value_type default_value;
 
 		sched::event<object_id_type> on_change;
@@ -61,7 +60,7 @@ namespace types
 			, initial_sync_cid(0)
 		{}
 
-		void init(value_type p = value_type())
+		static void init(value_type p = value_type())
 		{
 			// TODO
 		}

@@ -114,7 +114,6 @@ namespace wicp
 
 			it->second.property_lock.lock();
 			auto &property = it->second.properties.template get<member_id>();
-			// TODO std::cout << ">>object: " << std::hex << object_id << ";local value: `" << std::dec << int(property.local_value) << "'" << ";new value: `" << int(property_data.value) << std::endl;
 			if(property.local_value == property_data.value)
 			{
 				it->second.property_lock.unlock();
@@ -309,19 +308,6 @@ namespace wicp
 				notify_handler
 			);
 			jrn(journal::debug) << "initialized" << journal::end;
-		}
-
-		static bool init_sync_pending(object_id_type object_id)
-		{
-			wic_class::lock_remote();
-			auto it = wic_class::find_remote(object_id);
-
-			it->second.property_lock.lock();
-			bool b = it->second.properties.template get<member_id>().initial_sync_pending;
-			it->second.property_lock.unlock();
-			wic_class::unlock_remote();
-
-			return b;
 		}
 
 		static void init(object_id_type object_id, value_type pvalue = value_type())

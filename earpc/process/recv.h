@@ -125,7 +125,7 @@ namespace process
 						"; command: " << std::hex << call->command_id <<
 						"; target: " << (std::string)ip <<
 						"; return value size mismatch" <<
-						"; expected" << std::dec << call->return_size <<
+						"; expected " << std::dec << call->return_size <<
 						"; received " << ret_size <<
 						journal::end;
 

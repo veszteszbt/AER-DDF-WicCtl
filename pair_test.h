@@ -141,8 +141,6 @@ static void r_change_handler(uint64_t object_id)
 	remote_property::value(0x69, remote_property::value(0x69) + 1);
 }
 
-
-
 static void l_change_handler_echo(uint64_t object_id)
 {
 	auto value = int(local_property::value(object_id));
@@ -171,51 +169,25 @@ int main()
 	remote_property::init();
 
 	using namespace std::literals::chrono_literals;
-	if(sport == 11234)
+	wic_class_config::cfg_wic_class::set_remote(0x68, {10,2,1,100});
+		remote_property::init(0x68);
+		remote_property::subscribe_to_change(0x68, r_change_handler_echo);
+	
+	std::this_thread::sleep_for(2s);
+	int cnt = 0;
+	while(1)
 	{
-		wic_class_config::cfg_wic_class::set_remote(0x70, {127,0,0,1});
-
-		wic_class_config::cfg_wic_class::set_local(0x68);
-			local_property::init(0x68,0);
-			local_property::subscribe_to_change(0x68, l_change_handler_echo);
-			local_property::remote_add(0x68, 0x70);
-
-		wic_class_config::cfg_wic_class::set_local(0x69);
-			local_property::init(0x69,0);
-			local_property::subscribe_to_change(0x69, l_change_handler);
-			local_property::remote_add(0x69, 0x70);
+		std::this_thread::sleep_for(500ms);
+		remote_property::value(0x68,cnt++);
 	}
-	else
-	{
-		wic_class_config::cfg_wic_class::set_remote(0x68, {127,0,0,1});
-			remote_property::init(0x68);
-			remote_property::subscribe_to_change(0x68, r_change_handler);
 
-		wic_class_config::cfg_wic_class::set_remote(0x69, {127,0,0,1});
-			remote_property::init(0x69);
-			remote_property::subscribe_to_change(0x69, r_change_handler_echo);
-	}
+	// wic_class_config::cfg_wic_class::set_remote(0x69, {127,0,0,1});
+	// 	remote_property::init(0x69);
+	// 	remote_property::subscribe_to_change(0x69, r_change_handler_echo);
 	while(1)
 	{
 		std::string x ;
 		std::cin >> x;
-		if(x == "print")
-		{
-			if(sport == 11234)
-			{
-				std::cout << std::hex << "object: 68; value: " << std::dec << int(local_property::value(0x68)) << std::endl;	
-				std::cout << std::hex << "object: 69; value: " << std::dec << int(local_property::value(0x69)) << std::endl;
-			}
-			else
-			{
-				std::cout << std::hex << "object: 68; value: " << std::dec << int(remote_property::value(0x68)) << std::endl;	
-				std::cout << std::hex << "object: 69; value: " << std::dec << int(remote_property::value(0x69)) << std::endl;
-			}
-		}
-		else if(sport == 11234)
-			local_property::value(0x68, remote_property::value(0x68) + 1);	
-		else 
-			remote_property::value(0x68, remote_property::value(0x68) + 1);	
 	}
 
 }

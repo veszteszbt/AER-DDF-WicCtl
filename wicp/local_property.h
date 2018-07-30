@@ -135,7 +135,6 @@ namespace wicp
 
 			local_it->second.property_lock.lock();
 			auto &property = local_it->second.properties.template get<member_id>();
-			// TODO std::cout << "object: " << std::hex << object_id << ";local value: `" << std::dec << int(property.local_value) << "'" << ";new value: `" << int(property_data.value) << std::endl;
 			property.local_value = property_data.value;
 
 			local_it->second.property_lock.unlock();

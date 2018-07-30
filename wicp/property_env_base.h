@@ -156,7 +156,6 @@ namespace wicp
 			}
 			else if(sync.timestamp == history.front().time)
 			{
-			// TODO std::cout << ">>object: " << std::hex << object_id << ";local value: `"  << int(history.front().value) << std::endl;
 				jrn(journal::trace) << "remote: " << (std::string)ip << "; up-to-date" << journal::end;
 				return;
 			}			
