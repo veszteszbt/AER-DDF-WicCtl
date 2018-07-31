@@ -96,6 +96,7 @@ start:
 		//$$->evaluate();
 		journal(journal::info, "parser") << "start -> command_list" << journal::end;
 		finished = true;
+		std::cout << "Start symbol matched! Terminating the program!" << std::endl;
 		return;
 	}
 ;
