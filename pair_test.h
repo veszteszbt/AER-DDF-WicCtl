@@ -78,7 +78,7 @@ struct TestConfig
 
 	typedef std::chrono::high_resolution_clock cfg_clock;
 
-	typedef uint32_t                           cfg_class_id_type;
+	typedef uint32_t                       	   cfg_class_id_type;
                                               
 	typedef uint32_t                           cfg_member_id_type;
                                               

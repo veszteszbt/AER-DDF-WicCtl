@@ -410,10 +410,9 @@ namespace wicp
 				return pvalue;
 			}
 
-			// TODO delete value cout
 			jrn(journal::trace) << 
 				"object: " << std::hex << object_id << 
-				"; value set to " << std::dec << int(pvalue) <<  "; via API" << 
+				"; value set via API" << 
 				journal::end;
 			const value_type value = property.local_value = pvalue;
 			if(property.initial_sync_pending)

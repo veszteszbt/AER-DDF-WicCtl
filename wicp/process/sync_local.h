@@ -166,14 +166,10 @@ namespace process
 		}
 	public:
 		static void init()
-		{
-			jrn(journal::debug) << "initialized" << journal::end;
-		}
+		{ jrn(journal::debug) << "initialized" << journal::end; }
 
 		static void uninit()
-		{
-			jrn(journal::debug) << "uninitialized" << journal::end;
-		}
+		{ jrn(journal::debug) << "uninitialized" << journal::end; }
 
 		static void notify(
 			object_id_type local_object_id,
@@ -208,7 +204,6 @@ namespace process
 				wic_class::unlock_local();
 				return;
 			}
-
 			
 			local.property_lock.unlock();
 
@@ -286,7 +281,6 @@ namespace process
 				return;
 			}
 
-			local_it->second.property_lock.unlock();
 			local_it->second.remotes.lock();
 			wic_class::lock_remote();
 			for(
@@ -297,6 +291,22 @@ namespace process
 				auto remote_it = wic_class::find_remote(device->first);
 				if(remote_it != wic_class::end())
 				{
+					remote_it->second.property_lock.lock();
+					auto &remote_property = remote_it->second.properties.template get<member_id>();
+					// TODO
+					if(local_property.local_value == remote_property.local_value)
+					{
+						remote_it->second.property_lock.unlock();
+						jrn(journal::trace,object_id) << 
+							"remote: " << (std::string)remote_it->second.ip << 
+							"; skipping sync for the source of the data, device: " << 
+							std::hex << device->first << 
+							journal::end;
+
+						continue;
+					}
+					remote_it->second.property_lock.unlock();
+
 					jrn(journal::trace,object_id) << 
 						"remote: " << (std::string)remote_it->second.ip << 
 						"; doing sync via device: " << std::hex << device->first << 
@@ -315,13 +325,14 @@ namespace process
 				else
 				{
 					device = local_it->second.remotes.erase(device);
-					jrn(journal::debug) << 
+					jrn(journal::debug, object_id) << 
 						"omitting sync via deleted device " << std::hex << device->first << 
 						journal::end;
 				}
 			}
 			wic_class::unlock_remote();
 			local_it->second.remotes.unlock();
+			local_it->second.property_lock.unlock();
 			wic_class::unlock_local();
 		}
 

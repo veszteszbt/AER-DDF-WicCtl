@@ -55,7 +55,7 @@ namespace types
 		typedef sync_record<
 			call_id_type,
 			clock
-		> remote_property_sync_record;
+		> 											remote_property_sync_record;
 
 		/*! Type to hold sync status for each property of a remote endpoint */
 		typedef ::types::static_keyed_map<
@@ -63,7 +63,7 @@ namespace types
 				Tproperties,
 				remote_property_sync_record
 			>...
-		> remote_object_sync_record;
+		>											remote_object_sync_record;
 
 		/*! Type to map remote object ids to sync records */
 		typedef sched::lockable<
@@ -71,10 +71,10 @@ namespace types
 				object_id_type,
 				remote_object_sync_record
 			>
-		> remotes_type;
+		>											remotes_type;
 
 		/*! Store of remote endpoints */
-		remotes_type remotes;
+		remotes_type								remotes;
  
 		local_object_record(object_id_type object_id) 
 			: OBJECT_RECORD_CLASS(object_id) 
@@ -90,14 +90,14 @@ namespace types
 	{
 		typedef typename TwicClass::address_type   address_type;
 
-		typedef typename TwicClass::object_id_type object_id_type;
-
 		struct call_report_type
 		{
 			bool    success;
 			int32_t latency;
 			address_type address;
 		};
+
+		typedef typename TwicClass::object_id_type object_id_type;
 
 		address_type ip;
 
@@ -118,11 +118,11 @@ namespace types
 		{
 			if(h.reason == earpc::reason::cancelled)
 				return;
-			if(h.ip != ip)
-			{
-				ip = h.ip;
-				on_ip_change();
-			}
+			if(h.ip == ip)
+				return;
+
+			ip = h.ip;
+			on_ip_change();
 
 			call_report_type r;
 			r.success = !h.reason;

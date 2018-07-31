@@ -19,23 +19,23 @@ namespace wicp
 	WIC_CLASS_TEMPLATE
 	struct wic_class
 	{
-		template <typename...>
-		struct property_initializer;
 
-		typedef typename Tconfig::cfg_class_id_type	   class_id_type;
+		typedef typename Tconfig::cfg_class_id_type			class_id_type;
 
-		typedef typename Tconfig::cfg_member_id_type       member_id_type;
+		typedef typename Tconfig::cfg_member_id_type		member_id_type;
 
-		typedef typename Tconfig::cfg_object_id_type       object_id_type;
+		typedef typename Tconfig::cfg_object_id_type		object_id_type;
 
-		typedef typename Tconfig::cfg_earpc::call_id_type  call_id_type;
+		typedef typename Tconfig::cfg_earpc::call_id_type	call_id_type;
 
-		typedef typename Tconfig::cfg_address_type         address_type;
+		typedef typename Tconfig::cfg_address_type			address_type;
 
-		typedef typename Tconfig::cfg_clock                clock;
+		typedef typename Tconfig::cfg_clock					clock;
 
 	private:
-		typedef WIC_CLASS                                  self;
+		template <typename...>
+		struct property_initializer;
+		typedef WIC_CLASS									self;
 	
 	public:
 		typedef types::local_object_record<

@@ -289,9 +289,8 @@ namespace wicp
 				wic_class::unlock_local();
 				jrn(journal::debug) << 
 					"object: " << std::hex << object_id << 
-					"; set from API with no change" << int(pvalue) << 
+					"; set from API with no change" << 
 					journal::end;
-				// TODO journal
 				return pvalue;
 			}
 
@@ -361,10 +360,9 @@ namespace wicp
 			}
 
 			local_it->second.remotes.lock();
-
 			local_it->second.remotes.try_emplace(remote_object_id);
-			
 			local_it->second.remotes.unlock();
+
 			wic_class::unlock_remote();
 			wic_class::unlock_local();
 
