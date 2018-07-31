@@ -95,18 +95,18 @@ namespace process
 			return journal(level,"wicp.commit") << "property: " << std::hex <<
 				TEnv::class_id << "::" << TEnv::member_id::value << ' ';
 		}
-		
+
 		template <typename Tproperty>
 		static std::enable_if_t<
 			std::is_base_of_v<
-				property_record_base, 
+				property_record_base,
 				Tproperty
 			>, bool
 		> is_sync_needed(const Tproperty &property)
-		{ return !property.history.empty() && property.local_value != property.history.front().value; }
+		{ return !property.history.empty() && property.sync.local_value != property.history.front().value; }
 
 
-		static void check_cooldowns()
+		static void manage_cooldowns()
 		{
 			cooldowns.lock();
 			while(!cooldowns.empty())
@@ -116,7 +116,7 @@ namespace process
 				if(lowest.cooldown_time <= current_time)
 				{
 					wic_class::template lock<encap_object_type>();
-					auto lowest_it = 
+					auto lowest_it =
 						wic_class::template find<encap_object_type>(lowest.object_id);
 					if(lowest_it != wic_class::end())
 					{
@@ -125,9 +125,9 @@ namespace process
 						if(is_sync_needed(property))
 							safe_emplace_to_object_id_buffer(lowest.object_id);
 
-						jrn(journal::trace) << 
-							"object: "<< std::hex << lowest.object_id << 
-							"; cooldown expired" << 
+						jrn(journal::trace) <<
+							"object: "<< std::hex << lowest.object_id <<
+							"; cooldown expired" <<
 							journal::end;
 					}
 					cooldowns.pop();
@@ -145,7 +145,7 @@ namespace process
 			{
 				while(1)
 				{
-					check_cooldowns(); // TODO proper name
+					manage_cooldowns();
 					object_id_buffer.lock();
 
 					if(object_id_buffer.empty())
@@ -153,18 +153,18 @@ namespace process
 						object_id_buffer.unlock();
 						break;
 					}
-					
+
 					const object_id_type object_id = *object_id_buffer.begin();
 					object_id_buffer.erase(object_id_buffer.begin());
 					object_id_buffer.unlock();
 
-					
+
 					wic_class::template lock<encap_object_type>();
 					auto it = wic_class::template find<encap_object_type>(object_id);
 					if(it == wic_class::end())
 					{
 						wic_class::template unlock<encap_object_type>();
-						jrn(journal::error) << "Invalid `" << wic_class::name << 
+						jrn(journal::error) << "Invalid `" << wic_class::name <<
 							"' object reference " << std::hex << object_id << journal::end;
 						continue;
 					}
@@ -188,12 +188,12 @@ namespace process
 					else
 						property.cooldown_pending = true;
 
-					jrn(journal::trace) << 
-						"object: " << std::hex << object_id << 
-						"; comitting new value to history; length is " << int(property.history.size()) << 
+					jrn(journal::trace) <<
+						"object: " << std::hex << object_id <<
+						"; comitting new value to history; length is " << int(property.history.size()) <<
 						journal::end;
 
-					const history_record hr(property.local_value);
+					const history_record hr(property.sync.local_value);
 					property.history.emplace_front(hr);
 					if(property.history.size() > TEnv::history_size)
 						property.history.pop_back();
@@ -202,7 +202,11 @@ namespace process
 					{
 						it->second.property_lock.unlock();
 						wic_class::template unlock<encap_object_type>();
-						// TODO journal
+
+						// TODO
+						// jrn(journal::trace, object_id) <<
+						// 	"" <<
+						// 	journal::end;
 						property.on_change(object_id);
 					}
 					else
@@ -237,12 +241,12 @@ namespace process
 							cooldowns.unlock();
 							jrn(journal::trace) << "no change; suspending for " << lowest.cooldown_time - current_time << "ms" << journal::end;
 							suspend_cv.wait_until(
-								ul, 
+								ul,
 								clock::time_point(std::chrono::milliseconds(lowest.cooldown_time))
 							);
 							jrn(journal::trace) << "resuming" << journal::end;
 							wic_class::template lock<encap_object_type>();
-							auto lowest_it = 
+							auto lowest_it =
 								wic_class::template find<encap_object_type>(lowest.object_id);
 							if(lowest_it != wic_class::end())
 							{

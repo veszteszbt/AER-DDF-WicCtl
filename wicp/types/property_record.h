@@ -6,16 +6,16 @@
 # include <sched/listener.h>
 # include <wicp/types/sync_record.h>
 namespace wicp {
-namespace types 
+namespace types
 {
 	template <typename TcallId, typename TobjectId, typename Tvalue>
 	struct property_record_base
 	{
-		typedef TcallId call_id_type;
+		typedef TcallId 							call_id_type;
 
-		typedef Tvalue value_type;
+		typedef Tvalue								value_type;
 
-		typedef std::chrono::high_resolution_clock clock;
+		typedef std::chrono::high_resolution_clock 	clock;
 
 		struct history_record
 		{
@@ -31,29 +31,29 @@ namespace types
 			{}
 		};
 
-		typedef TobjectId object_id_type;
+		typedef TobjectId 					object_id_type;
 
-		typedef std::list<history_record> history_type;
+		typedef std::list<history_record>	history_type;
 
-		typedef ::wicp::types::sync_record<call_id_type, clock> sync_record_type;
+		typedef ::wicp::types::sync_record<
+			call_id_type,
+			value_type,
+			clock
+		> 									sync_record_type;
 
-		history_type history;
+		history_type 						history;
 
-		sync_record_type sync;
+		sync_record_type 					sync;
 
-		typename clock::time_point local_timestamp;
+		typename clock::time_point 			local_timestamp;
 
-		call_id_type initial_sync_cid;
+		call_id_type 						initial_sync_cid;
 
-		bool initial_sync_pending;
+		bool 								initial_sync_pending;
 
-		value_type local_value;
+		sched::event<object_id_type> 		on_change;
 
-		value_type default_value;
-
-		sched::event<object_id_type> on_change;
-
-		bool cooldown_pending;
+		bool 								cooldown_pending;
 
 		property_record_base()
 			: local_timestamp(clock::time_point::min())
@@ -64,15 +64,6 @@ namespace types
 		{
 			// TODO
 		}
-
-		// remote_record(const remote_record &t)
-		// 	: timestamp(t.timestamp)
-		// 	, pending_timestamp(t.pending_timestamp)
-		// 	, start(t.start)
-		// 	, latency(t.latency)
-		// 	, failures(t.failures)
-		// 	, call_id(t.call_id)
-		// {}
 	};
 }}
 #endif

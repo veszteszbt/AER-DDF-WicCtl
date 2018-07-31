@@ -174,12 +174,12 @@ int main()
 		remote_property::subscribe_to_change(0x68, r_change_handler_echo);
 	
 	std::this_thread::sleep_for(2s);
-	int cnt = 0;
-	while(1)
-	{
-		std::this_thread::sleep_for(500ms);
-		remote_property::value(0x68,cnt++);
-	}
+	// int cnt = 0;
+	// while(1)
+	// {
+	// 	std::this_thread::sleep_for(500ms);
+	// 	remote_property::value(0x68,cnt++);
+	// }
 
 	// wic_class_config::cfg_wic_class::set_remote(0x69, {127,0,0,1});
 	// 	remote_property::init(0x69);

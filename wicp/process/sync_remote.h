@@ -41,9 +41,9 @@ namespace process
 			if(it == wic_class::end())
 			{
 				wic_class::unlock_remote();
-				jrn(journal::error) << 
-					"Invalid remote `" << wic_class::name << 
-					"' object reference: " << std::hex << arg_object_id << 
+				jrn(journal::error) <<
+					"Invalid remote `" << wic_class::name <<
+					"' object reference: " << std::hex << arg_object_id <<
 					journal::end;
 				return;
 			}
@@ -58,37 +58,37 @@ namespace process
 			if(h.reason)
 			{
 				++property.sync.failures;
-				jrn(journal::error) << 
-					"remote: " << (std::string)h.ip << 
-					"; object: " << std::hex << arg_object_id << 
-					"; sync failed" << 
+				jrn(journal::error) <<
+					"remote: " << (std::string)h.ip <<
+					"; object: " << std::hex << arg_object_id <<
+					"; sync failed" <<
 					journal::end;
 				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
 				notify(arg_object_id);
 				return;
 			}
-			
+
 			const object_id_type ret_object_id = h.value();
 			if(arg_object_id != ret_object_id)
 			{
 				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
-				jrn(journal::critical) << 
-					"remote: " << (std::string)h.ip << 
-					"; sync succeeded with call " << std::hex << h.call_id << 
-					"; but got invalid remote `" << wic_class::name << 
-					"' object reference " << std::hex << ret_object_id << 
+				jrn(journal::critical) <<
+					"remote: " << (std::string)h.ip <<
+					"; sync succeeded with call " << std::hex << h.call_id <<
+					"; but got invalid remote `" << wic_class::name <<
+					"' object reference " << std::hex << ret_object_id <<
 					journal::end;
 
 				notify(arg_object_id);
 				return;
 			}
 
-			jrn(journal::trace) << 
+			jrn(journal::trace) <<
 				"remote: " << (std::string)h.ip <<
-				"; object: " << std::hex << arg_object_id << 
-				"; sync succeeded with call: " << std::hex << h.call_id << 
+				"; object: " << std::hex << arg_object_id <<
+				"; sync succeeded with call: " << std::hex << h.call_id <<
 				journal::end;
 
 			it->second.property_lock.unlock();
@@ -114,43 +114,43 @@ namespace process
 			if(it == wic_class::end())
 			{
 				wic_class::unlock_remote();
-				jrn(journal::error) << 
-					"Invalid remote `" << wic_class::name << 
-					"' object reference: " << std::hex << object_id << 
+				jrn(journal::error) <<
+					"Invalid remote `" << wic_class::name <<
+					"' object reference: " << std::hex << object_id <<
 					journal::end;
 				return;
 			}
-			
+
 			it->second.property_lock.lock();
 			auto &property = it->second.properties.template get<member_id>();
 			if(property.history.empty())
 			{
-				it->second.property_lock.unlock();					
+				it->second.property_lock.unlock();
 				wic_class::unlock_remote();
-				jrn(journal::trace) << 
-					"object: " << std::hex << object_id << 
-					"; nothing to do; suspending until next notify" << 
+				jrn(journal::trace) <<
+					"object: " << std::hex << object_id <<
+					"; nothing to do; suspending until next notify" <<
 					journal::end;
 				return;
 			}
 
-			jrn(journal::trace) << 
-				"remote: " << (std::string)it->second.ip << 
-				"; doing sync via object: " << std::hex << object_id << 
+			jrn(journal::trace) <<
+				"remote: " << (std::string)it->second.ip <<
+				"; doing sync via object: " << std::hex << object_id <<
 				journal::end;
 
 			TEnv::sync_remote(
-				property, 
-				object_id, 
-				it->second.ip, 
-				types::function::set, 
+				property,
+				object_id,
+				it->second.ip,
+				types::function::set,
 				call_finish
 			);
 			it->second.property_lock.unlock();
 			wic_class::unlock_remote();
 		}
 
-		// TODO calling this, i think the time is when we delete a remote at remote_del
+		// TODO calling this
 		static void cancel(object_id_type object_id)
 		{
 			wic_class::lock_remote();
@@ -158,9 +158,9 @@ namespace process
 			if(it == wic_class::end())
 			{
 				wic_class::unlock_remote();
-				jrn(journal::error) << 
-					"Invalid remote `" << wic_class::name << 
-					"' object reference: " << std::hex << object_id << 
+				jrn(journal::error) <<
+					"Invalid remote `" << wic_class::name <<
+					"' object reference: " << std::hex << object_id <<
 					journal::end;
 				return;
 			}
@@ -169,9 +169,9 @@ namespace process
 			auto &property = it->second.properties.template get<member_id>();
 			if(property.call_id)
 			{
-				jrn(journal::debug) << 
-					"object: " << std::hex << object_id << 
-					"; cancelling sync" << 
+				jrn(journal::debug) <<
+					"object: " << std::hex << object_id <<
+					"; cancelling sync" <<
 					journal::end;
 				TEnv::rpc::cancel(property.call_id);
 				property.call_id = 0;

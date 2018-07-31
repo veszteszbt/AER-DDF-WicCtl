@@ -2,27 +2,32 @@
 # define WICP_TYPES_SYNC_RECORD_H
 # include <chrono>
 namespace wicp {
-namespace types 
+namespace types
 {
-	template<typename TCallId, typename TClock>
+	template<typename TcallId, typename Tvalue, typename Tclock>
 	struct sync_record
 	{
-		typedef TCallId            call_id_type;
+		typedef TcallId				call_id_type;
 
-		typedef TClock             clock;
+		typedef Tvalue				value_type;
 
+		typedef Tclock				clock;
 
-		typename clock::time_point timestamp;
+		typename clock::time_point	timestamp;
 
-		typename clock::time_point pending_timestamp;
+		typename clock::time_point	pending_timestamp;
 
-		call_id_type               call_id;
+		call_id_type				call_id;
 
-		typename clock::time_point start;
+		value_type					local_value;
 
-		typename clock::duration   latency;
+		value_type					default_value;
 
-		uint32_t                   failures;
+		typename clock::time_point	start;
+
+		typename clock::duration	latency;
+
+		uint32_t					failures;
 
 		sync_record()
 			: timestamp(clock::time_point::min())
