@@ -103,6 +103,15 @@ namespace wicp
 				property.sync.local_value :
 				property.history.front().value
 			);
+			jrn(journal::trace) <<
+				"remote: " << (std::string)h.ip <<
+				" cancelling sync via object " << std::hex << object_id <<
+				journal::end;
+
+			rpc::cancel(property.sync.call_id);
+			property.sync.call_id = 0;
+			property.sync.pending_timestamp = env::clock::time_point::min();
+
 			local_it->second.property_lock.unlock();
 			wic_class::unlock_local();
 			jrn(journal::trace) <<
@@ -171,7 +180,6 @@ namespace wicp
 			auto local_it = wic_class::find_local(object_id);
 			if(local_it == wic_class::end())
 			{
-				wic_class::unlock_local();
 				jrn(journal::error) <<
 					"Invalid local `" << wic_class::name <<
 					"' object reference " << std::hex << object_id <<
@@ -206,11 +214,9 @@ namespace wicp
 
 		void uninit(object_id_type object_id)
 		{
-			wic_class::lock_local();
 			auto local_it = wic_class::find_local(object_id);
 			if(local_it == wic_class::end())
 			{
-				wic_class::unlock_local();
 				jrn(journal::error) <<
 					"Invalid local `" << wic_class::name <<
 					"' object reference " << std::hex << object_id <<
@@ -223,7 +229,6 @@ namespace wicp
 			auto &property = local_it->second.properties.template get<member_id>();
 			property.history.clear();
 			local_it->second.property_lock.unlock();
-			wic_class::unlock_local();
 		}
 
 		static value_type value(object_id_type object_id)

@@ -42,6 +42,13 @@ namespace process
 			{ return lhs.cooldown_time < rhs.cooldown_time; }
 		};
 
+		typedef sched::lockable<
+			std::priority_queue<
+				cooldown_record,
+				std::vector<cooldown_record>,
+				cooldown_record
+		>>											cooldowns_type;
+
 		typedef std::chrono::high_resolution_clock	clock;
 
 		typedef typename TEnv::proc_sync			proc_sync;
@@ -50,11 +57,7 @@ namespace process
 
 		typedef typename TEnv::property_data_type	property_data_type;
 
-		typedef typename TEnv::history_type			history_type;
-
 		typedef typename TEnv::history_record		history_record;
-
-		typedef typename TEnv::member_id_type		member_id_type;
 
 		typedef typename TEnv::encap_object_type	encap_object_type;
 
@@ -63,13 +66,6 @@ namespace process
 		typedef typename TEnv::member_id 			member_id;
 
 		typedef typename TEnv::property_record_base	property_record_base;
-
-		typedef sched::lockable<
-			std::priority_queue<
-				cooldown_record,
-				std::vector<cooldown_record>,
-				cooldown_record
-		>>											cooldowns_type;
 
 		typedef sched::lockable<
 			std::unordered_set<object_id_type>
@@ -239,7 +235,10 @@ namespace process
 						if(lowest.cooldown_time > current_time)
 						{
 							cooldowns.unlock();
-							jrn(journal::trace) << "no change; suspending for " << lowest.cooldown_time - current_time << "ms" << journal::end;
+							jrn(journal::trace) << 
+								"no change; suspending for " << lowest.cooldown_time - current_time << "ms" << 
+								journal::end;
+								
 							suspend_cv.wait_until(
 								ul,
 								clock::time_point(std::chrono::milliseconds(lowest.cooldown_time))

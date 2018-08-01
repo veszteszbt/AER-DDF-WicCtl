@@ -24,6 +24,8 @@ namespace process
 
 		typedef typename TEnv::set_handle_type					set_handle_type;
 
+		typedef typename wic_class::local_iterator				local_iterator;
+
 		typedef typename wic_class::remote_iterator				remote_iterator;
 
 		typedef typename wic_class::local_object_record_type	local_object_record;
@@ -77,6 +79,21 @@ namespace process
 			return std::make_pair<sync_record*,remote_object_record*>(nullptr,nullptr);
 		}
 
+		static void unlock_and_call_notify(
+			local_object_record &local, 
+			const std::string &journal_msg,
+			uint8_t journal_level = journal::error
+		)
+		{
+			wic_class::unlock_remote();
+			local.remotes.unlock();
+			wic_class::unlock_local();
+			if(!journal_msg.empty())
+				jrn(journal_level, local.object_id) << journal_msg << journal::end;
+
+			notify(local.object_id);
+		}
+
 		static void call_finish(set_handle_type h)
 		{
 			const object_id_type arg_object_id = h.argument().object_id;
@@ -100,15 +117,10 @@ namespace process
 			auto sync_it = find_sync(local,h.call_id);
 			if(!sync_it.first || !sync_it.second)
 			{
-				wic_class::unlock_remote();
-				local.remotes.unlock();
-				wic_class::unlock_local();
-				jrn(journal::critical,arg_object_id) <<
-					"remote: " << (std::string)h.ip << std::hex <<
-					"; could not find a valid remote for finished sync call " << h.call_id <<
-					journal::end;
-
-				notify(arg_object_id);
+				std::stringstream ss;
+				ss << "remote: " << (std::string)h.ip << std::hex <<
+					"; could not find a valid remote for finished sync call " << h.call_id;
+				unlock_and_call_notify(local, ss.str(), journal::critical);
 				return;
 			}
 
@@ -116,45 +128,29 @@ namespace process
 			sync_it.second->report_call(h);
 			if(h.reason)
 			{
-				wic_class::unlock_remote();
-				local.remotes.unlock();
-				wic_class::unlock_local();
-
-				jrn(journal::error,arg_object_id) <<
-					"remote: " << (std::string)h.ip <<
-					"; error in call, restarting sync for object " << std::hex << arg_object_id <<
-					journal::end;
-				notify(arg_object_id);
+				std::stringstream ss;
+				ss << "remote: " << (std::string)h.ip <<
+					"; error in call, restarting sync for object " << std::hex << arg_object_id;
+				unlock_and_call_notify(local, ss.str());
 				return;
 			}
 
 			const object_id_type ret_object_id = h.value();
 			if(arg_object_id != ret_object_id)
 			{
-				wic_class::unlock_remote();
-				local.remotes.unlock();
-				wic_class::unlock_local();
-
-				jrn(journal::error,arg_object_id) <<
-					"; remote: " << (std::string)h.ip <<
+				std::stringstream ss;
+				ss << "; remote: " << (std::string)h.ip <<
 					"; sync returned mismatching `" <<
 					wic_class::name << "' object reference " << std::hex << ret_object_id <<
-					"; considering failed" <<
-					journal::end;
-				notify(arg_object_id);
+					"; considering failed";
+				unlock_and_call_notify(local, ss.str());
 				return;
 			}
 
-			jrn(journal::trace,arg_object_id) <<
-				"remote: " << std::hex << sync_it.second->object_id << " (" << (std::string)h.ip << ")"
-				"; sync call finished" <<
-				journal::end;
-
-			wic_class::unlock_remote();
-			local.remotes.unlock();
-			wic_class::unlock_local();
-
-			notify(arg_object_id);
+			std::stringstream ss;
+			ss << "remote: " << std::hex << sync_it.second->object_id << " (" << (std::string)h.ip << ")"
+				"; sync call finished";
+			unlock_and_call_notify(local, ss.str(), journal::trace);
 		}
 	public:
 		static void init()
@@ -188,12 +184,12 @@ namespace process
 				local.properties.template get<member_id>();
 			if(local_property.history.empty())
 			{
+				local.property_lock.unlock();
+				wic_class::unlock_local();
 				jrn(journal::trace) <<
 					"object: " << std::hex << local_object_id <<
 					"; nothing to do; suspending until next notify" <<
 					journal::end;
-				local.property_lock.unlock();
-				wic_class::unlock_local();
 				return;
 			}
 
@@ -326,15 +322,16 @@ namespace process
 
 		static void cancel(remote_iterator it)
 		{
-			if(it->second.remote.call_id)
+			if(it->second.sync.call_id)
 			{
 				jrn(journal::trace) <<
 					"remote: " << (std::string)it->second.ip <<
 					" cancelling sync via object " << std::hex << it->second.object_id <<
 					journal::end;
 
-				TEnv::rpc::cancel(it->second.remote.call_id);
-				it->second.remote.call_id = 0;
+				TEnv::rpc::cancel(it->second.sync.call_id);
+				it->second.sync.call_id = 0;
+				it->second.sync.pending_timestamp = TEnv::clock::time_point::min();
 			}
 			else
 			{
@@ -355,7 +352,6 @@ namespace process
 			{
 				wic_class::unlock_local();
 				jrn(journal::error) <<
-
 						"Invalid local `" << wic_class::name <<
 						"' object reference " << std::hex
 						<< local_object_id <<

@@ -4,8 +4,8 @@
 # include <mutex>
 # include <sched/listener.h>
 # include <sched/lockable.h>
-# include <wicp/types/object_record.h>
 # include <types/meta.h>
+# include <wicp/types/object_record.h>
 
 #define WIC_CLASS_TEMPLATE template < \
 	typename Tconfig, \
@@ -249,24 +249,54 @@ namespace wicp
 			return clred;
 		}
 
-		// TODO
-		// template <typename T>
-		// static void lock_local_and_process(object_id_type object_id, T &fn)
-		// {
-		// 	wic_class::lock_local();
-		// 	auto local_it = wic_class::find_local(object_id);
-		// 	if(local_it != wic_class::end())
-		// 	{
-		// 		fn(local_it);
-		// 		wic_class::unlock_local();
-		// 	}
-		// 	else
-		// 	{
-		// 		wic_class::unlock_local();
-		// 		jrn(journal::error) << "Invalid local `" <<
-		// 			wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
-		// 	}
-		// }
+		template <typename Tfn>
+		static void safe_local_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
+		{
+			wic_class::lock_local();
+			auto local_it = wic_class::find_local(object_id);
+			if(local_it == wic_class::end())
+			{
+				wic_class::unlock_local();
+				jrn(journal::error) << 
+					"Invalid local `" << wic_class::name << 
+					"' object reference `" << std::hex << object_id << 
+					journal::end;
+			}
+
+			f(local_it);
+			wic_class::unlock_local();
+		}
+
+		template <typename Tfn>
+		static void safe_remote_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
+		{
+			wic_class::lock_remote();
+			auto remote_it = wic_class::find_remote(object_id);
+			if(remote_it == wic_class::end())
+			{
+				wic_class::unlock_remote();
+				jrn(journal::error) << 
+					"Invalid remote `" << wic_class::name << 
+					"' object reference `" << std::hex << object_id << 
+					journal::end;
+			}
+
+			f(remote_it);
+			wic_class::unlock_remote();
+		}
+
+		template <typename T, typename Tfn>
+		static std::enable_if_t<
+			std::is_same_v<T, local_object_record_type>
+		> safe_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
+		{ safe_local_process(object_id); }
+
+		template <typename T, typename Tfn>
+		static std::enable_if_t<
+			std::is_same_v<T, remote_object_record_type>
+		> safe_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
+		{ safe_remote_process(object_id); }
+
 	};
 
 	WIC_CLASS_TEMPLATE

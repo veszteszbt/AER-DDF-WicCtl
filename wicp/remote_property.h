@@ -82,7 +82,7 @@ namespace wicp
 
 		static journal jrn(uint8_t level, object_id_type object)
 		{
-			return journal(level,"wicp.sync.local") << std::hex <<
+			return journal(level,"wicp.property.remote") << std::hex <<
 				"object:  " << object <<
 				"; class: " << wic_class::name <<
 				"; property: " <<
@@ -321,12 +321,9 @@ namespace wicp
 		static void init(object_id_type object_id, value_type pvalue = value_type())
 		{
 			// TODO tell me what is this new(&env::remote) remote_record(role);
-
-			wic_class::lock_remote();
 			auto it = wic_class::find_remote(object_id);
 			if(it == wic_class::end())
 			{
-				wic_class::unlock_remote();
 				jrn(journal::error) <<
 					"Invalid remote `" << wic_class::name <<
 					"' object reference " << std::hex << object_id <<
@@ -344,7 +341,6 @@ namespace wicp
 			property.initial_sync_pending = true;
 
 			it->second.property_lock.unlock();
-			wic_class::unlock_remote();
 
 			// remote.role.on_bound += bind_handler;
 			// remote.role.on_unbound += unbind_handler;
@@ -369,11 +365,9 @@ namespace wicp
 
 		static value_type value(object_id_type object_id)
 		{
-			wic_class::lock_remote();
 			auto it = wic_class::find_remote(object_id);
 			if(it == wic_class::end())
 			{
-				wic_class::unlock_remote();
 				jrn(journal::error) <<
 					"Invalid remote `" << wic_class::name <<
 					"' object reference " << std::hex << object_id <<
@@ -384,7 +378,6 @@ namespace wicp
 			it->second.property_lock.lock();
 			const value_type value = it->second.properties.template get<member_id>().sync.local_value;
 			it->second.property_lock.unlock();
-			wic_class::unlock_remote();
 			jrn(journal::trace, object_id) <<
 				"get from API " <<
 				journal::end;
