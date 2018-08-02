@@ -45,7 +45,7 @@ class functions
 
 		std::function<Tret(Targ...)> command;
 
-		template<int index = sizeof...(Targ)>
+		/*template<int index = sizeof...(Targ)>
 		std::enable_if_t< ! (index <= 0)>
 		create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
 		{
@@ -59,22 +59,22 @@ class functions
 					);
 				}
 			});
+		}*/
+
+		template<int index = sizeof...(Targ)>
+		std::enable_if_t< ! (index <= 0)>
+		create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
+		{
+		 	//std::cout << "indukcio" << std::endl;
+
+		 	if(!(args[index-1].value(std::get< index-1 >(t))))
+		 		errv.push_back(
+		 			std::to_string(index) +
+		 			" (" + types::type::name(std::get< index-1 >(t)) + ")"
+		 		);
+
+			create_tuple<index-1>(t,args,errv);
 		}
-
-		// template<int index = sizeof...(Targ)>
-		// std::enable_if_t< ! (index <= 0)>
-		// create_tuple(arg_tuple_t &t, const std::vector<var_value> &args, std::vector<std::string> &errv)
-		// {
-		// 	//std::cout << "indukcio" << std::endl;
-
-		// 	if(!(args[index-1].value(std::get< index-1 >(t))))
-		// 		errv.push_back(
-		// 			std::to_string(index) +
-		// 			" (" + types::type::name(std::get< index-1 >(t)) + ")"
-		// 		);
-
-		// 	create_tuple<index-1>(t,args,errv);
-		// }
 
 		template<int index = sizeof...(Targ)>
 		std::enable_if_t<index <= 0>

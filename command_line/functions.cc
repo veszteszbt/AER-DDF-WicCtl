@@ -56,8 +56,21 @@ static void write_reverse(std::string s)
 static void echo_c(std::string s,int i)
 {
 	for (int j = 0; j < i; ++j)
-		std::cout << s;
+	{	std::cout << s; }
 
+	std::cout << std::endl;
+}
+
+static void testfunction(int i, double d, std::string s, std::map<std::string, var_value> m)
+{
+	std::cout << "the int is : " << i << std::endl;
+	std::cout << "the double is : " << d << std::endl;
+	std::cout << "the string is : " << s << std::endl;
+	std::cout << "the array is : ";
+	for (auto it = m.begin(); it != m.end(); ++it)
+	{
+		std::cout << it->first << "=>" << it->second << ", ";
+	}
 	std::cout << std::endl;
 }
 
@@ -132,6 +145,7 @@ functions::functions()
 	add_command("atan", atan);
 	add_command("is_true", is_true);
 	add_command("do_nothing", do_nothing);
+	add_command("testfunction", testfunction);
 	//add_command("var_info", var_info);
 	add_command("exit",exit);
 	add_variable("TRUE", 1);
