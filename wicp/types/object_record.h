@@ -41,7 +41,7 @@ namespace types
 	class local_object_record
 		: public OBJECT_RECORD_CLASS
 	{
-		template<typename Tpair,typename T>
+		template<typename Tpair, typename T>
 		struct change_second_to : std::pair<typename Tpair::first_type,T> {};
 
 	public:

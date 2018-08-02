@@ -67,7 +67,7 @@ struct property_data_type
 };
 
 template <int N>
-struct Int : public wicp::types::property_record_base<uint32_t, uint64_t, uint8_t>
+struct Int : public wicp::types::property_record<uint32_t, uint64_t, uint8_t>
 {
 	static const int result = N;
 };

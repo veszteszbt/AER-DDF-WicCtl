@@ -9,7 +9,7 @@ namespace wicp {
 namespace types
 {
 	template <typename TcallId, typename TobjectId, typename Tvalue>
-	struct property_record_base
+	struct property_record
 	{
 		typedef TcallId 							call_id_type;
 
@@ -55,7 +55,7 @@ namespace types
 
 		bool 								cooldown_pending;
 
-		property_record_base()
+		property_record()
 			: local_timestamp(clock::time_point::min())
 			, initial_sync_cid(0)
 		{}

@@ -4,62 +4,62 @@
 
 namespace types 
 {
-	template <typename Tkey, typename Tvalue, typename... Targs>
+	template <typename T, typename... Targs>
 	class static_map : public static_map<Targs...>
 	{
-		typedef typename Tkey::value_type key_type;
+		typedef typename T::first_type::value_type key_type;
 
-		typedef Tvalue value_type;
+		typedef typename T::second_type value_type;
 
-		constexpr static const key_type key = Tkey::value;
+		constexpr static const key_type key = T::first_type::value;
 
 		static value_type value;
 
 		static_map() = delete;
 	public:
 
-		template <typename T>
+		template <typename Tx>
 		static std::enable_if_t<
-			std::is_same_v<T, Tkey>, 
+			std::is_same_v<Tx, typename T::first_type>, 
 			value_type&
 		> get()
 		{ return value; }
 
-		template <typename T>
+		template <typename Tx>
 		static std::enable_if_t<
-			!std::is_same_v<T,Tkey>, 
-			decltype(std::declval<static_map<Targs...>>().template get<T>())
+			!std::is_same_v<Tx, typename T::first_type>, 
+			decltype(std::declval<static_map<Targs...>>().template get<Tx>())
 		> get()
-		{ return static_map<Targs...>::template get<T>(); }
+		{ return static_map<Targs...>::template get<Tx>(); }
 	};
 
-	template <typename Tkey, typename Tvalue>
-	class static_map<Tkey, Tvalue>
+	template <typename T>
+	class static_map<T>
 	{
-		typedef typename Tkey::value_type key_type;
+		typedef typename T::first_type::value_type key_type;
 
-		typedef Tvalue value_type;
+		typedef typename T::second_type value_type;
 
-		constexpr static const key_type key = Tkey::value;
+		constexpr static const key_type key = T::first_type::value;
 
 		static value_type value;
 
 		static_map() = delete;
 	public:
 	
-		template <typename T>
+		template <typename Tx>
 		static std::enable_if_t<
-			std::is_same_v<T,Tkey>, 
+			std::is_same_v<Tx, typename T::first_type>, 
 			value_type&
 		> get()
 		{ return value; }
 
-		template <typename T>
+		template <typename Tx>
 		static std::enable_if_t<
-			!std::is_same_v<T,Tkey>, 
+			!std::is_same_v<Tx, typename T::first_type>, 
 			value_type&
 		> get()
-		{ static_assert(std::is_same_v<T,Tkey>, "No such element"); }
+		{ static_assert(std::is_same_v<Tx, typename T::first_type>, "No such element"); }
 	};
 
 	template <typename T, typename... Targs>
@@ -113,14 +113,14 @@ namespace types
 			!std::is_same_v<Tx, typename T::first_type>, 
 			value_type&
 		> get()
-		{ static_assert(std::is_same_v<Tx,T::first_type>, "No such element"); }
+		{ static_assert(std::is_same_v<Tx,typename T::first_type>, "No such element"); }
 	};
 	
-	template <typename Tkey, typename Tvalue, typename... Targs>
-	typename static_map<Tkey, Tvalue, Targs...>::value_type static_map<Tkey, Tvalue, Targs...>::value;
+	template <typename T, typename... Targs>
+	typename static_map<T, Targs...>::value_type static_map<T, Targs...>::value;
 
-	template <typename Tkey, typename Tvalue>
-	typename static_map<Tkey, Tvalue>::value_type static_map<Tkey, Tvalue>::value;
+	template <typename T>
+	typename static_map<T>::value_type static_map<T>::value;
 
 }
 

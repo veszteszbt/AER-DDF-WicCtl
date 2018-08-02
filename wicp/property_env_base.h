@@ -13,7 +13,7 @@ namespace wicp
 	template<typename TConfig>
 	struct property_env_base
 	{
-		typedef typename TConfig::cfg_clock						clock;
+		typedef typename std::chrono::high_resolution_clock		clock;
 
 		typedef typename TConfig::cfg_earpc						rpc;
 
@@ -46,13 +46,13 @@ namespace wicp
 			property_data_type
 		> 														notify_handle_type;
 
-		typedef wicp::types::property_record_base<
+		typedef wicp::types::property_record<
 			call_id_type,
-			object_id_type, value_type
-		> 														property_record_base;
+			object_id_type, 
+			value_type
+		> 														property_record;
 
-		typedef typename property_record_base::history_record
-																history_record;
+		typedef typename property_record::history_record		history_record;
 
 		typedef ::wicp::types::sync_record<
 			call_id_type,
@@ -60,7 +60,7 @@ namespace wicp
 			clock
 		> 														sync_record;
 
-		typedef typename property_record_base::history_type		history_type;
+		typedef typename property_record::history_type			history_type;
 
 		typedef typename TConfig::cfg_wic_class					wic_class;
 
@@ -68,10 +68,7 @@ namespace wicp
 
 		typedef typename wic_class::remote_object_record_type	remote_object_record_type;
 
-		typedef std::integral_constant<
-			member_id_type,
-			TConfig::cfg_member_id
-		>														member_id;
+		typedef typename TConfig::cfg_member_id					member_id;
 
 		static_assert(
 			sizeof(command_id_type) >= sizeof(class_id_type) + sizeof(member_id_type),
@@ -98,7 +95,7 @@ namespace wicp
 		template <typename Tproperty>
 		static std::enable_if_t<
 			std::is_base_of_v<
-				property_record_base,
+				property_record,
 				Tproperty
 			>, bool
 		> sync_local(Tproperty &property)
@@ -209,7 +206,7 @@ namespace wicp
 		template <typename Tproperty>
 		static std::enable_if_t<
 			std::is_base_of_v<
-				property_record_base,
+				property_record,
 				Tproperty
 			>
 		> sync_remote(

@@ -65,7 +65,7 @@ namespace process
 
 		typedef typename TEnv::member_id 			member_id;
 
-		typedef typename TEnv::property_record_base	property_record_base;
+		typedef typename TEnv::property_record	property_record;
 
 		typedef sched::lockable<
 			std::unordered_set<object_id_type>
@@ -95,7 +95,7 @@ namespace process
 		template <typename Tproperty>
 		static std::enable_if_t<
 			std::is_base_of_v<
-				property_record_base,
+				property_record,
 				Tproperty
 			>, bool
 		> is_sync_needed(const Tproperty &property)

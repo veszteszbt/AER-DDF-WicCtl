@@ -5,7 +5,11 @@
 # include <sched/listener.h>
 # include <sched/lockable.h>
 # include <types/meta.h>
+# include <wicp/local_property.h>
+# include <wicp/remote_property.h>
 # include <wicp/types/object_record.h>
+# include <wicp/types/property_data_type.h>
+# include <wicp/types/property_record.h>
 
 #define WIC_CLASS_TEMPLATE template < \
 	typename Tconfig, \
@@ -19,17 +23,19 @@ namespace wicp
 	WIC_CLASS_TEMPLATE
 	struct wic_class
 	{
+		typedef typename std::chrono::high_resolution_clock	clock;
+
 		typedef typename Tconfig::cfg_class_id_type			class_id_type;
 
 		typedef typename Tconfig::cfg_member_id_type		member_id_type;
 
 		typedef typename Tconfig::cfg_object_id_type		object_id_type;
 
+		typedef typename Tconfig::cfg_earpc					earpc;
+
 		typedef typename Tconfig::cfg_earpc::call_id_type	call_id_type;
 
-		typedef typename Tconfig::cfg_address_type			address_type;
-
-		typedef typename Tconfig::cfg_clock					clock;
+		typedef net::ipv4_address							address_type;
 
 	private:
 		template <typename...>
@@ -37,17 +43,101 @@ namespace wicp
 
 		typedef WIC_CLASS									self;
 
+		template <typename Tproperty>
+		struct property_config
+		{
+			typedef typename Tproperty::value_type	cfg_value_type;
+
+			typedef class_id_type					cfg_class_id_type;
+
+			typedef member_id_type					cfg_member_id_type;
+
+			typedef object_id_type					cfg_object_id_type;
+
+			typedef earpc							cfg_earpc;
+
+			typedef self							cfg_wic_class;
+
+			typedef types::property_data_type<
+				object_id_type,
+				cfg_value_type
+			> 										cfg_property_data_type;
+
+			typedef std::integral_constant<
+				member_id_type,
+				static_cast<member_id_type>(Tproperty::member_id)
+			> 										cfg_member_id;
+
+			static const class_id_type cfg_class_id = Tconfig::cfg_class_id;
+
+			static const uintmax_t cfg_cooldown_time = Tproperty::cooldown_time;
+
+			constexpr static const size_t cfg_history_size = Tproperty::history_size;
+		};
+
+		template <typename TpropertyConfig>
+		struct object_record_transform 
+			: std::pair<
+				typename TpropertyConfig::cfg_member_id, 
+					types::property_record<
+						call_id_type,
+						object_id_type,
+						typename TpropertyConfig::cfg_value_type
+					>
+				>
+		{};
+
+		template <typename TpropertyConfig>
+		struct property_transform 
+			: std::pair<
+				local_property<TpropertyConfig>, 
+				remote_property<TpropertyConfig>
+			>
+		{};
+
+		template <typename TpropertyConfig>
+		struct local_property_transform 
+			: std::pair<
+				typename TpropertyConfig::cfg_member_id, 
+				local_property<TpropertyConfig>
+			>
+		{};
+
+		template <typename TpropertyConfig>
+		struct remote_property_transform 
+			: std::pair<
+				typename TpropertyConfig::cfg_member_id, 
+				remote_property<TpropertyConfig>
+			>
+		{};
+
 	public:
 		typedef types::local_object_record<
 			self,
-			Tproperties...
+			object_record_transform<
+				property_config<Tproperties>
+			>...
 		> 										local_object_record_type;
 
 		typedef types::remote_object_record<
 			self,
-			Tproperties...
+			object_record_transform<
+				property_config<Tproperties>
+			>...
 		> 										remote_object_record_type;
 	private:
+
+		typedef ::types::static_map<
+			local_property_transform<
+				property_config<Tproperties>
+			>...
+		>	local_property_holder;
+
+		typedef ::types::static_map<
+			remote_property_transform<
+				property_config<Tproperties>
+			>...
+		>	remote_property_holder;
 
 		typedef sched::lockable<
 			std::map<
@@ -87,10 +177,22 @@ namespace wicp
 		};
 
 		static void init()
-		{ property_initializer<Tproperties...>::init(); }
+		{ 
+			property_initializer<
+				property_transform<
+					property_config<Tproperties>
+				>...
+			>::init(); 
+		}
 
 		static void uninit()
-		{ property_initializer<Tproperties...>::uninit(); }
+		{ 
+			property_initializer<
+				property_transform<
+					property_config<Tproperties>
+				>...
+			>::uninit(); 
+		}
 
 		static void lock_local()
 		{ local_object_lock_table.lock(); }
@@ -151,6 +253,14 @@ namespace wicp
 		static end_iterator end()
 		{ return end_iterator(); }
 
+		template <member_id_type tMemberId>
+		static auto get_local()
+		{ return local_property_holder::template get<tMemberId>(); }
+
+		template <member_id_type tMemberId>
+		static auto get_remote()
+		{ return remote_property_holder::template get<tMemberId>(); }
+
 		static bool set_local(object_id_type object_id)
 		{
 			remote_object_lock_table.lock();
@@ -163,7 +273,12 @@ namespace wicp
 			remote_object_lock_table.unlock();
 			local_object_lock_table.lock();
 			local_object_lock_table.emplace(object_id, object_id);
-			property_initializer<Tproperties...>::init(object_id);
+			property_initializer<
+				local_property<
+					property_config<Tproperties>
+				>...
+			>::init(object_id);
+
 			local_object_lock_table.unlock();
 
 			return true;
@@ -190,7 +305,11 @@ namespace wicp
 				pair_it.first->second.on_ip_change();
 			}
 
-			property_initializer<Tproperties...>::init(object_id);
+			property_initializer<
+				remote_property<
+					property_config<Tproperties>
+				>...
+			>::init(object_id);
 			remote_object_lock_table.unlock();
 
 			return true;
@@ -207,7 +326,12 @@ namespace wicp
 			}
 
 			const bool clred = local_object_lock_table.erase(it);
-			property_initializer<Tproperties...>::uninit(object_id);
+			property_initializer<
+				local_property<
+					property_config<Tproperties>
+				>...
+			>::uninit(object_id);
+
 			local_object_lock_table.unlock();
 			return clred;
 		}
@@ -224,7 +348,11 @@ namespace wicp
 
 			it->second.on_destory();
 			const bool clred = remote_object_lock_table.erase(it);
-			property_initializer<Tproperties...>::uninit(object_id);
+			property_initializer<
+				remote_property<
+					property_config<Tproperties>
+				>...
+			>::uninit(object_id);
 			remote_object_lock_table.unlock();
 			return clred;
 		}
@@ -234,7 +362,11 @@ namespace wicp
 			const object_id_type object_id = it->second.object_id;
 			const bool clred = local_object_lock_table.erase(it);
 			if(clred)
-				property_initializer<Tproperties...>::uninit(object_id);
+				property_initializer<
+					local_property<
+						property_config<Tproperties>
+					>...
+				>::uninit(object_id);
 
 			return clred;
 		}
@@ -249,6 +381,20 @@ namespace wicp
 			return clred;
 		}
 
+		static bool is_known_local_object(local_iterator local_it, journal (*jrn)(uint8_t, object_id_type))
+		{
+			if(local_it == wic_class::end())
+			{
+				wic_class::unlock_local();
+				jrn(journal::error, local_it->first) <<
+					"Invalid local `" << wic_class::name <<
+					"' object reference" <<
+					journal::end;
+				return false;
+			}
+			return true;
+		}
+
 		template <typename Tfn>
 		static void safe_local_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
 		{
@@ -257,10 +403,11 @@ namespace wicp
 			if(local_it == wic_class::end())
 			{
 				wic_class::unlock_local();
-				jrn(journal::error) << 
-					"Invalid local `" << wic_class::name << 
-					"' object reference `" << std::hex << object_id << 
+				jrn(journal::error) <<
+					"Invalid local `" << wic_class::name <<
+					"' object reference `" << std::hex << object_id <<
 					journal::end;
+				return;
 			}
 
 			f(local_it);
@@ -275,10 +422,11 @@ namespace wicp
 			if(remote_it == wic_class::end())
 			{
 				wic_class::unlock_remote();
-				jrn(journal::error) << 
-					"Invalid remote `" << wic_class::name << 
-					"' object reference `" << std::hex << object_id << 
+				jrn(journal::error) <<
+					"Invalid remote `" << wic_class::name <<
+					"' object reference `" << std::hex << object_id <<
 					journal::end;
+				return;
 			}
 
 			f(remote_it);
@@ -313,25 +461,27 @@ namespace wicp
 	{
 		static void init()
 		{
+			Tproperty::first_type::init();
 			Tproperty::second_type::init();
 			WIC_CLASS::property_initializer<Tremaining...>::init();
 		}
 
 		static void uninit()
 		{
+			Tproperty::first_type::uninit();
 			Tproperty::second_type::uninit();
 			WIC_CLASS::property_initializer<Tremaining...>::uninit();
 		}
 
 		static void init(typename WIC_CLASS::object_id_type object_id)
 		{
-			Tproperty::second_type::init(object_id);
+			Tproperty::init(object_id);
 			WIC_CLASS::property_initializer<Tremaining...>::init(object_id);
 		}
 
 		static void uninit(typename WIC_CLASS::object_id_type object_id)
 		{
-			Tproperty::second_type::uninit(object_id);
+			Tproperty::uninit(object_id);
 			WIC_CLASS::property_initializer<Tremaining...>::uninit(object_id);
 		}
 	};
@@ -341,16 +491,22 @@ namespace wicp
 	struct WIC_CLASS::property_initializer<Tproperty>
 	{
 		static void init()
-		{ Tproperty::second_type::init(); }
+		{ 
+			Tproperty::first_type::init(); 
+			Tproperty::second_type::init();
+		}
 
 		static void uninit()
-		{ Tproperty::second_type::uninit(); }
+		{ 
+			Tproperty::first_type::uninit(); 
+			Tproperty::second_type::uninit();
+		}
 
 		static void init(typename WIC_CLASS::object_id_type object_id)
-		{ Tproperty::second_type::init(object_id); }
+		{ Tproperty::init(object_id); }
 
 		static void uninit(typename WIC_CLASS::object_id_type object_id)
-		{ Tproperty::second_type::uninit(object_id); }
+		{ Tproperty::uninit(object_id); }
 	};
 }
 

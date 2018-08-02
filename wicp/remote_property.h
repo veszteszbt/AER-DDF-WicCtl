@@ -363,6 +363,14 @@ namespace wicp
 			jrn(journal::debug) << "uninitialized" << journal::end;
 		}
 
+		static void uninit(object_id_type object_id)
+		{
+			// remote.role.on_bound -= bind_handler;
+			// remote.role.on_unbound -= unbind_handler;
+
+			jrn(journal::debug) << "uninitialized" << journal::end;
+		}
+
 		static value_type value(object_id_type object_id)
 		{
 			auto it = wic_class::find_remote(object_id);
