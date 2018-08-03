@@ -55,12 +55,14 @@ struct wic_class_config : public property_config_base
 	typedef rpc cfg_earpc;
 };
 
+typedef std::integral_constant<uint32_t, 3> member_id;
 
 typedef wicp::wic_class<
 	wic_class_config,
-	wicp::types::Property<1, true, uint8_t, 1, 16>//,
-	// wicp::types::Property<2, true, uint8_t, 1, 16>,	
-	// wicp::types::Property<3, true, uint8_t, 1000, 16>	
+	wicp::types::Property<3, true, uint8_t, 1000, 16>
+	// wicp::types::Property<1, true, uint8_t, 1, 16>,
+	// wicp::types::Property<2, true, uint8_t, 1, 16>,
+	// wicp::types::Property<5, true, uint8_t, 1, 16>	
 > wic_class;	
 
 // typedef wicp::local_property<wic_class_config> local_property;
@@ -100,16 +102,16 @@ static int count = 0;
 // 	journal(journal::trace, "faszlo_echo") << ss.str() << journal::end;
 // }
 
-// static void r_change_handler_echo(uint64_t object_id)
-// {
-// 	auto property = wic_class::template get_remote<3>();
+static void r_change_handler_echo(uint64_t object_id)
+{
+	typedef wic_class::template get_remote<member_id> property;
 
-// 	auto value = int(property::value(object_id));
-// 	std::stringstream ss;
-// 	ss << "echo; remote object: " << std::hex << object_id << "; value: " << std::dec << value;
-// 	std::cout << ss.str() << std::endl;
-// 	journal(journal::trace, "faszlo_echo") << ss.str() << journal::end;
-// }
+	auto value = int(property::value(object_id));
+	std::stringstream ss;
+	ss << "echo; remote object: " << std::hex << object_id << "; value: " << std::dec << value;
+	std::cout << ss.str() << std::endl;
+	journal(journal::trace, "faszlo_echo") << ss.str() << journal::end;
+}
 
 int main() 
 { 
@@ -122,17 +124,18 @@ int main()
 
 	using namespace std::literals::chrono_literals;
 	wic_class::init();
-	// wic_class::set_remote(0x68, {10,2,1,100});
+	wic_class::set_remote(0x68, {10,2,1,100});
 	// wic_class::set_local(0x69);
-	// wic_class::template get_remote<3>()::subscribe_to_change(0x68, r_change_handler_echo);
+	typedef wic_class::template get_remote<member_id> property;
+	property::subscribe_to_change(0x68, r_change_handler_echo);
 	
 	// std::this_thread::sleep_for(2s);
-	// // int cnt = 0;
-	// // while(1)
-	// // {
-	// // 	std::this_thread::sleep_for(500ms);
-	// // 	remote_property::value(0x68,cnt++);
-	// // }
+	int cnt = 0;
+	while(1)
+	{
+		std::this_thread::sleep_for(500ms);
+		property::value(0x68,cnt++);
+	}
 
 	// // wic_class::set_remote(0x69, {127,0,0,1});
 	// // 	remote_property::init(0x69);

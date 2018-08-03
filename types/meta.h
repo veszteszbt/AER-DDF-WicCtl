@@ -84,9 +84,9 @@ namespace types
 		template <typename Tx>
 		std::enable_if_t<
 			!std::is_same_v<Tx, typename T::first_type>, 
-			decltype(std::declval<static_keyed_map<Targs...>>().template get<T>())
+			decltype(std::declval<static_keyed_map<Targs...>>().template get<Tx>())
 		> get()
-		{ return static_keyed_map<Targs...>::template get<T>(); }
+		{ return static_keyed_map<Targs...>::template get<Tx>(); }
 	};
 
 	template <typename T>
@@ -114,6 +114,31 @@ namespace types
 			value_type&
 		> get()
 		{ static_assert(std::is_same_v<Tx,typename T::first_type>, "No such element"); }
+	};
+
+	template<typename... Targs>
+	struct type_map;
+
+	template <typename T, typename... Targs>
+	struct type_map<T,Targs...> 
+	{
+		typedef typename T::first_type key_type;
+
+		typedef typename T::second_type value_type;
+
+		template <typename Tindex>
+		using get = std::conditional_t<
+			std::is_same_v<key_type,Tindex>,
+			value_type,
+			typename type_map<Targs...>::template get<Tindex>
+		>;
+	};
+
+	template<>
+	struct type_map<>
+	{
+		template<typename Tindex>
+		using get = void;
 	};
 	
 	template <typename T, typename... Targs>

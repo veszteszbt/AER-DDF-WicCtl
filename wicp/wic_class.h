@@ -76,36 +76,32 @@ namespace wicp
 		};
 
 		template <typename TpropertyConfig>
-		struct object_record_transform 
-			: std::pair<
-				typename TpropertyConfig::cfg_member_id, 
-					types::property_record<
-						call_id_type,
-						object_id_type,
-						typename TpropertyConfig::cfg_value_type
-					>
+		struct object_record_transform : std::pair<
+			typename TpropertyConfig::cfg_member_id, 
+				types::property_record<
+					call_id_type,
+					object_id_type,
+					typename TpropertyConfig::cfg_value_type
 				>
+			>
 		{};
 
 		template <typename TpropertyConfig>
-		struct property_transform 
-			: std::pair<
+		struct property_transform : std::pair<
 				local_property<TpropertyConfig>, 
 				remote_property<TpropertyConfig>
 			>
 		{};
 
 		template <typename TpropertyConfig>
-		struct local_property_transform 
-			: std::pair<
+		struct local_property_transform : std::pair<
 				typename TpropertyConfig::cfg_member_id, 
 				local_property<TpropertyConfig>
 			>
 		{};
 
 		template <typename TpropertyConfig>
-		struct remote_property_transform 
-			: std::pair<
+		struct remote_property_transform : std::pair<
 				typename TpropertyConfig::cfg_member_id, 
 				remote_property<TpropertyConfig>
 			>
@@ -127,17 +123,17 @@ namespace wicp
 		> 										remote_object_record_type;
 	private:
 
-		typedef ::types::static_map<
+		typedef ::types::type_map<
 			local_property_transform<
 				property_config<Tproperties>
 			>...
-		>	local_property_holder;
+		>										local_property_holder; // TODO should this be handler?
 
-		typedef ::types::static_map<
+		typedef ::types::type_map<
 			remote_property_transform<
 				property_config<Tproperties>
 			>...
-		>	remote_property_holder;
+		>										remote_property_holder;
 
 		typedef sched::lockable<
 			std::map<
@@ -253,13 +249,11 @@ namespace wicp
 		static end_iterator end()
 		{ return end_iterator(); }
 
-		template <member_id_type tMemberId>
-		static auto get_local()
-		{ return local_property_holder::template get<tMemberId>(); }
-
-		template <member_id_type tMemberId>
-		static auto get_remote()
-		{ return remote_property_holder::template get<tMemberId>(); }
+		template <typename tMemberId>
+		using get_local = typename local_property_holder::template get<tMemberId>;
+		
+		template <typename tMemberId>
+		using get_remote = typename remote_property_holder::template get<tMemberId>;
 
 		static bool set_local(object_id_type object_id)
 		{
@@ -376,7 +370,11 @@ namespace wicp
 			const object_id_type object_id = it->second.object_id;
 			const bool clred = remote_object_lock_table.erase(it);
 			if(clred)
-				property_initializer<Tproperties...>::uninit(object_id);
+				property_initializer<
+					remote_property<
+						property_config<Tproperties>
+					>...
+				>::uninit(object_id);
 
 			return clred;
 		}
