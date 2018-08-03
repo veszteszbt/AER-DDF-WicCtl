@@ -59,11 +59,6 @@ namespace types
 			: local_timestamp(clock::time_point::min())
 			, initial_sync_cid(0)
 		{}
-
-		static void init(value_type p = value_type())
-		{
-			// TODO
-		}
 	};
 }}
 #endif

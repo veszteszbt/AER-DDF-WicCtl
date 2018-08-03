@@ -24,15 +24,21 @@ namespace process
 
 		typedef typename TEnv::set_handle_type					set_handle_type;
 
-		typedef typename wic_class::local_iterator				local_iterator;
+		typedef typename TEnv::history_type						history_type;
 
-		typedef typename wic_class::remote_iterator				remote_iterator;
+		typedef typename wic_class::local_table_iterator		local_table_iterator;
+
+		typedef typename wic_class::remote_table_iterator		remote_table_iterator;
 
 		typedef typename wic_class::local_object_record_type	local_object_record;
 
 		typedef typename wic_class::remote_object_record_type	remote_object_record;
 
+		typedef typename local_object_record::remotes_iterator	remotes_iterator;
+
 		typedef std::pair<sync_record*,remote_object_record*>	sync_remote_pair_record;
+
+		typedef typename sync_record::value_type				value_type;
 
 		typedef net::ipv4_address 								address_type;
 
@@ -78,6 +84,7 @@ namespace process
 				return;
 
 			const object_id_type ret_object_id = h.value();
+
 			if(!is_arg_and_ret_object_id_match(local, arg_object_id, ret_object_id, h.ip))
 				return;
 
@@ -273,31 +280,46 @@ namespace process
 		{
 			wic_class::lock_local();
 			auto local_it = wic_class::find_local(object_id);
-			if(local_it == wic_class::end())
-			{
-				wic_class::unlock_local();
-				jrn(journal::error) <<
-					"Invalid local `" << wic_class::name <<
-					"' object reference " << std::hex << object_id <<
-					journal::end;
+			if(!wic_class::is_known_local_object(local_it, jrn))
 				return;
-			}
 
 			local_it->second.property_lock.lock();
 			auto &local_property = local_it->second.properties.template get<member_id>();
-			if(local_property.history.empty())
+			if(is_history_empty_of(local_property.history, local_it))
+				return;
+
+			local_it->second.remotes.lock();
+			wic_class::lock_remote();
+
+			sync_remotes_of_local_object(local_it, local_property);
+
+			wic_class::unlock_remote();
+			local_it->second.remotes.unlock();
+			local_it->second.property_lock.unlock();
+			wic_class::unlock_local();
+		}
+
+		static bool is_history_empty_of(const history_type &history, local_table_iterator &local_it)
+		{
+			if(history.empty())
 			{
 				local_it->second.property_lock.unlock();
 				wic_class::unlock_local();
 				jrn(journal::trace) <<
-					"object: " << std::hex << object_id <<
+					"object: " << std::hex << local_it->first <<
 					"; nothing to do suspending until next notify" <<
 					journal::end;
-				return;
+				return true;
 			}
+			return false;
+		}
 
-			local_it->second.remotes.lock();
-			wic_class::lock_remote();
+		template <typename Tproperty>
+		static void sync_remotes_of_local_object(
+			local_table_iterator local_it, 
+			Tproperty &local_property
+		)
+		{
 			for(
 				auto device = local_it->second.remotes.begin();
 				device != local_it->second.remotes.end();
@@ -305,49 +327,77 @@ namespace process
 			{
 				auto remote_it = wic_class::find_remote(device->first);
 				if(remote_it != wic_class::end())
-				{
-					auto &device_sync = device->second.template get<member_id>();
-					if(local_property.sync.local_value == device_sync.local_value)
-					{
-						jrn(journal::trace,object_id) <<
-							"remote: " << (std::string)remote_it->second.ip <<
-							"; skipping sync for the source of the data, device: " <<
-							std::hex << device->first <<
-							journal::end;
-						++device;
+					if(sync_unnecessary(local_it->first, remote_it, device, local_property))
 						continue;
-					}
-
-					jrn(journal::trace,object_id) <<
-						"remote: " << (std::string)remote_it->second.ip <<
-						"; doing sync via device: " << std::hex << device->first <<
-						journal::end;
-
-					TEnv::sync_remote(
-						device_sync,
-						local_property.history,
-						object_id,
-						remote_it->second.ip,
-						::wicp::types::function::notify,
-						call_finish
-					);
-					++device;
-				}
 				else
 				{
 					device = local_it->second.remotes.erase(device);
-					jrn(journal::debug, object_id) <<
+					jrn(journal::debug, local_it->first) <<
 						"omitting sync via deleted device " << std::hex << device->first <<
 						journal::end;
 				}
 			}
-			wic_class::unlock_remote();
-			local_it->second.remotes.unlock();
-			local_it->second.property_lock.unlock();
-			wic_class::unlock_local();
+		}
+	
+		template <typename Tproperty>
+		static bool sync_unnecessary(
+			object_id_type object_id, 
+			remote_table_iterator remote_it, 
+			remotes_iterator &device, 
+			Tproperty &local_property
+		)
+		{
+			auto &device_sync = device->second.template get<member_id>();
+			if( 
+				is_sync_data_come_from(
+					device, 
+					device_sync.local_value, 
+					local_property.sync.local_value, 
+					remote_it->first,
+					remote_it->second.ip
+				)
+			)
+				return true;
+
+			jrn(journal::trace,remote_it->first) <<
+				"remote: " << (std::string)remote_it->second.ip <<
+				"; doing sync via device: " << std::hex << device->first <<
+				journal::end;
+
+			TEnv::sync_remote(
+				device_sync,
+				local_property.history,
+				object_id,
+				remote_it->second.ip,
+				::wicp::types::function::notify,
+				call_finish
+			);
+			++device;
+			return false;
 		}
 
-		static void cancel(remote_iterator it)
+		static bool is_sync_data_come_from(
+			remotes_iterator &device, 
+			value_type device_value, 
+			value_type local_value,
+			object_id_type object_id,
+			address_type ip
+		)
+		{
+			if(local_value == device_value)
+			{
+				jrn(journal::trace,object_id) <<
+					"remote: " << (std::string)ip <<
+					"; skipping sync for the source of the data, device: " <<
+					std::hex << device->first <<
+					journal::end;
+				++device;
+				return true;
+			}
+			return false;
+		}
+
+		static void cancel(remote_table_iterator it)
 		{
 			if(it->second.sync.call_id)
 			{

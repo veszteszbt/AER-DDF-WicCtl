@@ -1,5 +1,5 @@
-#ifndef WICP_TYPES_PROPERTY_TYPE_H
-# define WICP_TYPES_PROPERTY_TYPE_H
+#ifndef WICP_TYPES_PROPERTY_H
+# define WICP_TYPES_PROPERTY_H
 # include <chrono>
 namespace wicp {
 namespace types

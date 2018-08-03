@@ -65,7 +65,7 @@ namespace wicp
 
 		typedef typename env::member_id					member_id;
 
-		typedef typename wic_class::remote_iterator		remote_iterator;
+		typedef typename wic_class::remote_table_iterator		remote_table_iterator;
 
 	public:
 		typedef typename env::value_type			value_type;
@@ -262,7 +262,7 @@ namespace wicp
 			proc_log::notify(arg_object_id);
 		}
 
-		static void do_initial_sync(remote_iterator remote_it)
+		static void do_initial_sync(remote_table_iterator remote_it)
 		{
 			remote_it->second.property_lock.lock();
 			auto &property = remote_it->second.properties.template get<member_id>();

@@ -28,46 +28,46 @@ namespace wicp
 
 		struct env_commit : public env
 		{
-			typedef typename process::sync_local<env>	proc_sync;
-			typedef typename process::log<env>			proc_log;
+			typedef typename process::sync_local<env>		proc_sync;
+			typedef typename process::log<env>				proc_log;
 		};
 
-		typedef typename env::wic_class					wic_class;
+		typedef typename env::wic_class						wic_class;
 
-		typedef typename env::member_id 				member_id;
+		typedef typename env::member_id 					member_id;
 
-		typedef typename env_commit::proc_sync			proc_sync;
+		typedef typename env_commit::proc_sync				proc_sync;
 
-		typedef typename env::rpc						rpc;
+		typedef typename env::rpc							rpc;
 
-		typedef typename env::command_id_type			command_id_type;
+		typedef typename env::command_id_type				command_id_type;
 
-		typedef typename wic_class::clock				clock;
+		typedef typename wic_class::clock					clock;
 
-		typedef typename wic_class::local_iterator		local_iterator;
+		typedef typename wic_class::local_table_iterator	local_table_iterator;
 
-		typedef typename process::commit<env_commit>	proc_commit;
+		typedef typename process::commit<env_commit>		proc_commit;
 
 	public:
-		typedef typename env::value_type				value_type;
+		typedef typename env::value_type					value_type;
 
-		typedef typename env::object_id_type			object_id_type;
+		typedef typename env::object_id_type				object_id_type;
 
 	private:
 
-		typedef typename env::property_data_type 		property_data_type;
+		typedef typename env::property_data_type 			property_data_type;
 
 		typedef typename rpc::template incoming_call_handle<
 			property_data_type,
 			object_id_type
-		> 												get_handle_type;
+		> 													get_handle_type;
 
 		typedef typename rpc::template incoming_call_handle<
 			object_id_type,
 			property_data_type
-		> 												set_handle_type;
+		> 													set_handle_type;
 
-		static const command_id_type command_id 		= env::command_id;
+		static const command_id_type 			command_id 	= env::command_id;
 
 		static journal jrn(uint8_t level)
 		{

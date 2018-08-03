@@ -148,9 +148,9 @@ namespace wicp
 		>> 										remote_object_lock_table_type;
 
 	public:
-		typedef typename local_object_lock_table_type::iterator local_iterator;
+		typedef typename local_object_lock_table_type::iterator local_table_iterator;
 
-		typedef typename remote_object_lock_table_type::iterator remote_iterator;
+		typedef typename remote_object_lock_table_type::iterator remote_table_iterator;
 	private:
 
 		static local_object_lock_table_type 	local_object_lock_table;
@@ -165,10 +165,10 @@ namespace wicp
 
 		struct end_iterator
 		{
-			operator local_iterator()
+			operator local_table_iterator()
 			{ return local_object_lock_table.end(); }
 
-			operator remote_iterator()
+			operator remote_table_iterator()
 			{ return remote_object_lock_table.end(); }
 		};
 
@@ -226,23 +226,23 @@ namespace wicp
 		> unlock()
 		{ unlock_remote(); }
 
-		static local_iterator find_local(object_id_type object_id)
+		static local_table_iterator find_local(object_id_type object_id)
 		{ return local_object_lock_table.find(object_id); }
 
-		static remote_iterator find_remote(object_id_type object_id)
+		static remote_table_iterator find_remote(object_id_type object_id)
 		{ return remote_object_lock_table.find(object_id); }
 
 		template <typename T>
 		static std::enable_if_t<
 			std::is_same_v<T, local_object_record_type>,
-			local_iterator
+			local_table_iterator
 		> find(object_id_type pobject_id)
 		{ return find_local(pobject_id); }
 
 		template <typename T>
 		static std::enable_if_t<
 			std::is_same_v<T, remote_object_record_type>,
-			remote_iterator
+			remote_table_iterator
 		> find(object_id_type pobject_id)
 		{ return find_remote(pobject_id); }
 
@@ -351,7 +351,7 @@ namespace wicp
 			return clred;
 		}
 
-		static bool clr_local(local_iterator it)
+		static bool clr_local(local_table_iterator it)
 		{
 			const object_id_type object_id = it->second.object_id;
 			const bool clred = local_object_lock_table.erase(it);
@@ -365,7 +365,7 @@ namespace wicp
 			return clred;
 		}
 
-		static bool clr_remote(remote_iterator it)
+		static bool clr_remote(remote_table_iterator it)
 		{
 			const object_id_type object_id = it->second.object_id;
 			const bool clred = remote_object_lock_table.erase(it);
@@ -379,7 +379,7 @@ namespace wicp
 			return clred;
 		}
 
-		static bool is_known_local_object(local_iterator local_it, journal (*jrn)(uint8_t, object_id_type))
+		static bool is_known_local_object(local_table_iterator local_it, journal (*jrn)(uint8_t, object_id_type))
 		{
 			if(local_it == wic_class::end())
 			{

@@ -1,5 +1,5 @@
-#ifndef WICP_TYPES_OBJECT_RECORD
-# define WICP_TYPES_OBJECT_RECORD
+#ifndef WICP_TYPES_OBJECT_RECORD_H
+# define WICP_TYPES_OBJECT_RECORD_H
 # include <set>
 # include <net/ipv4_address.h>
 # include <sched/listener.h>
@@ -71,6 +71,8 @@ namespace types
 				remote_object_sync_record
 			>
 		>											remotes_type;
+
+		typedef typename remotes_type::iterator		remotes_iterator;
 
 		/*! Store of remote endpoints */
 		remotes_type								remotes;
