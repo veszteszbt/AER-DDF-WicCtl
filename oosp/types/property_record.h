@@ -11,8 +11,6 @@ namespace types
 	template <typename TcallId, typename TobjectId, typename Tvalue>
 	struct property_record
 	{
-		typedef TcallId 							call_id_type;
-
 		typedef Tvalue								value_type;
 
 		typedef std::chrono::high_resolution_clock 	clock;
@@ -30,6 +28,8 @@ namespace types
 				, value(v)
 			{}
 		};
+
+		typedef TcallId 					call_id_type;
 
 		typedef TobjectId 					object_id_type;
 

@@ -22,26 +22,29 @@ namespace process
 				TEnv::class_id << "::" << member_id::value << ' ';
 		}
 
+		static journal jrn(uint8_t level, object_id_type object)
+		{
+			return journal(level,"oosp.sync.remote") << std::hex <<
+				"object:  " << object <<
+				"; class: " << oosp_class::name <<
+				"; property: " <<
+				" (" << TEnv::class_id << "::" << member_id::value << "); ";
+			;
+		}
+
 		static void call_finish(set_handle_type h)
 		{
 			const object_id_type arg_object_id = h.argument().object_id;
 
 			oosp_class::lock_remote();
-			auto it = oosp_class::find_remote(arg_object_id);
-			if(it == oosp_class::end())
-			{
-				oosp_class::unlock_remote();
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference: " << std::hex << arg_object_id <<
-					journal::end;
+			auto remote_it = oosp_class::find_remote(arg_object_id);
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
 				return;
-			}
 
-			it->second.report_call(h);
+			remote_it->second.report_call(h);
 
-			it->second.property_lock.lock();
-			auto &property = it->second.properties.template get<member_id>();
+			remote_it->second.property_lock.lock();
+			auto &property = remote_it->second.properties.template get<member_id>();
 
 			TEnv::finish_sync_remote(property.sync, h);
 
@@ -53,7 +56,7 @@ namespace process
 					"; object: " << std::hex << arg_object_id <<
 					"; sync failed" <<
 					journal::end;
-				it->second.property_lock.unlock();
+				remote_it->second.property_lock.unlock();
 				oosp_class::unlock_remote();
 				notify(arg_object_id);
 				return;
@@ -62,7 +65,7 @@ namespace process
 			const object_id_type ret_object_id = h.value();
 			if(arg_object_id != ret_object_id)
 			{
-				it->second.property_lock.unlock();
+				remote_it->second.property_lock.unlock();
 				oosp_class::unlock_remote();
 				jrn(journal::critical) <<
 					"remote: " << (std::string)h.ip <<
@@ -81,7 +84,7 @@ namespace process
 				"; sync succeeded with call: " << std::hex << h.call_id <<
 				journal::end;
 
-			it->second.property_lock.unlock();
+			remote_it->second.property_lock.unlock();
 			oosp_class::unlock_remote();
 			notify(arg_object_id);
 		}

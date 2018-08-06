@@ -427,7 +427,7 @@ namespace oosp
 				"' object reference " << remote_object_id <<
 				journal::end;
 
-// TODO			proc_sync::notify(local_object_id, remote_object_id);
+			// TODO proc_sync::notify(local_object_id, remote_object_id);
 			return true;
 		}
 
@@ -543,29 +543,57 @@ namespace oosp
 			}
 		}
 
-		static bool is_known_local_object(local_table_iterator local_it, journal (*jrn)(uint8_t, object_id_type))
+		static bool unknown_local_object(local_table_iterator local_it, journal (*jrnal)(uint8_t, object_id_type))
 		{
 			if(local_it == end())
 			{
 				unlock_local();
-				jrn(journal::error, local_it->first) <<
+				jrnal(journal::error, local_it->first) <<
 					"Invalid local `" << name <<
 					"' object reference" <<
 					journal::end;
-				return false;
+				return true;
 			}
-			return true;
+			return false;
 		}
 
+		static bool unknown_remote_object(remote_table_iterator remote_it, journal (*jrnal)(uint8_t, object_id_type))
+		{
+			if(remote_it == end())
+			{
+				unlock_remote();
+				jrnal(journal::error, remote_it->first) <<
+					"Invalid remote `" << name <<
+					"' object reference" <<
+					journal::end;
+				return true;
+			}
+			return false;
+		}
+
+		// static bool unknown_local_object(local_table_iterator local_it, journal (*jrnal)(uint8_t))
+		// {
+		// 	if(local_it == end())
+		// 	{
+		// 		unlock_local();
+		// 		jrnal(journal::error) <<
+		// 			"Invalid remote `" << oosp_class::name <<
+		// 			"' object reference `" << std::hex << local_it->first <<
+		// 			journal::end;
+		// 		return true;
+		// 	}
+		// 	return false;
+		// }
+
 		template <typename Tfn>
-		static void safe_local_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
+		static void safe_local_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
 		{
 			lock_local();
 			auto local_it = find_local(object_id);
 			if(local_it == end())
 			{
 				unlock_local();
-				jrn(journal::error) <<
+				jrnal(journal::error) <<
 					"Invalid local `" << name <<
 					"' object reference `" << std::hex << object_id <<
 					journal::end;
@@ -577,14 +605,14 @@ namespace oosp
 		}
 
 		template <typename Tfn>
-		static void safe_remote_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
+		static void safe_remote_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
 		{
 			lock_remote();
 			auto remote_it = find_remote(object_id);
 			if(remote_it == end())
 			{
 				unlock_remote();
-				jrn(journal::error) <<
+				jrnal(journal::error) <<
 					"Invalid remote `" << name <<
 					"' object reference `" << std::hex << object_id <<
 					journal::end;
@@ -598,13 +626,13 @@ namespace oosp
 		template <typename T, typename Tfn>
 		static std::enable_if_t<
 			std::is_same_v<T, local_object_record_type>
-		> safe_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
+		> safe_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
 		{ safe_local_process(object_id); }
 
 		template <typename T, typename Tfn>
 		static std::enable_if_t<
 			std::is_same_v<T, remote_object_record_type>
-		> safe_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
+		> safe_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
 		{ safe_remote_process(object_id); }
 
 	};

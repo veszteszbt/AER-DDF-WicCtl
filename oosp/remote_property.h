@@ -14,10 +14,6 @@ namespace oosp
 		{
 			typedef property_env_base<TConfig>  base;
 
-			typedef void (*change_handler_type)();
-
-			static change_handler_type 								change_handler;
-
 			typedef typename TConfig::cfg_oosp_class				oosp_class;
 
 			typedef typename oosp_class::remote_object_record_type	encap_object_type;
@@ -30,6 +26,7 @@ namespace oosp
 		struct env_commit : public env
 		{
 			typedef typename process::sync_remote<env> proc_sync;
+
 			typedef typename process::log<env>         proc_log;
 		};
 
