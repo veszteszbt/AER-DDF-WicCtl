@@ -1,5 +1,5 @@
-#ifndef WICP_PROCESS_COMMIT_H
-# define WICP_PROCESS_COMMIT_H
+#ifndef OOSP_PROCESS_COMMIT_H
+# define OOSP_PROCESS_COMMIT_H
 # include <atomic>
 # include <condition_variable>
 # include <cstdint>
@@ -12,9 +12,9 @@
 # include <net/ipv4_address.h>
 # include <journal.h>
 # include <types/time.h>
-# include <wicp/types/property_record.h>
+# include <oosp/types/property_record.h>
 
-namespace wicp {
+namespace oosp {
 namespace process
 {
 	template<typename TEnv>
@@ -55,13 +55,11 @@ namespace process
 
 		typedef typename TEnv::proc_log				proc_log;
 
-		typedef typename TEnv::property_data_type	property_data_type;
-
 		typedef typename TEnv::history_record		history_record;
 
 		typedef typename TEnv::encap_object_type	encap_object_type;
 
-		typedef typename TEnv::wic_class			wic_class;
+		typedef typename TEnv::oosp_class			oosp_class;
 
 		typedef typename TEnv::member_id 			member_id;
 
@@ -88,7 +86,7 @@ namespace process
 		static journal jrn(uint8_t level)
 		{
 			int* x, *y;
-			return journal(level,"wicp.commit") << "property: " << std::hex <<
+			return journal(level,"oosp.commit") << "property: " << std::hex <<
 				TEnv::class_id << "::" << TEnv::member_id::value << ' ';
 		}
 
@@ -111,10 +109,10 @@ namespace process
 				const auto current_time = ::types::time::msec(clock::now());
 				if(lowest.cooldown_time <= current_time)
 				{
-					wic_class::template lock<encap_object_type>();
+					oosp_class::template lock<encap_object_type>();
 					auto lowest_it =
-						wic_class::template find<encap_object_type>(lowest.object_id);
-					if(lowest_it != wic_class::end())
+						oosp_class::template find<encap_object_type>(lowest.object_id);
+					if(lowest_it != oosp_class::end())
 					{
 						auto &property = lowest_it->second.properties.template get<member_id>();
 						property.cooldown_pending = false;
@@ -127,7 +125,7 @@ namespace process
 							journal::end;
 					}
 					cooldowns.pop();
-					wic_class::template unlock<encap_object_type>();
+					oosp_class::template unlock<encap_object_type>();
 				}
 				else
 					break;
@@ -155,12 +153,12 @@ namespace process
 					object_id_buffer.unlock();
 
 
-					wic_class::template lock<encap_object_type>();
-					auto it = wic_class::template find<encap_object_type>(object_id);
-					if(it == wic_class::end())
+					oosp_class::template lock<encap_object_type>();
+					auto it = oosp_class::template find<encap_object_type>(object_id);
+					if(it == oosp_class::end())
 					{
-						wic_class::template unlock<encap_object_type>();
-						jrn(journal::error) << "Invalid `" << wic_class::name <<
+						oosp_class::template unlock<encap_object_type>();
+						jrn(journal::error) << "Invalid `" << oosp_class::name <<
 							"' object reference " << std::hex << object_id << journal::end;
 						continue;
 					}
@@ -170,14 +168,14 @@ namespace process
 					if(property.cooldown_pending)
 					{
 						it->second.property_lock.unlock();
-						wic_class::template unlock<encap_object_type>();
+						oosp_class::template unlock<encap_object_type>();
 						jrn(journal::trace) << "cooldown pending; ignoring object: " << std::hex << object_id << journal::end;
 						continue;
 					}
 					else if(!is_sync_needed(property))
 					{
 						it->second.property_lock.unlock();
-						wic_class::template unlock<encap_object_type>();
+						oosp_class::template unlock<encap_object_type>();
 						jrn(journal::trace) << "no change; ignoring object " << std::hex << object_id << journal::end;
 						continue;
 					}
@@ -197,7 +195,7 @@ namespace process
 					if(TEnv::sync_local(property))
 					{
 						it->second.property_lock.unlock();
-						wic_class::template unlock<encap_object_type>();
+						oosp_class::template unlock<encap_object_type>();
 
 						// TODO
 						// jrn(journal::trace, object_id) <<
@@ -208,7 +206,7 @@ namespace process
 					else
 					{
 						it->second.property_lock.unlock();
-						wic_class::template unlock<encap_object_type>();
+						oosp_class::template unlock<encap_object_type>();
 					}
 
 					proc_sync::notify(object_id);
@@ -244,16 +242,16 @@ namespace process
 								clock::time_point(std::chrono::milliseconds(lowest.cooldown_time))
 							);
 							jrn(journal::trace) << "resuming" << journal::end;
-							wic_class::template lock<encap_object_type>();
+							oosp_class::template lock<encap_object_type>();
 							auto lowest_it =
-								wic_class::template find<encap_object_type>(lowest.object_id);
-							if(lowest_it != wic_class::end())
+								oosp_class::template find<encap_object_type>(lowest.object_id);
+							if(lowest_it != oosp_class::end())
 							{
 								auto &property = lowest_it->second.properties.template get<member_id>();
 								if(is_sync_needed(property))
 									safe_emplace_to_object_id_buffer(lowest.object_id);
 							}
-							wic_class::template unlock<encap_object_type>();
+							oosp_class::template unlock<encap_object_type>();
 						}
 						else
 						{
@@ -283,7 +281,7 @@ namespace process
 			proc_thread = new std::thread(start);
 
 #ifdef __linux__
-			pthread_setname_np(proc_thread->native_handle(),"wicp commit");
+			pthread_setname_np(proc_thread->native_handle(),"oosp commit");
 #endif
 
 		}

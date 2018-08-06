@@ -1,7 +1,7 @@
 #ifndef REMOTE_TIMER_H
 # define REMOTE_TIMER_H
 # include <property_config_base.h>
-# include <wicp/role.h>
+# include <oosp/role.h>
 namespace wic {
 
 template<typename TConfig>
@@ -21,7 +21,7 @@ class remote_timer
 
 		static const bool cfg_commit_change_only = true;
 	};
-	typedef wicp::remote_property<prop_value_config> prop_value;
+	typedef oosp::remote_property<prop_value_config> prop_value;
 
 	struct prop_running_config : public property_config_base
 	{
@@ -35,12 +35,12 @@ class remote_timer
 
 		static const bool cfg_commit_change_only = true;
 	};
-	typedef wicp::remote_property<prop_running_config> prop_running;
+	typedef oosp::remote_property<prop_running_config> prop_running;
 
 public:
 	static const uint32_t interval = TConfig::cfg_interval;
 
-	static void init(wicp::role_type &role)
+	static void init(oosp::role_type &role)
 	{
 		prop_value::init(role,0);
 		prop_running::init(role,0);

@@ -1,11 +1,11 @@
-#ifndef WICP_REMOTE_PROPERTY_H
-# define WICP_REMOTE_PROPERTY_H
-# include <wicp/property_env_base.h>
-# include <wicp/process/sync_remote.h>
-# include <wicp/process/commit.h>
-# include <wicp/process/log.h>
+#ifndef OOSP_REMOTE_PROPERTY_H
+# define OOSP_REMOTE_PROPERTY_H
+# include <oosp/property_env_base.h>
+# include <oosp/process/sync_remote.h>
+# include <oosp/process/commit.h>
+# include <oosp/process/log.h>
 # include <sched/listener.h>
-namespace wicp
+namespace oosp
 {
 	template<typename TConfig>
 	class remote_property
@@ -18,9 +18,9 @@ namespace wicp
 
 			static change_handler_type 								change_handler;
 
-			typedef typename TConfig::cfg_wic_class					wic_class;
+			typedef typename TConfig::cfg_oosp_class				oosp_class;
 
-			typedef typename wic_class::remote_object_record_type	encap_object_type;
+			typedef typename oosp_class::remote_object_record_type	encap_object_type;
 
 			typedef typename TConfig::cfg_property_data_type		property_data_type;
 
@@ -33,39 +33,33 @@ namespace wicp
 			typedef typename process::log<env>         proc_log;
 		};
 
-		typedef typename process::commit<env_commit>	proc_commit;
+		typedef typename process::commit<env_commit>		proc_commit;
 
-		typedef typename env_commit::proc_sync			proc_sync;
+		typedef typename env_commit::proc_sync				proc_sync;
 
-		typedef typename env_commit::proc_log			proc_log;
+		typedef typename env_commit::proc_log				proc_log;
 
-		typedef typename env::clock						clock;
+		typedef typename env::clock							clock;
 
-		typedef typename env::rpc						rpc;
+		typedef typename env::rpc							rpc;
 
-		typedef typename env::wic_class					wic_class;
+		typedef typename env::oosp_class					oosp_class;
 
-		typedef typename env::call_id_type				call_id_type;
+		typedef typename env::call_id_type					call_id_type;
 
-		typedef typename env::command_id_type			command_id_type;
+		typedef typename env::command_id_type				command_id_type;
 
-		typedef typename env::object_id_type			object_id_type;
+		typedef typename env::object_id_type				object_id_type;
 
-		typedef typename env::property_data_type		property_data_type;
+		typedef typename env::property_data_type			property_data_type;
 
-		typedef typename env::history_record			history_record;
+		typedef typename env::get_handle_type				get_handle_type;
 
-		typedef typename env::history_type				history_type;
+		typedef typename env::notify_handle_type			notify_handle_type;
 
-		typedef typename env::get_handle_type			get_handle_type;
+		typedef typename env::member_id						member_id;
 
-		typedef typename env::set_handle_type			set_handle_type;
-
-		typedef typename env::notify_handle_type		notify_handle_type;
-
-		typedef typename env::member_id					member_id;
-
-		typedef typename wic_class::remote_table_iterator		remote_table_iterator;
+		typedef typename oosp_class::remote_table_iterator	remote_table_iterator;
 
 	public:
 		typedef typename env::value_type			value_type;
@@ -77,16 +71,16 @@ namespace wicp
 
 		static journal jrn(uint8_t level)
 		{
-			return journal(level,"wicp.property.remote") <<
+			return journal(level,"oosp.property.remote") <<
 				"; property: " << std::hex << env::class_id << "::" << env::member_id::value <<
 				"; ";
 		}
 
 		static journal jrn(uint8_t level, object_id_type object)
 		{
-			return journal(level,"wicp.property.remote") << std::hex <<
+			return journal(level,"oosp.property.remote") << std::hex <<
 				"object:  " << object <<
-				"; class: " << wic_class::name <<
+				"; class: " << oosp_class::name <<
 				"; property: " <<
 				" (" << env::class_id << "::" << member_id::value << "); ";
 			;
@@ -96,14 +90,14 @@ namespace wicp
 		{
 			const property_data_type property_data = h.value();
 			const object_id_type object_id = property_data.object_id;
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it == wic_class::end())
+			oosp_class::lock_remote();
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(remote_it == oosp_class::end())
 			{
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				h.respond(object_id_type(0));
 				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
+					"Invalid remote `" << oosp_class::name <<
 					"' object reference `" << std::hex << object_id <<
 					journal::end;
 				return;
@@ -112,7 +106,7 @@ namespace wicp
 			remote_it->second.report_call(h);
 			if(h.reason != earpc::reason::process)
 			{
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				jrn(journal::error) <<
 					"object: " << std::hex << object_id <<
 					"; notify with reason " << std::dec << (int)h.reason <<
@@ -126,7 +120,7 @@ namespace wicp
 			if(property.sync.local_value == property_data.value)
 			{
 				remote_it->second.property_lock.unlock();
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				jrn(journal::warning) <<
 					"object: " << std::hex << object_id <<
 					"; notify with no change" <<
@@ -161,13 +155,13 @@ namespace wicp
 			if(env::sync_local(property))
 			{
 				remote_it->second.property_lock.unlock();
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				property.on_change(object_id);
 			}
 			else
 			{
 				remote_it->second.property_lock.unlock();
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 			}
 			proc_log::notify(object_id);
 		}
@@ -175,13 +169,13 @@ namespace wicp
 		static void get_handler(get_handle_type h)
 		{
 			const object_id_type arg_object_id = h.argument();
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(arg_object_id);
-			if(remote_it == wic_class::end())
+			oosp_class::lock_remote();
+			auto remote_it = oosp_class::find_remote(arg_object_id);
+			if(remote_it == oosp_class::end())
 			{
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
+					"Invalid remote `" << oosp_class::name <<
 					"' object reference `" << std::hex << arg_object_id <<
 					journal::end;
 				return;
@@ -206,17 +200,18 @@ namespace wicp
 						journal::end;
 				}
 				do_initial_sync(remote_it);
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				return;
 			}
 
 			const property_data_type property_data = h.value();
 			if(arg_object_id != property_data.object_id)
 			{
+				oosp_class::unlock_remote();
 				jrn(journal::critical) <<
 					"remote: " << (std::string)h.ip <<
 					"; initial sync succeeded with call: " << std::hex << h.call_id <<
-					"; but got invalid remote `" << wic_class::name <<
+					"; but got invalid remote `" << oosp_class::name <<
 					"' object reference `" << std::hex << property_data.object_id <<
 					journal::end;
 				return;
@@ -227,7 +222,7 @@ namespace wicp
 			if(!property.initial_sync_pending)
 			{
 				remote_it->second.property_lock.unlock();
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				jrn(journal::trace) <<
 					"initial sync succeeded with call: " << std::hex << h.call_id <<
 					"; but already completed via notify" <<
@@ -251,13 +246,13 @@ namespace wicp
 			if(env::sync_local(property))
 			{
 				remote_it->second.property_lock.unlock();
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				property.on_change(arg_object_id);
 			}
 			else
 			{
 				remote_it->second.property_lock.unlock();
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 			}
 			proc_log::notify(arg_object_id);
 		}
@@ -307,11 +302,11 @@ namespace wicp
 		static void init(object_id_type object_id, value_type pvalue = value_type())
 		{
 			// TODO tell me what is this new(&env::remote) remote_record(role);
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it == wic_class::end())
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(remote_it == oosp_class::end())
 			{
 				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
+					"Invalid remote `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return;
@@ -359,11 +354,11 @@ namespace wicp
 
 		static value_type value(object_id_type object_id)
 		{
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it == wic_class::end())
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(remote_it == oosp_class::end())
 			{
 				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
+					"Invalid remote `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return value_type(0);
@@ -383,13 +378,13 @@ namespace wicp
 			value_type pvalue
 		)
 		{
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it == wic_class::end())
+			oosp_class::lock_remote();
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(remote_it == oosp_class::end())
 			{
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
+					"Invalid remote `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return value_type(0);
@@ -400,7 +395,7 @@ namespace wicp
 			if(pvalue == property.sync.local_value)
 			{
 				remote_it->second.property_lock.unlock();
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				jrn(journal::debug, object_id) <<
 					"set from API with no change " <<
 					journal::end;
@@ -420,22 +415,22 @@ namespace wicp
 				property.initial_sync_cid = 0;
 				rpc::cancel(cid);
 			}
-
 			remote_it->second.property_lock.unlock();
-			wic_class::unlock_remote();
+
+			oosp_class::unlock_remote();
 			proc_commit::notify(object_id);
 			return value;
 		}
 
 		static value_type default_value(object_id_type object_id)
 		{
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it == wic_class::end())
+			oosp_class::lock_remote();
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(remote_it == oosp_class::end())
 			{
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
+					"Invalid remote `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return value_type(0);
@@ -445,7 +440,7 @@ namespace wicp
 			auto &property = remote_it->second.properties.template get<member_id>();
 			const value_type default_value = property.sync.default_value;
 			remote_it->property_lock.unlock();
-			wic_class::unlock_remote();
+			oosp_class::unlock_remote();
 			jrn(journal::trace, object_id) <<
 				"default value get from API" <<
 				journal::end;
@@ -455,13 +450,13 @@ namespace wicp
 
 		static uint32_t failures(object_id_type object_id)
 		{
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it == wic_class::end())
+			oosp_class::lock_remote();
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(remote_it == oosp_class::end())
 			{
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
+					"Invalid remote `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return uint32_t(0);
@@ -470,7 +465,7 @@ namespace wicp
 			remote_it->second.property_lock.lock();
 			const uint32_t failures = remote_it->second.properties.template get<member_id>().failures;
 			remote_it->second.property_lock.unlock();
-			wic_class::unlock_remote();
+			oosp_class::unlock_remote();
 			jrn(journal::trace, object_id) <<
 				"failures get from API" <<
 				journal::end;
@@ -480,13 +475,13 @@ namespace wicp
 
 		static typename clock::duration latency(object_id_type object_id)
 		{
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it == wic_class::end())
+			oosp_class::lock_remote();
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(remote_it == oosp_class::end())
 			{
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
+					"Invalid remote `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return clock::duration(0);
@@ -495,7 +490,7 @@ namespace wicp
 			remote_it->second.property_lock.lock();
 			const auto latency = remote_it->second.properties.template get<member_id>().latency;
 			remote_it->second.property_lock.unlock();
-			wic_class::unlock_remote();
+			oosp_class::unlock_remote();
 			jrn(journal::trace, object_id) <<
 				"latency get from API" <<
 				journal::end;
@@ -506,13 +501,13 @@ namespace wicp
 
 		static void clear_history(object_id_type object_id)
 		{
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it == wic_class::end())
+			oosp_class::lock_remote();
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(remote_it == oosp_class::end())
 			{
-				wic_class::unlock_remote();
+				oosp_class::unlock_remote();
 				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
+					"Invalid remote `" << oosp_class::name <<
 					"' object reference `" << std::hex << object_id <<
 					journal::end;
 				return;
@@ -522,23 +517,27 @@ namespace wicp
 			auto &property = remote_it->second.properties.template get<member_id>();
 			property.history.clear();
 			remote_it->second.property_lock.unlock();
-			wic_class::unlock_remote();
+			oosp_class::unlock_remote();
 		}
 
+		static bool is_sync_pending(object_id_type object_id)
+		{ return env::template is_sync_pending<typename env::encap_object_type>(object_id); }
+
+		// TODO
 		static void subscribe_to_change(
 			object_id_type object_id,
 			void (*change_handler)(object_id_type object_id)
 		)
 		{
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it != wic_class::end())
+			oosp_class::lock_remote();
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(remote_it != oosp_class::end())
 			{
 				remote_it->second.property_lock.lock();
 				remote_it->second.properties.template get<member_id>().on_change += change_handler;
 				remote_it->second.property_lock.unlock();
 			}
-			wic_class::unlock_remote();
+			oosp_class::unlock_remote();
 		}
 	};
 }

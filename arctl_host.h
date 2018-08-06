@@ -14,10 +14,10 @@ class arctl_host
 
 	static std::string app_name;
 
-	static wicp::role_type *server_role;
+	static oosp::role_type *server_role;
 public:
 
-	struct server_device_type : public wicp::device_type
+	struct server_device_type : public oosp::device_type
 	{
 		virtual ~server_device_type() {}
 		
@@ -39,7 +39,7 @@ public:
 		virtual uint8_t get_health()
 		{ return 255; }
 
-		virtual void report_call(wicp::call_report_type)
+		virtual void report_call(oosp::call_report_type)
 		{}
 
 	};
@@ -151,7 +151,7 @@ private:
 	}
 
 public:
-	static void init(uint64_t pserial, net::ipv4_address pserver, const std::string &papp_name, wicp::role_type &pserver_role)
+	static void init(uint64_t pserial, net::ipv4_address pserver, const std::string &papp_name, oosp::role_type &pserver_role)
 	{
 		heartbeat_failures = 0;
 		server_role = &pserver_role;
@@ -214,7 +214,7 @@ template<typename c>
 volatile uint8_t arctl_host<c>::heartbeat_failures;
 
 template<typename c>
-wicp::role_type *arctl_host<c>::server_role;
+oosp::role_type *arctl_host<c>::server_role;
 
 }
 #endif

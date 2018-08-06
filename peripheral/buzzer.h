@@ -1,7 +1,7 @@
 #ifndef PERIPHERAL_BUZZER_H
 # define PERIPHERAL_BUZZER_H
-# include <wicp/remote_property.h>
-# include <wicp/forward_property.h>
+# include <oosp/remote_property.h>
+# include <oosp/forward_property.h>
 # include <type_traits>
 # include <entity.h>
 
@@ -51,8 +51,8 @@ namespace peripheral
 		};
 		typedef std::conditional_t<
 			TConfig::cfg_replicate_locally,
-			wicp::forward_property<property_config>,
-			wicp::remote_property<property_config>
+			oosp::forward_property<property_config>,
+			oosp::remote_property<property_config>
 		> property;
 
 		static void change_handler()
@@ -68,7 +68,7 @@ namespace peripheral
 		}
 
 	public:
-		static void init(wicp::role_type &role)
+		static void init(oosp::role_type &role)
 		{
 			property::init(role);
 			property::on_change += change_handler;
@@ -77,10 +77,10 @@ namespace peripheral
 		static void uninit()
 		{ property::uninit(); }
 
-		static void remote_add(wicp::role_type &role)
+		static void remote_add(oosp::role_type &role)
 		{ property::remote_add(role); }
 
-		static void remote_del(wicp::role_type &role)
+		static void remote_del(oosp::role_type &role)
 		{ property::remote_del(role); }
 
 		static void beep(uint16_t freq, uint16_t length)

@@ -2,7 +2,7 @@
 # define WIC_EVENT_H
 # include <chrono>
 # include <sched/listener.h>
-# include <wicp/local_property.h>
+# include <oosp/local_property.h>
 namespace wic {
 
 template<typename TConfig>
@@ -20,7 +20,7 @@ class event
 
 			static const bool cfg_commit_change_only = true;
 		};
-		typedef wicp::local_property<property_config> property;
+		typedef oosp::local_property<property_config> property;
 public:
 	static void init()
 	{ property::init(); }
@@ -37,7 +37,7 @@ public:
 			TConfig::cfg_action();
 		}
 	}
-	static void remote_add(wicp::role_type &role)
+	static void remote_add(oosp::role_type &role)
 	{ property::remote_add(role); }
 
 	constexpr static sched::listener &on_raised = property::on_change;

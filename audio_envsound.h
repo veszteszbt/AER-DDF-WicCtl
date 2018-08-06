@@ -3,7 +3,7 @@
 # include <alsa_host.h>
 # include <exception>
 # include <property_config_base.h>
-# include <wicp/local_property.h>
+# include <oosp/local_property.h>
 namespace wic
 {
 	template<typename TConfig>
@@ -19,7 +19,7 @@ namespace wic
 
 
 		};
-		typedef wicp::local_property<property_config> property;
+		typedef oosp::local_property<property_config> property;
 
 		static void start()
 		{

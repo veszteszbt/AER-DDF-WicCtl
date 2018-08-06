@@ -25,14 +25,14 @@ class devman
 
 		static const uint32_t expiry_timeout = TConfig::cfg_expiry_timeout;
 
-		static void report_call(uint64_t,wicp::call_report_type);
+		static void report_call(uint64_t,oosp::call_report_type);
 	};
 
 	struct env_base : public env_device
 	{
 		typedef device<env_device>      device_type;
 
-		typedef wicp::role_type         role_type;
+		typedef oosp::role_type         role_type;
 
 		typedef std::list<device_type*> devices_type;
 
@@ -284,7 +284,7 @@ public:
 		proc_binder::uninit();
 	}
 
-	static bool add_role(wicp::role_type &r)
+	static bool add_role(oosp::role_type &r)
 	{
 		roles_lock.lock();
 		for(auto i : roles)
@@ -311,7 +311,7 @@ public:
 
 
 template<typename e>
-void devman<e>::env_device::report_call(uint64_t serial, wicp::call_report_type r)
+void devman<e>::env_device::report_call(uint64_t serial, oosp::call_report_type r)
 { proc_report::notify(serial,r); }
 
 template<typename e>

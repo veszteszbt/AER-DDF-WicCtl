@@ -1,6 +1,6 @@
-#ifndef WICP_ROLE_H
-# define WICP_ROLE_H
-namespace wicp {
+#ifndef OOSP_ROLE_H
+# define OOSP_ROLE_H
+namespace oosp {
 
 	struct call_report_type
 	{

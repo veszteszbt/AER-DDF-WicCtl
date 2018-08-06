@@ -3,6 +3,6 @@
 - EARPC:
  - Added handling of address change during ongoing call
  - Extended call state reporting features
-- WICP:
+- oosp:
  - Added role-based property handling
  - Added initial sync to remote property

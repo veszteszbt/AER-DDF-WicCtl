@@ -1,6 +1,6 @@
 #ifndef PERIPHERAL_ADDRESSABLE_LED_STRIP
-# include <wicp/remote_property.h>
-# include <wicp/forward_property.h>
+# include <oosp/remote_property.h>
+# include <oosp/forward_property.h>
 # include <type_traits>
 # include <entity.h>
 namespace peripheral
@@ -79,8 +79,8 @@ namespace peripheral
 		};
 		typedef std::conditional_t<
 			TConfig::cfg_replicate_locally,
-			wicp::forward_property<prop_value_config>,
-			wicp::remote_property<prop_value_config>
+			oosp::forward_property<prop_value_config>,
+			oosp::remote_property<prop_value_config>
 		> prop_value;
 
 		struct prop_enabled_config : public TConfig
@@ -99,8 +99,8 @@ namespace peripheral
 		};
 		typedef std::conditional_t<
 			TConfig::cfg_replicate_locally,
-			wicp::forward_property<prop_enabled_config>,
-			wicp::remote_property<prop_enabled_config>
+			oosp::forward_property<prop_enabled_config>,
+			oosp::remote_property<prop_enabled_config>
 		> prop_enabled;
 
 		static void prop_value_change_handler()
@@ -119,7 +119,7 @@ namespace peripheral
 
 
 	public:
-		static void init(wicp::role_type &role)
+		static void init(oosp::role_type &role)
 		{
 			prop_value::init(role);
 			prop_value::on_change += prop_value_change_handler;
@@ -133,13 +133,13 @@ namespace peripheral
 			prop_enabled::uninit();
 		}
 
-		static void remote_add(wicp::role_type &role)
+		static void remote_add(oosp::role_type &role)
 		{
 			prop_value::remote_add(role);
 			prop_enabled::remote_add(role);
 		}
 
-		static void remote_del(wicp::role_type &role)
+		static void remote_del(oosp::role_type &role)
 		{
 			prop_value::remote_del(role);
 			prop_enabled::remote_del(role);

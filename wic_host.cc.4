@@ -8,8 +8,8 @@
 #include <earpc/udp.h>
 #include <earpc/earpc.h>
 #include <net/algorithm.h>
-#include <wicp/local_property.h>
-#include <wicp/remote_property.h>
+#include <oosp/local_property.h>
+#include <oosp/remote_property.h>
 #include <property_config_base.h>
 #include <process/sql_executor.h>
 
@@ -932,7 +932,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<freezed1_config> freezed1;
+			typedef oosp::local_property<freezed1_config> freezed1;
 
 			/// Freezed5 ///
 			struct freezed5_config : public property_config_base
@@ -946,7 +946,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<freezed5_config> freezed5;
+			typedef oosp::local_property<freezed5_config> freezed5;
 
 			/// GM Help Status ///
 			struct gm_help_status_config : public property_config_base
@@ -960,7 +960,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<gm_help_status_config> gm_help_status;
+			typedef oosp::local_property<gm_help_status_config> gm_help_status;
 
 			/// GameState ///
 			struct gamestate_config : public property_config_base
@@ -974,7 +974,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 1000;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<gamestate_config> gamestate;
+			typedef oosp::local_property<gamestate_config> gamestate;
 
 			/// Incoming Call ///
 			struct incoming_call_config : public property_config_base
@@ -988,7 +988,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<incoming_call_config> incoming_call;
+			typedef oosp::local_property<incoming_call_config> incoming_call;
 
 			/// Incoming Call Status ///
 			struct incoming_call_status_config : public property_config_base
@@ -1002,7 +1002,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<incoming_call_status_config> incoming_call_status;
+			typedef oosp::local_property<incoming_call_status_config> incoming_call_status;
 
 			/// Restart Game ///
 			struct restart_game_config : public property_config_base
@@ -1016,7 +1016,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<restart_game_config> restart_game;
+			typedef oosp::local_property<restart_game_config> restart_game;
 
 			/// timedevent_test ///
 			struct timedevent_test_config : public property_config_base
@@ -1030,7 +1030,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<timedevent_test_config> timedevent_test;
+			typedef oosp::local_property<timedevent_test_config> timedevent_test;
 
 
 			/// room_1
@@ -1911,7 +1911,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<freezed1_config> freezed1;
+			typedef oosp::local_property<freezed1_config> freezed1;
 
 			/// Freezed5 ///
 			struct freezed5_config : public property_config_base
@@ -1925,7 +1925,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<freezed5_config> freezed5;
+			typedef oosp::local_property<freezed5_config> freezed5;
 
 			/// GM Help Status ///
 			struct gm_help_status_config : public property_config_base
@@ -1939,7 +1939,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<gm_help_status_config> gm_help_status;
+			typedef oosp::local_property<gm_help_status_config> gm_help_status;
 
 			/// GameState ///
 			struct gamestate_config : public property_config_base
@@ -1953,7 +1953,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 1000;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<gamestate_config> gamestate;
+			typedef oosp::local_property<gamestate_config> gamestate;
 
 			/// Incoming Call ///
 			struct incoming_call_config : public property_config_base
@@ -1967,7 +1967,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<incoming_call_config> incoming_call;
+			typedef oosp::local_property<incoming_call_config> incoming_call;
 
 			/// Incoming Call Status ///
 			struct incoming_call_status_config : public property_config_base
@@ -1981,7 +1981,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<incoming_call_status_config> incoming_call_status;
+			typedef oosp::local_property<incoming_call_status_config> incoming_call_status;
 
 			/// Restart Game ///
 			struct restart_game_config : public property_config_base
@@ -1995,7 +1995,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<restart_game_config> restart_game;
+			typedef oosp::local_property<restart_game_config> restart_game;
 
 
 			/// room_1
@@ -2652,7 +2652,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x10;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<started_config> started;
+				typedef oosp::forward_property<started_config> started;
 
 				/// Shutdown ///
 				struct shutdown_config : public property_config_base
@@ -2665,7 +2665,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x20;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<shutdown_config> shutdown;
+				typedef oosp::forward_property<shutdown_config> shutdown;
 
 				/// Logged In ///
 				struct logged_in_config : public property_config_base
@@ -2678,7 +2678,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x30;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<logged_in_config> logged_in;
+				typedef oosp::forward_property<logged_in_config> logged_in;
 
 				/// Recycled Restore ///
 				struct recycled_restore_config : public property_config_base
@@ -2691,7 +2691,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x40;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<recycled_restore_config> recycled_restore;
+				typedef oosp::forward_property<recycled_restore_config> recycled_restore;
 
 				/// Audioplay started ///
 				struct audioplay_started_config : public property_config_base
@@ -2704,7 +2704,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x50;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<audioplay_started_config> audioplay_started;
+				typedef oosp::forward_property<audioplay_started_config> audioplay_started;
 
 				/// Audioplay finished ///
 				struct audioplay_finished_config : public property_config_base
@@ -2717,7 +2717,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x60;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<audioplay_finished_config> audioplay_finished;
+				typedef oosp::forward_property<audioplay_finished_config> audioplay_finished;
 
 				/// Audioplay paused ///
 				struct audioplay_paused_config : public property_config_base
@@ -2730,7 +2730,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x70;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<audioplay_paused_config> audioplay_paused;
+				typedef oosp::forward_property<audioplay_paused_config> audioplay_paused;
 
 				/// Restart Game ///
 				struct restart_game_config : public property_config_base
@@ -2743,7 +2743,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x80;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<restart_game_config> restart_game;
+				typedef oosp::forward_property<restart_game_config> restart_game;
 
 				/// Audioplay startevent ///
 				struct audioplay_startevent_config : public property_config_base
@@ -2756,7 +2756,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x90;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<audioplay_startevent_config> audioplay_startevent;
+				typedef oosp::forward_property<audioplay_startevent_config> audioplay_startevent;
 
 				/// Audiopause pauseevent ///
 				struct audiopause_pauseevent_config : public property_config_base
@@ -2769,7 +2769,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0xa0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<audiopause_pauseevent_config> audiopause_pauseevent;
+				typedef oosp::forward_property<audiopause_pauseevent_config> audiopause_pauseevent;
 
 				static void init(net::ipv4_address ip)
 				{
@@ -2986,7 +2986,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x10;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<started_config> started;
+				typedef oosp::forward_property<started_config> started;
 
 				/// Shutdown ///
 				struct shutdown_config : public property_config_base
@@ -2999,7 +2999,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x20;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<shutdown_config> shutdown;
+				typedef oosp::forward_property<shutdown_config> shutdown;
 
 				/// LiveCam started ///
 				struct livecam_started_config : public property_config_base
@@ -3012,7 +3012,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x30;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<livecam_started_config> livecam_started;
+				typedef oosp::forward_property<livecam_started_config> livecam_started;
 
 				/// LiveCamSlides started ///
 				struct livecamslides_started_config : public property_config_base
@@ -3025,7 +3025,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x40;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<livecamslides_started_config> livecamslides_started;
+				typedef oosp::forward_property<livecamslides_started_config> livecamslides_started;
 
 				/// Restart Game ///
 				struct restart_game_config : public property_config_base
@@ -3038,7 +3038,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x50;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<restart_game_config> restart_game;
+				typedef oosp::forward_property<restart_game_config> restart_game;
 
 				/// Start LiveCams ///
 				struct start_livecams_config : public property_config_base
@@ -3051,7 +3051,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x60;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<start_livecams_config> start_livecams;
+				typedef oosp::forward_property<start_livecams_config> start_livecams;
 
 				/// Stop LiveCams ///
 				struct stop_livecams_config : public property_config_base
@@ -3064,7 +3064,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x70;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<stop_livecams_config> stop_livecams;
+				typedef oosp::forward_property<stop_livecams_config> stop_livecams;
 
 				/// Start Tape ///
 				struct start_tape_config : public property_config_base
@@ -3077,7 +3077,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x80;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<start_tape_config> start_tape;
+				typedef oosp::forward_property<start_tape_config> start_tape;
 
 				/// Stop Tape ///
 				struct stop_tape_config : public property_config_base
@@ -3090,7 +3090,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x90;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<stop_tape_config> stop_tape;
+				typedef oosp::forward_property<stop_tape_config> stop_tape;
 
 				/// enabled ///
 				struct enabled_config : public property_config_base
@@ -3103,7 +3103,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0xa0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<enabled_config> enabled;
+				typedef oosp::forward_property<enabled_config> enabled;
 
 				/// casette_id ///
 				struct casette_id_config : public property_config_base
@@ -3116,7 +3116,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0xb0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<casette_id_config> casette_id;
+				typedef oosp::forward_property<casette_id_config> casette_id;
 
 				/// play_ongoing ///
 				struct play_ongoing_config : public property_config_base
@@ -3129,7 +3129,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0xc0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<play_ongoing_config> play_ongoing;
+				typedef oosp::forward_property<play_ongoing_config> play_ongoing;
 
 				/// livecam_ongoing ///
 				struct livecam_ongoing_config : public property_config_base
@@ -3142,7 +3142,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0xd0;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<livecam_ongoing_config> livecam_ongoing;
+				typedef oosp::forward_property<livecam_ongoing_config> livecam_ongoing;
 
 				static void init(net::ipv4_address ip)
 				{
@@ -3220,7 +3220,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<freezed1_config> freezed1;
+			typedef oosp::local_property<freezed1_config> freezed1;
 
 			/// Freezed5 ///
 			struct freezed5_config : public property_config_base
@@ -3234,7 +3234,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<freezed5_config> freezed5;
+			typedef oosp::local_property<freezed5_config> freezed5;
 
 			/// GM Help Status ///
 			struct gm_help_status_config : public property_config_base
@@ -3248,7 +3248,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<gm_help_status_config> gm_help_status;
+			typedef oosp::local_property<gm_help_status_config> gm_help_status;
 
 			/// GameState ///
 			struct gamestate_config : public property_config_base
@@ -3262,7 +3262,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 1000;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<gamestate_config> gamestate;
+			typedef oosp::local_property<gamestate_config> gamestate;
 
 			/// Incoming Call ///
 			struct incoming_call_config : public property_config_base
@@ -3276,7 +3276,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<incoming_call_config> incoming_call;
+			typedef oosp::local_property<incoming_call_config> incoming_call;
 
 			/// Incoming Call Status ///
 			struct incoming_call_status_config : public property_config_base
@@ -3290,7 +3290,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<incoming_call_status_config> incoming_call_status;
+			typedef oosp::local_property<incoming_call_status_config> incoming_call_status;
 
 			/// Restart Game ///
 			struct restart_game_config : public property_config_base
@@ -3304,7 +3304,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<restart_game_config> restart_game;
+			typedef oosp::local_property<restart_game_config> restart_game;
 
 
 			/// room_1
@@ -3802,7 +3802,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x10;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<started_config> started;
+				typedef oosp::forward_property<started_config> started;
 
 				/// Shutdown ///
 				struct shutdown_config : public property_config_base
@@ -3815,7 +3815,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x20;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<shutdown_config> shutdown;
+				typedef oosp::forward_property<shutdown_config> shutdown;
 
 				/// Restart Game ///
 				struct restart_game_config : public property_config_base
@@ -3828,7 +3828,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x30;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::forward_property<restart_game_config> restart_game;
+				typedef oosp::forward_property<restart_game_config> restart_game;
 
 				static void init(net::ipv4_address ip)
 				{
@@ -4438,7 +4438,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<freezed1_config> freezed1;
+			typedef oosp::local_property<freezed1_config> freezed1;
 
 			/// Freezed5 ///
 			struct freezed5_config : public property_config_base
@@ -4452,7 +4452,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 10;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<freezed5_config> freezed5;
+			typedef oosp::local_property<freezed5_config> freezed5;
 
 			/// GM Help Status ///
 			struct gm_help_status_config : public property_config_base
@@ -4466,7 +4466,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<gm_help_status_config> gm_help_status;
+			typedef oosp::local_property<gm_help_status_config> gm_help_status;
 
 			/// GameState ///
 			struct gamestate_config : public property_config_base
@@ -4480,7 +4480,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 1000;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<gamestate_config> gamestate;
+			typedef oosp::local_property<gamestate_config> gamestate;
 
 			/// Incoming Call ///
 			struct incoming_call_config : public property_config_base
@@ -4494,7 +4494,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<incoming_call_config> incoming_call;
+			typedef oosp::local_property<incoming_call_config> incoming_call;
 
 			/// Incoming Call Status ///
 			struct incoming_call_status_config : public property_config_base
@@ -4508,7 +4508,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<incoming_call_status_config> incoming_call_status;
+			typedef oosp::local_property<incoming_call_status_config> incoming_call_status;
 
 			/// Restart Game ///
 			struct restart_game_config : public property_config_base
@@ -4522,7 +4522,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<restart_game_config> restart_game;
+			typedef oosp::local_property<restart_game_config> restart_game;
 
 
 			/// room_1
@@ -5114,7 +5114,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<servercpustatus_config> servercpustatus;
+			typedef oosp::local_property<servercpustatus_config> servercpustatus;
 
 			/// ServerMemoryStatus ///
 			struct servermemorystatus_config : public property_config_base
@@ -5128,7 +5128,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<servermemorystatus_config> servermemorystatus;
+			typedef oosp::local_property<servermemorystatus_config> servermemorystatus;
 
 			/// ServerNetworkStatus ///
 			struct servernetworkstatus_config : public property_config_base
@@ -5142,7 +5142,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<servernetworkstatus_config> servernetworkstatus;
+			typedef oosp::local_property<servernetworkstatus_config> servernetworkstatus;
 
 			/// ServerStorageStatus ///
 			struct serverstoragestatus_config : public property_config_base
@@ -5156,7 +5156,7 @@ namespace ddf
 				static const uint32_t cfg_cooldown_time      = 0;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<serverstoragestatus_config> serverstoragestatus;
+			typedef oosp::local_property<serverstoragestatus_config> serverstoragestatus;
 
 
 			/// StatusTimer

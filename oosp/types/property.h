@@ -1,7 +1,6 @@
-#ifndef WICP_TYPES_PROPERTY_H
-# define WICP_TYPES_PROPERTY_H
-# include <chrono>
-namespace wicp {
+#ifndef OOSP_TYPES_PROPERTY_H
+# define OOSP_TYPES_PROPERTY_H
+namespace oosp {
 namespace types
 {
 	template <

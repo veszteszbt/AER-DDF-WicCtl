@@ -1,27 +1,27 @@
-#ifndef WICP_WIC_CLASS_HH
-# define WICP_WIC_CLASS_HH
+#ifndef OOSP_WIC_CLASS_HH
+# define OOSP_WIC_CLASS_HH
 # include <map>
 # include <mutex>
 # include <sched/listener.h>
 # include <sched/lockable.h>
 # include <types/meta.h>
-# include <wicp/local_property.h>
-# include <wicp/remote_property.h>
-# include <wicp/types/object_record.h>
-# include <wicp/types/property_data_type.h>
-# include <wicp/types/property_record.h>
+# include <oosp/local_property.h>
+# include <oosp/remote_property.h>
+# include <oosp/types/object_record.h>
+# include <oosp/types/property_data_type.h>
+# include <oosp/types/property_record.h>
 
-#define WIC_CLASS_TEMPLATE template < \
+#define OOSP_CLASS_TEMPLATE template < \
 	typename Tconfig, \
 	typename... Tproperties \
 >
 
-#define WIC_CLASS wic_class<Tconfig, Tproperties...>
+#define OOSP_CLASS oosp_class<Tconfig, Tproperties...>
 
-namespace wicp
+namespace oosp
 {
-	WIC_CLASS_TEMPLATE
-	struct wic_class
+	OOSP_CLASS_TEMPLATE
+	struct oosp_class
 	{
 		typedef typename std::chrono::high_resolution_clock	clock;
 
@@ -41,7 +41,7 @@ namespace wicp
 		template <typename...>
 		struct property_initializer;
 
-		typedef WIC_CLASS									self;
+		typedef OOSP_CLASS									self;
 
 		template <typename Tproperty>
 		struct property_config
@@ -56,7 +56,7 @@ namespace wicp
 
 			typedef earpc							cfg_earpc;
 
-			typedef self							cfg_wic_class;
+			typedef self							cfg_oosp_class;
 
 			typedef types::property_data_type<
 				object_id_type,
@@ -127,7 +127,7 @@ namespace wicp
 			local_property_transform<
 				property_config<Tproperties>
 			>...
-		>										local_property_holder; // TODO should this be handler?
+		>										local_property_holder; // TODO should this be handler instead of holder?
 
 		typedef ::types::type_map<
 			remote_property_transform<
@@ -171,6 +171,12 @@ namespace wicp
 			operator remote_table_iterator()
 			{ return remote_object_lock_table.end(); }
 		};
+
+		static journal jrn(uint8_t level)
+		{
+			return journal(level,"oosp.oosp_class") << "property: " << std::hex <<
+				class_id << ' ';
+		}
 
 		static void init()
 		{ 
@@ -379,13 +385,171 @@ namespace wicp
 			return clred;
 		}
 
+		static bool remote_add(
+			object_id_type local_object_id,
+			object_id_type remote_object_id
+		)
+		{
+			lock_local();
+			auto local_it = find_local(local_object_id);
+			if(local_it == end())
+			{
+				unlock_local();
+				jrn(journal::error) <<
+					"Invalid local `" << name <<
+					"' object reference " << std::hex << local_object_id <<
+					journal::end;
+				return false;
+			}
+
+			lock_remote();
+			auto remote_it = find_remote(remote_object_id);
+			if(remote_it == end())
+			{
+				unlock_remote();
+				unlock_local();
+				jrn(journal::error) <<
+					"Invalid remote `" << name <<
+					"' object reference " << std::hex << remote_object_id <<
+					journal::end;
+				return false;
+			}
+
+			local_it->second.remotes.lock();
+			local_it->second.remotes.try_emplace(remote_object_id);
+			local_it->second.remotes.unlock();
+
+			unlock_remote();
+			unlock_local();
+
+			jrn(journal::trace) <<
+				"object: " << std::hex << local_object_id << "; added remote `" << name <<
+				"' object reference " << remote_object_id <<
+				journal::end;
+
+// TODO			proc_sync::notify(local_object_id, remote_object_id);
+			return true;
+		}
+
+		static bool remote_del(
+			object_id_type local_object_id,
+			object_id_type remote_object_id
+		)
+		{
+			lock_local();
+			auto local_it = find_local(local_object_id);
+			if(local_it == end())
+			{
+				unlock_local();
+				jrn(journal::error) <<
+					"Invalid local `" << name <<
+					"' object reference " << std::hex << local_object_id <<
+					journal::end;
+				return false;
+			}
+
+			cancel(local_object_id, remote_object_id);
+			local_it->remotes.lock();
+			if(!local_it->remotes.erase(remote_object_id))
+			{
+				local_it->remotes.unlock();
+				unlock_local();
+				jrn(journal::error) <<
+					"Invalid remote `" << name <<
+					"' object reference " << std::hex << remote_object_id <<
+					journal::end;
+
+				return false;
+			}
+
+			local_it->remotes.unlock();
+			unlock_local();
+			jrn(journal::trace) <<
+				"object: " << std::hex << local_object_id << "; deleted remote `" << name <<
+				"' object reference " << std::hex << remote_object_id <<
+				journal::end;
+			return true;
+		}
+
+		static void cancel(
+			object_id_type local_object_id,
+			object_id_type remote_object_id
+		)
+		{
+			lock_local();
+			auto local_it = find_local(local_object_id);
+			if(local_it == end())
+			{
+				unlock_local();
+				jrn(journal::error) <<
+						"Invalid local `" << name <<
+						"' object reference " << std::hex
+						<< local_object_id <<
+					journal::end;
+				return;
+			}
+
+			local_it->second.remotes.lock();
+			auto device = local_it->second.remotes.find(remote_object_id);
+			if(device == local_it->second.remotes.end())
+			{
+				local_it->second.remotes.unlock();
+				unlock_local();
+				jrn(journal::error) <<
+					"local object: " << std::hex << local_object_id <<
+					"; has no remote object: " << remote_object_id <<
+					journal::end;
+				return;
+			}
+			local_it->second.remotes.unlock();
+
+			lock_remote();
+			auto remote_it = find_remote(remote_object_id);
+			if(remote_it == end())
+			{
+				unlock_remote();
+				unlock_local();
+				jrn(journal::error) <<
+					"Invalid remote `" << name <<
+					"' object reference " << std::hex << remote_object_id <<
+					journal::end;
+				return;
+			}
+
+			cancel(remote_it);
+
+			unlock_remote();
+			unlock_local();
+		}
+
+		static void cancel(remote_table_iterator it)
+		{
+			if(it->second.sync.call_id)
+			{
+				jrn(journal::trace) <<
+					"remote: " << (std::string)it->second.ip <<
+					" cancelling sync via object " << std::hex << it->second.object_id <<
+					journal::end;
+
+				earpc::cancel(it->second.sync.call_id);
+				it->second.sync.call_id = 0;
+				it->second.sync.pending_timestamp = clock::time_point::min();
+			}
+			else
+			{
+				jrn(journal::error, it->second.object_id) <<
+					"ommiting cancel; call has not been made" <<
+					journal::end;
+			}
+		}
+
 		static bool is_known_local_object(local_table_iterator local_it, journal (*jrn)(uint8_t, object_id_type))
 		{
-			if(local_it == wic_class::end())
+			if(local_it == end())
 			{
-				wic_class::unlock_local();
+				unlock_local();
 				jrn(journal::error, local_it->first) <<
-					"Invalid local `" << wic_class::name <<
+					"Invalid local `" << name <<
 					"' object reference" <<
 					journal::end;
 				return false;
@@ -396,39 +560,39 @@ namespace wicp
 		template <typename Tfn>
 		static void safe_local_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
 		{
-			wic_class::lock_local();
-			auto local_it = wic_class::find_local(object_id);
-			if(local_it == wic_class::end())
+			lock_local();
+			auto local_it = find_local(object_id);
+			if(local_it == end())
 			{
-				wic_class::unlock_local();
+				unlock_local();
 				jrn(journal::error) <<
-					"Invalid local `" << wic_class::name <<
+					"Invalid local `" << name <<
 					"' object reference `" << std::hex << object_id <<
 					journal::end;
 				return;
 			}
 
 			f(local_it);
-			wic_class::unlock_local();
+			unlock_local();
 		}
 
 		template <typename Tfn>
 		static void safe_remote_process(object_id_type object_id, journal (*jrn)(uint8_t), Tfn &f)
 		{
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(object_id);
-			if(remote_it == wic_class::end())
+			lock_remote();
+			auto remote_it = find_remote(object_id);
+			if(remote_it == end())
 			{
-				wic_class::unlock_remote();
+				unlock_remote();
 				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
+					"Invalid remote `" << name <<
 					"' object reference `" << std::hex << object_id <<
 					journal::end;
 				return;
 			}
 
 			f(remote_it);
-			wic_class::unlock_remote();
+			unlock_remote();
 		}
 
 		template <typename T, typename Tfn>
@@ -445,48 +609,48 @@ namespace wicp
 
 	};
 
-	WIC_CLASS_TEMPLATE
-	typename WIC_CLASS::local_object_lock_table_type
-		WIC_CLASS::local_object_lock_table;
+	OOSP_CLASS_TEMPLATE
+	typename OOSP_CLASS::local_object_lock_table_type
+		OOSP_CLASS::local_object_lock_table;
 
-	WIC_CLASS_TEMPLATE
-	typename WIC_CLASS::remote_object_lock_table_type
-		WIC_CLASS::remote_object_lock_table;
+	OOSP_CLASS_TEMPLATE
+	typename OOSP_CLASS::remote_object_lock_table_type
+		OOSP_CLASS::remote_object_lock_table;
 
-	WIC_CLASS_TEMPLATE
+	OOSP_CLASS_TEMPLATE
 	template <typename Tproperty, typename... Tremaining>
-	struct WIC_CLASS::property_initializer<Tproperty, Tremaining...>
+	struct OOSP_CLASS::property_initializer<Tproperty, Tremaining...>
 	{
 		static void init()
 		{
 			Tproperty::first_type::init();
 			Tproperty::second_type::init();
-			WIC_CLASS::property_initializer<Tremaining...>::init();
+			OOSP_CLASS::property_initializer<Tremaining...>::init();
 		}
 
 		static void uninit()
 		{
 			Tproperty::first_type::uninit();
 			Tproperty::second_type::uninit();
-			WIC_CLASS::property_initializer<Tremaining...>::uninit();
+			OOSP_CLASS::property_initializer<Tremaining...>::uninit();
 		}
 
-		static void init(typename WIC_CLASS::object_id_type object_id)
+		static void init(typename OOSP_CLASS::object_id_type object_id)
 		{
 			Tproperty::init(object_id);
-			WIC_CLASS::property_initializer<Tremaining...>::init(object_id);
+			OOSP_CLASS::property_initializer<Tremaining...>::init(object_id);
 		}
 
-		static void uninit(typename WIC_CLASS::object_id_type object_id)
+		static void uninit(typename OOSP_CLASS::object_id_type object_id)
 		{
 			Tproperty::uninit(object_id);
-			WIC_CLASS::property_initializer<Tremaining...>::uninit(object_id);
+			OOSP_CLASS::property_initializer<Tremaining...>::uninit(object_id);
 		}
 	};
 
-	WIC_CLASS_TEMPLATE
+	OOSP_CLASS_TEMPLATE
 	template <typename Tproperty>
-	struct WIC_CLASS::property_initializer<Tproperty>
+	struct OOSP_CLASS::property_initializer<Tproperty>
 	{
 		static void init()
 		{ 
@@ -500,15 +664,15 @@ namespace wicp
 			Tproperty::second_type::uninit();
 		}
 
-		static void init(typename WIC_CLASS::object_id_type object_id)
+		static void init(typename OOSP_CLASS::object_id_type object_id)
 		{ Tproperty::init(object_id); }
 
-		static void uninit(typename WIC_CLASS::object_id_type object_id)
+		static void uninit(typename OOSP_CLASS::object_id_type object_id)
 		{ Tproperty::uninit(object_id); }
 	};
 }
 
-#undef WIC_CLASS_TEMPLATE
-#undef WIC_CLASS
+#undef OOSP_CLASS_TEMPLATE
+#undef OOSP_CLASS
 
 #endif

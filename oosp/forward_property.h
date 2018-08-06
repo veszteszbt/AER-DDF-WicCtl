@@ -1,6 +1,6 @@
-#ifndef WICP_FORWARD_PROPERTY_H
-# define WICP_FORWARD_PROPERTY_H
-namespace wicp {
+#ifndef OOSP_FORWARD_PROPERTY_H
+# define OOSP_FORWARD_PROPERTY_H
+namespace oosp {
 
 	template<typename TConfig>
 	class forward_property
@@ -13,7 +13,7 @@ namespace wicp {
 
 		static journal jrn(uint8_t level)
 		{
-			return journal(level,"wicp.property.forward") << "property: " << std::hex <<
+			return journal(level,"oosp.property.forward") << "property: " << std::hex <<
 				TConfig::cfg_class_id << "::" << TConfig::cfg_member_id << ' ';
 		}
 
@@ -35,7 +35,7 @@ namespace wicp {
 
 		typedef typename property::value_type value_type;
 
-		static void init(wicp::role_type &role, value_type v = value_type())
+		static void init(oosp::role_type &role, value_type v = value_type())
 		{
 			property::init(role,v);
 			replica::init(v);
@@ -62,10 +62,10 @@ namespace wicp {
 			property::value(v);
 		}
 
-		static bool remote_add(wicp::role_type &role)
+		static bool remote_add(oosp::role_type &role)
 		{ replica::remote_add(role); }
 
-		static bool remote_del(wicp::role_type &role)
+		static bool remote_del(oosp::role_type &role)
 		{ replica::remote_del(role); }
 
 		static uint32_t failures()

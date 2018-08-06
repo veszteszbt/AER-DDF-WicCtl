@@ -2,7 +2,7 @@
 # define WIC_AUDIO_SPEECH_H
 # include <alsa_host.h>
 # include <exception>
-# include <wicp/local_property.h>
+# include <oosp/local_property.h>
 # include <entity.h>
 namespace wic
 {
@@ -21,7 +21,7 @@ namespace wic
 
 			static const uint32_t cfg_cooldown_time = 0;
 		};
-		typedef wicp::local_property<property_config> property;
+		typedef oosp::local_property<property_config> property;
 
 		static volatile bool is_playing;
 
@@ -77,7 +77,7 @@ namespace wic
 			property::uninit();
 		}
 
-		static void remote_add(wicp::role_type &role)
+		static void remote_add(oosp::role_type &role)
 		{ property::remote_add(role); }
 
 		static void play()

@@ -24,7 +24,7 @@ namespace wic
 
 			static const bool cfg_commit_change_only = true;
 		};
-		typedef wicp::local_property<prop_value_config> prop_value;
+		typedef oosp::local_property<prop_value_config> prop_value;
 
 		struct prop_running_config : public property_config_base
 		{
@@ -38,7 +38,7 @@ namespace wic
 
 			static const bool cfg_commit_change_only = true;
 		};
-		typedef wicp::local_property<prop_running_config> prop_running;
+		typedef oosp::local_property<prop_running_config> prop_running;
 	public:
 		static const uint32_t interval = TConfig::cfg_interval;
 	private:
@@ -175,7 +175,7 @@ namespace wic
 		{ running(false); }
 
 
-		static void remote_add(wicp::role_type &role)
+		static void remote_add(oosp::role_type &role)
 		{
 			prop_value::remote_add(role);
 			prop_running::remote_add(role);

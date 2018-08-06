@@ -7,7 +7,7 @@ class device_role
 {
 	static_assert(TConfig::cfg_multiplicity > 0, "device multiplicity must be at least 1");
 
-	static wicp::role_type *role[];
+	static oosp::role_type *role[];
 
 	static std::mutex lock;
 
@@ -19,16 +19,16 @@ class device_role
 		static const uint32_t cfg_member_id = 0xeffffff;
 		static const uint32_t cfg_cooldown_time = 1000;
 	};
-	typedef wicp::local_property<prop_health_config> prop_health;
+	typedef oosp::local_property<prop_health_config> prop_health;
 
-	static void health_change_handler(wicp::role_type &r)
+	static void health_change_handler(oosp::role_type &r)
 	{ prop_health::value(r.get_health()); }
 
 public:
 
 	static const uint16_t multiplicity = TConfig::cfg_multiplicity;
 
-	static wicp::role_type &instance(uint16_t i = 0)
+	static oosp::role_type &instance(uint16_t i = 0)
 	{
 		lock.lock();
 		if(!initialized)
@@ -43,7 +43,7 @@ public:
 			return;
 
 		for(uint16_t i = 0; i < multiplicity; ++i)
-			role[i] = new wicp::role_type(TConfig::cfg_name);
+			role[i] = new oosp::role_type(TConfig::cfg_name);
 
 		if(multiplicity == 1)
 		{
@@ -78,7 +78,7 @@ public:
 		return prop_health::value();
 	}
 
-	static void remote_add(wicp::role_type &role)
+	static void remote_add(oosp::role_type &role)
 	{
 		if(multiplicity != 1)
 			return;
@@ -91,7 +91,7 @@ public:
 		prop_health::remote_add(role);
 	}
 
-	static void remote_del(wicp::role_type &role)
+	static void remote_del(oosp::role_type &role)
 	{
 		if(multiplicity != 1)
 			return;
@@ -108,7 +108,7 @@ public:
 };
 
 template<typename c>
-wicp::role_type *device_role<c>::role[c::cfg_multiplicity];
+oosp::role_type *device_role<c>::role[c::cfg_multiplicity];
 
 template<typename c>
 std::mutex device_role<c>::lock;

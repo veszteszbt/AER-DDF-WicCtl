@@ -1,7 +1,7 @@
 #ifndef WIC_REMOTE_AUDIO_SPEECH_H
 # define WIC_REMOTE_AUDIO_SPEECH_H
 # include <property_config_base.h>
-# include <wicp/role.h>
+# include <oosp/role.h>
 namespace wic {
 
 template<typename TConfig>
@@ -17,11 +17,11 @@ class remote_audio_speech
 		static const uint32_t cfg_cooldown_time = 0;
 		static const bool cfg_commit_change_only = true;
 	};
-	typedef wicp::remote_property<prop_playing_config> prop_playing;
+	typedef oosp::remote_property<prop_playing_config> prop_playing;
 
 
 public:
-	static void init(wicp::role_type &role)
+	static void init(oosp::role_type &role)
 	{ prop_playing::init(role); }
 
 	static void uninit()

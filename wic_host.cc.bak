@@ -8,8 +8,8 @@
 #include <earpc/udp.h>
 #include <earpc/earpc.h>
 #include <net/algorithm.h>
-#include <wicp/local_property.h>
-#include <wicp/remote_property.h>
+#include <oosp/local_property.h>
+#include <oosp/remote_property.h>
 #include <property_config_base.h>
 #include <process/sql_executor.h>
 
@@ -79,7 +79,7 @@ namespace gmclient_test
 				static const uint32_t cfg_member_id          = 0x20;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<freezed1_config> freezed1;
+			typedef oosp::local_property<freezed1_config> freezed1;
 
 			/// Freezed5 ///
 			struct freezed5_config : public property_config_base
@@ -90,7 +90,7 @@ namespace gmclient_test
 				static const uint32_t cfg_member_id          = 0x30;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<freezed5_config> freezed5;
+			typedef oosp::local_property<freezed5_config> freezed5;
 
 			/// GameState ///
 			struct gamestate_config : public property_config_base
@@ -101,7 +101,7 @@ namespace gmclient_test
 				static const uint32_t cfg_member_id          = 0x10;
 				static const bool     cfg_commit_change_only = true;
 			};
-			typedef wicp::local_property<gamestate_config> gamestate;
+			typedef oosp::local_property<gamestate_config> gamestate;
 
 
 			/// Speaker 1

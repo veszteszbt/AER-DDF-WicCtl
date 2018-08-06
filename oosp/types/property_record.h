@@ -1,11 +1,11 @@
-#ifndef WICP_TYPES_PROPERTY_RECORD_H
-# define WICP_TYPES_PROPERTY_RECORD_H
+#ifndef OOSP_TYPES_PROPERTY_RECORD_H
+# define OOSP_TYPES_PROPERTY_RECORD_H
 # include <chrono>
 # include <mutex>
 # include <list>
 # include <sched/listener.h>
-# include <wicp/types/sync_record.h>
-namespace wicp {
+# include <oosp/types/sync_record.h>
+namespace oosp {
 namespace types
 {
 	template <typename TcallId, typename TobjectId, typename Tvalue>
@@ -35,7 +35,7 @@ namespace types
 
 		typedef std::list<history_record>	history_type;
 
-		typedef ::wicp::types::sync_record<
+		typedef ::oosp::types::sync_record<
 			call_id_type,
 			value_type,
 			clock

@@ -1,5 +1,5 @@
-#ifndef WICP_PROCESS_LOG_H
-# define WICP_PROCESS_LOG_H
+#ifndef OOSP_PROCESS_LOG_H
+# define OOSP_PROCESS_LOG_H
 # include <mutex>
 # include <condition_variable>
 # include <thread>
@@ -14,7 +14,7 @@
 	#undef max
 	#undef min
 #endif
-namespace wicp {
+namespace oosp {
 namespace process
 {
 	template<typename TEnv>
@@ -28,23 +28,15 @@ namespace process
 
 		typedef typename TEnv::history_record		history_record;
 
-
 		typedef typename TEnv::object_id_type		object_id_type;
 
 		typedef typename TEnv::member_id			member_id;
 
-		typedef typename TEnv::wic_class			wic_class;
+		typedef typename TEnv::oosp_class			oosp_class;
 
 		typedef typename TEnv::encap_object_type	encap_object_type;
 
-
 		static typename clock::time_point 			time;
-
-		static const uint32_t cooldown_time			= TEnv::cooldown_time;
-
-		constexpr static history_type &history		= TEnv::history;
-
-		constexpr static std::mutex &history_lock	= TEnv::history_lock;
 
 	public:
 		static void init()
@@ -58,18 +50,18 @@ namespace process
 		static journal jrn(uint8_t level)
 		{
 			int* x, *y;
-			return journal(level,"wicp.commit") << "property: " << std::hex <<
+			return journal(level,"oosp.commit") << "property: " << std::hex <<
 				TEnv::class_id << "::" << TEnv::member_id::value << ' ';
 		}
 
 		static void notify(object_id_type object_id)
 		{
-			wic_class::template lock<encap_object_type>();
-			auto it = wic_class::template find<encap_object_type>(object_id);
-			if(it == wic_class::end())
+			oosp_class::template lock<encap_object_type>();
+			auto it = oosp_class::template find<encap_object_type>(object_id);
+			if(it == oosp_class::end())
 			{
-				wic_class::template unlock<encap_object_type>();
-				jrn(journal::error) << "Invalid `" << wic_class::name << "' object reference `" << std::hex << object_id << journal::end;
+				oosp_class::template unlock<encap_object_type>();
+				jrn(journal::error) << "Invalid `" << oosp_class::name << "' object reference `" << std::hex << object_id << journal::end;
 				return;
 			}
 			it->second.property_lock.lock();
@@ -77,7 +69,7 @@ namespace process
 			const history_record r = property.history.front();
 
 			it->second.property_lock.unlock();
-			wic_class::template unlock<encap_object_type>();
+			oosp_class::template unlock<encap_object_type>();
 
 			if(r.time > time)
 			{

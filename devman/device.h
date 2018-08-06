@@ -4,7 +4,7 @@
 namespace devman {
 
 template<typename TEnv>
-struct device : public wicp::device_type
+struct device : public oosp::device_type
 {
 	struct arctl_config
 	{
@@ -20,7 +20,7 @@ struct device : public wicp::device_type
 
 	typedef typename rpc::call_id_type call_id_type;
 
-	wicp::role_type *volatile role;
+	oosp::role_type *volatile role;
 
 	std::mutex        lock;
 
@@ -74,7 +74,7 @@ struct device : public wicp::device_type
 	bool is_bound()
 	{ return role; }
 
-	void bind(wicp::role_type *prole)
+	void bind(oosp::role_type *prole)
 	{
 		role = prole;
 		role->bind(*this);
@@ -200,7 +200,7 @@ struct device : public wicp::device_type
 		return r;
 	}
 
-	virtual void report_call(wicp::call_report_type r)
+	virtual void report_call(oosp::call_report_type r)
 	{ TEnv::report_call(serial,r); }
 
 	virtual uint8_t get_health()

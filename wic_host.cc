@@ -8,9 +8,9 @@
 #include <earpc/udp.h>
 #include <earpc/earpc.h>
 #include <net/algorithm.h>
-#include <wicp/local_property.h>
-#include <wicp/remote_property.h>
-#include <wicp/forward_property.h>
+#include <oosp/local_property.h>
+#include <oosp/remote_property.h>
+#include <oosp/forward_property.h>
 #include <property_config_base.h>
 #include <device_role.h>
 #include <process/sql_executor.h>

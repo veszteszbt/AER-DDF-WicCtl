@@ -1,7 +1,7 @@
 #include <iostream>
 #include <earpc/earpc.h>
-#include <wicp/local_property.h>
-#include <wicp/remote_property.h>
+#include <oosp/local_property.h>
+#include <oosp/remote_property.h>
 
 typedef earpc::earpc<earpc::config<uint64_t,uint32_t,1234,1234>> rpc;
 

@@ -1,7 +1,7 @@
-#ifndef WICP_TYPES_SYNC_RECORD_H
-# define WICP_TYPES_SYNC_RECORD_H
+#ifndef OOSP_TYPES_SYNC_RECORD_H
+# define OOSP_TYPES_SYNC_RECORD_H
 # include <chrono>
-namespace wicp {
+namespace oosp {
 namespace types
 {
 	template<typename TcallId, typename Tvalue, typename Tclock>

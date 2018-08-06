@@ -4,7 +4,7 @@
 template<typename TConfig>
 class property_room
 {
-	typedef wicp::local_property<TConfig> property;
+	typedef oosp::local_property<TConfig> property;
 
 	static void property_change_handler()
 	{
@@ -36,10 +36,10 @@ public:
 	static value_type default_value()
 	{ return property::default_value(); }
 
-	static void remote_add(wicp::role_type &role)
+	static void remote_add(oosp::role_type &role)
 	{ property::remote_add(role); }
 
-	static void remote_del(wicp::role_type &role)
+	static void remote_del(oosp::role_type &role)
 	{ property::remote_del(role); }
 
 	constexpr static sched::listener &on_change = property::on_change;

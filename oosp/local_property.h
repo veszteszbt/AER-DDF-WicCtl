@@ -1,11 +1,11 @@
-#ifndef WICP_LOCAL_PROPERTY_H
-# define WICP_LOCAL_PROPERTY_H
-# include <wicp/types.h>
-# include <wicp/property_env_base.h>
-# include <wicp/process/sync_local.h>
-# include <wicp/process/commit.h>
-# include <wicp/process/log.h>
-namespace wicp
+#ifndef OOSP_LOCAL_PROPERTY_H
+# define OOSP_LOCAL_PROPERTY_H
+# include <oosp/types.h>
+# include <oosp/property_env_base.h>
+# include <oosp/process/sync_local.h>
+# include <oosp/process/commit.h>
+# include <oosp/process/log.h>
+namespace oosp
 {
 	template<typename TConfig>
 	struct local_property
@@ -19,9 +19,9 @@ namespace wicp
 		{
 			typedef property_env_base<TConfig> base;
 
-			typedef typename TConfig::cfg_wic_class					wic_class;
+			typedef typename TConfig::cfg_oosp_class				oosp_class;
 
-			typedef typename wic_class::local_object_record_type	encap_object_type;
+			typedef typename oosp_class::local_object_record_type	encap_object_type;
 
 			typedef typename TConfig::cfg_property_data_type		property_data_type;
 		};
@@ -32,7 +32,7 @@ namespace wicp
 			typedef typename process::log<env>				proc_log;
 		};
 
-		typedef typename env::wic_class						wic_class;
+		typedef typename env::oosp_class					oosp_class;
 
 		typedef typename env::member_id 					member_id;
 
@@ -42,11 +42,11 @@ namespace wicp
 
 		typedef typename env::command_id_type				command_id_type;
 
-		typedef typename wic_class::clock					clock;
-
-		typedef typename wic_class::local_table_iterator	local_table_iterator;
+		typedef typename oosp_class::clock					clock;
 
 		typedef typename process::commit<env_commit>		proc_commit;
+
+		friend oosp_class;
 
 	public:
 		typedef typename env::value_type					value_type;
@@ -71,7 +71,7 @@ namespace wicp
 
 		static journal jrn(uint8_t level)
 		{
-			return journal(level,"wicp.property.local") << "property: " << std::hex <<
+			return journal(level,"oosp.property.local") << "property: " << std::hex <<
 				env::class_id << "::" << env::member_id::value << ' ';
 		}
 
@@ -79,16 +79,21 @@ namespace wicp
 		{
 			// TODO: find corresponding role and report the call
 			if(h.reason != earpc::reason::process)
+			{
+				jrn(journal::error) <<
+					"`" << oosp_class::name << "' Set called with other reason than process " <<
+					journal::end;
 				return;
+			}
 
 			const object_id_type object_id = h.value();
-			wic_class::lock_local();
-			auto local_it = wic_class::find_local(object_id);
-			if(local_it == wic_class::end())
+			oosp_class::lock_local();
+			auto local_it = oosp_class::find_local(object_id);
+			if(local_it == oosp_class::end())
 			{
-				wic_class::unlock_local();
+				oosp_class::unlock_local();
 				jrn(journal::critical) <<
-					"Invalid local `" << wic_class::name <<
+					"Invalid local `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				h.respond(property_data_type(0,0));
@@ -113,7 +118,7 @@ namespace wicp
 			property.sync.pending_timestamp = env::clock::time_point::min();
 
 			local_it->second.property_lock.unlock();
-			wic_class::unlock_local();
+			oosp_class::unlock_local();
 			jrn(journal::trace) <<
 				"get from remote: " << (std::string)h.ip <<
 				"; object: " << std::hex << object_id <<
@@ -125,17 +130,23 @@ namespace wicp
 		{
 			// TODO: find corresponding role and report the call
 			if(h.reason != earpc::reason::process)
+			{
+				jrn(journal::error) <<
+					"`" << oosp_class::name << "' Set called with other reason than process " <<
+					journal::end;
+				h.respond(object_id_type(0));
 				return;
+			}
 
 			const property_data_type property_data = h.value();
 			const object_id_type object_id = property_data.object_id;
-			wic_class::lock_local();
-			auto local_it = wic_class::find_local(object_id);
-			if(local_it == wic_class::end())
+			oosp_class::lock_local();
+			auto local_it = oosp_class::find_local(object_id);
+			if(local_it == oosp_class::end())
 			{
-				wic_class::unlock_local();
+				oosp_class::unlock_local();
 				jrn(journal::critical) <<
-					"Invalid local `" << wic_class::name <<
+					"Invalid local `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				h.respond(object_id_type(0));
@@ -147,7 +158,7 @@ namespace wicp
 			property.sync.local_value = property_data.value;
 
 			local_it->second.property_lock.unlock();
-			wic_class::unlock_local();
+			oosp_class::unlock_local();
 			jrn(journal::trace) <<
 				"set from remote: " << (std::string)h.ip <<
 				"; object: " << std::hex << object_id <<
@@ -177,11 +188,11 @@ namespace wicp
 			value_type value = value_type()
 		)
 		{
-			auto local_it = wic_class::find_local(object_id);
-			if(local_it == wic_class::end())
+			auto local_it = oosp_class::find_local(object_id);
+			if(local_it == oosp_class::end())
 			{
 				jrn(journal::error) <<
-					"Invalid local `" << wic_class::name <<
+					"Invalid local `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return;
@@ -214,11 +225,11 @@ namespace wicp
 
 		void uninit(object_id_type object_id)
 		{
-			auto local_it = wic_class::find_local(object_id);
-			if(local_it == wic_class::end())
+			auto local_it = oosp_class::find_local(object_id);
+			if(local_it == oosp_class::end())
 			{
 				jrn(journal::error) <<
-					"Invalid local `" << wic_class::name <<
+					"Invalid local `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return;
@@ -233,13 +244,13 @@ namespace wicp
 
 		static value_type value(object_id_type object_id)
 		{
-			wic_class::lock_local();
-			auto local_it = wic_class::find_local(object_id);
-			if(local_it == wic_class::end())
+			oosp_class::lock_local();
+			auto local_it = oosp_class::find_local(object_id);
+			if(local_it == oosp_class::end())
 			{
-				wic_class::unlock_local();
+				oosp_class::unlock_local();
 				jrn(journal::error) <<
-					"Invalid local `" << wic_class::name <<
+					"Invalid local `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 
@@ -252,7 +263,7 @@ namespace wicp
 			{
 				const value_type rv = property.sync.local_value;
 				local_it->second.property_lock.unlock();
-				wic_class::unlock_local();
+				oosp_class::unlock_local();
 				jrn(journal::trace) <<
 					"object: " << std::hex << object_id <<
 					"; get from API history is empty; returning local value" <<
@@ -262,7 +273,7 @@ namespace wicp
 
 			const value_type rv = property.history.front().value;
 			local_it->second.property_lock.unlock();
-			wic_class::unlock_local();
+			oosp_class::unlock_local();
 			jrn(journal::trace) <<
 				"object: " << std::hex << object_id <<
 				"; get from API" <<
@@ -272,13 +283,13 @@ namespace wicp
 
 		static value_type value(object_id_type object_id, value_type pvalue)
 		{
-			wic_class::lock_local();
-			auto it = wic_class::find_local(object_id);
-			if(it == wic_class::end())
+			oosp_class::lock_local();
+			auto it = oosp_class::find_local(object_id);
+			if(it == oosp_class::end())
 			{
-				wic_class::unlock_local();
+				oosp_class::unlock_local();
 				jrn(journal::error) <<
-					"Invalid local `" << wic_class::name <<
+					"Invalid local `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return value_type(0);
@@ -289,7 +300,7 @@ namespace wicp
 			if(property.sync.local_value == pvalue)
 			{
 				it->second.property_lock.unlock();
-				wic_class::unlock_local();
+				oosp_class::unlock_local();
 				jrn(journal::debug) <<
 					"object: " << std::hex << object_id <<
 					"; set from API with no change" <<
@@ -299,7 +310,7 @@ namespace wicp
 
 			property.sync.local_value = pvalue;
 			it->second.property_lock.unlock();
-			wic_class::unlock_local();
+			oosp_class::unlock_local();
 			jrn(journal::trace) <<
 				"object: " << std::hex << object_id <<
 				"; set from API" <<
@@ -311,13 +322,13 @@ namespace wicp
 
 		static value_type default_value(object_id_type object_id)
 		{
-			wic_class::lock_local();
-			auto local_it = wic_class::find_local(object_id);
-			if(local_it == wic_class::end())
+			oosp_class::lock_local();
+			auto local_it = oosp_class::find_local(object_id);
+			if(local_it == oosp_class::end())
 			{
-				wic_class::unlock_local();
+				oosp_class::unlock_local();
 				jrn(journal::error) <<
-					"Invalid local `" << wic_class::name <<
+					"Invalid local `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return value_type(0);
@@ -327,108 +338,22 @@ namespace wicp
 			auto &property = local_it->second.properties.template get<member_id>();
 			const value_type default_value = property.sync.default_value;
 			local_it->property_lock.unlock();
-			wic_class::unlock_local();
+			oosp_class::unlock_local();
 			jrn(journal::trace, object_id) <<
 				"default value get from API" <<
 				journal::end;
 			return default_value;
 		}
 
-		static bool remote_add(
-			object_id_type local_object_id,
-			object_id_type remote_object_id
-		)
-		{
-			wic_class::lock_local();
-			auto local_it = wic_class::find_local(local_object_id);
-			if(local_it == wic_class::end())
-			{
-				wic_class::unlock_local();
-				jrn(journal::error) <<
-					"Invalid local `" << wic_class::name <<
-					"' object reference " << std::hex << local_object_id <<
-					journal::end;
-				return false;
-			}
-
-			wic_class::lock_remote();
-			auto remote_it = wic_class::find_remote(remote_object_id);
-			if(remote_it == wic_class::end())
-			{
-				wic_class::unlock_remote();
-				wic_class::unlock_local();
-				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
-					"' object reference " << std::hex << remote_object_id <<
-					journal::end;
-				return false;
-			}
-
-			local_it->second.remotes.lock();
-			local_it->second.remotes.try_emplace(remote_object_id);
-			local_it->second.remotes.unlock();
-
-			wic_class::unlock_remote();
-			wic_class::unlock_local();
-
-			jrn(journal::trace) <<
-				"object: " << std::hex << local_object_id << "; added remote `" << wic_class::name <<
-				"' object reference " << remote_object_id <<
-				journal::end;
-
-			proc_sync::notify(local_object_id, remote_object_id);
-			return true;
-		}
-
-		static bool remote_del(
-			object_id_type local_object_id,
-			object_id_type remote_object_id
-		)
-		{
-			wic_class::lock_local();
-			auto local_it = wic_class::find_local(local_object_id);
-			if(local_it == wic_class::end())
-			{
-				wic_class::unlock_local();
-				jrn(journal::error) <<
-					"Invalid local `" << wic_class::name <<
-					"' object reference " << std::hex << local_object_id <<
-					journal::end;
-				return false;
-			}
-
-			proc_sync::cancel(local_object_id, remote_object_id);
-			local_it->remotes.lock();
-			if(!local_it->remotes.erase(remote_object_id))
-			{
-				local_it->remotes.unlock();
-				wic_class::unlock_local();
-				jrn(journal::error) <<
-					"Invalid remote `" << wic_class::name <<
-					"' object reference " << std::hex << remote_object_id <<
-					journal::end;
-
-				return false;
-			}
-
-			local_it->remotes.unlock();
-			wic_class::unlock_local();
-			jrn(journal::trace) <<
-				"object: " << std::hex << local_object_id << "; deleted remote `" << wic_class::name <<
-				"' object reference " << std::hex << remote_object_id <<
-				journal::end;
-			return true;
-		}
-
 		static void clear_history(object_id_type object_id)
 		{
-			wic_class::lock_local();
-			auto local_it = wic_class::find_local(object_id);
-			if(local_it == wic_class::end())
+			oosp_class::lock_local();
+			auto local_it = oosp_class::find_local(object_id);
+			if(local_it == oosp_class::end())
 			{
-				wic_class::unlock_local();
+				oosp_class::unlock_local();
 				jrn(journal::error) <<
-					"Invalid local `" << wic_class::name <<
+					"Invalid local `" << oosp_class::name <<
 					"' object reference " << std::hex << object_id <<
 					journal::end;
 				return;
@@ -442,20 +367,24 @@ namespace wicp
 				"history cleared" <<
 				journal::end;
 
-			wic_class::unlock_local();
+			oosp_class::unlock_local();
 		}
 
+		static bool is_sync_pending(object_id_type object_id)
+		{ return env::template is_sync_pending<typename env::encap_object_type>(object_id); }
+
+		// TODO delete this
 		static void subscribe_to_change(object_id_type object_id, void (*change_handler)(object_id_type object_id))
 		{
-			wic_class::lock_local();
-			auto it = wic_class::find_local(object_id);
-			if(it != wic_class::end())
+			oosp_class::lock_local();
+			auto it = oosp_class::find_local(object_id);
+			if(it != oosp_class::end())
 			{
 				it->second.property_lock.lock();
 				it->second.properties.template get<member_id>().on_change += change_handler;
 				it->second.property_lock.unlock();
 			}
-			wic_class::unlock_local();
+			oosp_class::unlock_local();
 		}
 	};
 }

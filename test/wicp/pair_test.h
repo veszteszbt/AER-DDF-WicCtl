@@ -9,11 +9,11 @@
 #include <earpc/earpc.h>
 #include <net/algorithm.h>
 #include <net/ipv4_address.h>
-#include <wicp/local_property.h>
-#include <wicp/remote_property.h>
-#include <wicp/forward_property.h>
-#include <wicp/wic_class.h>
-#include <wicp/types/property_record.h>
+#include <oosp/local_property.h>
+#include <oosp/remote_property.h>
+#include <oosp/forward_property.h>
+#include <oosp/oosp_class.h>
+#include <oosp/types/property_record.h>
 #include <property_config_base.h>
 #include <device_role.h>
 #include <devman/devman.h>
@@ -67,7 +67,7 @@ struct property_data_type
 };
 
 template <int N>
-struct Int : public wicp::types::property_record<uint32_t, uint64_t, uint8_t>
+struct Int : public oosp::types::property_record<uint32_t, uint64_t, uint8_t>
 {
 	static const int result = N;
 };
@@ -107,15 +107,15 @@ struct wic_class_config : public property_config_base
 
 	static const uint32_t cfg_member_id = 3;
 
-	typedef wicp::wic_class<
+	typedef oosp::oosp_class<
 		TestConfig,
 		std::pair<std::integral_constant<uint32_t, cfg_member_id>, Int<cfg_member_id>>
-	> cfg_wic_class;	
+	> cfg_oosp_class;	
 };
 
-typedef wicp::local_property<wic_class_config> local_property;
+typedef oosp::local_property<wic_class_config> local_property;
 
-typedef wicp::remote_property<wic_class_config> remote_property;
+typedef oosp::remote_property<wic_class_config> remote_property;
 
 static int count = 0;
 
@@ -171,25 +171,25 @@ int main()
 	using namespace std::literals::chrono_literals;
 	if(sport == 11234)
 	{
-		wic_class_config::cfg_wic_class::set_remote(0x70, {127,0,0,1});
+		wic_class_config::cfg_oosp_class::set_remote(0x70, {127,0,0,1});
 
-		wic_class_config::cfg_wic_class::set_local(0x68);
+		wic_class_config::cfg_oosp_class::set_local(0x68);
 			local_property::init(0x68,0);
 			local_property::subscribe_to_change(0x68, l_change_handler_echo);
 			local_property::remote_add(0x68, 0x70);
 
-		wic_class_config::cfg_wic_class::set_local(0x69);
+		wic_class_config::cfg_oosp_class::set_local(0x69);
 			local_property::init(0x69,0);
 			local_property::subscribe_to_change(0x69, l_change_handler);
 			local_property::remote_add(0x69, 0x70);
 	}
 	else
 	{
-		wic_class_config::cfg_wic_class::set_remote(0x68, {127,0,0,1});
+		wic_class_config::cfg_oosp_class::set_remote(0x68, {127,0,0,1});
 			remote_property::init(0x68);
 			remote_property::subscribe_to_change(0x68, r_change_handler);
 
-		wic_class_config::cfg_wic_class::set_remote(0x69, {127,0,0,1});
+		wic_class_config::cfg_oosp_class::set_remote(0x69, {127,0,0,1});
 			remote_property::init(0x69);
 			remote_property::subscribe_to_change(0x69, r_change_handler_echo);
 	}

@@ -1,7 +1,7 @@
 #ifndef PERIPHERAL_GPIO_OUTPUT_H
 # define PERIPHERAL_GPIO_OUTPUT_H
-# include <wicp/remote_property.h>
-# include <wicp/forward_property.h>
+# include <oosp/remote_property.h>
+# include <oosp/forward_property.h>
 # include <type_traits>
 # include <entity.h>
 namespace peripheral {
@@ -27,8 +27,8 @@ private:
 	};
 	typedef std::conditional_t<
 		TConfig::cfg_replicate_locally,
-		wicp::forward_property<property_config>,
-		wicp::remote_property<property_config>
+		oosp::forward_property<property_config>,
+		oosp::remote_property<property_config>
 	> property;
 
 	static void property_change_handler()
@@ -39,7 +39,7 @@ private:
 	}
 
 public:
-	static void init(wicp::role_type &role)
+	static void init(oosp::role_type &role)
 	{
 		property::init(role);
 		property::on_change += property_change_handler;
@@ -48,10 +48,10 @@ public:
 	static void uninit()
 	{ property::uninit(); }
 
-	static void remote_add(wicp::role_type &role)
+	static void remote_add(oosp::role_type &role)
 	{ property::remote_add(role); }
 
-	static void remote_del(wicp::role_type &role)
+	static void remote_del(oosp::role_type &role)
 	{ property::remote_del(role); }
 
 	typedef expose_property<property> value;

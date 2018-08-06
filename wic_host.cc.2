@@ -8,8 +8,8 @@
 #include <earpc/udp.h>
 #include <earpc/earpc.h>
 #include <net/algorithm.h>
-#include <wicp/local_property.h>
-#include <wicp/remote_property.h>
+#include <oosp/local_property.h>
+#include <oosp/remote_property.h>
 #include <property_config_base.h>
 #include <process/sql_executor.h>
 
@@ -1668,7 +1668,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x10;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::remote_property<enabled_config> enabled;
+				typedef oosp::remote_property<enabled_config> enabled;
 
 				/// casette_id ///
 				struct casette_id_config : public property_config_base
@@ -1679,7 +1679,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x20;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::remote_property<casette_id_config> casette_id;
+				typedef oosp::remote_property<casette_id_config> casette_id;
 
 				/// play_ongoing ///
 				struct play_ongoing_config : public property_config_base
@@ -1690,7 +1690,7 @@ namespace ddf
 					static const uint32_t cfg_member_id          = 0x30;
 					static const uint32_t cfg_cooldown_time      = 0;
 				};
-				typedef wicp::remote_property<play_ongoing_config> play_ongoing;
+				typedef oosp::remote_property<play_ongoing_config> play_ongoing;
 
 				static void init(net::ipv4_address ip)
 				{

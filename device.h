@@ -11,7 +11,7 @@
 namespace wic {
 
 template<typename TConfig>
-class device : public wicp::device_type
+class device : public oosp::device_type
 {	
 	typedef typename TConfig::cfg_earpc   rpc;
 
@@ -45,7 +45,7 @@ class device : public wicp::device_type
 
 	typedef std::map<std::string, device<TConfig>*>       dev_by_app_name_type;
 
-	typedef std::map<std::string, wicp::role_type*>            role_by_name_type;
+	typedef std::map<std::string, oosp::role_type*>            role_by_name_type;
 
 	static dev_by_ip_type       dev_by_ip;
 
@@ -219,7 +219,7 @@ class device : public wicp::device_type
 			}
 
 			lock.lock();
-			wicp::role_type *role = _get_role(app_name);
+			oosp::role_type *role = _get_role(app_name);
 			if(role)
 			{
 				lock.unlock();
@@ -258,7 +258,7 @@ class device : public wicp::device_type
 				if(hb_outages > 5)
 				{
 					initialized = false;
-					wicp::role_type *role = _get_role(app_name);
+					oosp::role_type *role = _get_role(app_name);
 					if(role)
 					{
 						lock.unlock();
@@ -363,7 +363,7 @@ class device : public wicp::device_type
 		suspend_cv.notify_one();
 	}
 
-	static void _set_role(wicp::role_type &role)
+	static void _set_role(oosp::role_type &role)
 	{
 		auto i = role_by_name.find(role.name);
 		if(i != role_by_name.end())
@@ -386,7 +386,7 @@ class device : public wicp::device_type
 		return true;
 	
 	}
-	static wicp::role_type *_get_role(const std::string &role)
+	static oosp::role_type *_get_role(const std::string &role)
 	{
 		auto i = role_by_name.find(role);
 		if(i == role_by_name.end())
@@ -400,7 +400,7 @@ public:
 	static const role_by_name_type &roles()
 	{ return role_by_name; }
 
-	static void set_role(wicp::role_type &role)
+	static void set_role(oosp::role_type &role)
 	{
 		lock.lock();
 		_set_role(role);
@@ -415,10 +415,10 @@ public:
 		return r;
 	}
 
-	static wicp::role_type *get_role(const std::string &role)
+	static oosp::role_type *get_role(const std::string &role)
 	{
 		lock.lock();
-		wicp::role_type *const r = _get_role(role);
+		oosp::role_type *const r = _get_role(role);
 		lock.unlock();
 		return r;
 	}

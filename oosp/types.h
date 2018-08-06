@@ -1,6 +1,6 @@
-#ifndef WICP_TYPES_H
-# define WICP_TYPES_H
-namespace wicp {
+#ifndef OOSP_TYPES_H
+# define OOSP_TYPES_H
+namespace oosp {
 namespace types
 {
 	struct function

@@ -10,9 +10,9 @@ class remote_device_role
 		typedef uint8_t cfg_value_type;
 		static const uint32_t cfg_member_id = 0xeffffff;
 	};
-	typedef wicp::remote_property<prop_health_config> prop_health;
+	typedef oosp::remote_property<prop_health_config> prop_health;
 public:
-	static void init(wicp::role_type &prole)
+	static void init(oosp::role_type &prole)
 	{ prop_health::init(prole,0); }
 
 	static void uninit()

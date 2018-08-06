@@ -14,9 +14,9 @@ class report
 	{
 		uint64_t               serial;
 		time_point             timestamp;
-		wicp::call_report_type report;
+		oosp::call_report_type report;
 
-		constexpr record_type(uint64_t s, wicp::call_report_type r)
+		constexpr record_type(uint64_t s, oosp::call_report_type r)
 			: serial(s)
 			, timestamp(clock::now())
 			, report(r)
@@ -166,7 +166,7 @@ public:
 		delete _proc;
 	}
 
-	static void notify(uint64_t serial, wicp::call_report_type report)
+	static void notify(uint64_t serial, oosp::call_report_type report)
 	{
 		queue.lock();
 		queue.emplace_back(serial,report);

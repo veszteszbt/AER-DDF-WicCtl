@@ -1,15 +1,15 @@
-#ifndef WICP_TYPES_OBJECT_RECORD_H
-# define WICP_TYPES_OBJECT_RECORD_H
+#ifndef OOSP_TYPES_OBJECT_RECORD_H
+# define OOSP_TYPES_OBJECT_RECORD_H
 # include <set>
 # include <net/ipv4_address.h>
 # include <sched/listener.h>
 # include <sched/lockable.h>
 # include <types/meta.h>
-# include <wicp/types/sync_record.h>
+# include <oosp/types/sync_record.h>
 
 #define OBJECT_RECORD_CLASS object_record<TwicClass, Tproperties...>
 
-namespace wicp {
+namespace oosp {
 namespace types
 {
 	template <

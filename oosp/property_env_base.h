@@ -1,14 +1,14 @@
-#ifndef WICP_PROPERTY_ENV_BASE_H
-# define WICP_PROPERTY_ENV_BASE_H
+#ifndef OOSP_PROPERTY_ENV_BASE_H
+# define OOSP_PROPERTY_ENV_BASE_H
 # include <mutex>
 # include <list>
 # include <net/ipv4_address.h>
 # include <sched/listener.h>
-# include <wicp/role.h>
-# include <wicp/types/property_record.h>
-# include <wicp/types/sync_record.h>
+# include <oosp/role.h>
+# include <oosp/types/property_record.h>
+# include <oosp/types/sync_record.h>
 # include <journal.h>
-namespace wicp
+namespace oosp
 {
 	template<typename TConfig>
 	struct property_env_base
@@ -46,7 +46,7 @@ namespace wicp
 			property_data_type
 		> 														notify_handle_type;
 
-		typedef wicp::types::property_record<
+		typedef oosp::types::property_record<
 			call_id_type,
 			object_id_type, 
 			value_type
@@ -54,7 +54,7 @@ namespace wicp
 
 		typedef typename property_record::history_record		history_record;
 
-		typedef ::wicp::types::sync_record<
+		typedef ::oosp::types::sync_record<
 			call_id_type,
 			value_type,
 			clock
@@ -62,11 +62,11 @@ namespace wicp
 
 		typedef typename property_record::history_type			history_type;
 
-		typedef typename TConfig::cfg_wic_class					wic_class;
+		typedef typename TConfig::cfg_oosp_class					oosp_class;
 
-		typedef typename wic_class::local_object_record_type	local_object_record_type;
+		typedef typename oosp_class::local_object_record_type	local_object_record_type;
 
-		typedef typename wic_class::remote_object_record_type	remote_object_record_type;
+		typedef typename oosp_class::remote_object_record_type	remote_object_record_type;
 
 		typedef typename TConfig::cfg_member_id					member_id;
 
@@ -88,7 +88,7 @@ namespace wicp
 
 		static journal jrn(uint8_t level)
 		{
-			return journal(level,"wicp.base") << "property: " << std::hex <<
+			return journal(level,"oosp.base") << "property: " << std::hex <<
 				class_id << "::" << member_id::value << ' ';
 		}
 
@@ -236,6 +236,28 @@ namespace wicp
 				++sync.failures;
 
 			sync.pending_timestamp = clock::time_point::min();
+		}
+
+		template <typename TencapObject>
+		static bool is_sync_pending(object_id_type object_id)
+		{
+			oosp_class::template lock<TencapObject>();
+			auto it = oosp_class::template find<TencapObject>(object_id);
+			if(it == oosp_class::end())
+			{
+				oosp_class::template unlock<TencapObject>();
+				jrn(journal::error) <<
+					"Invalid `" << oosp_class::name <<
+					"' object reference " << std::hex << object_id <<
+					journal::end;
+			}
+
+			it->second.property_lock();
+			const auto sync_pending_timestamp = it->second.properties.template get<member_id>().sync.pending_timestamp;
+			it->second.properties.unlock();
+			oosp_class::template unlock<TencapObject>();
+
+			return sync_pending_timestamp == clock::time_point::min();
 		}
 	};
 }
