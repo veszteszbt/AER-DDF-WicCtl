@@ -90,48 +90,6 @@ namespace process
 				TEnv::class_id << "::" << TEnv::member_id::value << ' ';
 		}
 
-		template <typename Tproperty>
-		static std::enable_if_t<
-			std::is_base_of_v<
-				property_record,
-				Tproperty
-			>, bool
-		> is_sync_needed(const Tproperty &property)
-		{ return !property.history.empty() && property.sync.local_value != property.history.front().value; }
-
-
-		static void manage_cooldowns()
-		{
-			cooldowns.lock();
-			while(!cooldowns.empty())
-			{
-				const auto lowest = cooldowns.top();
-				const auto current_time = ::types::time::msec(clock::now());
-				if(lowest.cooldown_time <= current_time)
-				{
-					oosp_class::template lock<encap_object_type>();
-					auto lowest_it =
-						oosp_class::template find<encap_object_type>(lowest.object_id);
-					if(lowest_it != oosp_class::end())
-					{
-						auto &property = lowest_it->second.properties.template get<member_id>();
-						property.cooldown_pending = false;
-						if(is_sync_needed(property))
-							safe_emplace_to_object_id_buffer(lowest.object_id);
-
-						jrn(journal::trace) <<
-							"object: "<< std::hex << lowest.object_id <<
-							"; cooldown expired" <<
-							journal::end;
-					}
-					cooldowns.pop();
-					oosp_class::template unlock<encap_object_type>();
-				}
-				else
-					break;
-			}
-			cooldowns.unlock();
-		}
 		static void start()
 		{
 			jrn(journal::debug) << "initialized" << journal::end;
@@ -155,32 +113,15 @@ namespace process
 
 					oosp_class::template lock<encap_object_type>();
 					auto it = oosp_class::template find<encap_object_type>(object_id);
-					if(it == oosp_class::end())
-					{
-						oosp_class::template unlock<encap_object_type>();
-						jrn(journal::error) << "Invalid `" << oosp_class::name <<
-							"' object reference " << std::hex << object_id << journal::end;
+					if(oosp_class::unknown_object(it, jrn))
 						continue;
-					}
 
 					it->second.property_lock.lock();
 					auto &property = it->second.properties.template get<member_id>();
-					if(property.cooldown_pending)
-					{
-						it->second.property_lock.unlock();
-						oosp_class::template unlock<encap_object_type>();
-						jrn(journal::trace) << "cooldown pending; ignoring object: " << std::hex << object_id << journal::end;
-						continue;
-					}
-					else if(!is_sync_needed(property))
-					{
-						it->second.property_lock.unlock();
-						oosp_class::template unlock<encap_object_type>();
-						jrn(journal::trace) << "no change; ignoring object " << std::hex << object_id << journal::end;
-						continue;
-					}
+					if(sync_necessary(property, it))
+						property.cooldown_pending = true
 					else
-						property.cooldown_pending = true;
+						continue;
 
 					jrn(journal::trace) <<
 						"object: " << std::hex << object_id <<
@@ -248,7 +189,7 @@ namespace process
 							if(lowest_it != oosp_class::end())
 							{
 								auto &property = lowest_it->second.properties.template get<member_id>();
-								if(is_sync_needed(property))
+								if(property_changed(property))
 									safe_emplace_to_object_id_buffer(lowest.object_id);
 							}
 							oosp_class::template unlock<encap_object_type>();
@@ -265,6 +206,68 @@ namespace process
 					object_id_buffer.unlock();
 			}
 			jrn(journal::debug) << "uninitialized" << journal::end;
+		}
+
+		static void manage_cooldowns()
+		{
+			cooldowns.lock();
+			while(!cooldowns.empty())
+			{
+				const auto lowest = cooldowns.top();
+				const auto current_time = ::types::time::msec(clock::now());
+				if(lowest.cooldown_time <= current_time)
+				{
+					oosp_class::template lock<encap_object_type>();
+					auto lowest_it =
+						oosp_class::template find<encap_object_type>(lowest.object_id);
+					if(lowest_it != oosp_class::end())
+					{
+						auto &property = lowest_it->second.properties.template get<member_id>();
+						property.cooldown_pending = false;
+						if(property_changed(property))
+							safe_emplace_to_object_id_buffer(lowest.object_id);
+
+						jrn(journal::trace) <<
+							"object: "<< std::hex << lowest.object_id <<
+							"; cooldown expired" <<
+							journal::end;
+					}
+					cooldowns.pop();
+					oosp_class::template unlock<encap_object_type>();
+				}
+				else
+					break;
+			}
+			cooldowns.unlock();
+		}
+
+		template <typename Tproperty>
+		static std::enable_if_t<
+			std::is_base_of_v<
+				property_record,
+				Tproperty
+			>, bool
+		> property_changed(const Tproperty &property)
+		{ return !property.history.empty() && property.sync.local_value != property.history.front().value; }
+
+		template <typename Tproperty, typename TtableIterator>
+		static bool sync_necessary(Tproperty &property, TtableIterator &it)
+		{
+			if(property.cooldown_pending)
+			{
+				it->second.property_lock.unlock();
+				oosp_class::template unlock<encap_object_type>();
+				jrn(journal::trace) << "cooldown pending; ignoring object: " << std::hex << it->first << journal::end;
+				return false;
+			}
+			else if(!property_changed(property))
+			{
+				it->second.property_lock.unlock();
+				oosp_class::template unlock<encap_object_type>();
+				jrn(journal::trace) << "no change; ignoring object " << std::hex << it->first << journal::end;
+				return false;
+			}
+			return true;
 		}
 
 		static void safe_emplace_to_object_id_buffer(object_id_type object_id)

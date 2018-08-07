@@ -391,6 +391,7 @@ namespace oosp
 		)
 		{
 			lock_local();
+
 			auto local_it = find_local(local_object_id);
 			if(local_it == end())
 			{
@@ -403,6 +404,7 @@ namespace oosp
 			}
 
 			lock_remote();
+
 			auto remote_it = find_remote(remote_object_id);
 			if(remote_it == end())
 			{
@@ -421,13 +423,16 @@ namespace oosp
 
 			unlock_remote();
 			unlock_local();
-
 			jrn(journal::trace) <<
 				"object: " << std::hex << local_object_id << "; added remote `" << name <<
 				"' object reference " << remote_object_id <<
 				journal::end;
 
-			// TODO proc_sync::notify(local_object_id, remote_object_id);
+			property_initializer<
+				local_property<
+					property_config<Tproperties>
+				>...
+			>::proc_sync_notify(local_object_id, remote_object_id);
 			return true;
 		}
 
@@ -437,6 +442,7 @@ namespace oosp
 		)
 		{
 			lock_local();
+
 			auto local_it = find_local(local_object_id);
 			if(local_it == end())
 			{
@@ -571,19 +577,11 @@ namespace oosp
 			return false;
 		}
 
-		// static bool unknown_local_object(local_table_iterator local_it, journal (*jrnal)(uint8_t))
-		// {
-		// 	if(local_it == end())
-		// 	{
-		// 		unlock_local();
-		// 		jrnal(journal::error) <<
-		// 			"Invalid remote `" << oosp_class::name <<
-		// 			"' object reference `" << std::hex << local_it->first <<
-		// 			journal::end;
-		// 		return true;
-		// 	}
-		// 	return false;
-		// }
+		static bool unknown_object(local_table_iterator local_it, journal (*jrnal)(uint8_t, object_id_type))
+		{ return unknown_local_object(local_it, jrnal); }
+
+		static bool unknown_object(remote_table_iterator remote_it, journal (*jrnal)(uint8_t, object_id_type))
+		{ return unknown_remote_object(remote_it, jrnal); }
 
 		template <typename Tfn>
 		static void safe_local_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
@@ -674,6 +672,15 @@ namespace oosp
 			Tproperty::uninit(object_id);
 			OOSP_CLASS::property_initializer<Tremaining...>::uninit(object_id);
 		}
+
+		static void proc_sync_notify(
+			typename OOSP_CLASS::object_id_type local_object_id, 
+			typename OOSP_CLASS::object_id_type remote_object_id
+		)
+		{
+			Tproperty::proc_sync::notify(local_object_id, remote_object_id);
+			OOSP_CLASS::property_initializer<Tremaining...>::proc_sync_notify(local_object_id, remote_object_id);
+		}
 	};
 
 	OOSP_CLASS_TEMPLATE
@@ -697,6 +704,12 @@ namespace oosp
 
 		static void uninit(typename OOSP_CLASS::object_id_type object_id)
 		{ Tproperty::uninit(object_id); }
+
+		static void proc_sync_notify(
+			typename OOSP_CLASS::object_id_type local_object_id, 
+			typename OOSP_CLASS::object_id_type remote_object_id
+		)
+		{ Tproperty::proc_sync::notify(local_object_id, remote_object_id); }
 	};
 }
 

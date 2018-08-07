@@ -187,13 +187,16 @@ int main()
 	oosp_class::init();
 	oosp_class::set_remote(0x68, {10,2,1,100});
 	oosp_class::set_local(0x69);
+	// oosp_class:remote_add(0x69, 0x68); // TODO I dont fucking know why this can't be seen
 	property_1::subscribe_to_change(0x68, change_handler_echo_1);
 	property_2::subscribe_to_change(0x68, change_handler_echo_2);
 	property_3::subscribe_to_change(0x68, change_handler_echo_3);
 	property_4::subscribe_to_change(0x68, change_handler_echo_4);
+
+	// property_1::is_sync_pending(0x68);
 	
-	std::this_thread::sleep_for(2s);
-	property_1::value(0x68, 0);
+	// std::this_thread::sleep_for(2s);
+	property_1::value(0x68, 1);
 	int cnt = 0;
 	// while(1)
 	// {

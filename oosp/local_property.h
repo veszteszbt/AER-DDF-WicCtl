@@ -35,6 +35,8 @@ namespace oosp
 		typedef typename env_commit::proc_sync				proc_sync;
 
 		typedef typename env::rpc							rpc;
+		
+		typedef typename env::sync_record					sync_record;
 
 		typedef typename env::command_id_type				command_id_type;
 
@@ -104,33 +106,49 @@ namespace oosp
 				return;
 			}
 
-			local_it->second.property_lock.lock();
-			auto &property = local_it->second.properties.template get<member_id>();
-			const property_data_type rv(
-				object_id,
-				property.history.empty() ?
-				property.sync.local_value :
-				property.history.front().value
-			);
-			jrn(journal::trace) <<
-				"remote: " << (std::string)h.ip <<
-				" cancelling sync via object " << std::hex << object_id <<
-				journal::end;
-			// TODO if statement wasn't here
-			if(property.sync.call_id)
-			{
-				rpc::cancel(property.sync.call_id);
-				property.sync.call_id = 0;
-				property.sync.pending_timestamp = env::clock::time_point::min();
-			}
+			const property_data_type rv = safe_create_return_value_and_cancel_call(local_it, h.ip);
 
-			local_it->second.property_lock.unlock();
 			oosp_class::unlock_local();
 			jrn(journal::trace) <<
 				"get from remote: " << (std::string)h.ip <<
 				"; object: " << std::hex << object_id <<
 				journal::end;
 			h.respond(rv);
+		}
+
+		static property_data_type safe_create_return_value_and_cancel_call(
+			local_table_iterator &local_it, 
+			net::ipv4_address ip
+		)
+		{
+			local_it->second.property_lock.lock();
+
+			auto &property = local_it->second.properties.template get<member_id>();
+			const property_data_type rv(
+				local_it->first,
+				property.history.empty() ?
+				property.sync.local_value :
+				property.history.front().value
+			);
+
+			cancel_call(property.sync, local_it->first, ip);
+
+			local_it->second.property_lock.unlock();
+			return rv;
+		}
+
+		static void cancel_call(sync_record &sync, object_id_type object_id, net::ipv4_address ip)
+		{
+			if(sync.call_id)
+			{
+				jrn(journal::trace) <<
+					"remote: " << (std::string)ip <<
+					" cancelling sync via object " << std::hex << object_id <<
+					journal::end;
+				rpc::cancel(sync.call_id);
+				sync.call_id = 0;
+				sync.pending_timestamp = env::clock::time_point::min();
+			}
 		}
 
 		static void set_handler(set_handle_type h)
@@ -225,8 +243,6 @@ namespace oosp
 				journal::end;
 		}
 
-	public:
-
 		static void uninit()
 		{
 			rpc::clear_command(command_id | types::function::get);
@@ -248,10 +264,14 @@ namespace oosp
 				return;
 			}
 
+			local_it->second.remotes.lock();
 			local_it->second.remotes.clear();
+			local_it->second.remotes.unlock();
 			local_it->second.property_lock.lock();
+			
 			auto &property = local_it->second.properties.template get<member_id>();
 			property.history.clear();
+
 			local_it->second.property_lock.unlock();
 		}
 

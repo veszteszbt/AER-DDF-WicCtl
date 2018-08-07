@@ -62,7 +62,7 @@ namespace oosp
 
 		typedef typename property_record::history_type			history_type;
 
-		typedef typename TConfig::cfg_oosp_class					oosp_class;
+		typedef typename TConfig::cfg_oosp_class				oosp_class;
 
 		typedef typename oosp_class::local_object_record_type	local_object_record_type;
 
@@ -90,6 +90,16 @@ namespace oosp
 		{
 			return journal(level,"oosp.base") << "property: " << std::hex <<
 				class_id << "::" << member_id::value << ' ';
+		}
+
+		static journal jrn(uint8_t level, object_id_type object)
+		{
+			return journal(level,"oosp.sync.local") << std::hex <<
+				"object:  " << object <<
+				"; class: " << oosp_class::name <<
+				"; property: " <<
+				" (" << class_id << "::" << member_id::value << "); ";
+			;
 		}
 
 		template <typename Tproperty>
@@ -242,22 +252,18 @@ namespace oosp
 		static bool is_sync_pending(object_id_type object_id)
 		{
 			oosp_class::template lock<TencapObject>();
+			
 			auto it = oosp_class::template find<TencapObject>(object_id);
-			if(it == oosp_class::end())
-			{
-				oosp_class::template unlock<TencapObject>();
-				jrn(journal::error) <<
-					"Invalid `" << oosp_class::name <<
-					"' object reference " << std::hex << object_id <<
-					journal::end;
-			}
+			if(oosp_class::unknown_object(it,jrn))
+				return false;
 
-			it->second.property_lock();
+			it->second.property_lock.lock();
+
 			const auto sync_pending_timestamp = it->second.properties.template get<member_id>().sync.pending_timestamp;
-			it->second.properties.unlock();
+			
+			it->second.property_lock.unlock();
 			oosp_class::template unlock<TencapObject>();
-
-			return sync_pending_timestamp == clock::time_point::min();
+			return sync_pending_timestamp != clock::time_point::min();
 		}
 	};
 }
