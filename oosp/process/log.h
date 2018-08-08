@@ -42,7 +42,7 @@ namespace process
 		static void init()
 		{
 			time = clock::time_point::min();
-		};
+		}
 
 		static void uninit()
 		{}
@@ -50,20 +50,27 @@ namespace process
 		static journal jrn(uint8_t level)
 		{
 			int* x, *y;
-			return journal(level,"oosp.commit") << "property: " << std::hex <<
+			return journal(level,"oosp.log") << "property: " << std::hex <<
 				TEnv::class_id << "::" << TEnv::member_id::value << ' ';
+		}
+
+		static journal jrn(uint8_t level, object_id_type object)
+		{
+			return journal(level,"oosp.log") << std::hex <<
+				"object:  " << object <<
+				"; class: " << oosp_class::name <<
+				"; property: " <<
+				" (" << TEnv::class_id << "::" << member_id::value << "); ";
+			;
 		}
 
 		static void notify(object_id_type object_id)
 		{
 			oosp_class::template lock<encap_object_type>();
 			auto it = oosp_class::template find<encap_object_type>(object_id);
-			if(it == oosp_class::end())
-			{
-				oosp_class::template unlock<encap_object_type>();
-				jrn(journal::error) << "Invalid `" << oosp_class::name << "' object reference `" << std::hex << object_id << journal::end;
+			if(oosp_class::unknown_object(it,jrn))
 				return;
-			}
+
 			it->second.property_lock.lock();
 			const auto &property = it->second.properties.template get<member_id>();
 			const history_record r = property.history.front();

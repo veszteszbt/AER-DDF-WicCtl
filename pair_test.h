@@ -74,42 +74,8 @@ typedef oosp::oosp_class<
 	oosp::types::Property<4, true, uint8_t, 1000, 16>	
 > oosp_class;	
 
-// typedef oosp::local_property<wic_class_config> local_property;
+typedef oosp_class::template get_local<ic_t<1>> local_property;
 
-// typedef oosp::remote_property<wic_class_config> remote_property;
-
-static int count = 0;
-
-// static void l_change_handler(uint64_t object_id)
-// {
-// 	const auto value = int(local_property::value(object_id));
-// 	std::stringstream ss;
-// 	ss << "change_handler; local object: " << std::hex << object_id << "; value: " << std::dec << value;
-// 	std::cout << ss.str() << std::endl;
-// 	journal(journal::trace, "test.local") << ss.str() << journal::end;
-
-// 	local_property::value(0x68, local_property::value(0x68) + 1);
-// }
-
-// static void r_change_handler(uint64_t object_id)
-// {
-// 	const auto value = int(remote_property::value(object_id));
-// 	std::stringstream ss;
-// 	ss << "change_hangler; remote object: " << std::hex << object_id << "; value: " << std::dec << value;
-// 	std::cout << ss.str() << std::endl;
-// 	journal(journal::trace, "test.local") << ss.str() << journal::end;
-
-// 	remote_property::value(0x69, remote_property::value(0x69) + 1);
-// }
-
-// static void l_change_handler_echo(uint64_t object_id)
-// {
-// 	auto value = int(local_property::value(object_id));
-// 	std::stringstream ss;
-// 	ss << "echo; local object: " << std::hex << object_id << "; value: " << std::dec << value;
-// 	std::cout << ss.str() << std::endl;
-// 	journal(journal::trace, "faszlo_echo") << ss.str() << journal::end;
-// }
 
 typedef oosp_class::template get_remote<ic_t<1>> property_1;
 typedef oosp_class::template get_remote<ic_t<2>> property_2;
@@ -186,17 +152,31 @@ int main()
 
 	oosp_class::init();
 	oosp_class::set_remote(0x68, {10,2,1,100});
-	oosp_class::set_local(0x69);
-	// oosp_class:remote_add(0x69, 0x68); // TODO I dont fucking know why this can't be seen
+	// oosp_class::set_local(0x69);
+	// oosp_class::remote_add(0x69, 0x68);
+	// oosp_class::remote_del(0x69, 0x68); 
 	property_1::subscribe_to_change(0x68, change_handler_echo_1);
 	property_2::subscribe_to_change(0x68, change_handler_echo_2);
 	property_3::subscribe_to_change(0x68, change_handler_echo_3);
 	property_4::subscribe_to_change(0x68, change_handler_echo_4);
 
+	// property_1::default_value(0x68);
+	// property_1::failures(0x68);
+	// property_1::latency(0x68);
+	// property_1::clear_history(0x68);
+	// property_1::is_sync_pending(0x68);
+
+	// local_property::default_value(0x69);
+	// local_property::is_sync_pending(0x69);
+	// local_property::clear_history(0x69);
+
 	// property_1::is_sync_pending(0x68);
 	
 	// std::this_thread::sleep_for(2s);
 	property_1::value(0x68, 1);
+
+	// oosp_class::clr_local(0x69);
+	// oosp_class::clr_remote(0x68);
 	int cnt = 0;
 	// while(1)
 	// {

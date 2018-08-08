@@ -108,7 +108,7 @@ namespace oosp
 				property_record,
 				Tproperty
 			>, bool
-		> sync_local(Tproperty &property)
+		> local_syncable(Tproperty &property)
 		{
 			if(property.history.empty())
 			{
@@ -134,6 +134,29 @@ namespace oosp
 				jrn(journal::debug) << "local value is up-to-date with history." << journal::end;
 
 			return false;
+		}
+
+		template <typename TtableIterator, typename Tproperty>
+		static std::enable_if_t<
+			std::is_base_of_v<
+				property_record,
+				Tproperty
+			>
+		> sync_local(TtableIterator &it, Tproperty &property)
+		{
+			typedef typename TtableIterator::value_type::second_type encap_object_type;
+			if(local_syncable(property))
+			{
+				it->second.property_lock.unlock();
+				oosp_class::template unlock<encap_object_type>();
+				
+				property.on_change(it->first);
+			}
+			else
+			{
+				it->second.property_lock.unlock();
+				oosp_class::template unlock<encap_object_type>();
+			}
 		}
 
 		static void sync_remote(
@@ -264,6 +287,23 @@ namespace oosp
 			it->second.property_lock.unlock();
 			oosp_class::template unlock<TencapObject>();
 			return sync_pending_timestamp != clock::time_point::min();
+		}
+
+		template <typename TtableIterator>
+		static bool local_value_match_given_value(
+			value_type local_value, 
+			value_type value, 
+			TtableIterator &it
+		)
+		{
+			if(local_value == value)
+			{
+				typedef typename TtableIterator::value_type::second_type encap_object_type;
+				it->second.property_lock.unlock();
+				oosp_class::template unlock<encap_object_type>();
+				return true;
+			}		
+			return false;
 		}
 	};
 }

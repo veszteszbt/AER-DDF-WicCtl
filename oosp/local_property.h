@@ -42,6 +42,8 @@ namespace oosp
 
 		typedef typename oosp_class::local_table_iterator	local_table_iterator;
 
+		typedef typename oosp_class::remote_table_iterator	remote_table_iterator;
+
 		typedef typename oosp_class::clock					clock;
 
 		typedef typename process::commit<env_commit>		proc_commit;
@@ -66,6 +68,8 @@ namespace oosp
 			object_id_type,
 			property_data_type
 		> 													set_handle_type;
+
+		friend oosp_class;
 
 		static const command_id_type 			command_id 	= env::command_id;
 
@@ -106,7 +110,7 @@ namespace oosp
 				return;
 			}
 
-			const property_data_type rv = safe_create_return_value_and_cancel_call(local_it, h.ip);
+			const property_data_type rv = safe_create_response_value_and_cancel_call(local_it, h.ip);
 
 			oosp_class::unlock_local();
 			jrn(journal::trace) <<
@@ -116,7 +120,7 @@ namespace oosp
 			h.respond(rv);
 		}
 
-		static property_data_type safe_create_return_value_and_cancel_call(
+		static property_data_type safe_create_response_value_and_cancel_call(
 			local_table_iterator &local_it, 
 			net::ipv4_address ip
 		)
@@ -192,21 +196,54 @@ namespace oosp
 			local_it->second.property_lock.unlock();
 		}
 
-	public:
-
-		static void init()
+		static void cancel(
+			local_table_iterator &local_it,
+			object_id_type remote_object_id
+		)
 		{
-			proc_commit::init();
-			proc_sync::init();
-			rpc::set_command(
-				command_id | types::function::get,
-				get_handler
-			);
-			rpc::set_command(
-				command_id | types::function::set,
-				set_handler
-			);
-			jrn(journal::debug) << "initialized" << journal::end;
+			auto &local = local_it->second;
+			local.remotes.lock();
+
+			auto device = local.remotes.find(remote_object_id);
+			if(oosp_class::local_has_no_remote(device, remote_object_id, local))
+				return;
+
+			local.remotes.unlock();
+			oosp_class::lock_remote();
+
+			auto remote_it = oosp_class::find_remote(remote_object_id);
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
+				return;
+
+			cancel(remote_it);
+
+			oosp_class::unlock_remote();
+		}
+
+		static void cancel(remote_table_iterator &it)
+		{
+			it->second.property_lock.lock();
+
+			auto &property = it->second.properties.template get<member_id>();
+			if(property.sync.call_id)
+			{
+				it->second.property_lock.unlock();
+				jrn(journal::trace) <<
+					"remote: " << (std::string)it->second.ip <<
+					" cancelling sync via object " << std::hex << it->second.object_id <<
+					journal::end;
+
+				rpc::cancel(property.sync.call_id);
+				property.sync.call_id = 0;
+				property.sync.pending_timestamp = clock::time_point::min();
+			}
+			else
+			{
+				it->second.property_lock.unlock();
+				jrn(journal::error, it->second.object_id) <<
+					"ommiting cancel; call has not been made" <<
+					journal::end;
+			}
 		}
 
 		static void init(
@@ -243,16 +280,7 @@ namespace oosp
 				journal::end;
 		}
 
-		static void uninit()
-		{
-			rpc::clear_command(command_id | types::function::get);
-			rpc::clear_command(command_id | types::function::set);
-			proc_commit::uninit();
-			proc_sync::uninit();
-			jrn(journal::debug) << "uninitialied" << journal::end;
-		}
-
-		void uninit(object_id_type object_id)
+		static void uninit(object_id_type object_id)
 		{
 			auto local_it = oosp_class::find_local(object_id);
 			if(local_it == oosp_class::end())
@@ -275,11 +303,37 @@ namespace oosp
 			local_it->second.property_lock.unlock();
 		}
 
+	public:
+
+		static void init()
+		{
+			proc_commit::init();
+			proc_sync::init();
+			rpc::set_command(
+				command_id | types::function::get,
+				get_handler
+			);
+			rpc::set_command(
+				command_id | types::function::set,
+				set_handler
+			);
+			jrn(journal::debug) << "initialized" << journal::end;
+		}
+
+		static void uninit()
+		{
+			rpc::clear_command(command_id | types::function::get);
+			rpc::clear_command(command_id | types::function::set);
+			proc_commit::uninit();
+			proc_sync::uninit();
+			jrn(journal::debug) << "uninitialied" << journal::end;
+		}
+
 		static value_type value(object_id_type object_id)
 		{
 			oosp_class::lock_local();
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it))
+			if(oosp_class::unknown_local_object(local_it, jrn))
 				return value_type(0);
 
 			local_it->second.property_lock.lock();
@@ -312,14 +366,20 @@ namespace oosp
 		{
 			oosp_class::lock_local();
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it))
+			if(oosp_class::unknown_local_object(local_it, jrn))
 				return value_type(0);
 
 			local_it->second.property_lock.lock();
 
 			auto &property = local_it->second.properties.template get<member_id>();
-			if(local_value_match_given_value(property.sync.local_value, pvalue, local_it))
+			if(env::local_value_match_given_value(property.sync.local_value, pvalue, local_it))
+			{
+				jrn(journal::debug) <<
+					"object: " << std::hex << object_id <<
+					"; set from API with no change" <<
+					journal::end;
 				return pvalue;
+			}
 
 			property.sync.local_value = pvalue;
 			
@@ -334,33 +394,12 @@ namespace oosp
 			return pvalue;
 		}
 
-	private:
-		static bool local_value_match_given_value(
-			value_type local_value, 
-			value_type value, 
-			local_table_iterator &local_it
-		)
-		{
-			if(local_value == value)
-			{
-				local_it->second.property_lock.unlock();
-				oosp_class::unlock_local();
-				jrn(journal::debug) <<
-					"object: " << std::hex << local_it->first <<
-					"; set from API with no change" <<
-					journal::end;
-				return true;
-			}		
-			return false;
-		}
-	public:
-
 		static value_type default_value(object_id_type object_id)
 		{
 			oosp_class::lock_local();
 
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it))
+			if(oosp_class::unknown_local_object(local_it, jrn))
 				return value_type(0);
 
 			local_it->second.property_lock.lock();
@@ -368,7 +407,7 @@ namespace oosp
 			auto &property = local_it->second.properties.template get<member_id>();
 			const value_type default_value = property.sync.default_value;
 
-			local_it->property_lock.unlock();
+			local_it->second.property_lock.unlock();
 			oosp_class::unlock_local();
 			jrn(journal::trace, object_id) <<
 				"default value get from API" <<
@@ -381,7 +420,7 @@ namespace oosp
 			oosp_class::lock_local();
 
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it))
+			if(oosp_class::unknown_local_object(local_it, jrn))
 				return;
 
 			local_it->second.property_lock.lock();
@@ -389,7 +428,7 @@ namespace oosp
 			auto &property = local_it->second.properties.template get<member_id>();
 			property.history.clear();
 
-			local_it->property_lock.unlock();
+			local_it->second.property_lock.unlock();
 			oosp_class::unlock_local();
 			jrn(journal::trace, object_id) <<
 				"history cleared" <<

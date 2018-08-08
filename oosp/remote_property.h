@@ -58,6 +58,8 @@ namespace oosp
 
 		typedef typename oosp_class::remote_table_iterator	remote_table_iterator;
 
+		friend oosp_class;
+
 	public:
 		typedef typename env::value_type			value_type;
 
@@ -89,14 +91,9 @@ namespace oosp
 			const object_id_type object_id = property_data.object_id;
 			oosp_class::lock_remote();
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(remote_it == oosp_class::end())
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
 			{
-				oosp_class::unlock_remote();
 				h.respond(object_id_type(0));
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference `" << std::hex << object_id <<
-					journal::end;
 				return;
 			}
 
@@ -114,16 +111,20 @@ namespace oosp
 
 			remote_it->second.property_lock.lock();
 			auto &property = remote_it->second.properties.template get<member_id>();
-			if(property.sync.local_value == property_data.value)
+			if(
+				env::local_value_match_given_value(
+					property.sync.local_value, 
+					property_data.value, 
+					remote_it
+				)
+			)
 			{
-				remote_it->second.property_lock.unlock();
-				oosp_class::unlock_remote();
 				jrn(journal::warning) <<
 					"object: " << std::hex << object_id <<
 					"; notify with no change" <<
 					journal::end;
 				h.respond(object_id);
-				return;
+				return;	
 			}
 
 			jrn(journal::trace) <<
@@ -133,9 +134,7 @@ namespace oosp
 
 			if(property.initial_sync_pending)
 			{
-				property.initial_sync_pending = false;
-				rpc::cancel(property.initial_sync_cid);
-				property.initial_sync_cid = 0;
+				cancel_call_and_init_default_state(property);
 				jrn(journal::trace) <<
 					"object: " << std::hex << object_id <<
 					"; initial sync completed with call: " << std::hex << h.call_id <<
@@ -149,18 +148,23 @@ namespace oosp
 
 			property.sync.timestamp = property.history.front().time;
 			h.respond(object_id);
-			if(env::sync_local(property))
-			{
-				remote_it->second.property_lock.unlock();
-				oosp_class::unlock_remote();
-				property.on_change(object_id);
-			}
-			else
-			{
-				remote_it->second.property_lock.unlock();
-				oosp_class::unlock_remote();
-			}
+			env::sync_local(remote_it, property);
+
 			proc_log::notify(object_id);
+		}
+
+		template <typename Tproperty>
+		static void cancel_call_and_init_default_state(Tproperty &property)
+		{
+			property.initial_sync_pending = false;
+			rpc::cancel(property.initial_sync_cid);
+			property.initial_sync_cid = 0;
+		}
+
+		static void unlock_remote_and_property_lock(remote_table_iterator &remote_it)
+		{
+			remote_it->second.property_lock.unlock();
+			oosp_class::unlock_remote();
 		}
 
 		static void get_handler(get_handle_type h)
@@ -168,58 +172,26 @@ namespace oosp
 			const object_id_type arg_object_id = h.argument();
 			oosp_class::lock_remote();
 			auto remote_it = oosp_class::find_remote(arg_object_id);
-			if(remote_it == oosp_class::end())
-			{
-				oosp_class::unlock_remote();
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference `" << std::hex << arg_object_id <<
-					journal::end;
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
 				return;
-			}
 
 			remote_it->second.report_call(h);
-			if(h.reason != earpc::reason::success)
+			if(call_failed(remote_it,h))
 			{
-				if(h.reason != earpc::reason::cancelled)
-				{
-					jrn(journal::error) <<
-						"object: " << std::hex << arg_object_id <<
-						"; initial sync failed with reason " << std::dec << (int)h.reason <<
-						"; retrying" <<
-						journal::end;
-				}
-				else
-				{
-					jrn(journal::warning) <<
-						"object: " << std::hex << arg_object_id <<
-						"; initial sync cancelled with call: " << std::hex << h.call_id << " retrying" <<
-						journal::end;
-				}
 				do_initial_sync(remote_it);
 				oosp_class::unlock_remote();
 				return;
 			}
 
 			const property_data_type property_data = h.value();
-			if(arg_object_id != property_data.object_id)
-			{
-				oosp_class::unlock_remote();
-				jrn(journal::critical) <<
-					"remote: " << (std::string)h.ip <<
-					"; initial sync succeeded with call: " << std::hex << h.call_id <<
-					"; but got invalid remote `" << oosp_class::name <<
-					"' object reference `" << std::hex << property_data.object_id <<
-					journal::end;
+			if(arg_and_ret_object_id_mismatched(arg_object_id, property_data.object_id, h))
 				return;
-			}
 
 			remote_it->second.property_lock.lock();
 			auto &property = remote_it->second.properties.template get<member_id>();
 			if(!property.initial_sync_pending)
 			{
-				remote_it->second.property_lock.unlock();
-				oosp_class::unlock_remote();
+				unlock_remote_and_property_lock(remote_it);
 				jrn(journal::trace) <<
 					"initial sync succeeded with call: " << std::hex << h.call_id <<
 					"; but already completed via notify" <<
@@ -240,23 +212,39 @@ namespace oosp
 				property.history.pop_back();
 
 			property.sync.timestamp = property.history.front().time;
-			if(env::sync_local(property))
-			{
-				remote_it->second.property_lock.unlock();
-				oosp_class::unlock_remote();
-				property.on_change(arg_object_id);
-			}
-			else
-			{
-				remote_it->second.property_lock.unlock();
-				oosp_class::unlock_remote();
-			}
+			env::sync_local(remote_it, property);
+
 			proc_log::notify(arg_object_id);
+		}
+		
+		static bool call_failed(remote_table_iterator &remote_it, const get_handle_type &h)
+		{
+			if(h.reason != earpc::reason::success)
+			{
+				if(h.reason != earpc::reason::cancelled)
+				{
+					jrn(journal::error) <<
+						"object: " << std::hex << remote_it->first <<
+						"; initial sync failed with reason " << std::dec << (int)h.reason <<
+						"; retrying" <<
+						journal::end;
+				}
+				else
+				{
+					jrn(journal::warning) <<
+						"object: " << std::hex << remote_it->first <<
+						"; initial sync cancelled with call: " << std::hex << h.call_id << " retrying" <<
+						journal::end;
+				}
+				return true;
+			}
+			return false;
 		}
 
 		static void do_initial_sync(remote_table_iterator remote_it)
 		{
 			remote_it->second.property_lock.lock();
+
 			auto &property = remote_it->second.properties.template get<member_id>();
 			if(!property.initial_sync_pending)
 			{
@@ -279,21 +267,27 @@ namespace oosp
 				remote_it->first,
 				get_handler
 			);
+
 			remote_it->second.property_lock.unlock();
 		}
-	public:
 
-		static void init()
+		static bool arg_and_ret_object_id_mismatched(
+			object_id_type arg_object_id, 
+			object_id_type ret_object_id, 
+			const get_handle_type &h
+		)
 		{
-			proc_log::init();
-			proc_commit::init();
-			proc_sync::init();
-
-			rpc::set_command(
-				command_id | types::function::notify,
-				notify_handler
-			);
-			jrn(journal::debug) << "initialized" << journal::end;
+			if(arg_object_id != ret_object_id)
+			{
+				jrn(journal::critical) <<
+					"remote: " << (std::string)h.ip <<
+					"; initial sync succeeded with call: " << std::hex << h.call_id <<
+					"; but got invalid remote `" << oosp_class::name <<
+					"' object reference `" << std::hex << ret_object_id <<
+					journal::end;
+				return true;
+			}
+			return false;
 		}
 
 		static void init(object_id_type object_id, value_type pvalue = value_type())
@@ -310,6 +304,7 @@ namespace oosp
 			}
 
 			remote_it->second.property_lock.lock();
+
 			auto &property = remote_it->second.properties.template get<member_id>();
 
 			property.sync.local_value = property.sync.default_value = pvalue;
@@ -329,6 +324,28 @@ namespace oosp
 				journal::end;
 		}
 
+		static void uninit(object_id_type object_id)
+		{
+			// remote.role.on_bound -= bind_handler;
+			// remote.role.on_unbound -= unbind_handler;
+
+			jrn(journal::debug) << "uninitialized" << journal::end;
+		}
+	public:
+
+		static void init()
+		{
+			proc_log::init();
+			proc_commit::init();
+			proc_sync::init();
+
+			rpc::set_command(
+				command_id | types::function::notify,
+				notify_handler
+			);
+			jrn(journal::debug) << "initialized" << journal::end;
+		}
+
 		static void uninit()
 		{
 			// remote.role.on_bound -= bind_handler;
@@ -341,29 +358,20 @@ namespace oosp
 			jrn(journal::debug) << "uninitialized" << journal::end;
 		}
 
-		static void uninit(object_id_type object_id)
-		{
-			// remote.role.on_bound -= bind_handler;
-			// remote.role.on_unbound -= unbind_handler;
-
-			jrn(journal::debug) << "uninitialized" << journal::end;
-		}
-
 		static value_type value(object_id_type object_id)
 		{
+			oosp_class::lock_remote();
+			
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(remote_it == oosp_class::end())
-			{
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference " << std::hex << object_id <<
-					journal::end;
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
 				return value_type(0);
-			}
 
 			remote_it->second.property_lock.lock();
-			const value_type value = remote_it->second.properties.template get<member_id>().sync.local_value;
+			const value_type value = 
+				remote_it->second.properties.template get<member_id>().sync.local_value;
 			remote_it->second.property_lock.unlock();
+			
+			oosp_class::unlock_remote();
 			jrn(journal::trace, object_id) <<
 				"get from API " <<
 				journal::end;
@@ -376,27 +384,20 @@ namespace oosp
 		)
 		{
 			oosp_class::lock_remote();
+
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(remote_it == oosp_class::end())
-			{
-				oosp_class::unlock_remote();
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference " << std::hex << object_id <<
-					journal::end;
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
 				return value_type(0);
-			}
 
 			remote_it->second.property_lock.lock();
+			
 			auto &property = remote_it->second.properties.template get<member_id>();
-			if(pvalue == property.sync.local_value)
+			if(env::local_value_match_given_value(property.sync.local_value, pvalue, remote_it))
 			{
-				remote_it->second.property_lock.unlock();
-				oosp_class::unlock_remote();
-				jrn(journal::debug, object_id) <<
-					"set from API with no change " <<
+				jrn(journal::debug) <<
+					"object: " << std::hex << object_id <<
+					"; set from API with no change" <<
 					journal::end;
-
 				return pvalue;
 			}
 
@@ -406,15 +407,9 @@ namespace oosp
 				journal::end;
 			const value_type value = property.sync.local_value = pvalue;
 			if(property.initial_sync_pending)
-			{
-				property.initial_sync_pending = false;
-				const call_id_type cid = property.initial_sync_cid;
-				property.initial_sync_cid = 0;
-				rpc::cancel(cid);
-			}
-			remote_it->second.property_lock.unlock();
+				cancel_call_and_init_default_state(property);
 
-			oosp_class::unlock_remote();
+			unlock_remote_and_property_lock(remote_it);
 			proc_commit::notify(object_id);
 			return value;
 		}
@@ -422,22 +417,17 @@ namespace oosp
 		static value_type default_value(object_id_type object_id)
 		{
 			oosp_class::lock_remote();
+
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(remote_it == oosp_class::end())
-			{
-				oosp_class::unlock_remote();
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference " << std::hex << object_id <<
-					journal::end;
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
 				return value_type(0);
-			}
 
 			remote_it->second.property_lock.lock();
+
 			auto &property = remote_it->second.properties.template get<member_id>();
 			const value_type default_value = property.sync.default_value;
-			remote_it->property_lock.unlock();
-			oosp_class::unlock_remote();
+
+			unlock_remote_and_property_lock(remote_it);
 			jrn(journal::trace, object_id) <<
 				"default value get from API" <<
 				journal::end;
@@ -448,21 +438,14 @@ namespace oosp
 		static uint32_t failures(object_id_type object_id)
 		{
 			oosp_class::lock_remote();
+
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(remote_it == oosp_class::end())
-			{
-				oosp_class::unlock_remote();
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference " << std::hex << object_id <<
-					journal::end;
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
 				return uint32_t(0);
-			}
 
 			remote_it->second.property_lock.lock();
-			const uint32_t failures = remote_it->second.properties.template get<member_id>().failures;
-			remote_it->second.property_lock.unlock();
-			oosp_class::unlock_remote();
+			const uint32_t failures = remote_it->second.properties.template get<member_id>().sync.failures;
+			unlock_remote_and_property_lock(remote_it);
 			jrn(journal::trace, object_id) <<
 				"failures get from API" <<
 				journal::end;
@@ -473,25 +456,19 @@ namespace oosp
 		static typename clock::duration latency(object_id_type object_id)
 		{
 			oosp_class::lock_remote();
+
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(remote_it == oosp_class::end())
-			{
-				oosp_class::unlock_remote();
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference " << std::hex << object_id <<
-					journal::end;
-				return clock::duration(0);
-			}
+			// TODO
+			// if(oosp_class::unknown_remote_object(remote_it, jrn))
+			// 	return clock::duration();
 
 			remote_it->second.property_lock.lock();
-			const auto latency = remote_it->second.properties.template get<member_id>().latency;
-			remote_it->second.property_lock.unlock();
-			oosp_class::unlock_remote();
+			const auto latency = remote_it->second.properties.template get<member_id>().sync.latency;
+			unlock_remote_and_property_lock(remote_it);
+
 			jrn(journal::trace, object_id) <<
 				"latency get from API" <<
 				journal::end;
-
 
 			return latency;
 		}
@@ -500,21 +477,15 @@ namespace oosp
 		{
 			oosp_class::lock_remote();
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(remote_it == oosp_class::end())
-			{
-				oosp_class::unlock_remote();
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference `" << std::hex << object_id <<
-					journal::end;
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
 				return;
-			}
 
 			remote_it->second.property_lock.lock();
+
 			auto &property = remote_it->second.properties.template get<member_id>();
 			property.history.clear();
-			remote_it->second.property_lock.unlock();
-			oosp_class::unlock_remote();
+
+			unlock_remote_and_property_lock(remote_it);
 		}
 
 		static bool is_sync_pending(object_id_type object_id)

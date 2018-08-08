@@ -90,6 +90,16 @@ namespace process
 				TEnv::class_id << "::" << TEnv::member_id::value << ' ';
 		}
 
+		static journal jrn(uint8_t level, object_id_type object)
+		{
+			return journal(level,"oosp.commit") << std::hex <<
+				"object:  " << object <<
+				"; class: " << oosp_class::name <<
+				"; property: " <<
+				" (" << TEnv::class_id << "::" << member_id::value << "); ";
+			;
+		}
+
 		static void start()
 		{
 			jrn(journal::debug) << "initialized" << journal::end;
@@ -119,7 +129,7 @@ namespace process
 					it->second.property_lock.lock();
 					auto &property = it->second.properties.template get<member_id>();
 					if(sync_necessary(property, it))
-						property.cooldown_pending = true
+						property.cooldown_pending = true;
 					else
 						continue;
 
@@ -133,22 +143,7 @@ namespace process
 					if(property.history.size() > TEnv::history_size)
 						property.history.pop_back();
 
-					if(TEnv::sync_local(property))
-					{
-						it->second.property_lock.unlock();
-						oosp_class::template unlock<encap_object_type>();
-
-						// TODO
-						// jrn(journal::trace, object_id) <<
-						// 	"" <<
-						// 	journal::end;
-						property.on_change(object_id);
-					}
-					else
-					{
-						it->second.property_lock.unlock();
-						oosp_class::template unlock<encap_object_type>();
-					}
+					TEnv::sync_local(it, property);
 
 					proc_sync::notify(object_id);
 					proc_log::notify(object_id);
@@ -156,51 +151,11 @@ namespace process
 					cooldowns.emplace(object_id, ::types::time::msec(hr.time) + static_cast<uint32_t>(cooldown_time));
 					cooldowns.unlock();
 				}
-				std::unique_lock<std::mutex> ul(suspend_lock);
 				object_id_buffer.lock();
 				if(object_id_buffer.empty())
 				{
 					object_id_buffer.unlock();
-					if(cooldowns.empty())
-					{
-						jrn(journal::trace) << "no change; suspending until next notify" << journal::end;
-						suspend_cv.wait(ul);
-					}
-					else
-					{
-						cooldowns.lock();
-						const auto lowest = cooldowns.top();
-						const auto current_time = ::types::time::msec(clock::now());
-						if(lowest.cooldown_time > current_time)
-						{
-							cooldowns.unlock();
-							jrn(journal::trace) << 
-								"no change; suspending for " << lowest.cooldown_time - current_time << "ms" << 
-								journal::end;
-								
-							suspend_cv.wait_until(
-								ul,
-								clock::time_point(std::chrono::milliseconds(lowest.cooldown_time))
-							);
-							jrn(journal::trace) << "resuming" << journal::end;
-							oosp_class::template lock<encap_object_type>();
-							auto lowest_it =
-								oosp_class::template find<encap_object_type>(lowest.object_id);
-							if(lowest_it != oosp_class::end())
-							{
-								auto &property = lowest_it->second.properties.template get<member_id>();
-								if(property_changed(property))
-									safe_emplace_to_object_id_buffer(lowest.object_id);
-							}
-							oosp_class::template unlock<encap_object_type>();
-						}
-						else
-						{
-							cooldowns.unlock();
-							jrn(journal::trace) << "no change; suspending until next notify" << journal::end;
-							suspend_cv.wait(ul);
-						}
-					}
+					manage_wait();
 				}
 				else
 					object_id_buffer.unlock();
@@ -268,6 +223,51 @@ namespace process
 				return false;
 			}
 			return true;
+		}
+
+		static void manage_wait()
+		{
+			std::unique_lock<std::mutex> ul(suspend_lock);
+			if(cooldowns.empty())
+			{
+				jrn(journal::trace) << "no change; suspending until next notify" << journal::end;
+				suspend_cv.wait(ul);
+			}
+			else
+			{
+				cooldowns.lock();
+				const auto lowest = cooldowns.top();
+				const auto current_time = ::types::time::msec(clock::now());
+				if(lowest.cooldown_time > current_time)
+				{
+					cooldowns.unlock();
+					jrn(journal::trace) << 
+						"no change; suspending for " << lowest.cooldown_time - current_time << "ms" << 
+						journal::end;
+						
+					suspend_cv.wait_until(
+						ul,
+						clock::time_point(std::chrono::milliseconds(lowest.cooldown_time))
+					);
+					jrn(journal::trace) << "resuming" << journal::end;
+					oosp_class::template lock<encap_object_type>();
+					auto lowest_it =
+						oosp_class::template find<encap_object_type>(lowest.object_id);
+					if(lowest_it != oosp_class::end())
+					{
+						auto &property = lowest_it->second.properties.template get<member_id>();
+						if(property_changed(property))
+							safe_emplace_to_object_id_buffer(lowest.object_id);
+					}
+					oosp_class::template unlock<encap_object_type>();
+				}
+				else
+				{
+					cooldowns.unlock();
+					jrn(journal::trace) << "no change; suspending until next notify" << journal::end;
+					suspend_cv.wait(ul);
+				}
+			}
 		}
 
 		static void safe_emplace_to_object_id_buffer(object_id_type object_id)

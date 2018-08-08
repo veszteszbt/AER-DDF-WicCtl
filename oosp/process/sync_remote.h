@@ -8,13 +8,15 @@ namespace process
 	template<typename TEnv>
 	class sync_remote
 	{
-		typedef typename TEnv::set_handle_type		set_handle_type;
+		typedef typename TEnv::set_handle_type					set_handle_type;
 
-		typedef typename TEnv::oosp_class			oosp_class;
+		typedef typename TEnv::oosp_class						oosp_class;
 
-		typedef typename TEnv::object_id_type		object_id_type;
+		typedef typename TEnv::object_id_type					object_id_type;
 
-		typedef typename TEnv::member_id			member_id;
+		typedef typename TEnv::member_id						member_id;
+
+		typedef typename oosp_class::remote_object_record_type	remote_object_record_type;
 
 		static journal jrn(uint8_t level)
 		{
@@ -35,58 +37,83 @@ namespace process
 		static void call_finish(set_handle_type h)
 		{
 			const object_id_type arg_object_id = h.argument().object_id;
-
 			oosp_class::lock_remote();
+
 			auto remote_it = oosp_class::find_remote(arg_object_id);
 			if(oosp_class::unknown_remote_object(remote_it, jrn))
 				return;
 
-			remote_it->second.report_call(h);
+			auto &remote = remote_it->second;
+			remote.report_call(h);
+			remote.property_lock.lock();
 
-			remote_it->second.property_lock.lock();
-			auto &property = remote_it->second.properties.template get<member_id>();
+			auto &property = remote.properties.template get<member_id>();
 
 			TEnv::finish_sync_remote(property.sync, h);
 
-			if(h.reason)
-			{
-				++property.sync.failures;
-				jrn(journal::error) <<
-					"remote: " << (std::string)h.ip <<
-					"; object: " << std::hex << arg_object_id <<
-					"; sync failed" <<
-					journal::end;
-				remote_it->second.property_lock.unlock();
-				oosp_class::unlock_remote();
-				notify(arg_object_id);
+			if(call_failed(h, property.sync.failures, remote))
 				return;
-			}
 
 			const object_id_type ret_object_id = h.value();
+			if(arg_and_ret_object_id_mismatched(remote, arg_object_id, ret_object_id, h))
+				return;
+
+			std::stringstream ss;
+			ss << "remote: " << (std::string)h.ip <<
+				"; object: " << std::hex << arg_object_id <<
+				"; sync succeeded with call: " << std::hex << h.call_id;
+
+			unlock_and_call_notify(remote, ss.str(), journal::trace);
+		}
+
+		static bool call_failed(const set_handle_type &h, uint32_t &failures, remote_object_record_type &remote)
+		{
+			if(h.reason)
+			{
+				++failures;
+				std::stringstream ss;
+				ss << "remote: " << (std::string)h.ip <<
+					"; object: " << std::hex << remote.object_id <<
+					"; sync failed";
+				unlock_and_call_notify(remote, ss.str());
+				return true;
+			}
+			return false;
+		}
+
+		static void unlock_and_call_notify(
+			remote_object_record_type &remote, 
+			const std::string &journal_msg,
+			uint8_t journal_level = journal::error
+		)
+		{
+			remote.property_lock.unlock();
+			oosp_class::unlock_remote();
+
+			if(!journal_msg.empty())
+				jrn(journal_level, remote.object_id) << journal_msg << journal::end;
+			
+			notify(remote.object_id);
+		}
+
+		static bool arg_and_ret_object_id_mismatched(
+			remote_object_record_type &remote,
+			object_id_type arg_object_id, 
+			object_id_type ret_object_id, 
+			const set_handle_type &h
+		)
+		{
 			if(arg_object_id != ret_object_id)
 			{
-				remote_it->second.property_lock.unlock();
-				oosp_class::unlock_remote();
-				jrn(journal::critical) <<
-					"remote: " << (std::string)h.ip <<
+				std::stringstream ss;
+				ss << "remote: " << (std::string)h.ip <<
 					"; sync succeeded with call " << std::hex << h.call_id <<
 					"; but got invalid remote `" << oosp_class::name <<
-					"' object reference " << std::hex << ret_object_id <<
-					journal::end;
-
-				notify(arg_object_id);
-				return;
+					"' object reference " << std::hex << ret_object_id;
+				unlock_and_call_notify(remote, ss.str(), journal::critical);
+				return true;
 			}
-
-			jrn(journal::trace) <<
-				"remote: " << (std::string)h.ip <<
-				"; object: " << std::hex << arg_object_id <<
-				"; sync succeeded with call: " << std::hex << h.call_id <<
-				journal::end;
-
-			remote_it->second.property_lock.unlock();
-			oosp_class::unlock_remote();
-			notify(arg_object_id);
+			return false;	
 		}
 
 	public:
@@ -103,22 +130,18 @@ namespace process
 		static void notify(object_id_type object_id)
 		{
 			oosp_class::lock_remote();
-			auto it = oosp_class::find_remote(object_id);
-			if(it == oosp_class::end())
-			{
-				oosp_class::unlock_remote();
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference: " << std::hex << object_id <<
-					journal::end;
-				return;
-			}
 
-			it->second.property_lock.lock();
-			auto &property = it->second.properties.template get<member_id>();
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
+				return;
+			
+			auto &remote = remote_it->second;
+			remote.property_lock.lock();
+
+			auto &property = remote.properties.template get<member_id>();
 			if(property.history.empty())
 			{
-				it->second.property_lock.unlock();
+				remote.property_lock.unlock();
 				oosp_class::unlock_remote();
 				jrn(journal::trace) <<
 					"object: " << std::hex << object_id <<
@@ -128,18 +151,18 @@ namespace process
 			}
 
 			jrn(journal::trace) <<
-				"remote: " << (std::string)it->second.ip <<
+				"remote: " << (std::string)remote.ip <<
 				"; doing sync via object: " << std::hex << object_id <<
 				journal::end;
-
 			TEnv::sync_remote(
 				property,
 				object_id,
-				it->second.ip,
+				remote.ip,
 				types::function::set,
 				call_finish
 			);
-			it->second.property_lock.unlock();
+
+			remote.property_lock.unlock();
 			oosp_class::unlock_remote();
 		}
 
@@ -147,19 +170,12 @@ namespace process
 		static void cancel(object_id_type object_id)
 		{
 			oosp_class::lock_remote();
-			auto it = oosp_class::find_remote(object_id);
-			if(it == oosp_class::end())
-			{
-				oosp_class::unlock_remote();
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference: " << std::hex << object_id <<
-					journal::end;
+			auto remote_it = oosp_class::find_remote(object_id);
+			if(oosp_class::unknown_remote_object(remote_it, jrn))
 				return;
-			}
 
-			it->second.property_lock.lock();
-			auto &property = it->second.properties.template get<member_id>();
+			remote_it->second.property_lock.lock();
+			auto &property = remote_it->second.properties.template get<member_id>();
 			if(property.call_id)
 			{
 				jrn(journal::debug) <<
@@ -169,7 +185,7 @@ namespace process
 				TEnv::rpc::cancel(property.call_id);
 				property.call_id = 0;
 			}
-			it->second.property_lock.unlock();
+			remote_it->second.property_lock.unlock();
 			oosp_class::unlock_remote();
 		}
 	};

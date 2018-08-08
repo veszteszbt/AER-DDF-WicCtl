@@ -157,7 +157,7 @@ namespace oosp
 
 		static remote_object_lock_table_type 	remote_object_lock_table;
 
-		static const class_id_type 	class_id = Tconfig::class_id;
+		static const class_id_type 	class_id = Tconfig::cfg_class_id;
 
 	public:
 
@@ -178,6 +178,15 @@ namespace oosp
 				class_id << ' ';
 		}
 
+		static journal jrn(uint8_t level, object_id_type object)
+		{
+			return journal(level,"oosp.class") << std::hex <<
+				"object:  " << object <<
+				"; class: " << oosp_class::name <<
+				"; property: " <<
+				" (" << class_id << ")";
+			;
+		}
 		static void init()
 		{ 
 			property_initializer<
@@ -318,14 +327,13 @@ namespace oosp
 		static bool clr_local(object_id_type object_id)
 		{
 			local_object_lock_table.lock();
-			auto it = local_object_lock_table.find(object_id);
-			if(it == local_object_lock_table.end())
+
+			if(!local_object_lock_table.erase(object_id))
 			{
 				local_object_lock_table.unlock();
 				return false;
 			}
 
-			const bool clred = local_object_lock_table.erase(it);
 			property_initializer<
 				local_property<
 					property_config<Tproperties>
@@ -333,7 +341,7 @@ namespace oosp
 			>::uninit(object_id);
 
 			local_object_lock_table.unlock();
-			return clred;
+			return true;
 		}
 
 		static bool clr_remote(object_id_type object_id)
@@ -346,44 +354,45 @@ namespace oosp
 				return false;
 			}
 
-			it->second.on_destory();
-			const bool clred = remote_object_lock_table.erase(it);
+			it->second.on_destroy();
+			remote_object_lock_table.erase(it);
 			property_initializer<
 				remote_property<
 					property_config<Tproperties>
 				>...
 			>::uninit(object_id);
 			remote_object_lock_table.unlock();
-			return clred;
+			return true;
 		}
 
-		static bool clr_local(local_table_iterator it)
-		{
-			const object_id_type object_id = it->second.object_id;
-			const bool clred = local_object_lock_table.erase(it);
-			if(clred)
-				property_initializer<
-					local_property<
-						property_config<Tproperties>
-					>...
-				>::uninit(object_id);
+		// TODO
+		// static bool clr_local(local_table_iterator it)
+		// {
+		// 	const object_id_type object_id = it->second.object_id;
+		// 	const bool clred = local_object_lock_table.erase(it);
+		// 	if(clred)
+		// 		property_initializer<
+		// 			local_property<
+		// 				property_config<Tproperties>
+		// 			>...
+		// 		>::uninit(object_id);
 
-			return clred;
-		}
+		// 	return clred;
+		// }
 
-		static bool clr_remote(remote_table_iterator it)
-		{
-			const object_id_type object_id = it->second.object_id;
-			const bool clred = remote_object_lock_table.erase(it);
-			if(clred)
-				property_initializer<
-					remote_property<
-						property_config<Tproperties>
-					>...
-				>::uninit(object_id);
+		// static bool clr_remote(remote_table_iterator it)
+		// {
+		// 	const object_id_type object_id = it->second.object_id;
+		// 	const bool clred = remote_object_lock_table.erase(it);
+		// 	if(clred)
+		// 		property_initializer<
+		// 			remote_property<
+		// 				property_config<Tproperties>
+		// 			>...
+		// 		>::uninit(object_id);
 
-			return clred;
-		}
+		// 	return clred;
+		// }
 
 		static bool remote_add(
 			object_id_type local_object_id,
@@ -393,15 +402,8 @@ namespace oosp
 			lock_local();
 
 			auto local_it = find_local(local_object_id);
-			if(local_it == end())
-			{
-				unlock_local();
-				jrn(journal::error) <<
-					"Invalid local `" << name <<
-					"' object reference " << std::hex << local_object_id <<
-					journal::end;
+			if(unknown_local_object(local_it, jrn))
 				return false;
-			}
 
 			lock_remote();
 
@@ -444,21 +446,21 @@ namespace oosp
 			lock_local();
 
 			auto local_it = find_local(local_object_id);
-			if(local_it == end())
-			{
-				unlock_local();
-				jrn(journal::error) <<
-					"Invalid local `" << name <<
-					"' object reference " << std::hex << local_object_id <<
-					journal::end;
+			if(unknown_local_object(local_it, jrn))
 				return false;
-			}
 
-			cancel(local_object_id, remote_object_id);
-			local_it->remotes.lock();
-			if(!local_it->remotes.erase(remote_object_id))
+			auto &local = local_it->second;
+			property_initializer<
+				local_property<
+					property_config<Tproperties>
+				>...
+			>::cancel(local_it, remote_object_id);
+
+			local.remotes.lock();
+
+			if(!local.remotes.erase(remote_object_id))
 			{
-				local_it->remotes.unlock();
+				local.remotes.unlock();
 				unlock_local();
 				jrn(journal::error) <<
 					"Invalid remote `" << name <<
@@ -468,7 +470,7 @@ namespace oosp
 				return false;
 			}
 
-			local_it->remotes.unlock();
+			local.remotes.unlock();
 			unlock_local();
 			jrn(journal::trace) <<
 				"object: " << std::hex << local_object_id << "; deleted remote `" << name <<
@@ -477,76 +479,23 @@ namespace oosp
 			return true;
 		}
 
-		static void cancel(
-			object_id_type local_object_id,
-			object_id_type remote_object_id
+		static bool local_has_no_remote(
+			const typename local_object_record_type::remotes_iterator &device, 
+			object_id_type remote_object_id, 
+			local_object_record_type &local
 		)
 		{
-			lock_local();
-			auto local_it = find_local(local_object_id);
-			if(local_it == end())
+			if(device == local.remotes.end())
 			{
-				unlock_local();
+				local.remotes.unlock();
+				oosp_class::unlock_local();
 				jrn(journal::error) <<
-						"Invalid local `" << name <<
-						"' object reference " << std::hex
-						<< local_object_id <<
+					"local object " << std::hex << local.object_id <<
+					" has no remote object: " << remote_object_id <<
 					journal::end;
-				return;
+				return true;
 			}
-
-			local_it->second.remotes.lock();
-			auto device = local_it->second.remotes.find(remote_object_id);
-			if(device == local_it->second.remotes.end())
-			{
-				local_it->second.remotes.unlock();
-				unlock_local();
-				jrn(journal::error) <<
-					"local object: " << std::hex << local_object_id <<
-					"; has no remote object: " << remote_object_id <<
-					journal::end;
-				return;
-			}
-			local_it->second.remotes.unlock();
-
-			lock_remote();
-			auto remote_it = find_remote(remote_object_id);
-			if(remote_it == end())
-			{
-				unlock_remote();
-				unlock_local();
-				jrn(journal::error) <<
-					"Invalid remote `" << name <<
-					"' object reference " << std::hex << remote_object_id <<
-					journal::end;
-				return;
-			}
-
-			cancel(remote_it);
-
-			unlock_remote();
-			unlock_local();
-		}
-
-		static void cancel(remote_table_iterator it)
-		{
-			if(it->second.sync.call_id)
-			{
-				jrn(journal::trace) <<
-					"remote: " << (std::string)it->second.ip <<
-					" cancelling sync via object " << std::hex << it->second.object_id <<
-					journal::end;
-
-				earpc::cancel(it->second.sync.call_id);
-				it->second.sync.call_id = 0;
-				it->second.sync.pending_timestamp = clock::time_point::min();
-			}
-			else
-			{
-				jrn(journal::error, it->second.object_id) <<
-					"ommiting cancel; call has not been made" <<
-					journal::end;
-			}
+			return false;
 		}
 
 		static bool unknown_local_object(local_table_iterator local_it, journal (*jrnal)(uint8_t, object_id_type))
@@ -576,62 +525,83 @@ namespace oosp
 			}
 			return false;
 		}
-
+	
 		static bool unknown_object(local_table_iterator local_it, journal (*jrnal)(uint8_t, object_id_type))
 		{ return unknown_local_object(local_it, jrnal); }
 
 		static bool unknown_object(remote_table_iterator remote_it, journal (*jrnal)(uint8_t, object_id_type))
 		{ return unknown_remote_object(remote_it, jrnal); }
 
-		template <typename Tfn>
-		static void safe_local_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
+		static bool unknown_device_object(
+			local_object_record_type &local, 
+			remote_table_iterator remote_it, 
+			journal (*jrnal)(uint8_t, object_id_type)
+		)
 		{
-			lock_local();
-			auto local_it = find_local(object_id);
-			if(local_it == end())
-			{
-				unlock_local();
-				jrnal(journal::error) <<
-					"Invalid local `" << name <<
-					"' object reference `" << std::hex << object_id <<
-					journal::end;
-				return;
-			}
-
-			f(local_it);
-			unlock_local();
-		}
-
-		template <typename Tfn>
-		static void safe_remote_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
-		{
-			lock_remote();
-			auto remote_it = find_remote(object_id);
 			if(remote_it == end())
 			{
 				unlock_remote();
-				jrnal(journal::error) <<
+				local.remotes.unlock();
+				unlock_local();
+				jrnal(journal::error, remote_it->first) <<
 					"Invalid remote `" << name <<
-					"' object reference `" << std::hex << object_id <<
+					"' object reference" <<
 					journal::end;
-				return;
+				return true;
 			}
-
-			f(remote_it);
-			unlock_remote();
+			return false;
 		}
 
-		template <typename T, typename Tfn>
-		static std::enable_if_t<
-			std::is_same_v<T, local_object_record_type>
-		> safe_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
-		{ safe_local_process(object_id); }
+		// TODO
+		// template <typename Tfn>
+		// static void safe_local_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
+		// {
+		// 	lock_local();
+		// 	auto local_it = find_local(object_id);
+		// 	if(local_it == end())
+		// 	{
+		// 		unlock_local();
+		// 		jrnal(journal::error) <<
+		// 			"Invalid local `" << name <<
+		// 			"' object reference `" << std::hex << object_id <<
+		// 			journal::end;
+		// 		return;
+		// 	}
 
-		template <typename T, typename Tfn>
-		static std::enable_if_t<
-			std::is_same_v<T, remote_object_record_type>
-		> safe_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
-		{ safe_remote_process(object_id); }
+		// 	f(local_it);
+		// 	unlock_local();
+		// }
+
+		// template <typename Tfn>
+		// static void safe_remote_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
+		// {
+		// 	lock_remote();
+		// 	auto remote_it = find_remote(object_id);
+		// 	if(remote_it == end())
+		// 	{
+		// 		unlock_remote();
+		// 		jrnal(journal::error) <<
+		// 			"Invalid remote `" << name <<
+		// 			"' object reference `" << std::hex << object_id <<
+		// 			journal::end;
+		// 		return;
+		// 	}
+
+		// 	f(remote_it);
+		// 	unlock_remote();
+		// }
+
+		// template <typename T, typename Tfn>
+		// static std::enable_if_t<
+		// 	std::is_same_v<T, local_object_record_type>
+		// > safe_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
+		// { safe_local_process(object_id); }
+
+		// template <typename T, typename Tfn>
+		// static std::enable_if_t<
+		// 	std::is_same_v<T, remote_object_record_type>
+		// > safe_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
+		// { safe_remote_process(object_id); }
 
 	};
 
@@ -681,6 +651,15 @@ namespace oosp
 			Tproperty::proc_sync::notify(local_object_id, remote_object_id);
 			OOSP_CLASS::property_initializer<Tremaining...>::proc_sync_notify(local_object_id, remote_object_id);
 		}
+
+		static void cancel(
+			typename OOSP_CLASS::local_table_iterator &local_it, 
+			typename OOSP_CLASS::object_id_type remote_object_id
+		)
+		{
+			Tproperty::cancel(local_it, remote_object_id);
+			OOSP_CLASS::property_initializer<Tremaining...>::cancel(local_it, remote_object_id);
+		}
 	};
 
 	OOSP_CLASS_TEMPLATE
@@ -710,6 +689,12 @@ namespace oosp
 			typename OOSP_CLASS::object_id_type remote_object_id
 		)
 		{ Tproperty::proc_sync::notify(local_object_id, remote_object_id); }
+
+		static void cancel(
+			typename OOSP_CLASS::local_table_iterator &local_it, 
+			typename OOSP_CLASS::object_id_type remote_object_id
+		)
+		{ Tproperty::cancel(local_it, remote_object_id); }
 	};
 }
 

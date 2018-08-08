@@ -8,35 +8,35 @@ namespace process
 	template<typename TEnv>
 	class sync_local
 	{
-		typedef typename TEnv::call_id_type						call_id_type;
+		typedef typename TEnv::call_id_type							call_id_type;
 
-		typedef typename TEnv::object_id_type					object_id_type;
+		typedef typename TEnv::object_id_type						object_id_type;
 
-		typedef typename TEnv::member_id						member_id;
+		typedef typename TEnv::member_id							member_id;
 
-		typedef typename TEnv::oosp_class						oosp_class;
+		typedef typename TEnv::oosp_class							oosp_class;
 
-		typedef typename TEnv::sync_record 						sync_record;
+		typedef typename TEnv::sync_record 							sync_record;
 
-		typedef typename TEnv::set_handle_type					set_handle_type;
+		typedef typename TEnv::set_handle_type						set_handle_type;
 
-		typedef typename TEnv::history_type						history_type;
+		typedef typename TEnv::history_type							history_type;
 
-		typedef typename oosp_class::local_table_iterator		local_table_iterator;
+		typedef typename oosp_class::local_table_iterator			local_table_iterator;
 
-		typedef typename oosp_class::remote_table_iterator		remote_table_iterator;
+		typedef typename oosp_class::remote_table_iterator			remote_table_iterator;
 
-		typedef typename oosp_class::local_object_record_type	local_object_record_type;
+		typedef typename oosp_class::local_object_record_type		local_object_record_type;
 
-		typedef typename oosp_class::remote_object_record_type	remote_object_record_type;
+		typedef typename oosp_class::remote_object_record_type		remote_object_record_type;
 
 		typedef typename local_object_record_type::remotes_iterator	remotes_iterator;
 
 		typedef std::pair<sync_record*,remote_object_record_type*>	sync_remote_pair_record;
 
-		typedef typename sync_record::value_type				value_type;
+		typedef typename sync_record::value_type					value_type;
 
-		typedef net::ipv4_address 								address_type;
+		typedef net::ipv4_address 									address_type;
 
 		friend oosp_class;
 
@@ -77,7 +77,7 @@ namespace process
 
 			TEnv::finish_sync_remote(*sync_pair.first, h);
 			sync_pair.second->report_call(h);
-			if(call_unsucceeded(local, h.reason, h.ip, arg_object_id))
+			if(call_failed(local, h.reason, h.ip, arg_object_id))
 				return;
 
 			const object_id_type ret_object_id = h.value();
@@ -151,7 +151,7 @@ namespace process
 			notify(local.object_id);
 		}
 
-		static bool call_unsucceeded(
+		static bool call_failed(
 			local_object_record_type &local,
 			uint8_t reason, 
 			address_type ip, 
@@ -183,7 +183,7 @@ namespace process
 					"; sync returned mismatching `" <<
 					oosp_class::name << "' object reference " << std::hex << ret_object_id <<
 					"; considering failed";
-				unlock_and_call_notify(local, ss.str());
+				unlock_and_call_notify(local, ss.str(), journal::critical);
 				return true;
 			}
 			return false;
@@ -212,38 +212,21 @@ namespace process
 
 			auto &local_property =
 				local.properties.template get<member_id>();
-			if(local_property.history.empty())
-			{
-				local.property_lock.unlock();
-				oosp_class::unlock_local();
-				jrn(journal::trace) <<
-					"object: " << std::hex << local_object_id <<
-					"; nothing to do; suspending until next notify" <<
-					journal::end;
+			if(history_empty_of(local_property.history, local_it))
 				return;
-			}
 
 			local.property_lock.unlock();
 			local.remotes.lock();
 
 			auto device = local.remotes.find(remote_object_id);
-			if(local_has_no_remote(device, remote_object_id, local))
+			if(oosp_class::local_has_no_remote(device, remote_object_id, local))
 				return;
 
 			oosp_class::lock_remote();
 
 			auto remote_it = oosp_class::find_remote(remote_object_id);
-			if(remote_it == oosp_class::end())
-			{
-				oosp_class::unlock_remote();
-				local.remotes.unlock();
-				oosp_class::unlock_local();
-				jrn(journal::error) <<
-					"Invalid remote `" << oosp_class::name <<
-					"' object reference " << std::hex << remote_object_id <<
-					journal::end;
+			if(oosp_class::unknown_device_object(local, remote_it, jrn))
 				return;
-			}
 
 			auto &sync = device->second.template get<member_id>();
 			jrn(journal::trace) <<
@@ -261,30 +244,31 @@ namespace process
 				call_finish
 			);
 
-			local.remotes.unlock();
 			oosp_class::unlock_remote();
+			local.remotes.unlock();
 			oosp_class::unlock_local();
 		}
 
-		static bool local_has_no_remote(
-			const remotes_iterator &device, 
-			object_id_type remote_object_id, 
-			local_object_record_type &local
+	private:
+		static bool history_empty_of(
+			const history_type &history, 
+			local_table_iterator &local_it
 		)
 		{
-			if(device == local.remotes.end())
+			if(history.empty())
 			{
-				local.remotes.unlock();
+				local_it->second.property_lock.unlock();
 				oosp_class::unlock_local();
-				jrn(journal::error) <<
-					"local object " << std::hex << local.object_id <<
-					" has no remote object with id " << remote_object_id <<
+				jrn(journal::trace) <<
+					"object: " << std::hex << local_it->first <<
+					"; nothing to do suspending until next notify" <<
 					journal::end;
 				return true;
 			}
 			return false;
 		}
 
+	public:
 		static void notify(object_id_type object_id)
 		{
 			oosp_class::lock_local();
@@ -311,23 +295,6 @@ namespace process
 		}
 
 	private:
-		static bool history_empty_of(
-			const history_type &history, 
-			local_table_iterator &local_it
-		)
-		{
-			if(history.empty())
-			{
-				local_it->second.property_lock.unlock();
-				oosp_class::unlock_local();
-				jrn(journal::trace) <<
-					"object: " << std::hex << local_it->first <<
-					"; nothing to do suspending until next notify" <<
-					journal::end;
-				return true;
-			}
-			return false;
-		}
 
 		template <typename Tproperty>
 		static void sync_remotes_of_local_object(
