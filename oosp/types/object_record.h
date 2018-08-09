@@ -27,8 +27,8 @@ namespace types
 		std::mutex 		property_lock;
 
 		object_id_type	object_id;
-
 	protected:
+
 		object_record(object_id_type pobject_id)
 			: object_id(pobject_id)
 		{}
@@ -43,8 +43,8 @@ namespace types
 	{
 		template<typename Tpair, typename T>
 		struct change_second_to : std::pair<typename Tpair::first_type,T> {};
-
 	public:
+
 		typedef typename TwicClass::clock           clock;
 
 		typedef typename TwicClass::call_id_type    call_id_type;
@@ -129,8 +129,8 @@ namespace types
 			r.success = !h.reason;
 			r.latency = calc_latency(h);
 		}
-
 	private:
+	
 		template<typename T, typename U = decltype(T::finished), typename V = decltype(T::started)>
 		int32_t calc_latency(const T &h)
 		{ return ::types::time::msec(h.finished-h.started); }

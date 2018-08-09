@@ -36,8 +36,8 @@ namespace oosp
 		typedef typename Tconfig::cfg_earpc::call_id_type	call_id_type;
 
 		typedef net::ipv4_address							address_type;
-
 	private:
+
 		template <typename...>
 		struct property_initializer;
 
@@ -106,8 +106,8 @@ namespace oosp
 				remote_property<TpropertyConfig>
 			>
 		{};
-
 	public:
+
 		typedef types::local_object_record<
 			self,
 			object_record_transform<
@@ -146,8 +146,8 @@ namespace oosp
 				object_id_type,
 				remote_object_record_type
 		>> 										remote_object_lock_table_type;
-
 	public:
+
 		typedef typename local_object_lock_table_type::iterator local_table_iterator;
 
 		typedef typename remote_object_lock_table_type::iterator remote_table_iterator;
@@ -158,7 +158,6 @@ namespace oosp
 		static remote_object_lock_table_type 	remote_object_lock_table;
 
 		static const class_id_type 	class_id = Tconfig::cfg_class_id;
-
 	public:
 
 		constexpr static const char* name = Tconfig::cfg_name;
@@ -365,35 +364,6 @@ namespace oosp
 			return true;
 		}
 
-		// TODO
-		// static bool clr_local(local_table_iterator it)
-		// {
-		// 	const object_id_type object_id = it->second.object_id;
-		// 	const bool clred = local_object_lock_table.erase(it);
-		// 	if(clred)
-		// 		property_initializer<
-		// 			local_property<
-		// 				property_config<Tproperties>
-		// 			>...
-		// 		>::uninit(object_id);
-
-		// 	return clred;
-		// }
-
-		// static bool clr_remote(remote_table_iterator it)
-		// {
-		// 	const object_id_type object_id = it->second.object_id;
-		// 	const bool clred = remote_object_lock_table.erase(it);
-		// 	if(clred)
-		// 		property_initializer<
-		// 			remote_property<
-		// 				property_config<Tproperties>
-		// 			>...
-		// 		>::uninit(object_id);
-
-		// 	return clred;
-		// }
-
 		static bool remote_add(
 			object_id_type local_object_id,
 			object_id_type remote_object_id
@@ -402,7 +372,7 @@ namespace oosp
 			lock_local();
 
 			auto local_it = find_local(local_object_id);
-			if(unknown_local_object(local_it, jrn))
+			if(unlock_on_unknown_local_object(local_it, jrn))
 				return false;
 
 			lock_remote();
@@ -446,7 +416,7 @@ namespace oosp
 			lock_local();
 
 			auto local_it = find_local(local_object_id);
-			if(unknown_local_object(local_it, jrn))
+			if(unlock_on_unknown_local_object(local_it, jrn))
 				return false;
 
 			auto &local = local_it->second;
@@ -498,7 +468,7 @@ namespace oosp
 			return false;
 		}
 
-		static bool unknown_local_object(local_table_iterator local_it, journal (*jrnal)(uint8_t, object_id_type))
+		static bool unlock_on_unknown_local_object(local_table_iterator local_it, journal (*jrnal)(uint8_t, object_id_type))
 		{
 			if(local_it == end())
 			{
@@ -512,7 +482,7 @@ namespace oosp
 			return false;
 		}
 
-		static bool unknown_remote_object(remote_table_iterator remote_it, journal (*jrnal)(uint8_t, object_id_type))
+		static bool unlock_on_unknown_remote_object(remote_table_iterator remote_it, journal (*jrnal)(uint8_t, object_id_type))
 		{
 			if(remote_it == end())
 			{
@@ -526,13 +496,13 @@ namespace oosp
 			return false;
 		}
 	
-		static bool unknown_object(local_table_iterator local_it, journal (*jrnal)(uint8_t, object_id_type))
-		{ return unknown_local_object(local_it, jrnal); }
+		static bool unlock_on_unknown_object(local_table_iterator local_it, journal (*jrnal)(uint8_t, object_id_type))
+		{ return unlock_on_unknown_local_object(local_it, jrnal); }
 
-		static bool unknown_object(remote_table_iterator remote_it, journal (*jrnal)(uint8_t, object_id_type))
-		{ return unknown_remote_object(remote_it, jrnal); }
+		static bool unlock_on_unknown_object(remote_table_iterator remote_it, journal (*jrnal)(uint8_t, object_id_type))
+		{ return unlock_on_unknown_remote_object(remote_it, jrnal); }
 
-		static bool unknown_device_object(
+		static bool unlock_on_unknown_device_object(
 			local_object_record_type &local, 
 			remote_table_iterator remote_it, 
 			journal (*jrnal)(uint8_t, object_id_type)
@@ -551,58 +521,6 @@ namespace oosp
 			}
 			return false;
 		}
-
-		// TODO
-		// template <typename Tfn>
-		// static void safe_local_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
-		// {
-		// 	lock_local();
-		// 	auto local_it = find_local(object_id);
-		// 	if(local_it == end())
-		// 	{
-		// 		unlock_local();
-		// 		jrnal(journal::error) <<
-		// 			"Invalid local `" << name <<
-		// 			"' object reference `" << std::hex << object_id <<
-		// 			journal::end;
-		// 		return;
-		// 	}
-
-		// 	f(local_it);
-		// 	unlock_local();
-		// }
-
-		// template <typename Tfn>
-		// static void safe_remote_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
-		// {
-		// 	lock_remote();
-		// 	auto remote_it = find_remote(object_id);
-		// 	if(remote_it == end())
-		// 	{
-		// 		unlock_remote();
-		// 		jrnal(journal::error) <<
-		// 			"Invalid remote `" << name <<
-		// 			"' object reference `" << std::hex << object_id <<
-		// 			journal::end;
-		// 		return;
-		// 	}
-
-		// 	f(remote_it);
-		// 	unlock_remote();
-		// }
-
-		// template <typename T, typename Tfn>
-		// static std::enable_if_t<
-		// 	std::is_same_v<T, local_object_record_type>
-		// > safe_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
-		// { safe_local_process(object_id); }
-
-		// template <typename T, typename Tfn>
-		// static std::enable_if_t<
-		// 	std::is_same_v<T, remote_object_record_type>
-		// > safe_process(object_id_type object_id, journal (*jrnal)(uint8_t), Tfn &f)
-		// { safe_remote_process(object_id); }
-
 	};
 
 	OOSP_CLASS_TEMPLATE

@@ -13,9 +13,8 @@
 #include <oosp/remote_property.h>
 #include <oosp/forward_property.h>
 #include <oosp/oosp_class.h>
-#include <oosp/types/property.h>
 #include <oosp/types/property_record.h>
-#include <oosp/types/property_data_type.h>
+#include <oosp/types/property.h>
 #include <property_config_base.h>
 #include <device_role.h>
 #include <devman/devman.h>
@@ -45,6 +44,34 @@
 
 typedef earpc::earpc<earpc::config<uint64_t,uint32_t,sport,dport>> rpc;
 
+template <typename TobjId, typename Tvalue>
+struct property_data_type
+{
+	typedef TobjId object_id_type;
+	typedef Tvalue value_type;
+
+	object_id_type object_id;
+	value_type value;
+
+	property_data_type() = default;
+
+	property_data_type(
+		object_id_type pobject_id,
+		const value_type &pvalue 
+	) 
+		: object_id(pobject_id)
+		, value(pvalue)
+	{}
+
+	bool operator==(const property_data_type &that) const
+	{ return std::tie(object_id, value) == std::tie(that.object_id, that.value); }
+};
+
+template <int N>
+struct Int : public oosp::types::property_record<uint32_t, uint64_t, uint8_t>
+{
+	static const int result = N;
+};
 
 struct wic_class_config : public property_config_base
 {
@@ -64,81 +91,53 @@ struct ic
 template <uint32_t c>
 using ic_t = typename::ic<c>::type;
 
-typedef std::integral_constant<uint32_t, 3> member_id;
-
 typedef oosp::oosp_class<
 	wic_class_config,
-	oosp::types::Property<1, true, uint8_t, 1000, 16>,
-	oosp::types::Property<2, true, uint8_t, 1000, 16>,
-	oosp::types::Property<3, true, uint8_t, 1000, 16>,
-	oosp::types::Property<4, true, uint8_t, 1000, 16>	
+	oosp::types::Property<1, true, uint8_t, 1000, 16>
 > oosp_class;	
 
 typedef oosp_class::template get_local<ic_t<1>> local_property;
 
+typedef oosp_class::template get_remote<ic_t<1>> remote_property;
 
-typedef oosp_class::template get_remote<ic_t<1>> property_1;
-typedef oosp_class::template get_remote<ic_t<2>> property_2;
-typedef oosp_class::template get_remote<ic_t<3>> property_3;
-typedef oosp_class::template get_remote<ic_t<4>> property_4;
-
-
-using namespace std::literals::chrono_literals;
-
-static void change_handler_echo_1(uint64_t object_id)
+static void l_change_handler(uint64_t object_id)
 {
-
-	typedef oosp_class::template get_remote<ic_t<1>> property;
-
-	auto value = int(property::value(object_id));
-
+	const auto value = int(local_property::value(object_id));
 	std::stringstream ss;
-	ss << std::dec << value << "; remote object: " << std::hex << 0x68 << " property: 1; value: ";
+	ss << "change_handler; local object: " << std::hex << object_id << "; value: " << std::dec << value;
+	std::cout << ss.str() << std::endl;
+	journal(journal::trace, "test.local") << ss.str() << journal::end;
+
+	local_property::value(0x68, local_property::value(0x68) + 1);
+}
+
+static void r_change_handler(uint64_t object_id)
+{
+	const auto value = int(remote_property::value(object_id));
+	std::stringstream ss;
+	ss << "change_hangler; remote object: " << std::hex << object_id << "; value: " << std::dec << value;
+	std::cout << ss.str() << std::endl;
+	journal(journal::trace, "test.local") << ss.str() << journal::end;
+
+	remote_property::value(0x69, remote_property::value(0x69) + 1);
+}
+
+static void l_change_handler_echo(uint64_t object_id)
+{
+	auto value = int(local_property::value(object_id));
+	std::stringstream ss;
+	ss << "echo; local object: " << std::hex << object_id << "; value: " << std::dec << value;
 	std::cout << ss.str() << std::endl;
 	journal(journal::trace, "faszlo_echo") << ss.str() << journal::end;
 }
 
-static void change_handler_echo_2(uint64_t object_id)
+static void r_change_handler_echo(uint64_t object_id)
 {
-	typedef oosp_class::template get_remote<ic_t<2>> property;
-
-	auto value = int(property::value(object_id));
-
+	auto value = int(remote_property::value(object_id));
 	std::stringstream ss;
-	ss << std::dec << value << "; remote object: " << std::hex << 0x68 << " property: 2; value: ";
+	ss << "echo; remote object: " << std::hex << object_id << "; value: " << std::dec << value;
 	std::cout << ss.str() << std::endl;
 	journal(journal::trace, "faszlo_echo") << ss.str() << journal::end;
-
-	// std::this_thread::sleep_for(500ms);
-	property_3::value(0x68, value + 1);
-}
-
-static void change_handler_echo_3(uint64_t object_id)
-{
-
-	typedef oosp_class::template get_remote<ic_t<3>> property;
-
-	auto value = int(property::value(object_id));
-
-	std::stringstream ss;
-	ss << std::dec << value << "; remote object: " << std::hex << 0x68 << " property: 3; value: ";
-	std::cout << ss.str() << std::endl;
-	journal(journal::trace, "faszlo_echo") << ss.str() << journal::end;
-}
-
-static void change_handler_echo_4(uint64_t object_id)
-{
-	typedef oosp_class::template get_remote<ic_t<4>> property;
-
-	auto value = int(property::value(object_id));
-
-	std::stringstream ss;
-	ss << std::dec << value << "; remote object: " << std::hex << 0x68 << " property: 4; value: ";
-	std::cout << ss.str() << std::endl;
-	journal(journal::trace, "faszlo_echo") << ss.str() << journal::end;
-
-	// std::this_thread::sleep_for(500ms);
-	property_1::value(0x68, value + 1);
 }
 
 int main() 
@@ -147,50 +146,52 @@ int main()
 	journal::init(fname);
 	rpc::init();
 
-	// local_property::init();
-	// remote_property::init();
-
 	oosp_class::init();
-	oosp_class::set_remote(0x68, {10,2,1,100});
-	// oosp_class::set_local(0x69);
-	// oosp_class::remote_add(0x69, 0x68);
-	// oosp_class::remote_del(0x69, 0x68); 
-	property_1::subscribe_to_change(0x68, change_handler_echo_1);
-	property_2::subscribe_to_change(0x68, change_handler_echo_2);
-	property_3::subscribe_to_change(0x68, change_handler_echo_3);
-	property_4::subscribe_to_change(0x68, change_handler_echo_4);
 
-	// property_1::default_value(0x68);
-	// property_1::failures(0x68);
-	// property_1::latency(0x68);
-	// property_1::clear_history(0x68);
-	// property_1::is_sync_pending(0x68);
+	using namespace std::literals::chrono_literals;
+	if(sport == 1234)
+	{
+		oosp_class::set_remote(0x70, {127,0,0,1});
 
-	// local_property::default_value(0x69);
-	// local_property::is_sync_pending(0x69);
-	// local_property::clear_history(0x69);
+		oosp_class::set_local(0x68);
+			local_property::subscribe_to_change(0x68, l_change_handler_echo);
+			oosp_class::remote_add(0x68, 0x70);
 
-	// property_1::is_sync_pending(0x68);
-	
-	// std::this_thread::sleep_for(2s);
-	property_1::value(0x68, 1);
+		oosp_class::set_local(0x69);
+			local_property::subscribe_to_change(0x69, l_change_handler);
+			oosp_class::remote_add(0x69, 0x70);
+	}
+	else
+	{
+		oosp_class::set_local(0x70);
 
-	// oosp_class::clr_local(0x69);
-	// oosp_class::clr_remote(0x68);
-	int cnt = 0;
-	// while(1)
-	// {
-	// 	std::this_thread::sleep_for(500ms);
-	// 	property_1::value(0x68,cnt++);
-	// }
+		oosp_class::set_remote(0x68, {127,0,0,1});
+			remote_property::subscribe_to_change(0x68, r_change_handler);
 
-	// // oosp_class::set_remote(0x69, {127,0,0,1});
-	// // 	remote_property::init(0x69);
-	// // 	remote_property::subscribe_to_change(0x69, r_change_handler_echo);
-	// while(1)
-	// {
-	// 	std::string x ;
-	// 	std::cin >> x;
-	// }
+		oosp_class::set_remote(0x69, {127,0,0,1});
+			remote_property::subscribe_to_change(0x69, r_change_handler_echo);
+	}
+	while(1)
+	{
+		std::string x ;
+		std::cin >> x;
+		if(x == "print")
+		{
+			if(sport == 1234)
+			{
+				std::cout << std::hex << "object: 68; value: " << std::dec << int(local_property::value(0x68)) << std::endl;	
+				std::cout << std::hex << "object: 69; value: " << std::dec << int(local_property::value(0x69)) << std::endl;
+			}
+			else
+			{
+				std::cout << std::hex << "object: 68; value: " << std::dec << int(remote_property::value(0x68)) << std::endl;	
+				std::cout << std::hex << "object: 69; value: " << std::dec << int(remote_property::value(0x69)) << std::endl;
+			}
+		}
+		else if(sport == 11234)
+			local_property::value(0x68, remote_property::value(0x68) + 1);	
+		else 
+			remote_property::value(0x68, remote_property::value(0x68) + 1);	
+	}
 
 }

@@ -51,10 +51,10 @@ namespace process
 		static journal jrn(uint8_t level, object_id_type object)
 		{
 			return journal(level,"oosp.sync.local") << std::hex <<
-				"object:  " << object <<
+				"object: " << object <<
 				"; class: " << oosp_class::name <<
 				"; property: " <<
-				" (" << TEnv::class_id << "::" << member_id::value << "); ";
+				"(" << TEnv::class_id << "::" << member_id::value << "); ";
 			;
 		}
 
@@ -64,7 +64,7 @@ namespace process
 			oosp_class::lock_local();
 
 			auto local_it = oosp_class::find_local(arg_object_id);
-			if(oosp_class::unknown_local_object(local_it, jrn))
+			if(oosp_class::unlock_on_unknown_local_object(local_it, jrn))
 				return;
 
 			auto &local = local_it->second;
@@ -188,8 +188,8 @@ namespace process
 			}
 			return false;
 		}
-
 	public:
+
 		static void init()
 		{ jrn(journal::debug) << "initialized" << journal::end; }
 
@@ -204,7 +204,7 @@ namespace process
 			oosp_class::lock_local();
 
 			auto local_it = oosp_class::find_local(local_object_id);
-			if(oosp_class::unknown_local_object(local_it, jrn))
+			if(oosp_class::unlock_on_unknown_local_object(local_it, jrn))
 				return;
 
 			auto &local = local_it->second;
@@ -225,7 +225,7 @@ namespace process
 			oosp_class::lock_remote();
 
 			auto remote_it = oosp_class::find_remote(remote_object_id);
-			if(oosp_class::unknown_device_object(local, remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_device_object(local, remote_it, jrn))
 				return;
 
 			auto &sync = device->second.template get<member_id>();
@@ -248,8 +248,8 @@ namespace process
 			local.remotes.unlock();
 			oosp_class::unlock_local();
 		}
-
 	private:
+
 		static bool history_empty_of(
 			const history_type &history, 
 			local_table_iterator &local_it
@@ -267,14 +267,14 @@ namespace process
 			}
 			return false;
 		}
-
 	public:
+
 		static void notify(object_id_type object_id)
 		{
 			oosp_class::lock_local();
 
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it, jrn))
+			if(oosp_class::unlock_on_unknown_local_object(local_it, jrn))
 				return;
 
 			local_it->second.property_lock.lock();
@@ -293,7 +293,6 @@ namespace process
 			local_it->second.property_lock.unlock();
 			oosp_class::unlock_local();
 		}
-
 	private:
 
 		template <typename Tproperty>
@@ -314,10 +313,9 @@ namespace process
 					if(
 						sync_necessary(
 							device, 
-							device_sync.local_value, 
-							local_property.sync.local_value, 
-							remote_it->first,
-							remote_it->second.ip
+							remote_it->second.ip,
+							local_property.sync.last_ip,
+							remote_it->first
 						)
 					)
 						sync_remote(
@@ -342,19 +340,22 @@ namespace process
 
 		static bool sync_necessary(
 			remotes_iterator &device, 
-			value_type device_value, 
-			value_type local_value,
-			object_id_type object_id,
-			address_type ip
+			net::ipv4_address &local_ip,
+			net::ipv4_address &device_ip, 
+			object_id_type object_id
 		)
 		{
-			if(local_value == device_value)
+			jrn(journal::trace,object_id) <<
+				"remote: " << (std::string)local_ip << "; device: " << (std::string)device_ip << journal::end;
+		
+			if(local_ip == device_ip)
 			{
 				jrn(journal::trace,object_id) <<
-					"remote: " << (std::string)ip <<
+					"remote: " << (std::string)local_ip <<
 					"; skipping sync for the source of the data, device: " <<
 					std::hex << device->first <<
 					journal::end;
+				device_ip = 0;
 				++device;
 				return false;
 			}

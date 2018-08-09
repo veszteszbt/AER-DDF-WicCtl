@@ -103,8 +103,9 @@ namespace oosp
 
 			const object_id_type object_id = h.value();
 			oosp_class::lock_local();
+
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it, jrn))
+			if(oosp_class::unlock_on_unknown_local_object(local_it, jrn))
 			{
 				h.respond(property_data_type(0,0));
 				return;
@@ -141,7 +142,11 @@ namespace oosp
 			return rv;
 		}
 
-		static void cancel_call(sync_record &sync, object_id_type object_id, net::ipv4_address ip)
+		static void cancel_call(
+			sync_record &sync, 
+			object_id_type object_id, 
+			net::ipv4_address ip
+		)
 		{
 			if(sync.call_id)
 			{
@@ -170,14 +175,15 @@ namespace oosp
 			const property_data_type property_data = h.value();
 			const object_id_type object_id = property_data.object_id;
 			oosp_class::lock_local();
+
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it, jrn))
+			if(oosp_class::unlock_on_unknown_local_object(local_it, jrn))
 			{
 				h.respond(object_id_type(0));
 				return;
 			}
 			
-			safe_set_property_local_value(local_it, property_data.value);
+			safe_set_property_values(local_it, property_data.value, h.ip);
 
 			oosp_class::unlock_local();
 			jrn(journal::trace) <<
@@ -188,11 +194,18 @@ namespace oosp
 			proc_commit::notify(object_id);
 		}
 
-		static void safe_set_property_local_value(local_table_iterator &local_it, value_type value)
+		static void safe_set_property_values(
+			local_table_iterator &local_it, 
+			value_type value,
+			net::ipv4_address ip
+		)
 		{
 			local_it->second.property_lock.lock();
+
 			auto &property = local_it->second.properties.template get<member_id>();
 			property.sync.local_value = value;
+			property.sync.last_ip = ip;
+			
 			local_it->second.property_lock.unlock();
 		}
 
@@ -212,7 +225,7 @@ namespace oosp
 			oosp_class::lock_remote();
 
 			auto remote_it = oosp_class::find_remote(remote_object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 				return;
 
 			cancel(remote_it);
@@ -264,10 +277,9 @@ namespace oosp
 			local_it->second.remotes.lock();
 			local_it->second.remotes.clear();
 			local_it->second.remotes.unlock();
-
 			local_it->second.property_lock.lock();
-			auto &property = local_it->second.properties.template get<member_id>();
 
+			auto &property = local_it->second.properties.template get<member_id>();
 			property.history.clear();
 			property.history.push_back(typename env::history_record(value));
 			property.sync.default_value = property.sync.local_value = value;
@@ -332,8 +344,9 @@ namespace oosp
 		static value_type value(object_id_type object_id)
 		{
 			oosp_class::lock_local();
+
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it, jrn))
+			if(oosp_class::unlock_on_unknown_local_object(local_it, jrn))
 				return value_type(0);
 
 			local_it->second.property_lock.lock();
@@ -366,7 +379,7 @@ namespace oosp
 		{
 			oosp_class::lock_local();
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it, jrn))
+			if(oosp_class::unlock_on_unknown_local_object(local_it, jrn))
 				return value_type(0);
 
 			local_it->second.property_lock.lock();
@@ -399,7 +412,7 @@ namespace oosp
 			oosp_class::lock_local();
 
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it, jrn))
+			if(oosp_class::unlock_on_unknown_local_object(local_it, jrn))
 				return value_type(0);
 
 			local_it->second.property_lock.lock();
@@ -420,7 +433,7 @@ namespace oosp
 			oosp_class::lock_local();
 
 			auto local_it = oosp_class::find_local(object_id);
-			if(oosp_class::unknown_local_object(local_it, jrn))
+			if(oosp_class::unlock_on_unknown_local_object(local_it, jrn))
 				return;
 
 			local_it->second.property_lock.lock();

@@ -102,6 +102,29 @@ namespace oosp
 			;
 		}
 
+		template <typename TtableIterator, typename Tproperty>
+		static std::enable_if_t<
+			std::is_base_of_v<
+				property_record,
+				Tproperty
+			>
+		> sync_local(TtableIterator &it, Tproperty &property)
+		{
+			typedef typename TtableIterator::value_type::second_type encap_object_type;
+			if(local_syncable(property))
+			{
+				it->second.property_lock.unlock();
+				oosp_class::template unlock<encap_object_type>();
+				
+				property.on_change(it->first);
+			}
+			else
+			{
+				it->second.property_lock.unlock();
+				oosp_class::template unlock<encap_object_type>();
+			}
+		}
+
 		template <typename Tproperty>
 		static std::enable_if_t<
 			std::is_base_of_v<
@@ -136,28 +159,20 @@ namespace oosp
 			return false;
 		}
 
-		template <typename TtableIterator, typename Tproperty>
+		template <typename Tproperty>
 		static std::enable_if_t<
 			std::is_base_of_v<
 				property_record,
 				Tproperty
 			>
-		> sync_local(TtableIterator &it, Tproperty &property)
-		{
-			typedef typename TtableIterator::value_type::second_type encap_object_type;
-			if(local_syncable(property))
-			{
-				it->second.property_lock.unlock();
-				oosp_class::template unlock<encap_object_type>();
-				
-				property.on_change(it->first);
-			}
-			else
-			{
-				it->second.property_lock.unlock();
-				oosp_class::template unlock<encap_object_type>();
-			}
-		}
+		> sync_remote(
+			Tproperty &property,
+			object_id_type object_id,
+			net::ipv4_address ip,
+			uint8_t function,
+			void(*callback)(set_handle_type)
+		)
+		{ sync_remote(property.sync, property.history, object_id, ip, function, callback); }
 
 		static void sync_remote(
 			sync_record &sync,
@@ -211,6 +226,23 @@ namespace oosp
 			}
 			jrn(journal::trace) << "remote: " << (std::string)ip << "; sync needed" << journal::end;
 
+			typename history_type::const_iterator first_not_synced_it = find_first_not_synced(history, sync.timestamp);
+
+			sync.pending_timestamp = first_not_synced_it->time;
+			if(sync.start == clock::time_point::min())
+			{
+				sync.start = clock::now();
+				sync.failures = 0;
+			}
+
+			const property_data_type v = {object_id, first_not_synced_it->value};
+			jrn(journal::trace) << "remote: " << (std::string)ip << "; sync initiated" << journal::end;
+
+			sync.call_id = rpc::call(ip,command_id|function,v,callback);
+		}
+
+		static typename history_type::const_iterator find_first_not_synced(const history_type &history, typename clock::time_point timestamp)
+		{
 			typename history_type::const_iterator i = history.begin();
 			for(
 				typename history_type::const_iterator j = history.begin();
@@ -218,38 +250,12 @@ namespace oosp
 				++j
 			)
 			{
-				if(sync.timestamp >= j->time)
+				if(timestamp >= j->time)
 					break;
 				i = j;
 			}
-
-			sync.pending_timestamp = i->time;
-			if(sync.start == clock::time_point::min())
-			{
-				sync.start = clock::now();
-				sync.failures = 0;
-			}
-
-			const property_data_type v = {object_id, i->value};
-			jrn(journal::trace) << "remote: " << (std::string)ip << "; sync initiated" << journal::end;
-
-			sync.call_id = rpc::call(ip,command_id|function,v,callback);
+			return i;
 		}
-
-		template <typename Tproperty>
-		static std::enable_if_t<
-			std::is_base_of_v<
-				property_record,
-				Tproperty
-			>
-		> sync_remote(
-			Tproperty &property,
-			object_id_type object_id,
-			net::ipv4_address ip,
-			uint8_t function,
-			void(*callback)(set_handle_type)
-		)
-		{ sync_remote(property.sync, property.history, object_id, ip, function, callback); }
 
 		static void finish_sync_remote(sync_record &sync, set_handle_type h)
 		{
@@ -277,7 +283,7 @@ namespace oosp
 			oosp_class::template lock<TencapObject>();
 			
 			auto it = oosp_class::template find<TencapObject>(object_id);
-			if(oosp_class::unknown_object(it,jrn))
+			if(oosp_class::unlock_on_unknown_object(it,jrn))
 				return false;
 
 			it->second.property_lock.lock();

@@ -23,6 +23,8 @@ namespace types
 
 		value_type					default_value;
 
+		net::ipv4_address			last_ip;
+
 		typename clock::time_point	start;
 
 		typename clock::duration	latency;
@@ -35,6 +37,7 @@ namespace types
 			, start(clock::time_point::min())
 			, failures(0)
 			, call_id(0)
+			, last_ip(0)
 		{}
 	};
 }}

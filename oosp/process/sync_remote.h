@@ -40,7 +40,7 @@ namespace process
 			oosp_class::lock_remote();
 
 			auto remote_it = oosp_class::find_remote(arg_object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 				return;
 
 			auto &remote = remote_it->second;
@@ -115,8 +115,8 @@ namespace process
 			}
 			return false;	
 		}
-
 	public:
+
 		static void init()
 		{
 			jrn(journal::debug) << "initialized" << journal::end;
@@ -132,7 +132,7 @@ namespace process
 			oosp_class::lock_remote();
 
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 				return;
 			
 			auto &remote = remote_it->second;
@@ -171,7 +171,7 @@ namespace process
 		{
 			oosp_class::lock_remote();
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 				return;
 
 			remote_it->second.property_lock.lock();

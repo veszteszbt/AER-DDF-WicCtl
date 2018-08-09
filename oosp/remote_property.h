@@ -71,7 +71,7 @@ namespace oosp
 		static journal jrn(uint8_t level)
 		{
 			return journal(level,"oosp.property.remote") <<
-				"; property: " << std::hex << env::class_id << "::" << env::member_id::value <<
+				"property: " << std::hex << env::class_id << "::" << env::member_id::value <<
 				"; ";
 		}
 
@@ -90,8 +90,9 @@ namespace oosp
 			const property_data_type property_data = h.value();
 			const object_id_type object_id = property_data.object_id;
 			oosp_class::lock_remote();
+
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 			{
 				h.respond(object_id_type(0));
 				return;
@@ -111,25 +112,15 @@ namespace oosp
 
 			remote_it->second.property_lock.lock();
 			auto &property = remote_it->second.properties.template get<member_id>();
-			if(
-				env::local_value_match_given_value(
-					property.sync.local_value, 
-					property_data.value, 
-					remote_it
-				)
-			)
+			if(notify_called_with_no_change(property, property_data.value, remote_it))
 			{
-				jrn(journal::warning) <<
-					"object: " << std::hex << object_id <<
-					"; notify with no change" <<
-					journal::end;
 				h.respond(object_id);
-				return;	
+				return;
 			}
 
 			jrn(journal::trace) <<
 				"object: " << std::hex << object_id <<
-				"; notify with new value " << std::dec << int(property_data.value) <<
+				"; notify with new value " <<
 				journal::end;
 
 			if(property.initial_sync_pending)
@@ -152,6 +143,30 @@ namespace oosp
 
 			proc_log::notify(object_id);
 		}
+		
+		template <typename Tproperty>
+		static bool notify_called_with_no_change(
+			Tproperty &property, 
+			value_type pvalue, 
+			remote_table_iterator &remote_it
+		)
+		{
+			if(
+				env::local_value_match_given_value(
+					property.sync.local_value, 
+					pvalue,
+					remote_it
+				)
+			)
+			{
+				jrn(journal::warning) <<
+					"object: " << std::hex << remote_it->first <<
+					"; notify with no change" <<
+					journal::end;
+				return true;
+			}
+			return false;
+		}
 
 		template <typename Tproperty>
 		static void cancel_call_and_init_default_state(Tproperty &property)
@@ -172,7 +187,7 @@ namespace oosp
 			const object_id_type arg_object_id = h.argument();
 			oosp_class::lock_remote();
 			auto remote_it = oosp_class::find_remote(arg_object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 				return;
 
 			remote_it->second.report_call(h);
@@ -363,7 +378,7 @@ namespace oosp
 			oosp_class::lock_remote();
 			
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 				return value_type(0);
 
 			remote_it->second.property_lock.lock();
@@ -386,7 +401,7 @@ namespace oosp
 			oosp_class::lock_remote();
 
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 				return value_type(0);
 
 			remote_it->second.property_lock.lock();
@@ -419,7 +434,7 @@ namespace oosp
 			oosp_class::lock_remote();
 
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 				return value_type(0);
 
 			remote_it->second.property_lock.lock();
@@ -440,7 +455,7 @@ namespace oosp
 			oosp_class::lock_remote();
 
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 				return uint32_t(0);
 
 			remote_it->second.property_lock.lock();
@@ -458,9 +473,9 @@ namespace oosp
 			oosp_class::lock_remote();
 
 			auto remote_it = oosp_class::find_remote(object_id);
-			// TODO
-			// if(oosp_class::unknown_remote_object(remote_it, jrn))
-			// 	return clock::duration();
+
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
+				return std::chrono::seconds::max();
 
 			remote_it->second.property_lock.lock();
 			const auto latency = remote_it->second.properties.template get<member_id>().sync.latency;
@@ -477,7 +492,7 @@ namespace oosp
 		{
 			oosp_class::lock_remote();
 			auto remote_it = oosp_class::find_remote(object_id);
-			if(oosp_class::unknown_remote_object(remote_it, jrn))
+			if(oosp_class::unlock_on_unknown_remote_object(remote_it, jrn))
 				return;
 
 			remote_it->second.property_lock.lock();
@@ -491,7 +506,7 @@ namespace oosp
 		static bool is_sync_pending(object_id_type object_id)
 		{ return env::template is_sync_pending<typename env::encap_object_type>(object_id); }
 
-		// TODO
+		// TODO delete this
 		static void subscribe_to_change(
 			object_id_type object_id,
 			void (*change_handler)(object_id_type object_id)

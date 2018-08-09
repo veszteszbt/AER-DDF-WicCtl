@@ -68,7 +68,7 @@ namespace process
 		{
 			oosp_class::template lock<encap_object_type>();
 			auto it = oosp_class::template find<encap_object_type>(object_id);
-			if(oosp_class::unknown_object(it,jrn))
+			if(oosp_class::unlock_on_unknown_object(it,jrn))
 				return;
 
 			it->second.property_lock.lock();
