@@ -35,3 +35,4 @@
 *.app
 wicctl
 wic_host
+*.json
