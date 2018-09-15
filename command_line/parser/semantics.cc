@@ -729,7 +729,8 @@ for_in_desc::for_in_desc(
 	c_expression_list* cel,
 	command_list_desc* commands_
 )
-	: variable(variable_)
+	: row(row_number)
+	, variable(variable_)
 	, elements(cel)
 	, commands(commands_)
 {}
@@ -752,6 +753,54 @@ void for_in_desc::evaluate()
 		assign* a = new assign(row, variable, elements->return_element(i));
 		a->evaluate();
 		commands->evaluate();
+	}
+}
+
+for_in_var_desc::for_in_var_desc(
+	int row_number,
+	std::string* variable_,
+	std::string* r,
+	command_list_desc* commands_
+)
+	: row(row_number)
+	, variable(variable_)
+	, range(r)
+	, commands(commands_)
+{}
+
+var_value for_in_var_desc::get_return_value()
+{
+	var_value v = 0;
+	std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using return value of non-returning function (for loop)!" << std::endl;
+	journal(journal::info, "semantics") << row << ": ERROR: using return value of non-returning function (for loop)!" << journal::end;
+	//ERROR
+
+	return v;
+}
+
+void for_in_var_desc::evaluate()
+{
+	variable_desc v = (*commandline::shell::parser).symbol_table.get_value(range);
+	var_value loop_range = v.value;
+
+	//expr_var loop_range(row_number, range);
+	if (loop_range.get_type() != u_array)
+	{
+		std::cerr << std::endl << row << ": \e[31;01mERROR:\e[0m using non-array as loop range!" << std::endl;
+		journal(journal::info, "semantics") << row << ": \e[31;01mERROR:\e[0m using non-array as loop range!" << journal::end;
+	}
+	else
+	{
+		std::vector<var_value> elements = loop_range.return_array_elements();
+		//for(auto it = elements.begin(); it != elements.end(); ++it)
+		for(int i = 0; i<loop_range.get_size(); ++i)
+		{
+			// assigns the current element from the elements array
+			commandline::shell::parser->symbol_table.set_value(variable, variable_desc(row, elements[i]));
+			//assign* a = new assign(row, variable, it->value);
+			//a->evaluate();
+			commands->evaluate();
+		}
 	}
 }
 

@@ -504,11 +504,36 @@ struct for_in_desc : public command_desc
 
 	c_expression_list* elements;
 	command_list_desc* commands;
+	int row;
+
 
 	for_in_desc(
 		int row_number,
 		std::string* variable_,
 		c_expression_list* cel,
+		command_list_desc* commands_
+	);
+
+	var_value get_return_value();
+
+	void evaluate();
+};
+
+
+struct for_in_var_desc : public command_desc
+{
+	// int row; // > comment for the same reason
+	std::string* variable;
+
+	std::string* range;
+	command_list_desc* commands;
+	int row;
+
+
+	for_in_var_desc(
+		int row_number,
+		std::string* variable_,
+		std::string* r,
 		command_list_desc* commands_
 	);
 

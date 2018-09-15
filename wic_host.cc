@@ -3865,6 +3865,7 @@ int main()
 	>::exec(s);
 
 	s.execute();
+	s.execute();
 
 	uninit();
 

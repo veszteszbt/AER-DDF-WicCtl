@@ -14,8 +14,7 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		sed -i 's/enum ErrorRecovery__/public:\n\t\tenum ErrorRecovery__/' Parserbase.h
 		sed -i 's/UNEXPECTED_TOKEN__,/UNEXPECTED_TOKEN__,\n\t\t\tFINISH_THIS_STRINGSTREAM/' Parserbase.h
 		sed -i 's/bool        d_actionCases__ = false;/protected:\n\t\tbool        d_actionCases__ = false;/' Parserbase.h
-		sed -i 's/void setDebug(DebugMode__ mode);/void setDebug(DebugMode__ mode);\n\nstatic bool finished;\n\t\tint returnState;\n\t\tstatic long index;\n\n\t\tvoid finish(int i)\n\t\t{\n\t\t\tfinished = true;\n\t\t\treturnState=i;\n\t\t}/' Parserbase.h
-
+		sed -i 's/void setDebug(DebugMode__ mode);/void setDebug(DebugMode__ mode);\n\n\t\tstatic bool finished;\n\t\tstatic bool is_errorstate;\n\t\tint returnState;\n\t\tstatic long index;\n\n\t\tvoid finish(int i)\n\t\t{\n\t\t\tfinished = true;\n\t\t\treturnState=i;\n\t\t}/' Parserbase.h
 
 		echo "inserting into Parser.h"
 		sed -i 's/lines./lines.\n#include "symbol_table.h"\n#include <sstream>/' Parser.h
@@ -34,11 +33,14 @@ read -p "WARNING: This operation will delete your current bisonc++ files! Press 
 		sed -i 's/clearin__();/\/\/ clearin__();/' parse.cc
 		sed -i 's/if (not recovery__())/if(e == FINISH_THIS_STRINGSTREAM)\n\t{\n\t\tParserBase::finished = true;\n\t\treturn;\n\t}\n\telse\n\t{\n\t\tstd::cout << ">encountered an error, please write a semicolon (;) to ensure that the state with the error is closed" << std::endl;\n\t\tclearin__();\n\t}\n\n\tif (not recovery__())/' parse.cc
 		sed -i 's/while (true)/ParserBase::finished = false;\n\twhile (!ParserBase::finished)/' parse.cc
+		sed -i 's/shift__(action);/is_errorstate=false;\n\t\tshift__(action);/' parse.cc
+		sed -i 's/reduce__(-action);/is_errorstate=false;\n\t\treduce__(-action);/' parse.cc
+		sed -i 's/std::cout << ">encountered an error, please write a semicolon (;) to ensure that the state with the error is closed" << std::endl;/if (!is_errorstate)\n\t\t\tstd::cout << ">encountered an error, please write a semicolon (;) to ensure that the state with the error is closed" << std::endl;\n\n\t\tis_errorstate=true;/' parse.cc
 		# to remove warning
 		# (sed can't do this) insert into parse.cc:
 		# return returnState;
 		# before } catch (Return__ retValue)
-		sed -i 's/\/\/ derived\/tail/bool ParserBase::finished = false;\n\/\/ derived\/tail/' parse.cc
+		sed -i 's/\/\/ derived\/tail/bool ParserBase::finished = false;\nbool ParserBase::is_errorstate = false;\n\/\/ derived\/tail/' parse.cc
 
 		echo "please paste \"return returnState\" into parse.cc for the parse() function"
 
