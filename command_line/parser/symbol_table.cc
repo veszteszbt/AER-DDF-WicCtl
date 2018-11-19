@@ -145,6 +145,8 @@ var_value::~var_value()
 		val.array->arraypair::~map();
 }
 
+
+//value() function attempts to convert and put the current value of the variable into the parameter variable
 bool var_value::value(int &i) const
 {
 	if (var_type == u_double)
@@ -1243,7 +1245,7 @@ template <typename Ttype>
 std::enable_if_t< types::meta::is_one_of_v<Ttype, int, double, std::string>, void >
 out_stream(std::ostream& out, var_value &v)
 {
-	int i;
+	Ttype i;
 		if (v.value(i))
 
 	out << i;

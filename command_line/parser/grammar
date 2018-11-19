@@ -383,7 +383,7 @@ expression:
 |
 	COMMAND_RETURNER OPEN_CURLY_BRACKET command CLOSING_CURLY_BRACKET
 	{
-		$$ = new expr_const(d_loc__.first_line, $3->get_return_value());
+		$$ = new expr_callpar(d_loc__.first_line, $3);
 		journal(journal::info, "parser") << "expression -> COMMAND_RETURNER OPEN_CURLY_BRACKET command CLOSING_CURLY_BRACKET" << journal::end;
 	}
 ;

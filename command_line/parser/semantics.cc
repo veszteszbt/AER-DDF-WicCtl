@@ -119,6 +119,22 @@ void expr_const::evaluate()
 var_value expr_const::get_val()
 { return val; }
 
+
+expr_callpar::expr_callpar(int row_number, command_desc* n)
+	: row(row_number)
+	, nestedcall(n)
+{}
+
+void expr_callpar::evaluate()
+{
+	val = nestedcall->get_return_value();
+	//std::cout << "evaluating function, value is: " << val << std::endl;
+}
+
+var_value expr_callpar::get_val()
+{ return val; }
+
+
 expr_var::expr_var(int row_number, std::string var_name) : row(row_number), name(var_name)
 {}
 
@@ -1017,6 +1033,7 @@ call::call(
 var_value call::get_return_value()
 {
 	evaluate();
+	//std::cout << "call return value" << std::endl;
 	return returnval;
 }
 
@@ -1026,6 +1043,7 @@ void call::evaluate()
 		args[i]->evaluate(); //evaluate each argument's value (important)
 
 	returnval = commandline::shell::fptr->run(this);
+	//std::cout << "call evaluated, value is: " << returnval << std::endl;
 }
 
 sytable_stack::sytable_stack(command_list_desc* cd)
@@ -1049,3 +1067,26 @@ void sytable_stack::evaluate()
 	c->evaluate();
 	commandline::shell::parser->symbol_table.decrease_stack();
 }
+
+/*function_parameter::function_parameter(int row_number, command_desc* p)
+:
+row(row_number),
+parameters(p)
+{
+
+}
+
+void function_parameter::evaluate()
+{
+	val = parameters->get_return_value();
+}
+
+var_value function_parameter::get_val()
+{
+	evaluate();
+	return val;
+}
+
+expr_const::expr_const(int row_number, function_parameter fp)
+	: expression_desc(row_number, v)
+{ val = v; }*/

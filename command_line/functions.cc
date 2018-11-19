@@ -61,6 +61,12 @@ static void echo_c(std::string s,int i)
 	std::cout << std::endl;
 }
 
+static void echo_noend(std::string s,int i)
+{
+	for (int j = 0; j < i; ++j)
+	{	std::cout << s; }
+}
+
 static void testfunction(int i, double d, std::string s, std::map<std::string, var_value> m)
 {
 	std::cout << "the int is : " << i << std::endl;
@@ -89,6 +95,7 @@ static void is_true(int b)
 	else
 		std::cout << "FALSE" << std::endl;
 }
+
 
 /*static void var_info(var_value v)
 {
@@ -138,6 +145,7 @@ functions::functions()
 	//add_command("echo", echo<std::string>);
 	add_command("write_reverse", write_reverse);
 	add_command("echo_c", echo_c);
+	add_command("echo_noend", echo_noend);
 	add_command("echo_end", echo_end);
 	add_command("sin", sin);
 	add_command("cos", cos);
@@ -155,7 +163,7 @@ functions::functions()
 
 var_value functions::run(call* c)
 {
-	var_value v = 0;
+	var_value v;
 	arguments.clear();
 	arguments.resize(0);
 	std::string command_name;
@@ -171,6 +179,8 @@ var_value functions::run(call* c)
 		//typename std::result_of<T(void)>
 		//v lehet void is!!
 		//v = std::result_of<runcommand->second(arguments)>;
+		
+		//v.set_type_noconvert(runcommand->second(arguments)::result_type)
 		v = runcommand->second(arguments);
 	}
 	else
@@ -195,6 +205,7 @@ var_value functions::run(call* c)
 	{
 
 	}*/
+	//std::cout << runcommand->first << " functions.cc val: " << v << std::endl;
 	return v;
 }
 

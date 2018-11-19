@@ -99,6 +99,18 @@ struct expr_const : public expression_desc
 	var_value get_val();
 };
 
+struct expr_callpar : public expression_desc
+{
+	int row;
+	command_desc* nestedcall;
+
+	expr_callpar(int row_number, command_desc* n);
+
+	void evaluate();
+	type get_type();
+	var_value get_val();
+};
+
 //variables
 struct expr_var : public expression_desc
 {
