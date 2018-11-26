@@ -150,7 +150,13 @@ var_value::~var_value()
 bool var_value::value(int &i) const
 {
 	if (var_type == u_double)
+	{
 		i = static_cast<int>(val.doubleval);
+		if (i != val.doubleval)
+		{
+			std::cout << "Warning: converting double to int resulted in data loss!" << std::endl;
+		}
+	}
 	else if(var_type == u_string)
 	{
 		std::stringstream ss;

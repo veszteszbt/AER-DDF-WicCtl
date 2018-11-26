@@ -765,14 +765,33 @@ void for_in_desc::evaluate()
 {
 	for(int i = 0; i < elements->get_size(); ++i)
 	{
-		// assigns the current element from the elements array
-		assign* a = new assign(row, variable, elements->return_element(i));
-		a->evaluate();
-		commands->evaluate();
+		expression_desc* exprval = elements->return_element(i);
+		exprval->evaluate();
+		//std::cout << exprval->get_type() << std::endl;
+		if (exprval->get_type() == u_array)
+		{
+			var_value arrayval = exprval->get_val();
+			std::vector<var_value> elements = arrayval.return_array_elements();
+			for(int i = 0; i<arrayval.get_size(); ++i)
+			{
+				// assigns the current element from the elements array
+				commandline::shell::parser->symbol_table.set_value(variable, variable_desc(row, elements[i]));
+				//assign* a = new assign(row, variable, it->value);
+				//a->evaluate();
+				commands->evaluate();
+			}
+		}
+		else
+		{
+			// assigns the current element from the elements array
+			assign* a = new assign(row, variable, exprval);
+			a->evaluate();
+			commands->evaluate();
+		}
 	}
 }
 
-for_in_var_desc::for_in_var_desc(
+/*for_in_var_desc::for_in_var_desc(
 	int row_number,
 	std::string* variable_,
 	std::string* r,
@@ -818,7 +837,7 @@ void for_in_var_desc::evaluate()
 			commands->evaluate();
 		}
 	}
-}
+}*/
 
 if_desc::if_desc(
 	int row_number,

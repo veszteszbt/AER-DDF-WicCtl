@@ -532,7 +532,7 @@ struct for_in_desc : public command_desc
 };
 
 
-struct for_in_var_desc : public command_desc
+/*struct for_in_var_desc : public command_desc
 {
 	// int row; // > comment for the same reason
 	std::string* variable;
@@ -552,7 +552,7 @@ struct for_in_var_desc : public command_desc
 	var_value get_return_value();
 
 	void evaluate();
-};
+};*/
 
 struct if_desc : public command_desc
 {

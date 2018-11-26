@@ -68,11 +68,13 @@ class functions
 		 	//std::cout << "indukcio" << std::endl;
 
 		 	if(!(args[index-1].value(std::get< index-1 >(t))))
-		 		errv.push_back(
-		 			std::to_string(index) +
-		 			" (" + types::type::name(std::get< index-1 >(t)) + ")"
+		 	{
+				//std::cout << args[index-1].get_type() << std::endl;
+				errv.push_back(
+		 		std::to_string(index) +
+		 		" (" + types::type::name(std::get< index-1 >(t)) + ")"
 		 		);
-
+			}
 			create_tuple<index-1>(t,args,errv);
 		}
 
