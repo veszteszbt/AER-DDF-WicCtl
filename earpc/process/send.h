@@ -36,7 +36,7 @@ namespace process
 
 		static std::condition_variable  suspend_cv;
 
-		constexpr static ::earpc::udp  &conn = TEnv::conn;
+		static ::earpc::udp &conn;
 
 		struct packet
 		{
@@ -281,5 +281,8 @@ namespace process
 
 	template<typename e>
 	volatile bool send<e>::notified;
+
+	template<typename e>
+	::earpc::udp &send<e>::conn = e::conn;
 }}
 #endif

@@ -19,7 +19,7 @@ namespace process
 
 		typedef typename TEnv::header_type header_type;
 
-		constexpr static ::earpc::udp &conn = TEnv::conn;
+		static ::earpc::udp &conn;
 
 		struct queue_record
 		{
@@ -163,5 +163,8 @@ namespace process
 
 	template<typename e>
 	typename feedback<e>::header_type feedback<e>::packet;
+
+	template<typename e>
+	::earpc::udp &feedback<e>::conn = e::conn;
 }}
 #endif

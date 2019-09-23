@@ -39,7 +39,7 @@ namespace process
 
 		static const command_id_type command_id_exception    = TEnv::command_id_exception;
 
-		constexpr static ::earpc::udp &conn                  = TEnv::conn;
+		static ::earpc::udp &conn;
 
 		static uint8_t *buffer;
 
@@ -632,5 +632,8 @@ namespace process
 
 	template<typename e>
 	uint8_t *recv<e>::buffer;
+
+	template<typename e>
+	::earpc::udp &recv<e>::conn = e::conn;
 }}
 #endif
